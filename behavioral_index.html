@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InnovatorBench — 全部 20 个 Task 行为分析索引</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root {
+    --navy: #1a2332; --navy-light: #2d4a6f;
+    --blue: #2563eb; --blue-light: #eff6ff;
+    --green: #059669; --green-light: #ecfdf5;
+    --red: #dc2626; --red-light: #fef2f2;
+    --orange: #d97706; --orange-light: #fffbeb;
+    --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+    --gray-500: #6b7280; --gray-700: #374151; --gray-900: #111827;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans SC', -apple-system, sans-serif; background: var(--gray-50); color: var(--gray-900); line-height: 1.6; font-size: 15px; }
+  .container { max-width: 1300px; margin: 0 auto; padding: 40px 24px; }
+  .header { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); color: white; padding: 48px 0; margin-bottom: 36px; }
+  .header .container { padding: 0 24px; }
+  .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .header .subtitle { font-size: 15px; opacity: 0.85; margin-bottom: 4px; }
+  .header .meta { margin-top: 16px; display: flex; gap: 28px; font-size: 13px; opacity: 0.8; flex-wrap: wrap; }
+  .section { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px; }
+  .section h2 { font-size: 20px; color: var(--navy); margin-bottom: 6px; }
+  .section .section-desc { color: var(--gray-500); font-size: 13px; margin-bottom: 18px; }
+  .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .stat-card { background: var(--gray-50); border-radius: 8px; padding: 16px; text-align: center; border: 1px solid var(--gray-200); }
+  .stat-card .num { font-size: 28px; font-weight: 700; color: var(--navy); font-family: 'JetBrains Mono', monospace; }
+  .stat-card .label { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
+  .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .card { background: white; border: 1px solid var(--gray-200); border-radius: 10px; padding: 16px; text-decoration: none; color: inherit; transition: all 0.15s; display: flex; flex-direction: column; gap: 8px; }
+  .card:hover { box-shadow: 0 8px 16px rgba(0,0,0,0.08); transform: translateY(-2px); }
+  .card-scored { border-left: 4px solid var(--green); }
+  .card-zero { border-left: 4px solid var(--orange); }
+  .card-noeval { border-left: 4px solid var(--red); }
+  .card-id { font-size: 16px; font-weight: 700; color: var(--navy); }
+  .card-stats { margin: 4px 0; }
+  .card-stats .big { font-size: 26px; font-weight: 700; color: var(--green); font-family: 'JetBrains Mono', monospace; }
+  .card-stats .small { font-size: 15px; color: var(--gray-500); font-weight: 400; }
+  .card-stats .label { font-size: 11px; color: var(--gray-500); }
+  .card-progress { height: 6px; background: var(--gray-100); border-radius: 3px; overflow: hidden; }
+  .card-progress-bar { height: 100%; background: linear-gradient(90deg, var(--green), #10b981); }
+  .card-zero .card-progress-bar { background: var(--orange); width: 0 !important; }
+  .card-noeval .card-progress-bar { background: var(--red); width: 0 !important; }
+  .card-best { font-size: 12px; color: var(--gray-700); }
+  .family-tag { display: inline-block; background: var(--blue-light); color: var(--blue); padding: 1px 6px; border-radius: 3px; font-size: 10px; margin-left: 4px; font-family: 'JetBrains Mono', monospace; }
+  .score-pill { display: inline-block; background: var(--navy); color: white; padding: 1px 7px; border-radius: 10px; font-size: 11px; font-weight: 700; margin-left: 4px; font-family: 'JetBrains Mono', monospace; }
+  .card-meta { display: flex; gap: 8px; font-size: 10px; color: var(--gray-500); flex-wrap: wrap; padding-top: 6px; border-top: 1px solid var(--gray-100); }
+  .card.missing { opacity: 0.4; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--gray-100); padding: 9px 10px; text-align: left; font-weight: 600; border-bottom: 2px solid var(--gray-200); font-size: 12px; }
+  td { padding: 7px 10px; border-bottom: 1px solid var(--gray-100); }
+  tbody tr:hover { background: var(--gray-50); }
+  .row-scored { background: #ecfdf5; }
+  .row-zero { background: #fffbeb; }
+  .row-noeval { background: #fef2f2; }
+  .score-cell { font-weight: 700; color: var(--navy); font-family: 'JetBrains Mono', monospace; }
+  .pct { font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  @media (max-width: 900px) {
+    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+    .summary-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="container">
+    <h1>InnovatorBench — Task 1 ~ Task 20 全量行为分析索引</h1>
+    <div class="subtitle">每个任务 28~36 次 agent 运行，34 项行为指标，按模型家族分组对比</div>
+    <div class="meta">
+      <span>20 / 20 Tasks Reported</span>
+      <span>600 Total Runs</span>
+      <span>263 Scored &gt; 0</span>
+      <span>172 Zero</span>
+      <span>165 No-Eval</span>
+      <span>Generated 2026-04-28 07:08</span>
+    </div>
+  </div>
+</div>
+<div class="container">
+
+<div class="section">
+  <h2>📊 总体概览</h2>
+  <div class="section-desc">Task 1~20 的全局汇总。点击下方卡片跳转到单任务详细报告。</div>
+  <div class="summary-grid">
+    <div class="stat-card"><div class="num">20</div><div class="label">Tasks with reports</div></div>
+    <div class="stat-card"><div class="num">600</div><div class="label">Total Runs</div></div>
+    <div class="stat-card"><div class="num" style="color:var(--green);">263</div><div class="label">得分 &gt; 0 次数</div></div>
+    <div class="stat-card"><div class="num" style="color:var(--red);">165</div><div class="label">未触发 eval 次数</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>🎯 Task 卡片 (快速跳转)</h2>
+  <div class="section-desc">
+    <span style="display:inline-block;width:10px;height:10px;background:var(--green);border-radius:2px;"></span> 有得分 &gt; 0 的 run &nbsp;
+    <span style="display:inline-block;width:10px;height:10px;background:var(--orange);border-radius:2px;"></span> 仅零分 eval &nbsp;
+    <span style="display:inline-block;width:10px;height:10px;background:var(--red);border-radius:2px;"></span> 无 eval 触发
+  </div>
+  <div class="cards-grid">
+    
+        <a class="card card-scored" href="Task1_Behavioral_Analysis.html">
+          <div class="card-id">Task 1</div>
+          <div class="card-stats">
+            <div class="big">21<span class="small">/35</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:60%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> glm-4-5-full-data (Sep12)
+            <span class="family-tag">glm-4-5-full-data</span>
+            <span class="score-pill">96.4</span>
+          </div>
+          <div class="card-meta">
+            <span>35 runs</span>
+            <span>14 families</span>
+            <span>零分 3</span>
+            <span>无eval 11</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task2_Behavioral_Analysis.html">
+          <div class="card-id">Task 2</div>
+          <div class="card-stats">
+            <div class="big">18<span class="small">/35</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:51%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> claude-4-sonnet (Sep08)
+            <span class="family-tag">claude-4-sonnet</span>
+            <span class="score-pill">39.4</span>
+          </div>
+          <div class="card-meta">
+            <span>35 runs</span>
+            <span>14 families</span>
+            <span>零分 5</span>
+            <span>无eval 12</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task3_Behavioral_Analysis.html">
+          <div class="card-id">Task 3</div>
+          <div class="card-stats">
+            <div class="big">15<span class="small">/28</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:54%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> glm-4-5 (Sep07)
+            <span class="family-tag">glm-4-5</span>
+            <span class="score-pill">18.9</span>
+          </div>
+          <div class="card-meta">
+            <span>28 runs</span>
+            <span>14 families</span>
+            <span>零分 5</span>
+            <span>无eval 8</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task4_Behavioral_Analysis.html">
+          <div class="card-id">Task 4</div>
+          <div class="card-stats">
+            <div class="big">19<span class="small">/25</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:76%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> kimi-k2.5 (Feb26)
+            <span class="family-tag">kimi-k2.5</span>
+            <span class="score-pill">100.0</span>
+          </div>
+          <div class="card-meta">
+            <span>25 runs</span>
+            <span>14 families</span>
+            <span>零分 1</span>
+            <span>无eval 5</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task5_Behavioral_Analysis.html">
+          <div class="card-id">Task 5</div>
+          <div class="card-stats">
+            <div class="big">20<span class="small">/32</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:62%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> claude-4-sonnet (Sep11)
+            <span class="family-tag">claude-4-sonnet</span>
+            <span class="score-pill">23.2</span>
+          </div>
+          <div class="card-meta">
+            <span>32 runs</span>
+            <span>14 families</span>
+            <span>零分 2</span>
+            <span>无eval 10</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task6_Behavioral_Analysis.html">
+          <div class="card-id">Task 6</div>
+          <div class="card-stats">
+            <div class="big">19<span class="small">/33</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:58%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> glm-4-5-full-data-wo-interact (Sep15)
+            <span class="family-tag">glm-4-5-full-data-wo-interact</span>
+            <span class="score-pill">100.0</span>
+          </div>
+          <div class="card-meta">
+            <span>33 runs</span>
+            <span>14 families</span>
+            <span>零分 3</span>
+            <span>无eval 11</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task7_Behavioral_Analysis.html">
+          <div class="card-id">Task 7</div>
+          <div class="card-stats">
+            <div class="big">21<span class="small">/28</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:75%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> claude-4-sonnet (Nov14)
+            <span class="family-tag">claude-4-sonnet</span>
+            <span class="score-pill">25.8</span>
+          </div>
+          <div class="card-meta">
+            <span>28 runs</span>
+            <span>14 families</span>
+            <span>零分 1</span>
+            <span>无eval 6</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task8_Behavioral_Analysis.html">
+          <div class="card-id">Task 8</div>
+          <div class="card-stats">
+            <div class="big">16<span class="small">/36</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:44%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> glm47_data_w_codeact_rebench_1_2... (Feb27)
+            <span class="family-tag">glm47-codeact</span>
+            <span class="score-pill">38.0</span>
+          </div>
+          <div class="card-meta">
+            <span>36 runs</span>
+            <span>14 families</span>
+            <span>零分 10</span>
+            <span>无eval 10</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task9_Behavioral_Analysis.html">
+          <div class="card-id">Task 9</div>
+          <div class="card-stats">
+            <div class="big">2<span class="small">/26</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:8%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> glm47 (Feb25)
+            <span class="family-tag">glm47</span>
+            <span class="score-pill">60.8</span>
+          </div>
+          <div class="card-meta">
+            <span>26 runs</span>
+            <span>14 families</span>
+            <span>零分 17</span>
+            <span>无eval 7</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task10_Behavioral_Analysis.html">
+          <div class="card-id">Task 10</div>
+          <div class="card-stats">
+            <div class="big">1<span class="small">/21</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:5%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> kimi-k2.5 (Feb26)
+            <span class="family-tag">kimi-k2.5</span>
+            <span class="score-pill">15.5</span>
+          </div>
+          <div class="card-meta">
+            <span>21 runs</span>
+            <span>14 families</span>
+            <span>零分 14</span>
+            <span>无eval 6</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task11_Behavioral_Analysis.html">
+          <div class="card-id">Task 11</div>
+          <div class="card-stats">
+            <div class="big">16<span class="small">/27</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:59%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> claude-4-sonnet (Sep08)
+            <span class="family-tag">claude-4-sonnet</span>
+            <span class="score-pill">86.3</span>
+          </div>
+          <div class="card-meta">
+            <span>27 runs</span>
+            <span>14 families</span>
+            <span>零分 4</span>
+            <span>无eval 7</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task12_Behavioral_Analysis.html">
+          <div class="card-id">Task 12</div>
+          <div class="card-stats">
+            <div class="big">7<span class="small">/32</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:22%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> kimi-k2.5 (Feb26)
+            <span class="family-tag">kimi-k2.5</span>
+            <span class="score-pill">95.4</span>
+          </div>
+          <div class="card-meta">
+            <span>32 runs</span>
+            <span>14 families</span>
+            <span>零分 18</span>
+            <span>无eval 7</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task13_Behavioral_Analysis.html">
+          <div class="card-id">Task 13</div>
+          <div class="card-stats">
+            <div class="big">13<span class="small">/33</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:39%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> glm47 (Feb27)
+            <span class="family-tag">glm47</span>
+            <span class="score-pill">31.4</span>
+          </div>
+          <div class="card-meta">
+            <span>33 runs</span>
+            <span>13 families</span>
+            <span>零分 9</span>
+            <span>无eval 11</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task14_Behavioral_Analysis.html">
+          <div class="card-id">Task 14</div>
+          <div class="card-stats">
+            <div class="big">6<span class="small">/28</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:21%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> claude-4-sonnet (Sep14)
+            <span class="family-tag">claude-4-sonnet</span>
+            <span class="score-pill">37.4</span>
+          </div>
+          <div class="card-meta">
+            <span>28 runs</span>
+            <span>12 families</span>
+            <span>零分 17</span>
+            <span>无eval 5</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task15_Behavioral_Analysis.html">
+          <div class="card-id">Task 15</div>
+          <div class="card-stats">
+            <div class="big">9<span class="small">/28</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:32%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> glm-4-5-full-data-w-interact-w-f... (Sep17)
+            <span class="family-tag">glm-4-5-full-data-w-interact-w-filter</span>
+            <span class="score-pill">75.7</span>
+          </div>
+          <div class="card-meta">
+            <span>28 runs</span>
+            <span>14 families</span>
+            <span>零分 10</span>
+            <span>无eval 9</span>
+          </div>
+        </a>
+        <a class="card card-zero" href="Task16_Behavioral_Analysis.html">
+          <div class="card-id">Task 16</div>
+          <div class="card-stats">
+            <div class="big">0<span class="small">/25</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:0%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> claude-4-sonnet (Sep03)
+            <span class="family-tag">claude-4-sonnet</span>
+            <span class="score-pill">0.0</span>
+          </div>
+          <div class="card-meta">
+            <span>25 runs</span>
+            <span>14 families</span>
+            <span>零分 21</span>
+            <span>无eval 4</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task17_Behavioral_Analysis.html">
+          <div class="card-id">Task 17</div>
+          <div class="card-stats">
+            <div class="big">16<span class="small">/34</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:47%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> glm47 (Feb25)
+            <span class="family-tag">glm47</span>
+            <span class="score-pill">55.9</span>
+          </div>
+          <div class="card-meta">
+            <span>34 runs</span>
+            <span>13 families</span>
+            <span>零分 10</span>
+            <span>无eval 8</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task18_Behavioral_Analysis.html">
+          <div class="card-id">Task 18</div>
+          <div class="card-stats">
+            <div class="big">5<span class="small">/28</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:18%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> glm47_data_w_sweagent_swefactory... (Feb25)
+            <span class="family-tag">glm47-sweagent</span>
+            <span class="score-pill">70.0</span>
+          </div>
+          <div class="card-meta">
+            <span>28 runs</span>
+            <span>14 families</span>
+            <span>零分 13</span>
+            <span>无eval 10</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task19_Behavioral_Analysis.html">
+          <div class="card-id">Task 19</div>
+          <div class="card-stats">
+            <div class="big">19<span class="small">/30</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:63%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> gpt-5 (Sep05)
+            <span class="family-tag">gpt-5</span>
+            <span class="score-pill">92.5</span>
+          </div>
+          <div class="card-meta">
+            <span>30 runs</span>
+            <span>13 families</span>
+            <span>零分 2</span>
+            <span>无eval 9</span>
+          </div>
+        </a>
+        <a class="card card-scored" href="Task20_Behavioral_Analysis.html">
+          <div class="card-id">Task 20</div>
+          <div class="card-stats">
+            <div class="big">20<span class="small">/36</span></div>
+            <div class="label">得分 &gt; 0</div>
+          </div>
+          <div class="card-progress"><div class="card-progress-bar" style="width:56%;"></div></div>
+          <div class="card-best">
+            <b>Best:</b> gpt-5 (Sep08)
+            <span class="family-tag">gpt-5</span>
+            <span class="score-pill">87.8</span>
+          </div>
+          <div class="card-meta">
+            <span>36 runs</span>
+            <span>14 families</span>
+            <span>零分 7</span>
+            <span>无eval 9</span>
+          </div>
+        </a>
+  </div>
+</div>
+
+<div class="section">
+  <h2>📋 汇总排行榜 (按通过率排序)</h2>
+  <div class="section-desc">通过率 = 得分 &gt; 0 的 run 占比。排序靠前的任务相对容易。</div>
+  <table>
+    <thead><tr>
+      <th>Rank</th><th>Task</th><th>Total</th><th>Scored</th><th>Zero</th><th>No-Eval</th>
+      <th>通过率</th><th>Best</th><th>Best Run</th><th>Family</th><th>Families</th><th>Size</th>
+    </tr></thead>
+    <tbody><tr class="row-scored">
+          <td>1</td>
+          <td><a href="Task4_Behavioral_Analysis.html"><b>Task 4</b></a></td>
+          <td>25</td>
+          <td>19</td>
+          <td>1</td>
+          <td>5</td>
+          <td class="pct">76.0%</td>
+          <td class="score-cell"><b>100.0</b></td>
+          <td>kimi-k2.5 (Feb26)</td>
+          <td>kimi-k2.5</td>
+          <td>14</td>
+          <td>677 KB</td>
+        </tr><tr class="row-scored">
+          <td>2</td>
+          <td><a href="Task7_Behavioral_Analysis.html"><b>Task 7</b></a></td>
+          <td>28</td>
+          <td>21</td>
+          <td>1</td>
+          <td>6</td>
+          <td class="pct">75.0%</td>
+          <td class="score-cell"><b>25.8</b></td>
+          <td>claude-4-sonnet (Nov14)</td>
+          <td>claude-4-sonnet</td>
+          <td>14</td>
+          <td>615 KB</td>
+        </tr><tr class="row-scored">
+          <td>3</td>
+          <td><a href="Task19_Behavioral_Analysis.html"><b>Task 19</b></a></td>
+          <td>30</td>
+          <td>19</td>
+          <td>2</td>
+          <td>9</td>
+          <td class="pct">63.3%</td>
+          <td class="score-cell"><b>92.5</b></td>
+          <td>gpt-5 (Sep05)</td>
+          <td>gpt-5</td>
+          <td>13</td>
+          <td>627 KB</td>
+        </tr><tr class="row-scored">
+          <td>4</td>
+          <td><a href="Task5_Behavioral_Analysis.html"><b>Task 5</b></a></td>
+          <td>32</td>
+          <td>20</td>
+          <td>2</td>
+          <td>10</td>
+          <td class="pct">62.5%</td>
+          <td class="score-cell"><b>23.2</b></td>
+          <td>claude-4-sonnet (Sep11)</td>
+          <td>claude-4-sonnet</td>
+          <td>14</td>
+          <td>546 KB</td>
+        </tr><tr class="row-scored">
+          <td>5</td>
+          <td><a href="Task1_Behavioral_Analysis.html"><b>Task 1</b></a></td>
+          <td>35</td>
+          <td>21</td>
+          <td>3</td>
+          <td>11</td>
+          <td class="pct">60.0%</td>
+          <td class="score-cell"><b>96.4</b></td>
+          <td>glm-4-5-full-data (Sep12)</td>
+          <td>glm-4-5-full-data</td>
+          <td>14</td>
+          <td>788 KB</td>
+        </tr><tr class="row-scored">
+          <td>6</td>
+          <td><a href="Task11_Behavioral_Analysis.html"><b>Task 11</b></a></td>
+          <td>27</td>
+          <td>16</td>
+          <td>4</td>
+          <td>7</td>
+          <td class="pct">59.3%</td>
+          <td class="score-cell"><b>86.3</b></td>
+          <td>claude-4-sonnet (Sep08)</td>
+          <td>claude-4-sonnet</td>
+          <td>14</td>
+          <td>628 KB</td>
+        </tr><tr class="row-scored">
+          <td>7</td>
+          <td><a href="Task6_Behavioral_Analysis.html"><b>Task 6</b></a></td>
+          <td>33</td>
+          <td>19</td>
+          <td>3</td>
+          <td>11</td>
+          <td class="pct">57.6%</td>
+          <td class="score-cell"><b>100.0</b></td>
+          <td>glm-4-5-full-data-wo-interact (Sep15)</td>
+          <td>glm-4-5-full-data-wo-interact</td>
+          <td>14</td>
+          <td>852 KB</td>
+        </tr><tr class="row-scored">
+          <td>8</td>
+          <td><a href="Task20_Behavioral_Analysis.html"><b>Task 20</b></a></td>
+          <td>36</td>
+          <td>20</td>
+          <td>7</td>
+          <td>9</td>
+          <td class="pct">55.6%</td>
+          <td class="score-cell"><b>87.8</b></td>
+          <td>gpt-5 (Sep08)</td>
+          <td>gpt-5</td>
+          <td>14</td>
+          <td>792 KB</td>
+        </tr><tr class="row-scored">
+          <td>9</td>
+          <td><a href="Task3_Behavioral_Analysis.html"><b>Task 3</b></a></td>
+          <td>28</td>
+          <td>15</td>
+          <td>5</td>
+          <td>8</td>
+          <td class="pct">53.6%</td>
+          <td class="score-cell"><b>18.9</b></td>
+          <td>glm-4-5 (Sep07)</td>
+          <td>glm-4-5</td>
+          <td>14</td>
+          <td>678 KB</td>
+        </tr><tr class="row-scored">
+          <td>10</td>
+          <td><a href="Task2_Behavioral_Analysis.html"><b>Task 2</b></a></td>
+          <td>35</td>
+          <td>18</td>
+          <td>5</td>
+          <td>12</td>
+          <td class="pct">51.4%</td>
+          <td class="score-cell"><b>39.4</b></td>
+          <td>claude-4-sonnet (Sep08)</td>
+          <td>claude-4-sonnet</td>
+          <td>14</td>
+          <td>809 KB</td>
+        </tr><tr class="row-scored">
+          <td>11</td>
+          <td><a href="Task17_Behavioral_Analysis.html"><b>Task 17</b></a></td>
+          <td>34</td>
+          <td>16</td>
+          <td>10</td>
+          <td>8</td>
+          <td class="pct">47.1%</td>
+          <td class="score-cell"><b>55.9</b></td>
+          <td>glm47 (Feb25)</td>
+          <td>glm47</td>
+          <td>13</td>
+          <td>960 KB</td>
+        </tr><tr class="row-scored">
+          <td>12</td>
+          <td><a href="Task8_Behavioral_Analysis.html"><b>Task 8</b></a></td>
+          <td>36</td>
+          <td>16</td>
+          <td>10</td>
+          <td>10</td>
+          <td class="pct">44.4%</td>
+          <td class="score-cell"><b>38.0</b></td>
+          <td>glm47_data_w_codeact_rebench_1_2... (Feb27)</td>
+          <td>glm47-codeact</td>
+          <td>14</td>
+          <td>850 KB</td>
+        </tr><tr class="row-scored">
+          <td>13</td>
+          <td><a href="Task13_Behavioral_Analysis.html"><b>Task 13</b></a></td>
+          <td>33</td>
+          <td>13</td>
+          <td>9</td>
+          <td>11</td>
+          <td class="pct">39.4%</td>
+          <td class="score-cell"><b>31.4</b></td>
+          <td>glm47 (Feb27)</td>
+          <td>glm47</td>
+          <td>13</td>
+          <td>907 KB</td>
+        </tr><tr class="row-scored">
+          <td>14</td>
+          <td><a href="Task15_Behavioral_Analysis.html"><b>Task 15</b></a></td>
+          <td>28</td>
+          <td>9</td>
+          <td>10</td>
+          <td>9</td>
+          <td class="pct">32.1%</td>
+          <td class="score-cell"><b>75.7</b></td>
+          <td>glm-4-5-full-data-w-interact-w-f... (Sep17)</td>
+          <td>glm-4-5-full-data-w-interact-w-filter</td>
+          <td>14</td>
+          <td>745 KB</td>
+        </tr><tr class="row-scored">
+          <td>15</td>
+          <td><a href="Task12_Behavioral_Analysis.html"><b>Task 12</b></a></td>
+          <td>32</td>
+          <td>7</td>
+          <td>18</td>
+          <td>7</td>
+          <td class="pct">21.9%</td>
+          <td class="score-cell"><b>95.4</b></td>
+          <td>kimi-k2.5 (Feb26)</td>
+          <td>kimi-k2.5</td>
+          <td>14</td>
+          <td>798 KB</td>
+        </tr><tr class="row-scored">
+          <td>16</td>
+          <td><a href="Task14_Behavioral_Analysis.html"><b>Task 14</b></a></td>
+          <td>28</td>
+          <td>6</td>
+          <td>17</td>
+          <td>5</td>
+          <td class="pct">21.4%</td>
+          <td class="score-cell"><b>37.4</b></td>
+          <td>claude-4-sonnet (Sep14)</td>
+          <td>claude-4-sonnet</td>
+          <td>12</td>
+          <td>792 KB</td>
+        </tr><tr class="row-scored">
+          <td>17</td>
+          <td><a href="Task18_Behavioral_Analysis.html"><b>Task 18</b></a></td>
+          <td>28</td>
+          <td>5</td>
+          <td>13</td>
+          <td>10</td>
+          <td class="pct">17.9%</td>
+          <td class="score-cell"><b>70.0</b></td>
+          <td>glm47_data_w_sweagent_swefactory... (Feb25)</td>
+          <td>glm47-sweagent</td>
+          <td>14</td>
+          <td>711 KB</td>
+        </tr><tr class="row-scored">
+          <td>18</td>
+          <td><a href="Task9_Behavioral_Analysis.html"><b>Task 9</b></a></td>
+          <td>26</td>
+          <td>2</td>
+          <td>17</td>
+          <td>7</td>
+          <td class="pct">7.7%</td>
+          <td class="score-cell"><b>60.8</b></td>
+          <td>glm47 (Feb25)</td>
+          <td>glm47</td>
+          <td>14</td>
+          <td>672 KB</td>
+        </tr><tr class="row-scored">
+          <td>19</td>
+          <td><a href="Task10_Behavioral_Analysis.html"><b>Task 10</b></a></td>
+          <td>21</td>
+          <td>1</td>
+          <td>14</td>
+          <td>6</td>
+          <td class="pct">4.8%</td>
+          <td class="score-cell"><b>15.5</b></td>
+          <td>kimi-k2.5 (Feb26)</td>
+          <td>kimi-k2.5</td>
+          <td>14</td>
+          <td>608 KB</td>
+        </tr><tr class="row-zero">
+          <td>20</td>
+          <td><a href="Task16_Behavioral_Analysis.html"><b>Task 16</b></a></td>
+          <td>25</td>
+          <td>0</td>
+          <td>21</td>
+          <td>4</td>
+          <td class="pct">0.0%</td>
+          <td class="score-cell"><b>0.0</b></td>
+          <td>claude-4-sonnet (Sep03)</td>
+          <td>claude-4-sonnet</td>
+          <td>14</td>
+          <td>656 KB</td>
+        </tr></tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2>📖 报告结构说明</h2>
+  <div class="section-desc">每份单任务报告包含以下 6 个章节：</div>
+  <ol style="margin-left:20px; font-size:13px; line-height:2;">
+    <li><b>任务概述</b> — Leaderboard（按 Best Score 排序的全量 run 表）</li>
+    <li><b>模型分组概览</b> — 按 model family 聚合对比</li>
+    <li><b>行为时间线</b> — 每个 run 的动作序列可视化（彩色色块 + 得分标记）</li>
+    <li><b>逐指标行为解读</b> — 34+ 项指标的 Best/Worst 证据 + 全量表格</li>
+    <li><b>成功 vs 失败模式</b> — 模式分类与失败原因归纳</li>
+    <li><b>结论</b> — 区分度最高的指标 + 与得分相关的指标</li>
+  </ol>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent·Eval — Research Proposal v4</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f2440;
+    --accent: #2563eb;
+    --accent-light: #3b82f6;
+    --sky: #e0f2fe;
+    --ice: #f0f9ff;
+    --slate: #475569;
+    --muted: #94a3b8;
+    --bg: #fafbfc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --gold: #d97706;
+    --green: #059669;
+    --green-bg: #d1fae5;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--navy);
+    line-height: 1.8;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== COVER ===== */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(160deg, #0f2440 0%, #1e3a5f 40%, #2563eb 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 60px 24px;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+  }
+
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -150px; left: -150px;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(217,119,6,0.08) 0%, transparent 70%);
+  }
+
+  .cover-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 32px;
+  }
+
+  .cover-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(48px, 8vw, 84px);
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+
+  .cover-title .dot {
+    color: var(--gold);
+    font-size: 0.6em;
+    vertical-align: middle;
+  }
+
+  .cover-divider {
+    width: 80px; height: 3px;
+    background: var(--gold);
+    margin: 36px auto;
+    border-radius: 2px;
+  }
+
+  .cover-subtitle {
+    font-size: 20px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.85);
+    max-width: 640px;
+    margin-bottom: 8px;
+  }
+
+  .cover-subtitle-en {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: rgba(255,255,255,0.45);
+    max-width: 560px;
+    margin-bottom: 64px;
+  }
+
+  .cover-meta {
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    line-height: 2;
+  }
+  .cover-meta strong { color: rgba(255,255,255,0.8); font-weight: 500; }
+
+  .version-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--gold);
+    border: 1px solid rgba(217,119,6,0.4);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-top: 24px;
+    letter-spacing: 1px;
+  }
+
+  /* ===== MAIN LAYOUT ===== */
+  .main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 80px 24px 120px;
+  }
+
+  /* ===== HEADINGS ===== */
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--navy);
+    margin: 72px 0 28px;
+    padding-bottom: 16px;
+    border-bottom: 3px solid var(--accent);
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  h1 .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--sky);
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+  }
+
+  h1:first-child { margin-top: 0; }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 40px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  h2::before {
+    content: '';
+    width: 4px; height: 20px;
+    background: var(--accent);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 28px 0 12px;
+    padding-left: 12px;
+    border-left: 3px solid var(--gold);
+  }
+
+  /* ===== TEXT ===== */
+  p { margin-bottom: 16px; color: var(--slate); }
+
+  .highlight-box {
+    background: var(--ice);
+    border-left: 4px solid var(--accent);
+    padding: 20px 24px;
+    border-radius: 0 8px 8px 0;
+    margin: 24px 0;
+  }
+
+  .highlight-box p { margin-bottom: 0; }
+
+  .upgrade-box {
+    background: #fefce8;
+    border-left: 4px solid var(--gold);
+    padding: 20px 24px;
+    border-radius: 0 8px 8px 0;
+    margin: 24px 0;
+  }
+
+  .upgrade-box p { margin-bottom: 0; }
+
+  .upgrade-box .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gold);
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* ===== LISTS ===== */
+  ul, ol {
+    padding-left: 24px;
+    margin-bottom: 20px;
+  }
+
+  li {
+    color: var(--slate);
+    margin-bottom: 10px;
+    padding-left: 4px;
+  }
+
+  li strong {
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  li::marker { color: var(--accent); }
+
+  /* ===== TABLES ===== */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 24px 0;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  thead th {
+    background: var(--navy);
+    color: #fff;
+    font-weight: 500;
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+
+  tbody td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tbody tr:nth-child(even) { background: var(--ice); }
+  tbody tr:last-child td { border-bottom: none; }
+
+  td .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--sky);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  td .tag-new {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--green);
+    background: var(--green-bg);
+    padding: 2px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.3px;
+    margin-left: 4px;
+  }
+
+  /* ===== RQ CARDS ===== */
+  .rq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .rq-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    transition: box-shadow 0.2s;
+  }
+
+  .rq-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+
+  .rq-card .rq-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gold);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+
+  .rq-card p {
+    font-size: 14px;
+    margin-bottom: 0;
+    line-height: 1.7;
+  }
+
+  /* ===== CONTRIBUTIONS ===== */
+  .contrib-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .contrib-card {
+    background: linear-gradient(135deg, var(--ice) 0%, #fff 100%);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+  }
+
+  .contrib-card .contrib-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--accent);
+    opacity: 0.2;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .contrib-card p { font-size: 14px; margin-bottom: 0; }
+
+  /* ===== REFS ===== */
+  .ref-list {
+    list-style: none;
+    padding: 0;
+    counter-reset: ref;
+  }
+
+  .ref-list li {
+    counter-increment: ref;
+    padding-left: 36px;
+    position: relative;
+    font-size: 14px;
+    color: var(--slate);
+    margin-bottom: 12px;
+    line-height: 1.7;
+  }
+
+  .ref-list li::before {
+    content: '[' counter(ref) ']';
+    position: absolute;
+    left: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* ===== FORMULA ===== */
+  .formula-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 28px;
+    margin: 20px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 2;
+    color: var(--navy);
+    overflow-x: auto;
+  }
+
+  /* ===== TIMELINE ===== */
+  .timeline {
+    position: relative;
+    margin: 32px 0;
+    padding-left: 32px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 11px; top: 8px; bottom: 8px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--gold));
+    border-radius: 1px;
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 32px;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -27px; top: 6px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+
+  .timeline-item:last-child::before { background: var(--gold); box-shadow: 0 0 0 2px var(--gold); }
+
+  .timeline-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .timeline-title {
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .timeline-desc { font-size: 14px; color: var(--slate); }
+
+  .footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 80px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 640px) {
+    .rq-grid, .contrib-grid { grid-template-columns: 1fr; }
+    .cover-title { font-size: 48px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<section class="cover">
+  <div class="cover-label">Research Proposal · v4 · 2026</div>
+  <div class="cover-title">Agent<span class="dot">·</span>Eval</div>
+  <div class="cover-divider"></div>
+  <div class="cover-subtitle">面向真实场景的 Long-Horizon Agent 多维度评测体系</div>
+  <div class="cover-subtitle-en">A Multi-Dimensional Evaluation Framework for Long-Horizon Agents<br>with Trace-Aware Diagnosis and Debiased Judgment</div>
+  <div class="cover-meta">
+    <strong>叶绿满山</strong><br>
+    GAIR Lab, Shanghai Jiao Tong University<br>
+    导师：刘鹏飞 (Pengfei Liu)
+  </div>
+  <div class="version-badge">v4 — UPGRADED FROM v3 WITH 4 NEW METHODOLOGICAL PILLARS</div>
+</section>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- 0 -->
+<h1><span class="num">00</span>v3 → v4 升级摘要</h1>
+
+<p>Proposal v4 在 v3 的三大方法论模块（能力剖面图 / 失败传播链 / 交互判断力）基础上，融合了四篇最新研究的方法论创新，形成六项核心升级：</p>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>#</th><th>升级点</th><th>来源论文</th><th>影响模块</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>U1</td><td><strong>层级化轨迹树构建与失败定位</strong>：将扁平轨迹重组为 Goal → Sub-goal → Action 三层树结构，实现 step-level P/R/F1 失败定位</td><td>CodeTracer (2604.11641)</td><td>§3.3 失败传播链</td></tr>
+    <tr><td>U2</td><td><strong>轨迹感知的工具使用评测</strong>：引入 Exact Match / Inclusion / Parameter Correctness / Traj-Satisfy 四级工具使用评估框架</td><td>TRAJECT-Bench (2510.04550)</td><td>§3.2 能力剖面图</td></tr>
+    <tr><td>U3</td><td><strong>评估去偏方法论</strong>：用 GLM 回归控制 token 消耗量等混淆变量，消除自动评估中的长度/冗余偏差</td><td>AlpacaEval-LC (2404.04475)</td><td>§3.6 自动评估器</td></tr>
+    <tr><td>U4</td><td><strong>形式化多维分桶分析框架</strong>：引入 Spearman Sρ / Std Sσ / task-independent ζ / task-dependent ρ 四个分析变量 + 统计检验协议</td><td>InterpretEval (2011.06854)</td><td>§3.2 能力剖面图</td></tr>
+    <tr><td>U5</td><td><strong>轨迹长度缩放瓶颈分析</strong>：基于 TRAJECT-Bench 发现的 3→5 tool 性能断崖，增设缩放瓶颈诊断</td><td>TRAJECT-Bench</td><td>§3.5 难度分级</td></tr>
+    <tr><td>U6</td><td><strong>反思回放恢复机制</strong>：CodeTracer 的 Reflective Replay 为失败传播链提供干预验证手段</td><td>CodeTracer</td><td>§3.3 干预评估</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="highlight-box">
+  <p><strong>新增指标数量</strong>：v4 在 v3 已有 36 + 补充 28 = 64 条指标基础上，新增 <strong>32 条</strong>来自四篇论文的指标，总计 <strong>96 条</strong>多维评测指标。完整新增指标清单见 <code>Agent_Eval_Metrics_All_add.html</code>。</p>
+</div>
+
+
+<!-- 1 -->
+<h1><span class="num">01</span>研究动机</h1>
+
+<h2>当前 Agent 评测的困境</h2>
+<p>随着 LLM Agent 的快速发展，各类 Agent 系统已能深度整合外部工具、接管通讯与操作界面。然而现有评测方法存在严重局限：</p>
+
+<ul>
+  <li><strong>整体指标的遮蔽效应：</strong>大多数 benchmark 仅报告端到端任务的整体成功率，无法揭示 Agent 在不同维度上的优劣。InterpretEval (Fu et al., 2020) 显示，一个 NER 模型整体 F1=85 可能在长实体上只有45。Agent 评测同样如此。</li>
+  <li><strong>侧重于关注最终交付结果：</strong>在真实场景中的任务往往是持续数天的复杂过程，Agent 评测也不应只看任务是否完成，而应审视决策链路每一步。</li>
+  <li><strong>缺少对步骤级交付物的评估：</strong>Agent 完成 long-horizon 任务时，在中间阶段需要及时向人求证以完成任务，模型的很多错误是因为过于自信直接完成任务所致。</li>
+</ul>
+
+<div class="upgrade-box">
+  <p><span class="tag">v4 NEW</span> <strong>工具使用评测的粗粒度问题：</strong>TRAJECT-Bench 揭示现有 benchmark 仅统计"是否调用了正确工具"，忽视了参数正确性、调用顺序合理性、冗余调用等关键维度。在 1228 个工具的评测中，Agent 在 Exact Match 仅 23.5%，但 Inclusion（包含正确工具）达 67.2%——说明 Agent "知道用什么"但"不知道怎么用好"。</p>
+</div>
+
+<div class="upgrade-box">
+  <p><span class="tag">v4 NEW</span> <strong>失败定位缺乏层级结构：</strong>CodeTracer 提出将轨迹组织为 Goal → Sub-goal → Action 的层级树（trace tree），在 step-level 达到 48% F1 的失败定位精度。对比 v3 的扁平因果回溯，层级化结构可以精确区分"哪个子目标失败"而非仅定位"哪一步出错"。</p>
+</div>
+
+<div class="upgrade-box">
+  <p><span class="tag">v4 NEW</span> <strong>自动评估的系统性偏差：</strong>AlpacaEval-LC 发现，不控制输出长度时 LLM-as-Judge 的排行榜与人类偏好的 Spearman 相关仅 0.94，控制后升至 0.98。在 Agent 评测中，token 消耗量、步骤数等变量同样可能引入类似偏差。</p>
+</div>
+
+<h2>研究线索与传承</h2>
+<p>本项目的方法论根基来自 GAIR Lab 在评测方向的一系列研究积累，同时融合了四篇最新外部研究的方法论贡献：</p>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>工作</th><th>定位</th><th>核心思想</th><th>对本项目的启示</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>InterpretEval</strong></td><td><span class="tag">评估方法论</span></td><td>属性→分桶→多维分析</td><td>为 Agent 定义"属性"，分桶评估；v4 引入其 Sρ/Sσ/ζ/ρ 分析变量</td></tr>
+    <tr><td><strong>ReasonEval</strong></td><td><span class="tag">方法论+模型</span></td><td>validity + redundancy 过程评估</td><td>对决策链路做步骤级评分</td></tr>
+    <tr><td><strong>FacTool</strong></td><td><span class="tag">检测工具</span></td><td>外挂工具核查事实性</td><td>用外部工具自动验证 Agent 行为的正确性</td></tr>
+    <tr><td><strong>FELM</strong></td><td><span class="tag">评测基准</span></td><td>多领域 segment 级标注</td><td>构建多场景、细粒度标注的 meta-evaluation 数据集</td></tr>
+    <tr><td><strong>SkillCraft</strong></td><td><span class="tag">Agent Benchmark</span></td><td>工具组合与复用</td><td>评测工具组合能力，设计难度分级</td></tr>
+    <tr><td><strong>AlphaEval</strong></td><td><span class="tag">Agent Benchmark</span></td><td>生产场景 + 职业领域</td><td>真实产品环境中的 Agent 评测</td></tr>
+    <tr><td><strong>TRAJECT-Bench</strong> <span class="tag-new">v4</span></td><td><span class="tag">工具使用评测</span></td><td>轨迹感知的多粒度工具评估</td><td>EM / Inclusion / Parameter Correctness / Traj-Satisfy 四级评估</td></tr>
+    <tr><td><strong>CodeTracer</strong> <span class="tag-new">v4</span></td><td><span class="tag">失败诊断</span></td><td>层级轨迹树 + 失败起点定位</td><td>trace tree 构建方法升级 §3.3 失败传播链分析</td></tr>
+    <tr><td><strong>AlpacaEval-LC</strong> <span class="tag-new">v4</span></td><td><span class="tag">评估去偏</span></td><td>GLM 回归控制混淆变量</td><td>控制 token 消耗/步骤数等偏差变量</td></tr>
+    <tr><td><strong>InterpretEval-NER</strong> <span class="tag-new">v4</span></td><td><span class="tag">分桶方法论</span></td><td>形式化属性-桶分析框架</td><td>统计检验协议与三层分析视角的形式化</td></tr>
+  </tbody>
+</table>
+</div>
+
+
+<!-- 2 -->
+<h1><span class="num">02</span>问题定义</h1>
+
+<h2>研究目标</h2>
+<p>本项目的核心目标是构建一套面向真实场景的 Long-Horizon Agent 多维度评测体系，包含三个层次：</p>
+<ol>
+  <li><strong>评测环境：</strong>构建贴近实际应用场景、支持深度交互与复杂操作的高效 Agent 评测环境。</li>
+  <li><strong>评测任务集：</strong>设计面向长决策链路 (Long-Horizon) 的真实场景 Agent 评测任务集，覆盖多个职业领域。</li>
+  <li><strong>评测指标：</strong>建立针对 Agent 决策链路、工具使用、错误纠正及时间效率的多维度评测指标。</li>
+</ol>
+
+<h2>关键研究问题</h2>
+<div class="rq-grid">
+  <div class="rq-card">
+    <div class="rq-label">RQ1</div>
+    <p>如何定义 Agent 的"属性"，可以更全面的揭示 Agent 在真实任务场景下的能力分级？</p>
+  </div>
+  <div class="rq-card">
+    <div class="rq-label">RQ2</div>
+    <p>如何对 Agent 多步决策链路做步骤级评估，而非仅看最终完成情况？</p>
+  </div>
+  <div class="rq-card">
+    <div class="rq-label">RQ3</div>
+    <p>如何构建贴近生产环境的 Long-Horizon 评测任务，暴露 Agent 在真实场景中的失败模式？</p>
+  </div>
+  <div class="rq-card">
+    <div class="rq-label">RQ4</div>
+    <p>评测结果能否反哺 Agent 训练？</p>
+  </div>
+</div>
+
+<div class="upgrade-box">
+  <p><span class="tag">v4 NEW</span> v4 新增两个研究问题：</p>
+</div>
+
+<div class="rq-grid">
+  <div class="rq-card">
+    <div class="rq-label">RQ5 NEW</div>
+    <p>如何消除自动评估器中的系统性偏差（如 token 消耗量、步骤数量对评分的混淆效应），使评测结果更接近真实能力排序？</p>
+  </div>
+  <div class="rq-card">
+    <div class="rq-label">RQ6 NEW</div>
+    <p>Agent 在工具使用轨迹的不同粒度（工具选择 / 参数正确性 / 调用顺序 / 整体满意度）上的能力瓶颈分别在哪里？</p>
+  </div>
+</div>
+
+
+<!-- 3 -->
+<h1><span class="num">03</span>方法设计</h1>
+
+<p>v3 的核心定位不变：把 Agent 评测从<strong>排名工具</strong>升级为<strong>诊断工具</strong>。v4 在方法论层面引入四项来自最新研究的系统性升级。</p>
+
+<h2>3.1 评测环境与任务集构建</h2>
+
+<p>整合 InnovatorBench（创新性研究任务）和 AgencyBench（真实长链路工作流）的任务场景，并借鉴 ClawBench 对 OpenClaw 类系统的评测经验，构建覆盖真实场景和创造性问题的统一评测环境。核心设计原则：</p>
+<ul>
+  <li><strong>工具多样性：</strong>集成 API 调用、代码执行、文件操作、浏览器操作等多类工具。</li>
+  <li><strong>Long-Horizon 支持：</strong>任务链路涵盖 10–50+ 步决策。</li>
+  <li><strong>分任务阶段交互：</strong>模型需要及时意识到何时需要向人求证。</li>
+  <li><strong>可控难度：</strong>沿数量维度 (N)、复杂度维度 (M) 和交互维度 (K) 进行系统性难度缩放。</li>
+</ul>
+
+<div class="upgrade-box">
+  <p><span class="tag">v4 NEW</span> 借鉴 TRAJECT-Bench 的任务设计，增加<strong>简单/困难配对查询</strong>（simple query 直接指定工具，hard query 需间接推理），以及<strong>并行/顺序轨迹</strong>双结构，量化 Agent 在不同推理路径上的能力差异。</p>
+</div>
+
+
+<h2>3.2 Agent 能力剖面图（Agent Capability Profile）</h2>
+
+<p>v3 中定义了三类属性（任务/行为/效率）和三种分析视角（模型维度/属性维度/桶维度）。v4 在两个方面进行系统性升级：</p>
+
+<h3>升级 A：形式化分桶分析框架（来自 InterpretEval）</h3>
+
+<p>v3 的分桶分析是描述性的（"在工具链深度 ≥10 时成功率从 94% 降到 61%"）。v4 引入 InterpretEval 的形式化分析框架，将三种分析视角数学化：</p>
+
+<div class="formula-box">
+<strong>Model-wise Analysis：</strong><br>
+&nbsp;&nbsp;Sρ(m, a) = Spearman(performance_m, bucket_a) — 模型 m 在属性 a 上的性能-属性相关性<br>
+&nbsp;&nbsp;Sσ(m, a) = Std(performance_m across buckets of a) — 模型 m 在属性 a 上的性能离散度<br><br>
+<strong>Attribute-wise Analysis：</strong><br>
+&nbsp;&nbsp;ζ(a) = mean_m(Sρ(m, a)) — 属性 a 的任务无关偏差（所有模型是否都受此属性影响）<br>
+&nbsp;&nbsp;ρ(a) = std_m(Sρ(m, a)) — 属性 a 的任务依赖性（不同模型受此属性影响程度的差异）<br><br>
+<strong>Bucket-wise Analysis：</strong><br>
+&nbsp;&nbsp;自诊断：argMax_b / argMin_b performance(m, a, b) — 模型 m 在属性 a 的最强/最弱桶<br>
+&nbsp;&nbsp;对比诊断：argMax_b |performance(m1, a, b) - performance(m2, a, b)| — 两模型差距最大的桶<br><br>
+<strong>统计检验：</strong>Friedman's test (跨模型)，Wilcoxon signed-rank (配对模型)，p &lt; 0.05
+</div>
+
+<p>这一形式化使"Claude 在长链路上比 GPT-5 弱"不再是定性描述，而是可量化、可统计检验的诊断结论。</p>
+
+<h3>升级 B：轨迹感知的工具使用评估（来自 TRAJECT-Bench）</h3>
+
+<p>v3 的行为属性主要关注工具复用率、错误恢复等宏观行为。v4 新增一组针对工具使用轨迹的细粒度评估维度：</p>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>评估层级</th><th>指标</th><th>定义</th><th>TRAJECT-Bench 发现</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>工具选择</strong></td><td>Trajectory Exact Match (EM)</td><td>Agent 选择的工具序列与参考轨迹完全匹配的比例</td><td>最强模型仅 23.5%</td></tr>
+    <tr><td><strong>工具选择</strong></td><td>Inclusion Rate</td><td>参考轨迹中的工具至少被包含在 Agent 输出中的比例</td><td>达 67.2%，说明"知道用什么但不精确"</td></tr>
+    <tr><td><strong>参数正确性</strong></td><td>Parameter Correctness</td><td>工具调用参数的 schema/format/value 三层校验通过率</td><td>参数盲选是主要失败模式之一</td></tr>
+    <tr><td><strong>整体质量</strong></td><td>Traj-Satisfy (LLM Judge)</td><td>LLM 对工具使用轨迹的综合满意度评分 (0-10)</td><td>与人类判断高度一致</td></tr>
+    <tr><td><strong>失败模式</strong></td><td>相似工具混淆率</td><td>Agent 在功能相似工具间选错的频率</td><td>10 领域 1228 工具中的系统性混淆</td></tr>
+    <tr><td><strong>失败模式</strong></td><td>冗余调用率</td><td>对完成任务不必要的工具调用占比</td><td>顺序轨迹中尤为严重</td></tr>
+  </tbody>
+</table>
+</div>
+
+
+<h2>3.3 失败传播链分析（Failure Cascade Tracing）</h2>
+
+<p>v3 提出了四步方法：轨迹分段 → 逐段评估 → 因果回溯 → 传播模式分类。v4 在此基础上引入 CodeTracer 的层级化方法，实现从"扁平回溯"到"树状诊断"的升级。</p>
+
+<h3>升级 C：层级化轨迹树构建（来自 CodeTracer）</h3>
+
+<p>CodeTracer 的核心思路是将扁平的 Agent 轨迹重组为三层树结构：</p>
+
+<ol>
+  <li><strong>Evolving Extraction（增量抽取）：</strong>对每一步 action，识别其 goal（要做什么）、evidence（基于什么信息）、outcome（结果如何），形成结构化的步骤描述。</li>
+  <li><strong>Tree Indexing（树索引）：</strong>将步骤聚合为 Sub-goal 节点，Sub-goal 聚合为 Goal 节点，形成 Goal → Sub-goal → Action 三层树。</li>
+  <li><strong>Diagnosis（诊断）：</strong>在树上标注每个节点的状态（成功/失败/部分成功），自上而下定位失败的最小子树。</li>
+</ol>
+
+<div class="highlight-box">
+  <p><strong>v3 vs v4 的关键区别：</strong>v3 的因果回溯是沿<em>时间线</em>反向搜索第一个异常步骤；v4 的树状诊断是沿<em>目标层级</em>逐层定位失败子树。后者的优势在于：(1) 不依赖线性时间顺序，可处理并行子目标；(2) 提供更可解释的诊断输出（"数据预处理子目标失败"比"第 12 步出错"信息量更大）；(3) CodeTracer 实证达到 48% step-level F1，提供了可复现的基线。</p>
+</div>
+
+<p>融合后的失败传播链分析流程：</p>
+
+<ol>
+  <li><strong>轨迹树构建：</strong>用 CodeTracer 的 Evolving Extraction + Tree Indexing 方法，将轨迹组织为层级树。</li>
+  <li><strong>失败起点定位（Failure Onset Localization）：</strong>在树上标注失败起点——最早开始偏离正确路径的 Sub-goal 节点。</li>
+  <li><strong>传播路径追踪：</strong>从失败起点沿树的兄弟/子节点追踪影响扩散路径。</li>
+  <li><strong>传播模式分类：</strong>保留 v3 的分类体系（立即崩溃/延迟爆发/渐进退化），增加 CodeTracer 发现的新模式。</li>
+</ol>
+
+<h3>新增指标（来自 CodeTracer）</h3>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>指标</th><th>定义</th><th>CodeTracer 实证</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Step-level P/R/F1</strong></td><td>失败步骤定位的精确率/召回率/F1</td><td>最佳达 48% F1</td></tr>
+    <tr><td><strong>Effective Action Ratio</strong></td><td>推进目标的有效动作 / 总动作数</td><td>Claude 73%, GPT-5 71%, DeepSeek 69%</td></tr>
+    <tr><td><strong>Evidence-to-Action Gap</strong></td><td>收集到正确信息但未正确执行的比例</td><td>强模型也存在 ~15% 的 gap</td></tr>
+    <tr><td><strong>Reflective Replay Recovery Rate</strong></td><td>失败轨迹经反思回放后成功恢复的比例</td><td>Claude +6.7pp, GPT-5 +5.6pp</td></tr>
+    <tr><td><strong>Iteration Budget Saturation</strong></td><td>成功率不再随步骤数增加而提升的拐点</td><td>约 40 步后饱和</td></tr>
+  </tbody>
+</table>
+</div>
+
+
+<h2>3.4 交互判断力评估（Interaction Judgment）</h2>
+
+<p>v3 的交互判断力框架（False Confidence / Excessive Inquiry / Effective Inquiry）及其三个核心指标（检查点召回率/交互精确率/交互F1）保持不变。v4 在此基础上增加元认知校准的量化深度：</p>
+
+<div class="upgrade-box">
+  <p><span class="tag">v4 NEW</span> 引入 TRAJECT-Bench 的 <strong>Traj-Satisfy</strong> 评分方法，对 Agent 主动交互的质量进行 0-10 LLM 评分，与二值化的 checkpoint recall/precision 形成互补——前者捕捉"问得好不好"，后者捕捉"该不该问"。</p>
+</div>
+
+<p>同时，CodeTracer 的 <strong>Evidence-to-Action Gap</strong> 为元认知缺口提供了新的量化手段：Agent 已经收集到了做出正确决策所需的信息，但未能转化为正确行动——这恰好对应 v3 中"知道不确定但不验证"的 RQ7。</p>
+
+
+<h2>3.5 难度分级与双模式评测</h2>
+
+<p>v3 的三维难度缩放 (N × M × K) 保持不变。v4 增加来自 TRAJECT-Bench 的缩放瓶颈诊断：</p>
+
+<div class="upgrade-box">
+  <p><span class="tag">v4 NEW</span> <strong>缩放瓶颈分析：</strong>TRAJECT-Bench 发现 Agent 性能在工具链长度从 3 增加到 5 时出现断崖式下降（EM 从 35% 降至 12%），而非线性退化。v4 要求在难度缩放实验中，不仅报告各难度级别的绝对成绩，还要计算相邻级别间的<strong>性能衰减曲线</strong>，识别每个模型的<strong>缩放瓶颈点</strong>（performance cliff）。</p>
+</div>
+
+<p>同时引入 TRAJECT-Bench 的<strong>简单/困难配对查询</strong>设计：</p>
+<ul>
+  <li><strong>Simple Query：</strong>直接指定工具名或明确描述功能需求（"用 X 工具做 Y"）。</li>
+  <li><strong>Hard Query：</strong>间接描述需求，需要 Agent 从语义推理到具体工具（"帮我分析这个数据的趋势"→ 需推理使用统计分析工具）。</li>
+</ul>
+<p>Simple/Hard 配对的性能差值直接量化了 Agent 的<strong>工具发现能力</strong>——是否只能在被明确指示时才能正确使用工具。</p>
+
+
+<h2>3.6 自动评估器</h2>
+
+<p>v3 的三层架构（基于规则 + LLM-as-Judge + 过程奖励模型）保持不变。v4 引入 AlpacaEval-LC 的去偏方法论，对 LLM-as-Judge 层进行系统性升级：</p>
+
+<h3>升级 D：评估去偏（来自 AlpacaEval-LC）</h3>
+
+<p>AlpacaEval-LC 的核心发现是：LLM 评估器对输出长度有系统性偏好，导致"更长的回答 = 更高的评分"。Agent 评测中存在类似的混淆变量：</p>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>Agent 评测中的混淆变量</th><th>偏差方向</th><th>对应 AlpacaEval-LC 概念</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Token 消耗量</td><td>更多 token → LLM judge 可能给更高的"thoroughness"分</td><td>Length bias</td></tr>
+    <tr><td>工具调用步数</td><td>更多步骤 → 看起来"更认真"</td><td>Length bias (step-level)</td></tr>
+    <tr><td>Reasoning 内容长度</td><td>更长的 thinking → 看起来"更深思熟虑"</td><td>Length bias (reasoning-level)</td></tr>
+    <tr><td>验证步骤数量</td><td>更多测试 → 看起来"更谨慎"</td><td>Verbosity bias</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>v4 的去偏方法：</p>
+
+<div class="formula-box">
+<strong>Step 1：拟合带混淆变量的 GLM：</strong><br>
+&nbsp;&nbsp;q(y=1 | m, x, confounders) = logistic(θ_m - θ_base + φ·f(confounders) + (ψ_m - ψ_base)·γ_x)<br>
+&nbsp;&nbsp;其中 confounders = {token_count, step_count, reasoning_length, test_count}<br>
+&nbsp;&nbsp;f(·) = tanh(·/std) 归一化<br><br>
+<strong>Step 2：计算 Controlled Direct Effect（去偏评分）：</strong><br>
+&nbsp;&nbsp;Score_controlled(m) = logistic(θ_m - θ_base + (ψ_m - ψ_base)·γ_x)<br>
+&nbsp;&nbsp;（移除 φ·f(confounders) 项 = 移除混淆变量的直接效应）<br><br>
+<strong>去偏目标：</strong>Token-Consumption Controlled Success Rate / Step-Count Controlled Success Rate
+</div>
+
+<p>这一方法的实际价值在于：当模型 A 用 50K token 得 80 分、模型 B 用 20K token 得 75 分时，去偏后可能发现 B 的真实能力高于 A——因为 A 的 5 分优势来自于 token 消耗的混淆效应而非真实能力差异。</p>
+
+<div class="upgrade-box">
+  <p><span class="tag">v4 NEW</span> <strong>Gameability 评估：</strong>参照 AlpacaEval-LC，v4 新增评估指标的<strong>可博弈性</strong>测试——通过 prompt 操纵让 Agent 改变输出风格（更冗余/更简洁），测量评分变化幅度。理想的评测指标应对此类操纵不敏感。AlpacaEval-LC 将 gameability 从 26% 降至 10%。</p>
+</div>
+
+
+<!-- 4 -->
+<h1><span class="num">04</span>预期贡献</h1>
+
+<div class="contrib-grid">
+  <div class="contrib-card">
+    <div class="contrib-num">01</div>
+    <p>一套面向真实场景的 Long-Horizon Agent 评测环境与任务集，融合 TRAJECT-Bench 的简单/困难配对设计和并行/顺序双轨迹结构。</p>
+  </div>
+  <div class="contrib-card">
+    <div class="contrib-num">02</div>
+    <p>一套 96 条多维度评测指标的完整体系，覆盖能力剖面、失败传播、交互判断、轨迹诊断、评估去偏五大模块，配套形式化统计检验。</p>
+  </div>
+  <div class="contrib-card">
+    <div class="contrib-num">03</div>
+    <p>基于 CodeTracer 层级轨迹树的失败传播链自动分析工具，实现 step-level 失败定位（目标 F1 ≥ 50%）和 Reflective Replay 恢复机制。</p>
+  </div>
+  <div class="contrib-card">
+    <div class="contrib-num">04</div>
+    <p>经 AlpacaEval-LC 去偏的 LLM-as-Judge 评估器，控制 token 消耗等混淆变量，提供更接近真实能力的诊断结果。</p>
+  </div>
+  <div class="contrib-card">
+    <div class="contrib-num">05</div>
+    <p>"评测反哺训练"的实证研究，验证评测结果可用于数据筛选、失败诊断和 Agent 训练优化。</p>
+  </div>
+  <div class="contrib-card">
+    <div class="contrib-num">06</div>
+    <p>开源评测平台、任务集、评估器和全部实验结果，促进 Agent 评测研究的可复现性。</p>
+  </div>
+</div>
+
+
+<!-- 5 -->
+<h1><span class="num">05</span>主要参考文献</h1>
+
+<ol class="ref-list">
+  <li>Fu, Liu, Neubig. <em>Interpretable Multi-dataset Evaluation for Named Entity Recognition.</em> EMNLP 2020.</li>
+  <li>Xia, Li, Liu, Wu, Liu. <em>Evaluating Mathematical Reasoning Beyond Accuracy.</em> AAAI 2025.</li>
+  <li>Chern et al. <em>FacTool: Factuality Detection in Generative AI.</em> ACL 2024.</li>
+  <li>Chern et al. <em>FELM: Benchmarking Factuality Evaluation of Large Language Models.</em> NeurIPS D&B 2023.</li>
+  <li>Chen et al. <em>SkillCraft: Can LLM Agents Learn to Use Tools Skillfully?</em> arXiv 2026.</li>
+  <li>Wu et al. <em>InnovatorBench: Evaluating Agents' Ability to Conduct Innovative LLM Research.</em> ICLR 2026.</li>
+  <li>Li et al. <em>AgencyBench: Benchmarking the Frontiers of Autonomous Agents in 1M-Token Real-World Contexts.</em> arXiv 2026.</li>
+  <li>GAIR Lab. <em>ClawBench: Agentic Benchmarking for OpenClaw Agents.</em> 2026.</li>
+  <li>GAIR Lab. <em>AlphaEval: A Production-Grounded Agent Benchmark.</em> COLM 2026 (under review).</li>
+  <li>GAIR Lab. <em>ResearcherBench: Evaluating Deep AI Research Systems on the Frontiers of Scientific Inquiry.</em> 2026.</li>
+  <li>Ahmed et al. <em>TRAJECT-Bench: A Trajectory-Aware Benchmark for Agentic Tool Use.</em> arXiv 2510.04550, 2025.</li>
+  <li>Dubois, Li, et al. <em>Length-Controlled AlpacaEval: A Simple Way to Debias Automatic Evaluators.</em> arXiv 2404.04475, 2024.</li>
+  <li>Yang et al. <em>CodeTracer: Towards Traceable Agent States for Code Generation.</em> arXiv 2604.11641, 2026.</li>
+  <li>Fu, Liu, Neubig. <em>Interpretable Multi-dataset Evaluation for Named Entity Recognition.</em> EMNLP 2020. (形式化分桶方法论)</li>
+</ol>
+
+<div class="footer">
+  Agent·Eval Proposal v4 · 2026-04-23 · Upgraded from v3 with CodeTracer + TRAJECT-Bench + AlpacaEval-LC + InterpretEval
+</div>
+
+</div>
+</body>
+</html>

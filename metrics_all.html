@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent·Eval — Complete Metric Catalog v4 (96 Metrics)</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f2440;
+    --accent: #2563eb;
+    --accent-light: #3b82f6;
+    --sky: #e0f2fe;
+    --ice: #f0f9ff;
+    --slate: #475569;
+    --muted: #94a3b8;
+    --bg: #fafbfc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --gold: #d97706;
+    --green: #059669;
+    --green-bg: #d1fae5;
+    --orange: #ea580c;
+    --orange-bg: #fff7ed;
+    --purple: #7c3aed;
+    --purple-bg: #ede9fe;
+    --rose: #be185d;
+    --rose-bg: #fce7f3;
+    --teal: #0d9488;
+    --teal-bg: #ccfbf1;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans SC',sans-serif; background:var(--bg); color:var(--navy); line-height:1.8; font-size:14px; -webkit-font-smoothing:antialiased; }
+
+  .cover { min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; background:linear-gradient(160deg,#0f2440 0%,#1a3352 30%,#1e3a5f 50%,#2563eb 100%); position:relative; overflow:hidden; padding:60px 24px; }
+  .cover::before { content:''; position:absolute; top:-200px; right:-200px; width:600px; height:600px; border-radius:50%; background:radial-gradient(circle,rgba(59,130,246,0.15) 0%,transparent 70%); }
+  .cover-label { font-family:'JetBrains Mono',monospace; font-size:13px; letter-spacing:4px; text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:32px; }
+  .cover-title { font-family:'Playfair Display',serif; font-size:clamp(42px,7vw,78px); font-weight:900; color:#fff; letter-spacing:-1px; line-height:1.1; }
+  .cover-title .dot { color:var(--gold); font-size:0.6em; vertical-align:middle; }
+  .cover-divider { width:80px; height:3px; background:var(--gold); margin:36px auto; border-radius:2px; }
+  .cover-subtitle { font-size:20px; font-weight:500; color:rgba(255,255,255,0.85); max-width:720px; margin-bottom:8px; }
+  .cover-subtitle-en { font-family:'Playfair Display',serif; font-size:15px; font-style:italic; color:rgba(255,255,255,0.45); max-width:600px; margin-bottom:64px; }
+  .cover-meta { font-size:14px; color:rgba(255,255,255,0.55); line-height:2; }
+  .cover-meta strong { color:rgba(255,255,255,0.8); font-weight:500; }
+
+  .main { max-width:1200px; margin:0 auto; padding:80px 24px 120px; }
+  h1 { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; color:var(--navy); margin:64px 0 24px; padding-bottom:14px; border-bottom:3px solid var(--accent); display:flex; align-items:baseline; gap:12px; }
+  h1 .num { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:500; color:var(--accent); background:var(--sky); padding:3px 9px; border-radius:4px; letter-spacing:1px; }
+  h1:first-of-type { margin-top:0; }
+  h2 { font-size:18px; font-weight:700; color:var(--accent); margin:36px 0 14px; display:flex; align-items:center; gap:8px; }
+  h2::before { content:''; width:4px; height:18px; background:var(--accent); border-radius:2px; flex-shrink:0; }
+  h3 { font-size:15px; font-weight:700; color:var(--navy); margin:24px 0 10px; padding-left:12px; border-left:3px solid var(--gold); }
+  p { margin-bottom:14px; color:var(--slate); }
+  .lead { font-size:15px; }
+
+  .highlight-box { background:var(--ice); border-left:4px solid var(--accent); padding:18px 22px; border-radius:0 8px 8px 0; margin:20px 0; }
+  .highlight-box p { margin-bottom:0; }
+  .warn-box { background:#fef2f2; border-left:4px solid #dc2626; padding:18px 22px; border-radius:0 8px 8px 0; margin:20px 0; }
+  .warn-box p { margin-bottom:0; color:#991b1b; }
+  .success-box { background:#f0fdf4; border-left:4px solid var(--green); padding:18px 22px; border-radius:0 8px 8px 0; margin:20px 0; }
+  .success-box p { margin-bottom:0; }
+
+  .stats { display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin:28px 0; }
+  .stat-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px; text-align:center; }
+  .stat-num { font-family:'Playfair Display',serif; font-size:32px; font-weight:900; color:var(--accent); line-height:1; margin-bottom:4px; }
+  .stat-label { font-size:11px; color:var(--muted); letter-spacing:0.5px; text-transform:uppercase; }
+
+  .legend { display:flex; gap:16px; flex-wrap:wrap; padding:14px 18px; background:var(--card); border:1px solid var(--border); border-radius:8px; margin-bottom:20px; font-size:12px; }
+  .legend-item { display:flex; align-items:center; gap:6px; color:var(--slate); }
+
+  .table-wrap { overflow-x:auto; margin:20px 0 32px; border-radius:10px; border:1px solid var(--border); box-shadow:0 1px 3px rgba(0,0,0,0.04); }
+  table { width:100%; border-collapse:collapse; font-size:12.5px; }
+  thead th { background:var(--navy); color:#fff; font-weight:500; padding:10px 12px; text-align:left; font-size:11.5px; letter-spacing:0.5px; white-space:nowrap; }
+  tbody td { padding:9px 12px; border-bottom:1px solid var(--border); vertical-align:top; color:var(--slate); }
+  tbody tr:nth-child(even) { background:var(--ice); }
+  tbody tr:hover { background:var(--sky); transition:background 0.15s; }
+
+  .mn { color:var(--navy); font-weight:600; font-size:12px; }
+  .detect-tag { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:500; padding:1px 6px; border-radius:3px; letter-spacing:0.3px; white-space:nowrap; }
+  .detect-tag.rule { background:#dcfce7; color:#15803d; }
+  .detect-tag.judge { background:#fef3c7; color:#b45309; }
+  .detect-tag.exp { background:#fce7f3; color:#be185d; }
+  .detect-tag.stat { background:var(--purple-bg); color:var(--purple); }
+
+  .src-tag { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:500; padding:1px 5px; border-radius:3px; letter-spacing:0.3px; white-space:nowrap; }
+  .src-tag.v3 { background:var(--sky); color:var(--accent); }
+  .src-tag.v3m { background:#dbeafe; color:#1d4ed8; }
+  .src-tag.supp { background:var(--orange-bg); color:var(--orange); }
+  .src-tag.traject { background:var(--orange-bg); color:var(--orange); }
+  .src-tag.ct { background:var(--teal-bg); color:var(--teal); }
+  .src-tag.lc { background:var(--purple-bg); color:var(--purple); }
+  .src-tag.ie { background:var(--rose-bg); color:var(--rose); }
+
+  .auto-tag { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:600; padding:1px 5px; border-radius:3px; white-space:nowrap; }
+  .auto-tag.yes { background:#dcfce7; color:#15803d; }
+  .auto-tag.partial { background:#fef3c7; color:#b45309; }
+  .auto-tag.no { background:#fee2e2; color:#dc2626; }
+
+  .innov-tag { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:600; padding:1px 5px; border-radius:3px; white-space:nowrap; }
+  .innov-tag.now { background:#dcfce7; color:#15803d; }
+  .innov-tag.adapt { background:#fef3c7; color:#b45309; }
+  .innov-tag.na { background:#f1f5f9; color:#94a3b8; }
+
+  .formula-box { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px 24px; margin:18px 0; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:2; color:var(--navy); overflow-x:auto; }
+
+  .footer { text-align:center; color:var(--muted); font-size:12px; margin-top:72px; padding-top:28px; border-top:1px solid var(--border); }
+
+  @media(max-width:900px) { .stats { grid-template-columns:repeat(3,1fr); } }
+  @media(max-width:600px) { .stats { grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-label">Complete Metric Catalog · v4 · 2026-04-24</div>
+  <h1 class="cover-title" style="border:none;margin:0;padding:0;color:#fff;">Metric<span class="dot">·</span>All</h1>
+  <div class="cover-divider"></div>
+  <div class="cover-subtitle">Agent·Eval 全量指标合集 — 96 条多维度评测指标</div>
+  <div class="cover-subtitle-en">Complete Metric Catalog with Auto-Computability &amp; InnovatorBench Feasibility</div>
+  <div class="cover-meta">
+    <div><strong>指标总数</strong> · 96 条 = v3(9) + MetricCatalog(27) + Supplementary(28) + v4-New(32)</div>
+    <div><strong>全自动可计算</strong> · 41 条 | <strong>InnovatorBench 可立即计算</strong> · 26 条</div>
+    <div><strong>目标数据</strong> · InnovatorBench 661 trajectories · 15 models · 40 tasks</div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ===== 00 OVERVIEW ===== -->
+<h1><span class="num">00</span>总览</h1>
+
+<div class="stats">
+  <div class="stat-card"><div class="stat-num">96</div><div class="stat-label">Total Metrics</div></div>
+  <div class="stat-card"><div class="stat-num">41</div><div class="stat-label">Full-Auto (RULE)</div></div>
+  <div class="stat-card"><div class="stat-num">26</div><div class="stat-label">InnovatorBench NOW</div></div>
+  <div class="stat-card"><div class="stat-num">661</div><div class="stat-label">Trajectories</div></div>
+  <div class="stat-card"><div class="stat-num">15</div><div class="stat-label">Models</div></div>
+  <div class="stat-card"><div class="stat-num">40</div><div class="stat-label">Tasks</div></div>
+</div>
+
+<h2>图例</h2>
+<div class="legend">
+  <div class="legend-item"><span class="src-tag v3">v3</span>Proposal v3 原有</div>
+  <div class="legend-item"><span class="src-tag v3m">v3-M</span>MetricCatalog v2 新增</div>
+  <div class="legend-item"><span class="src-tag supp">SUPP</span>Supplementary 轨迹分析</div>
+  <div class="legend-item"><span class="src-tag traject">TRAJ</span>TRAJECT-Bench</div>
+  <div class="legend-item"><span class="src-tag ct">CT</span>CodeTracer</div>
+  <div class="legend-item"><span class="src-tag lc">LC</span>AlpacaEval-LC</div>
+  <div class="legend-item"><span class="src-tag ie">IE</span>InterpretEval</div>
+</div>
+<div class="legend">
+  <div class="legend-item"><span class="detect-tag rule">RULE</span>规则自动</div>
+  <div class="legend-item"><span class="detect-tag judge">JUDGE</span>LLM Judge</div>
+  <div class="legend-item"><span class="detect-tag exp">EXP</span>对照实验</div>
+  <div class="legend-item"><span class="detect-tag stat">STAT</span>统计检验</div>
+  <div class="legend-item"><span class="auto-tag yes">AUTO</span>全自动计算</div>
+  <div class="legend-item"><span class="auto-tag partial">SEMI</span>需部分人工/Judge</div>
+  <div class="legend-item"><span class="auto-tag no">MANUAL</span>需实验/标注</div>
+  <div class="legend-item"><span class="innov-tag now">NOW</span>InnovatorBench可立即算</div>
+  <div class="legend-item"><span class="innov-tag adapt">ADAPT</span>需适配后可算</div>
+  <div class="legend-item"><span class="innov-tag na">N/A</span>不适用</div>
+</div>
+
+<h2>InnovatorBench 数据结构</h2>
+<div class="highlight-box">
+  <p><strong>661 条轨迹</strong>，每条轨迹由 <code>nodes/</code> 目录下的 JSON 文件组成。节点类型：<code>root</code>（任务描述）、<code>react</code>（工具调用，含 action + observation + response）、<code>planning</code>（子目标规划）、<code>judge</code>（rubric 评估）、<code>summary</code>（上下文压缩）。每个 react 节点包含：<code>action.action_type</code>（28种：run_command, edit_file, open_file, eval, create_session, sleep, think, plan 等）、<code>response.usage</code>（token统计）、<code>response.reasoning</code>（部分模型有）、<code>observation</code>（执行结果）。eval 节点含 <code>overall_score</code>(0-100) 和 <code>already_eval_num</code>(最多3次)。</p>
+</div>
+
+
+<!-- ===== PART I: §3.2 能力剖面图 ===== -->
+<h1><span class="num">I</span>§3.2 Agent 能力剖面图 (34 metrics)</h1>
+
+<h3>I-A 任务属性 Task Attributes (4)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>定义</th><th>检测</th><th>来源</th><th>自动化</th><th>InnovBench</th></tr></thead>
+<tbody>
+<tr><td>1</td><td class="mn">任务领域</td><td>Research/Code/Frontend/Data 离散分桶</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3">v3</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> task_id→领域映射</td></tr>
+<tr><td>2</td><td class="mn">工具链深度</td><td>总工具调用步数；XS/S/M/L/XL</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3">v3</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> count(react nodes)</td></tr>
+<tr><td>3</td><td class="mn">子任务数量</td><td>任务内独立子目标数；3/5/8+</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3">v3</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> count(planning.subgoals)</td></tr>
+<tr><td>4</td><td class="mn">检查点数 K</td><td>需向人类求证的节点数</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3">v3</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag adapt">ADAPT</span> 需标注检查点</td></tr>
+</tbody></table></div>
+
+<h3>I-B 行为属性 Behavioral Attributes (14)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>定义</th><th>检测</th><th>来源</th><th>自动化</th><th>InnovBench</th></tr></thead>
+<tbody>
+<tr><td>5</td><td class="mn">工具复用率</td><td>复用次数/(复用+新建)次数</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3">v3</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> create_file vs edit_file 比</td></tr>
+<tr><td>6</td><td class="mn">错误恢复次数</td><td>错误后成功恢复次数；0/1-2/3+</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag v3">v3</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>7</td><td class="mn">先读后改率</td><td>edit_file 前存在对同一文件 open_file 的比例</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> action序列匹配</td></tr>
+<tr><td>8</td><td class="mn">环境默认状态检查率</td><td>使用环境资源前显式检查的比例</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>9</td><td class="mn">外部声明验证率</td><td>prompt 中可验证事实声明中 agent 主动验证的比例</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>10</td><td class="mn">盲目重试次数</td><td>同一 error message 连续出现次数（中间无诊断动作）</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> observation.message 连续重复检测</td></tr>
+<tr><td>11</td><td class="mn">Eval 滥用率</td><td>两次 eval 间无文件修改的 eval 占比</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> eval action间夹edit检测</td></tr>
+<tr><td>12</td><td class="mn">资源回收率</td><td>close_session / create_session 次数比</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> action_type计数</td></tr>
+<tr><td>13</td><td class="mn">跨阶段约束违反数</td><td>pipeline 后期违反前期已做决策约束的次数</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>14</td><td class="mn">监控死锁步数占比</td><td>连续 sleep+check_session_idle≥10步/总步数</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> action序列模式</td></tr>
+<tr><td>15</td><td class="mn">重复查看率</td><td>同一文件被 open_file 查看≥3次的比例</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> open_file path统计</td></tr>
+<tr><td>16</td><td class="mn">信息获取策略分类</td><td>search_dir/find_file 密集型 vs open_file 密集型</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> action_type比例</td></tr>
+<tr><td>17</td><td class="mn">相似工具混淆率</td><td>功能相似工具组内选错工具的频率</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag traject">TRAJ</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span> 需定义相似组</td></tr>
+<tr><td>18</td><td class="mn">冗余工具调用率</td><td>非必要工具调用/总调用</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag traject">TRAJ</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span> 需参考轨迹</td></tr>
+</tbody></table></div>
+
+<h3>I-C 效率属性 Efficiency Attributes (8)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>定义</th><th>检测</th><th>来源</th><th>自动化</th><th>InnovBench</th></tr></thead>
+<tbody>
+<tr><td>19</td><td class="mn">Token 消耗量</td><td>总 input+output tokens；按百分位分桶</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3">v3</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> sum(response.usage.total_tokens)</td></tr>
+<tr><td>20</td><td class="mn">任务完成时间</td><td>按百分位分桶</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3">v3</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> last_timestamp - first_timestamp</td></tr>
+<tr><td>21</td><td class="mn">格式失败率</td><td>null action / 总步数</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> action_type=="null" 计数</td></tr>
+<tr><td>22</td><td class="mn">同步误用率</td><td>长命令调用中同步等待的比例</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>23</td><td class="mn">有效步骤率</td><td>1−(格式失败率+盲目重试占比+死锁占比)</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> 组合 #10,#14,#21</td></tr>
+<tr><td>24</td><td class="mn">Token-per-point</td><td>总 token / 分数增量</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> token/overall_score</td></tr>
+<tr><td>25</td><td class="mn">Effective Action Ratio</td><td>推进目标的有效动作/总动作</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag ct">CT</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>26</td><td class="mn">Iteration Budget Saturation</td><td>成功率不再提升的步数拐点</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag ct">CT</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> score vs step曲线拐点</td></tr>
+</tbody></table></div>
+
+<h3>I-D 工具使用评估 Tool Usage (8, from TRAJECT-Bench)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>定义</th><th>检测</th><th>来源</th><th>自动化</th><th>InnovBench</th></tr></thead>
+<tbody>
+<tr><td>27</td><td class="mn">Trajectory EM</td><td>完整工具序列与参考完全匹配率</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag traject">TRAJ</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag na">N/A</span> 无参考轨迹</td></tr>
+<tr><td>28</td><td class="mn">Tool Inclusion Rate</td><td>必需工具至少出现在输出中的比例</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag traject">TRAJ</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag na">N/A</span></td></tr>
+<tr><td>29</td><td class="mn">Parameter Schema 合规率</td><td>工具参数符合 schema 的比例</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag traject">TRAJ</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag adapt">ADAPT</span> 需定义schema</td></tr>
+<tr><td>30</td><td class="mn">Parameter Value 精确率</td><td>参数值与预期值匹配度</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag traject">TRAJ</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag na">N/A</span></td></tr>
+<tr><td>31</td><td class="mn">参数盲选率</td><td>选对工具但参数明显不匹配的比例</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag traject">TRAJ</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>32</td><td class="mn">Traj-Satisfy</td><td>LLM 对轨迹的综合满意度(0-10)</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag traject">TRAJ</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>33</td><td class="mn">缩放瓶颈点</td><td>性能衰减曲线首个断崖拐点</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag traject">TRAJ</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> score vs step_count 曲线</td></tr>
+<tr><td>34</td><td class="mn">Simple/Hard 性能差</td><td>直接查询与间接查询性能差值</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag traject">TRAJ</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag na">N/A</span> 需配对设计</td></tr>
+</tbody></table></div>
+
+
+<!-- ===== PART II: §3.3 失败传播链 ===== -->
+<h1><span class="num">II</span>§3.3 失败传播链分析 (24 metrics)</h1>
+
+<h3>II-A 根因定位 (2)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>定义</th><th>检测</th><th>来源</th><th>自动化</th><th>InnovBench</th></tr></thead>
+<tbody>
+<tr><td>35</td><td class="mn">根因定位准确率</td><td>Judge 根因与人工标注一致率</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>36</td><td class="mn">因果图跨 judge 一致率</td><td>不同 judge 产出 causal graph 的 κ</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+</tbody></table></div>
+
+<h3>II-B 传播距离 (2)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>定义</th><th>检测</th><th>来源</th><th>自动化</th><th>InnovBench</th></tr></thead>
+<tbody>
+<tr><td>37</td><td class="mn">Propagation length</td><td>根因→暴露的步数距离</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>38</td><td class="mn">Propagation length 分布</td><td>按模型聚合均值/方差/分位数</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+</tbody></table></div>
+
+<h3>II-C 传播模式 (4)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>定义</th><th>检测</th><th>来源</th><th>自动化</th><th>InnovBench</th></tr></thead>
+<tbody>
+<tr><td>39</td><td class="mn">传播模式分布</td><td>即时崩溃/格式坍塌/延迟爆炸/摘要固化/资源耗竭/监控死锁占比</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag v3">v3</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>40</td><td class="mn">错误固化率</td><td>summarization 后错误仍持续影响的比例</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>41</td><td class="mn">按错误类型分层固化率</td><td>语法类 vs 设计决策类分别测固化率</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>42</td><td class="mn">CAT 类失败占比</td><td>盲目重试/Eval滥用/资源泄漏/跨阶段违反合计占比</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+</tbody></table></div>
+
+<h3>II-D 实时预警 + 干预评估 (4)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>定义</th><th>检测</th><th>来源</th><th>自动化</th><th>InnovBench</th></tr></thead>
+<tbody>
+<tr><td>43</td><td class="mn">Precursor 信号集</td><td>session泄漏曲线/连续sleep/hedging频率/context速度</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> 可从action序列提取</td></tr>
+<tr><td>44</td><td class="mn">固化率下降幅度</td><td>干预后固化率相对baseline下降</td><td><span class="detect-tag exp">EXP</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag no">MANUAL</span></td><td><span class="innov-tag na">N/A</span></td></tr>
+<tr><td>45</td><td class="mn">有/无 summarization 下 CAT 失败率差</td><td>对比两环境下四类 CAT 变化</td><td><span class="detect-tag exp">EXP</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag no">MANUAL</span></td><td><span class="innov-tag na">N/A</span></td></tr>
+<tr><td>46</td><td class="mn">Action log 干预有效性</td><td>结构化行为清单后 CAT 失败率下降</td><td><span class="detect-tag exp">EXP</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag no">MANUAL</span></td><td><span class="innov-tag na">N/A</span></td></tr>
+</tbody></table></div>
+
+<h3>II-E CodeTracer 层级诊断 (6)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>定义</th><th>检测</th><th>来源</th><th>自动化</th><th>InnovBench</th></tr></thead>
+<tbody>
+<tr><td>47</td><td class="mn">Step-level Precision</td><td>标记失败步骤的精确率</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag ct">CT</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>48</td><td class="mn">Step-level Recall</td><td>实际失败步骤被识别的比例</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag ct">CT</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>49</td><td class="mn">Step-level F1</td><td>P/R 调和平均</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag ct">CT</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>50</td><td class="mn">Evidence-to-Action Gap</td><td>已收集正确信息但未正确执行的比例</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag ct">CT</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>51</td><td class="mn">Reflective Replay 恢复率</td><td>失败轨迹经反思重放后成功率</td><td><span class="detect-tag exp">EXP</span></td><td><span class="src-tag ct">CT</span></td><td><span class="auto-tag no">MANUAL</span></td><td><span class="innov-tag na">N/A</span></td></tr>
+<tr><td>52</td><td class="mn">阶段性错误类型分布</td><td>按前20%/中60%/后20%统计错误类型变化</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag ct">CT</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+</tbody></table></div>
+
+<h3>II-F SWE-bench 代码修复 (6, from Supplementary)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>定义</th><th>检测</th><th>来源</th><th>自动化</th><th>InnovBench</th></tr></thead>
+<tbody>
+<tr><td>53</td><td class="mn">代码定位效率</td><td>首次查看最终修改文件前的探索步数/总步数</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> open_file→edit_file路径追踪</td></tr>
+<tr><td>54</td><td class="mn">探索-编辑比</td><td>search/open/find步数 / edit/create步数</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> action_type分类计数</td></tr>
+<tr><td>55</td><td class="mn">文件触达率</td><td>查看唯一文件数/编辑唯一文件数</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> open_file vs edit_file unique paths</td></tr>
+<tr><td>56</td><td class="mn">Bug 复现率</td><td>首次编辑前是否运行了复现测试</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>57</td><td class="mn">修复后验证率</td><td>最后编辑到 eval 之间是否有测试</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> 最后edit→eval间有无run_command</td></tr>
+<tr><td>58</td><td class="mn">编辑回滚率</td><td>同位置恢复之前内容的次数/总编辑</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+</tbody></table></div>
+
+
+<!-- ===== PART III: §3.4 交互判断力 ===== -->
+<h1><span class="num">III</span>§3.4 交互判断力 (10 metrics)</h1>
+
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>定义</th><th>检测</th><th>来源</th><th>自动化</th><th>InnovBench</th></tr></thead>
+<tbody>
+<tr><td>59</td><td class="mn">检查点召回率</td><td>预设检查点处主动求证的比例</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3">v3</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>60</td><td class="mn">交互精确率</td><td>主动交互中确实需要人类决策的比例</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag v3">v3</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>61</td><td class="mn">交互 F1</td><td>召回率+精确率调和平均</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag v3">v3</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>62</td><td class="mn">被动触发比例</td><td>human intervention 中由 agent 报错触发的比例</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag adapt">ADAPT</span> 需识别human介入</td></tr>
+<tr><td>63</td><td class="mn">Thinking hedging 频率</td><td>thinking 中不确定性表达的密度</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span> 仅部分模型有reasoning</td></tr>
+<tr><td>64</td><td class="mn">不确定性校准误差 ECE</td><td>hedging强度分桶，比较置信度 vs 正确率</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>65</td><td class="mn">问题质量分</td><td>主动发起问题的具体性/可回答性/价值(1-5)</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>66</td><td class="mn">反馈执行率</td><td>人类反馈后覆盖的反馈点/总反馈点</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>67</td><td class="mn">Agent 自评校准误差</td><td>Agent 声称完成的点数 vs 实际通过点数</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span> 有judge节点可对照</td></tr>
+<tr><td>68</td><td class="mn">Feedback 利用率</td><td>重试是否针对 feedback 做了对应修改</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+</tbody></table></div>
+
+
+<!-- ===== PART IV: §3.5 难度分级 ===== -->
+<h1><span class="num">IV</span>§3.5 难度分级 + §3.6 评估器 (14 metrics)</h1>
+
+<h3>IV-A 推理质量 (5, from Supplementary)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>定义</th><th>检测</th><th>来源</th><th>自动化</th><th>InnovBench</th></tr></thead>
+<tbody>
+<tr><td>69</td><td class="mn">推理-行动一致性</td><td>reasoning 中计划与实际 tool_calls 匹配度</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>70</td><td class="mn">假设-验证循环率</td><td>reasoning 中假设后有验证动作的比例</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>71</td><td class="mn">推理深度退化指数</td><td>后20% reasoning长度/前20%</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> response.content长度按位置分桶</td></tr>
+<tr><td>72</td><td class="mn">think 工具有效性</td><td>使用think后下一步成功率 vs 未使用时</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> think→next_action.success</td></tr>
+<tr><td>73</td><td class="mn">双通道推理差异</td><td>reasoning vs content 中表达差异</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span> 仅kimi有reasoning</td></tr>
+</tbody></table></div>
+
+<h3>IV-B 框架/模型对比 (4, from Supplementary)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>定义</th><th>检测</th><th>来源</th><th>自动化</th><th>InnovBench</th></tr></thead>
+<tbody>
+<tr><td>74</td><td class="mn">工具转移矩阵</td><td>P(tool_t+1|tool_t) 马尔可夫矩阵</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> action_type bigram统计</td></tr>
+<tr><td>75</td><td class="mn">跨模型同任务效率</td><td>同task_id不同model的步数差</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> 直接比较</td></tr>
+<tr><td>76</td><td class="mn">规划行为有效性</td><td>使用plan/planning对成功率的影响</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> planning节点存在 vs score</td></tr>
+<tr><td>77</td><td class="mn">顺序依赖满足率</td><td>工具间数据流依赖正确维护率</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag traject">TRAJ</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+</tbody></table></div>
+
+<h3>IV-C 评估去偏 (7, from AlpacaEval-LC)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>定义</th><th>检测</th><th>来源</th><th>自动化</th><th>InnovBench</th></tr></thead>
+<tbody>
+<tr><td>78</td><td class="mn">Token-Controlled 成功率</td><td>GLM回归控制token后的模型成功率</td><td><span class="detect-tag stat">STAT</span></td><td><span class="src-tag lc">LC</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> GLM(score~model+token+task)</td></tr>
+<tr><td>79</td><td class="mn">Step-Controlled 成功率</td><td>GLM回归控制步数后的成功率</td><td><span class="detect-tag stat">STAT</span></td><td><span class="src-tag lc">LC</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> GLM(score~model+steps+task)</td></tr>
+<tr><td>80</td><td class="mn">Reasoning-Length-Controlled 评分</td><td>控制reasoning长度后的评分</td><td><span class="detect-tag stat">STAT</span></td><td><span class="src-tag lc">LC</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag adapt">ADAPT</span> 仅部分模型有</td></tr>
+<tr><td>81</td><td class="mn">Gameability (可博弈性)</td><td>prompt操纵后评分变化幅度</td><td><span class="detect-tag exp">EXP</span></td><td><span class="src-tag lc">LC</span></td><td><span class="auto-tag no">MANUAL</span></td><td><span class="innov-tag na">N/A</span></td></tr>
+<tr><td>82</td><td class="mn">Adversarial Gain</td><td>非能力手段获得的最大评分增益</td><td><span class="detect-tag exp">EXP</span></td><td><span class="src-tag lc">LC</span></td><td><span class="auto-tag no">MANUAL</span></td><td><span class="innov-tag na">N/A</span></td></tr>
+<tr><td>83</td><td class="mn">人类偏好相关性</td><td>自动排名 vs 人类排名 Spearman ρ</td><td><span class="detect-tag stat">STAT</span></td><td><span class="src-tag lc">LC</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span> 需人类标注</td></tr>
+<tr><td>84</td><td class="mn">Verbosity-Normalized Score</td><td>token/step预算相同条件下标准化评分</td><td><span class="detect-tag stat">STAT</span></td><td><span class="src-tag lc">LC</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> score/token_budget标准化</td></tr>
+</tbody></table></div>
+
+<h3>IV-D 形式化分桶分析 (6, from InterpretEval)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>定义</th><th>检测</th><th>来源</th><th>自动化</th><th>InnovBench</th></tr></thead>
+<tbody>
+<tr><td>85</td><td class="mn">Sρ(m,a)</td><td>模型m×属性a的Spearman秩相关</td><td><span class="detect-tag stat">STAT</span></td><td><span class="src-tag ie">IE</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> scipy.stats.spearmanr</td></tr>
+<tr><td>86</td><td class="mn">Sσ(m,a)</td><td>模型m在属性a各桶上的性能标准差</td><td><span class="detect-tag stat">STAT</span></td><td><span class="src-tag ie">IE</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> np.std</td></tr>
+<tr><td>87</td><td class="mn">ζ(a) task-independent 偏差</td><td>mean_m(Sρ(m,a))，属性的普遍影响力</td><td><span class="detect-tag stat">STAT</span></td><td><span class="src-tag ie">IE</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> np.mean over models</td></tr>
+<tr><td>88</td><td class="mn">ρ(a) task-dependent 变异性</td><td>std_m(Sρ(m,a))，模型间敏感度差异</td><td><span class="detect-tag stat">STAT</span></td><td><span class="src-tag ie">IE</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> np.std over models</td></tr>
+<tr><td>89</td><td class="mn">Bucket-wise 自诊断</td><td>argMax/argMin per model×attribute</td><td><span class="detect-tag stat">STAT</span></td><td><span class="src-tag ie">IE</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> argmax/argmin</td></tr>
+<tr><td>90</td><td class="mn">Significance Testing Protocol</td><td>Friedman + Wilcoxon + Holm-Bonferroni</td><td><span class="detect-tag stat">STAT</span></td><td><span class="src-tag ie">IE</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> scipy.stats</td></tr>
+</tbody></table></div>
+
+<h3>IV-E 自动评估器元指标 + 其他 (6)</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>定义</th><th>检测</th><th>来源</th><th>自动化</th><th>InnovBench</th></tr></thead>
+<tbody>
+<tr><td>91</td><td class="mn">Judge rule 自动挖掘 coverage</td><td>自动挖出规则覆盖人工规则率</td><td><span class="detect-tag exp">EXP</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag no">MANUAL</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>92</td><td class="mn">Judge rule 自动挖掘 precision</td><td>自动规则的误判率</td><td><span class="detect-tag exp">EXP</span></td><td><span class="src-tag v3m">v3-M</span></td><td><span class="auto-tag no">MANUAL</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>93</td><td class="mn">重试改善率</td><td>eval attempt2分数 > attempt1比例</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> eval score序列比较</td></tr>
+<tr><td>94</td><td class="mn">编译-运行时错误比</td><td>编译失败 vs 运行时逻辑失败占比</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>95</td><td class="mn">子任务依赖传播长度</td><td>subtask_k的错误首次影响subtask_k+n的n</td><td><span class="detect-tag judge">JUDGE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag partial">SEMI</span></td><td><span class="innov-tag adapt">ADAPT</span></td></tr>
+<tr><td>96</td><td class="mn">预算利用率</td><td>有效花费/总花费(排除无效迭代)</td><td><span class="detect-tag rule">RULE</span></td><td><span class="src-tag supp">SUPP</span></td><td><span class="auto-tag yes">AUTO</span></td><td><span class="innov-tag now">NOW</span> 有效step token/total token</td></tr>
+</tbody></table></div>
+
+
+<!-- ===== PART V: 立即可算清单 ===== -->
+<h1><span class="num">V</span>InnovatorBench 可立即计算的 26 条指标</h1>
+
+<p class="lead">以下指标可基于 661 条轨迹的 JSON 节点文件直接编码计算，无需额外标注或 LLM Judge。</p>
+
+<div class="success-box">
+  <p><strong>数据访问路径</strong>：<code>/inspire/hdd/project/qproject-fundationmodel/public/ai_engineer/workspace_backup/workspace_task_*/nodes/</code></p>
+  <p><strong>关键字段</strong>：<code>action.action_type</code>, <code>action.thought</code>, <code>action.path</code>, <code>observation.success</code>, <code>observation.message</code>, <code>observation.overall_score</code>, <code>response.usage</code>, <code>response.content</code>, <code>timestamp</code>, <code>depth</code></p>
+</div>
+
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>指标</th><th>计算方法（Python 伪代码）</th><th>需要的字段</th></tr></thead>
+<tbody>
+<tr><td>2</td><td class="mn">工具链深度</td><td><code>len([n for n in nodes if n.node_type=="react"])</code></td><td>node_type</td></tr>
+<tr><td>3</td><td class="mn">子任务数量</td><td><code>len(planning_node.subgoals)</code></td><td>planning.subgoals</td></tr>
+<tr><td>7</td><td class="mn">先读后改率</td><td>对每个 edit_file action，检查前 N 个 action 是否有对同 path 的 open_file</td><td>action.action_type, action.path</td></tr>
+<tr><td>10</td><td class="mn">盲目重试次数</td><td>连续 observation.message 相同且 success==False 的最长子序列</td><td>observation.message, observation.success</td></tr>
+<tr><td>11</td><td class="mn">Eval 滥用率</td><td>相邻两个 eval action 之间无 edit/create 的 eval 占比</td><td>action.action_type</td></tr>
+<tr><td>12</td><td class="mn">资源回收率</td><td><code>count(close_session) / count(create_session)</code></td><td>action.action_type</td></tr>
+<tr><td>14</td><td class="mn">监控死锁步数占比</td><td>连续 sleep+check_session_idle≥10 的步数 / 总步数</td><td>action.action_type</td></tr>
+<tr><td>15</td><td class="mn">重复查看率</td><td>同一 path 被 open_file ≥3 次的文件数 / 总查看文件数</td><td>action.path</td></tr>
+<tr><td>16</td><td class="mn">信息获取策略分类</td><td><code>count(search_dir+find_file) / count(open_file)</code></td><td>action.action_type</td></tr>
+<tr><td>19</td><td class="mn">Token 消耗量</td><td><code>sum(response.usage.total_tokens for all nodes)</code></td><td>response.usage</td></tr>
+<tr><td>20</td><td class="mn">任务完成时间</td><td><code>last_node.timestamp - root_node.timestamp</code></td><td>timestamp</td></tr>
+<tr><td>21</td><td class="mn">格式失败率</td><td><code>count(action_type=="null") / total_react_nodes</code></td><td>action.action_type</td></tr>
+<tr><td>23</td><td class="mn">有效步骤率</td><td><code>1 - (格式失败率 + 盲目重试占比 + 死锁占比)</code></td><td>组合 #10,14,21</td></tr>
+<tr><td>24</td><td class="mn">Token-per-point</td><td><code>total_tokens / overall_score</code> (score>0时)</td><td>usage, eval score</td></tr>
+<tr><td>33</td><td class="mn">缩放瓶颈点</td><td>按 step_count 分桶计算 avg score，找最大衰减拐点</td><td>step count, score</td></tr>
+<tr><td>43</td><td class="mn">Precursor 信号集</td><td>session泄漏曲线、连续sleep长度、context token增长率</td><td>action序列, usage</td></tr>
+<tr><td>53</td><td class="mn">代码定位效率</td><td>首个 edit_file 前的 react 步数 / 总步数</td><td>action.action_type</td></tr>
+<tr><td>54</td><td class="mn">探索-编辑比</td><td><code>count(open+search+find) / count(edit+create)</code></td><td>action.action_type</td></tr>
+<tr><td>55</td><td class="mn">文件触达率</td><td><code>len(unique open paths) / len(unique edit paths)</code></td><td>action.path</td></tr>
+<tr><td>57</td><td class="mn">修复后验证率</td><td>最后 edit→eval 间有 run_command 的轨迹比例</td><td>action.action_type</td></tr>
+<tr><td>71</td><td class="mn">推理深度退化指数</td><td><code>mean(response.content length in last 20%) / mean(first 20%)</code></td><td>response.content, depth</td></tr>
+<tr><td>72</td><td class="mn">think 工具有效性</td><td>think 后下一步 success 率 vs 总体 success 率</td><td>action.action_type, observation.success</td></tr>
+<tr><td>74</td><td class="mn">工具转移矩阵</td><td><code>bigram_count(action_types) → transition_prob</code></td><td>action.action_type序列</td></tr>
+<tr><td>75</td><td class="mn">跨模型同任务效率</td><td>同 task_id 不同 model 的 step 数对比</td><td>目录名解析</td></tr>
+<tr><td>76</td><td class="mn">规划行为有效性</td><td>有 planning 节点的轨迹 vs 无 planning 的 avg score</td><td>node_type, eval score</td></tr>
+<tr><td>93</td><td class="mn">重试改善率</td><td><code>count(eval2_score > eval1_score) / count(has_2_evals)</code></td><td>eval observation</td></tr>
+</tbody></table></div>
+
+
+<!-- ===== PART VI: 区分度算法 ===== -->
+<h1><span class="num">VI</span>区分度检验算法</h1>
+
+<p class="lead">计算出指标数值后，需要验证每条指标是否真的能区分"好 Agent"和"差 Agent"。以下是从基础到高阶的区分度检验方法体系。</p>
+
+<h2>Level 1：单指标区分度（必做）</h2>
+
+<h3>1.1 Kruskal-Wallis H 检验</h3>
+<div class="formula-box">
+<strong>目的：</strong>检验该指标在不同模型间是否有显著差异（非参数 one-way ANOVA）<br>
+<strong>方法：</strong>scipy.stats.kruskal(*[metric_values_per_model])<br>
+<strong>判据：</strong>p < 0.05 → 指标有区分度；H 值越大区分度越强<br>
+<strong>适用：</strong>所有 96 条指标的第一轮筛选
+</div>
+
+<h3>1.2 Effect Size — η² (Eta-squared)</h3>
+<div class="formula-box">
+<strong>目的：</strong>量化区分效果的大小（不只看是否显著，还看效果多大）<br>
+<strong>方法：</strong>η² = H / (N - 1)，其中 H 是 Kruskal-Wallis 统计量，N 是样本总数<br>
+<strong>判据：</strong>η² < 0.01 弱，0.01–0.06 中，> 0.06 强<br>
+<strong>用途：</strong>在显著指标中排序优先级
+</div>
+
+<h3>1.3 Spearman 秩相关（指标 vs 最终得分）</h3>
+<div class="formula-box">
+<strong>目的：</strong>检验指标值与任务最终得分的单调相关性<br>
+<strong>方法：</strong>scipy.stats.spearmanr(metric_values, overall_scores)<br>
+<strong>判据：</strong>|ρ| > 0.3 且 p < 0.05 → 指标与成功相关<br>
+<strong>用途：</strong>验证指标是否"方向正确"（好指标值→高得分）
+</div>
+
+<h2>Level 2：指标间关系（推荐）</h2>
+
+<h3>2.1 指标冗余度 — 指标间 Spearman 相关矩阵</h3>
+<div class="formula-box">
+<strong>目的：</strong>发现高度相关的指标对（|ρ|>0.8），可能测量同一维度，可合并<br>
+<strong>方法：</strong>计算所有可算指标对的 Spearman 矩阵，绘制 clustermap<br>
+<strong>判据：</strong>|ρ| > 0.8 的指标对需审查是否冗余<br>
+<strong>工具：</strong>seaborn.clustermap + scipy hierarchical clustering
+</div>
+
+<h3>2.2 PCA / Factor Analysis</h3>
+<div class="formula-box">
+<strong>目的：</strong>将 26 个可算指标降维，看实际独立的维度有几个<br>
+<strong>方法：</strong>sklearn.decomposition.PCA + 观察 explained_variance_ratio<br>
+<strong>判据：</strong>如果前 4–6 个主成分解释 >80% 方差 → 指标体系有较好的维度覆盖<br>
+<strong>输出：</strong>每个主成分的 loading 向量 → 解释"这个维度代表什么能力"
+</div>
+
+<h2>Level 3：预测能力（高阶）</h2>
+
+<h3>3.1 Random Forest Feature Importance</h3>
+<div class="formula-box">
+<strong>目的：</strong>用全部指标预测 overall_score，看哪些指标贡献最大<br>
+<strong>方法：</strong>RandomForestRegressor(n_estimators=500).fit(X_metrics, y_score)<br>
+<strong>输出：</strong>feature_importances_ 排序 → Top-K 最有预测力的指标<br>
+<strong>优势：</strong>自动处理非线性关系和指标间交互
+</div>
+
+<h3>3.2 Leave-One-Out 指标消融</h3>
+<div class="formula-box">
+<strong>目的：</strong>移除某指标后预测能力下降多少 → 该指标的独立贡献<br>
+<strong>方法：</strong>对每个指标 i，计算 R²_full - R²_{without_i}<br>
+<strong>判据：</strong>ΔR² > 0.02 → 该指标有独立贡献；ΔR² ≈ 0 → 可被其他指标替代
+</div>
+
+<h2>Level 4：模型诊断能力（最终验证）</h2>
+
+<h3>4.1 Friedman's Test + Nemenyi Post-hoc</h3>
+<div class="formula-box">
+<strong>目的：</strong>在每条指标上做跨模型排名检验，确认指标是否产生与 overall_score 一致的模型排序<br>
+<strong>方法：</strong>scipy.stats.friedmanchisquare → Nemenyi critical difference diagram<br>
+<strong>输出：</strong>CD (Critical Difference) 图 → 哪些模型在该指标上显著不同
+</div>
+
+<h3>4.2 指标体系的诊断一致性 (Coherence Score)</h3>
+<div class="formula-box">
+<strong>目的：</strong>验证整个指标体系是否能产生一致且有信息量的模型画像<br>
+<strong>方法：</strong>对每个模型，用全部指标生成"能力剖面向量"，计算模型间的距离矩阵，与 overall_score 排名的 Kendall τ 做对比<br>
+<strong>判据：</strong>τ > 0.7 → 指标体系与最终成绩高度一致，同时提供更细粒度的诊断信息
+</div>
+
+<h2>推荐实施顺序</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>阶段</th><th>算法</th><th>输入</th><th>输出</th><th>工具</th></tr></thead>
+<tbody>
+<tr><td>Phase 1</td><td>Kruskal-Wallis + η²</td><td>26指标 × 661轨迹</td><td>显著指标列表 + effect size</td><td>scipy</td></tr>
+<tr><td>Phase 2</td><td>Spearman(metric, score)</td><td>26指标 × 661轨迹</td><td>指标-成功相关性</td><td>scipy</td></tr>
+<tr><td>Phase 3</td><td>指标间 Spearman + PCA</td><td>26指标矩阵</td><td>冗余指标对 + 独立维度数</td><td>seaborn, sklearn</td></tr>
+<tr><td>Phase 4</td><td>Random Forest + 消融</td><td>26指标 → score</td><td>Top-K 重要指标</td><td>sklearn</td></tr>
+<tr><td>Phase 5</td><td>Friedman + CD diagram</td><td>每指标的模型排名</td><td>模型区分图</td><td>scikit-posthocs</td></tr>
+</tbody></table></div>
+
+
+<div class="footer">
+  Agent·Eval Complete Metric Catalog v4 · 96 Metrics · 2026-04-24<br>
+  Data: InnovatorBench 661 trajectories · 15 models · 40 tasks
+</div>
+
+</div>
+</body>
+</html>

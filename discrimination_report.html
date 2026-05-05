@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent·Eval 指标区分度分析报告</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --navy: #1a2332;
+    --blue: #2563eb;
+    --blue-light: #eff6ff;
+    --green: #059669;
+    --green-light: #ecfdf5;
+    --red: #dc2626;
+    --red-light: #fef2f2;
+    --orange: #d97706;
+    --orange-light: #fffbeb;
+    --purple: #7c3aed;
+    --purple-light: #f5f3ff;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, #2d4a6f 100%);
+    color: white;
+    padding: 48px 0;
+    margin-bottom: 40px;
+  }
+  .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .header .subtitle { font-size: 15px; opacity: 0.8; }
+  .header .meta { margin-top: 20px; display: flex; gap: 32px; font-size: 13px; opacity: 0.7; }
+
+  /* Section */
+  .section {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+  .section h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section h2 .num {
+    background: var(--navy);
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .section .lead {
+    color: var(--gray-500);
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .section h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin: 24px 0 12px;
+    padding-top: 16px;
+    border-top: 1px solid var(--gray-200);
+  }
+  .section h3:first-of-type { border-top: none; padding-top: 0; margin-top: 16px; }
+
+  /* KPI row */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .kpi {
+    background: var(--gray-50);
+    border-radius: 10px;
+    padding: 16px 20px;
+    text-align: center;
+  }
+  .kpi .value { font-size: 28px; font-weight: 700; color: var(--navy); }
+  .kpi .label { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
+  .kpi.blue { background: var(--blue-light); }
+  .kpi.blue .value { color: var(--blue); }
+  .kpi.green { background: var(--green-light); }
+  .kpi.green .value { color: var(--green); }
+  .kpi.orange { background: var(--orange-light); }
+  .kpi.orange .value { color: var(--orange); }
+  .kpi.purple { background: var(--purple-light); }
+  .kpi.purple .value { color: var(--purple); }
+  .kpi.red { background: var(--red-light); }
+  .kpi.red .value { color: var(--red); }
+
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 12px 0;
+  }
+  th {
+    text-align: left;
+    background: var(--gray-100);
+    padding: 10px 12px;
+    font-weight: 600;
+    color: var(--gray-700);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--gray-100);
+    vertical-align: middle;
+  }
+  tr:hover td { background: var(--gray-50); }
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .right { text-align: right; }
+
+  /* Bar */
+  .bar-cell { width: 120px; }
+  .bar-bg { background: var(--gray-200); border-radius: 4px; height: 8px; position: relative; }
+  .bar-fill { height: 8px; border-radius: 4px; position: absolute; top: 0; left: 0; }
+  .bar-fill.blue { background: var(--blue); }
+  .bar-fill.green { background: var(--green); }
+  .bar-fill.orange { background: var(--orange); }
+  .bar-fill.red { background: var(--red); }
+  .bar-fill.purple { background: var(--purple); }
+
+  /* Tags */
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .tag.strong { background: #dcfce7; color: #166534; }
+  .tag.medium { background: #fef9c3; color: #854d0e; }
+  .tag.weak { background: #fee2e2; color: #991b1b; }
+  .tag.dead { background: var(--gray-200); color: var(--gray-500); }
+  .tag.innov { background: var(--blue-light); color: var(--blue); }
+  .tag.agency { background: var(--purple-light); color: var(--purple); }
+  .tag.swe { background: var(--green-light); color: var(--green); }
+
+  /* Insight box */
+  .insight {
+    background: var(--blue-light);
+    border-left: 4px solid var(--blue);
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  .insight.warn {
+    background: var(--orange-light);
+    border-left-color: var(--orange);
+  }
+  .insight.good {
+    background: var(--green-light);
+    border-left-color: var(--green);
+  }
+  .insight strong { color: var(--navy); }
+
+  /* Comparison grid */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .compare-card {
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .compare-card.left { background: var(--blue-light); }
+  .compare-card.right { background: var(--purple-light); }
+  .compare-card h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .compare-card.left h4 { color: var(--blue); }
+  .compare-card.right h4 { color: var(--purple); }
+  .compare-card ul { list-style: none; font-size: 13px; }
+  .compare-card li { padding: 3px 0; }
+  .compare-card li::before { content: "· "; font-weight: bold; }
+
+  /* Model ranking */
+  .rank-row {
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .rank-num {
+    width: 22px;
+    text-align: right;
+    font-weight: 700;
+    color: var(--gray-500);
+    font-size: 12px;
+  }
+  .rank-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rank-bar-bg { flex: 0 0 200px; background: var(--gray-200); border-radius: 4px; height: 10px; position: relative; }
+  .rank-bar { height: 10px; border-radius: 4px; position: absolute; top: 0; left: 0; }
+  .rank-score { width: 50px; text-align: right; font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .rank-n { width: 35px; text-align: right; color: var(--gray-500); font-size: 11px; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    color: var(--gray-500);
+    font-size: 12px;
+    padding: 32px 0;
+  }
+
+  p { margin-bottom: 10px; }
+
+  @media (max-width: 768px) {
+    .compare-grid { grid-template-columns: 1fr; }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .rank-bar-bg { flex: 0 0 100px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="container">
+    <h1>Agent·Eval 指标区分度分析报告</h1>
+    <div class="subtitle">InnovatorBench + AgencyBench + SWE-bench 三基准联合分析 — 哪些指标真正有用？</div>
+    <div class="meta">
+      <span>日期: 2026-04-25</span>
+      <span>轨迹总数: 27,485</span>
+      <span>数据源: 3个 + 3个 + 3个</span>
+      <span>指标: 34 + 30 + 28</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ============================================================ -->
+<!-- Section 0: 这份报告在说什么 -->
+<!-- ============================================================ -->
+<div class="section">
+  <h2><span class="num">0</span> 这份报告在说什么</h2>
+  <p>我们设计了一套多维度评估体系（Agent·Eval），试图从"过程行为"来评估 AI Agent 的能力，而不仅仅看最终得分。但一个关键问题是：<strong>我们设计的这些过程指标，到底有没有用？能不能区分好模型和差模型？</strong></p>
+  <p>为了回答这个问题，我们在三个 benchmark 上跑了全套指标，并用5种统计方法来检验每个指标的"区分度"：</p>
+  <table>
+    <tr><th>方法</th><th>回答的问题</th><th>怎么读结果</th></tr>
+    <tr><td><strong>Kruskal-Wallis H + η²</strong></td><td>这个指标在不同模型之间有没有显著差异？</td><td>η² > 0.06 = 有差异，> 0.14 = 差异很大</td></tr>
+    <tr><td><strong>Spearman ρ</strong></td><td>这个指标跟"做得好不好"（最终得分）有没有关系？</td><td>|ρ| > 0.3 = 中等相关，> 0.5 = 强相关</td></tr>
+    <tr><td><strong>PCA 主成分分析</strong></td><td>这些指标总共在测几个独立维度？</td><td>PC越分散 = 指标越不冗余（好事）</td></tr>
+    <tr><td><strong>Random Forest</strong></td><td>哪些过程指标最能预测最终得分？</td><td>重要性 > 0.05 = 有实际预测价值</td></tr>
+    <tr><td><strong>Kendall τ</strong></td><td>按这个指标给模型排名，跟按得分排名一致吗？</td><td>|τ| > 0.4 = 排名高度一致</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 1: 两个 Benchmark 概览 -->
+<!-- ============================================================ -->
+<div class="section">
+  <h2><span class="num">1</span> 三个 Benchmark 对比</h2>
+  <div class="lead">先看数据全貌：三个 benchmark 的规模和特征差异很大，这影响了指标的表现。</div>
+
+  <div class="compare-grid">
+    <div class="compare-card left">
+      <h4>InnovatorBench</h4>
+      <ul>
+        <li><strong>655</strong> 条轨迹 / <strong>15</strong> 个模型 / <strong>40</strong> 个任务</li>
+        <li>平均 <strong>160步</strong> / 轨迹，<strong>930万</strong> tokens</li>
+        <li>平均耗时 <strong>4.1小时</strong></li>
+        <li>得分范围 0-100，平均 <strong>11.7</strong></li>
+        <li>有得分的轨迹仅 <strong>44%</strong>（289/655）</li>
+        <li>数据格式：节点树（react/planning/judge）</li>
+        <li>轨迹特点：<strong>长时间、高复杂度</strong>的开放任务</li>
+      </ul>
+    </div>
+    <div class="compare-card right">
+      <h4>AgencyBench</h4>
+      <ul>
+        <li><strong>165</strong> 条轨迹 / <strong>22</strong> 个模型 / <strong>37</strong> 个任务</li>
+        <li>平均 <strong>17次</strong>工具调用，<strong>8.6万</strong>字符输出</li>
+        <li>平均耗时 <strong>10分钟</strong>（仅19条有时间数据）</li>
+        <li>得分范围 0-50，平均 <strong>15.4</strong></li>
+        <li>有得分的轨迹 <strong>68%</strong>（112/165）</li>
+        <li>数据格式：纯文本agent_output + subtask分数</li>
+        <li>轨迹特点：<strong>结构化子任务、短周期</strong>的编程任务</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="margin-top:16px">
+    <div class="compare-card" style="background:var(--green-light);border-radius:10px;padding:20px">
+      <h4 style="color:var(--green);font-size:14px;font-weight:700;margin-bottom:12px">SWE-bench Environment Trajectories (NEW)</h4>
+      <ul style="list-style:none;font-size:13px">
+        <li style="padding:3px 0">· <strong>26,665</strong> 条去重轨迹 / <strong>3</strong> 个数据源 / 来自 <strong>38</strong> 个JSONL文件</li>
+        <li style="padding:3px 0">· 平均 <strong>90次</strong>工具调用，<strong>16万</strong>字符输出</li>
+        <li style="padding:3px 0">· 数据源：<strong>difficult_cls</strong>（3,090条）、<strong>codeact-glm47</strong>（11,984条）、<strong>code-sweagent-glm47</strong>（11,591条）</li>
+        <li style="padding:3px 0">· Pass分类：pass0(59)、pass1(2,298)、count_1(3,199)、count_1_2(7,330)、count_2(1,455)、unknown(12,324)</li>
+        <li style="padding:3px 0">· <strong>无显式得分</strong>——按文件名中的pass级别分组</li>
+        <li style="padding:3px 0">· 数据格式：JSONL（messages + tool_calls），工具包括 bash/str_replace_editor/submit/think/task_tracker</li>
+        <li style="padding:3px 0">· 轨迹特点：<strong>大规模代码修复</strong>，agent在真实代码仓库中进行诊断和修复</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>关键差异：</strong>InnovatorBench 是"马拉松"（每条轨迹跑4小时、160步），AgencyBench 是"短跑"（10分钟、5个子任务），而 SWE-bench 是"中距离竞速"（约90次工具调用，在真实代码仓库中修bug）。SWE-bench 的独特之处在于没有显式评分，分组依据是文件名中编码的pass级别和数据来源（不同的Agent框架：sweagent vs codeact）。这使得SWE数据主要用于分析<strong>不同框架间的行为差异</strong>，而非预测最终得分。
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 2: 模型排名 -->
+<!-- ============================================================ -->
+<div class="section">
+  <h2><span class="num">2</span> 模型实力排名</h2>
+  <div class="lead">先看"答案"——各模型在两个 benchmark 上的最终得分排名。后续分析的核心问题是：过程指标能否复现这个排名。</div>
+
+  <div class="compare-grid">
+    <div class="compare-card left">
+      <h4>InnovatorBench Top-10</h4>
+      <div class="rank-row"><span class="rank-num">1</span><span class="rank-name">kimi-k2.5</span><div class="rank-bar-bg"><div class="rank-bar" style="width:100%;background:var(--blue)"></div></div><span class="rank-score">35.6</span><span class="rank-n">n=21</span></div>
+      <div class="rank-row"><span class="rank-num">2</span><span class="rank-name">glm47</span><div class="rank-bar-bg"><div class="rank-bar" style="width:66%;background:var(--blue)"></div></div><span class="rank-score">23.6</span><span class="rank-n">n=20</span></div>
+      <div class="rank-row"><span class="rank-num">3</span><span class="rank-name">glm47-codeact</span><div class="rank-bar-bg"><div class="rank-bar" style="width:49%;background:var(--blue)"></div></div><span class="rank-score">17.4</span><span class="rank-n">n=29</span></div>
+      <div class="rank-row"><span class="rank-num">4</span><span class="rank-name">claude-4-sonnet</span><div class="rank-bar-bg"><div class="rank-bar" style="width:47%;background:var(--blue)"></div></div><span class="rank-score">16.9</span><span class="rank-n">n=207</span></div>
+      <div class="rank-row"><span class="rank-num">5</span><span class="rank-name">glm-4-5-full-data</span><div class="rank-bar-bg"><div class="rank-bar" style="width:42%;background:var(--blue)"></div></div><span class="rank-score">14.9</span><span class="rank-n">n=25</span></div>
+      <div class="rank-row"><span class="rank-num">6</span><span class="rank-name">glm-4-5-wo-interact-filter</span><div class="rank-bar-bg"><div class="rank-bar" style="width:32%;background:var(--blue)"></div></div><span class="rank-score">11.5</span><span class="rank-n">n=20</span></div>
+      <div class="rank-row"><span class="rank-num">7</span><span class="rank-name">glm47-sweagent</span><div class="rank-bar-bg"><div class="rank-bar" style="width:28%;background:var(--blue)"></div></div><span class="rank-score">9.8</span><span class="rank-n">n=21</span></div>
+      <div class="rank-row"><span class="rank-num">8</span><span class="rank-name">glm-4-5-w-interact-filter</span><div class="rank-bar-bg"><div class="rank-bar" style="width:25%;background:var(--blue)"></div></div><span class="rank-score">8.9</span><span class="rank-n">n=86</span></div>
+      <div class="rank-row"><span class="rank-num">9</span><span class="rank-name">gpt-5</span><div class="rank-bar-bg"><div class="rank-bar" style="width:12%;background:var(--blue)"></div></div><span class="rank-score">4.1</span><span class="rank-n">n=64</span></div>
+      <div class="rank-row"><span class="rank-num">10</span><span class="rank-name">kimi-k2-instruct</span><div class="rank-bar-bg"><div class="rank-bar" style="width:11%;background:var(--blue)"></div></div><span class="rank-score">3.7</span><span class="rank-n">n=29</span></div>
+    </div>
+    <div class="compare-card right">
+      <h4>AgencyBench Top-10</h4>
+      <div class="rank-row"><span class="rank-num">1</span><span class="rank-name">claude-4.5-opus</span><div class="rank-bar-bg"><div class="rank-bar" style="width:100%;background:var(--purple)"></div></div><span class="rank-score">23.3</span><span class="rank-n">n=6</span></div>
+      <div class="rank-row"><span class="rank-num">1</span><span class="rank-name">gemini-3-pro</span><div class="rank-bar-bg"><div class="rank-bar" style="width:100%;background:var(--purple)"></div></div><span class="rank-score">23.3</span><span class="rank-n">n=6</span></div>
+      <div class="rank-row"><span class="rank-num">3</span><span class="rank-name">claude-4.5-sonnet</span><div class="rank-bar-bg"><div class="rank-bar" style="width:99%;background:var(--purple)"></div></div><span class="rank-score">23.0</span><span class="rank-n">n=9</span></div>
+      <div class="rank-row"><span class="rank-num">4</span><span class="rank-name">gpt-5.2</span><div class="rank-bar-bg"><div class="rank-bar" style="width:96%;background:var(--purple)"></div></div><span class="rank-score">22.3</span><span class="rank-n">n=11</span></div>
+      <div class="rank-row"><span class="rank-num">5</span><span class="rank-name">grok-4.1-fast</span><div class="rank-bar-bg"><div class="rank-bar" style="width:93%;background:var(--purple)"></div></div><span class="rank-score">21.8</span><span class="rank-n">n=10</span></div>
+      <div class="rank-row"><span class="rank-num">6</span><span class="rank-name">claude-4.5-opus (gzy)</span><div class="rank-bar-bg"><div class="rank-bar" style="width:91%;background:var(--purple)"></div></div><span class="rank-score">21.3</span><span class="rank-n">n=11</span></div>
+      <div class="rank-row"><span class="rank-num">7</span><span class="rank-name">kimi-k2-thinking</span><div class="rank-bar-bg"><div class="rank-bar" style="width:87%;background:var(--purple)"></div></div><span class="rank-score">20.3</span><span class="rank-n">n=10</span></div>
+      <div class="rank-row"><span class="rank-num">8</span><span class="rank-name">gemini-3-pro (gzy)</span><div class="rank-bar-bg"><div class="rank-bar" style="width:83%;background:var(--purple)"></div></div><span class="rank-score">19.3</span><span class="rank-n">n=10</span></div>
+      <div class="rank-row"><span class="rank-num">9</span><span class="rank-name">minimax-m2</span><div class="rank-bar-bg"><div class="rank-bar" style="width:82%;background:var(--purple)"></div></div><span class="rank-score">19.2</span><span class="rank-n">n=6</span></div>
+      <div class="rank-row"><span class="rank-num">10</span><span class="rank-name">glm-4.6</span><div class="rank-bar-bg"><div class="rank-bar" style="width:68%;background:var(--purple)"></div></div><span class="rank-score">15.9</span><span class="rank-n">n=10</span></div>
+    </div>
+  </div>
+
+  <div class="insight warn">
+    <strong>注意：</strong>AgencyBench 中 claude-sonnet-4（旧版）得分全为0，这不是模型弱——而是这批数据使用的是旧格式，没有rubric评分。同样，InnovatorBench 中 grok-4 和 grok-code-fast-1 得分为0，可能是模型未完成任何任务。在读排名时应排除这些无效数据点。
+  </div>
+
+  <h3>SWE-bench 三个数据源对比</h3>
+  <div class="lead">SWE-bench 没有显式评分，但三个数据源使用不同的Agent框架，行为特征差异巨大。</div>
+  <table>
+    <tr>
+      <th>数据源</th>
+      <th>轨迹数</th>
+      <th>平均工具调用</th>
+      <th>平均错误率</th>
+      <th>有效步骤率</th>
+      <th>行为熵</th>
+      <th>工具种类</th>
+      <th>有think工具</th>
+    </tr>
+    <tr style="background:var(--green-light)">
+      <td><strong>codeact-glm47</strong></td>
+      <td>11,984</td>
+      <td class="mono right">93.3</td>
+      <td class="mono right">1.42</td>
+      <td class="mono right" style="font-weight:700">0.846</td>
+      <td class="mono right" style="font-weight:700">1.22</td>
+      <td class="mono right" style="font-weight:700">4.2</td>
+      <td style="text-align:center;color:var(--green)">98.7%</td>
+    </tr>
+    <tr>
+      <td><strong>code-sweagent-glm47</strong></td>
+      <td>11,591</td>
+      <td class="mono right" style="font-weight:700">98.0</td>
+      <td class="mono right">1.54</td>
+      <td class="mono right">0.823</td>
+      <td class="mono right">1.04</td>
+      <td class="mono right">3.0</td>
+      <td style="text-align:center;color:var(--red)">0%</td>
+    </tr>
+    <tr>
+      <td><strong>difficult_cls</strong></td>
+      <td>3,090</td>
+      <td class="mono right">47.4</td>
+      <td class="mono right" style="color:var(--red)">2.10</td>
+      <td class="mono right" style="color:var(--red)">0.760</td>
+      <td class="mono right">1.10</td>
+      <td class="mono right">3.0</td>
+      <td style="text-align:center;color:var(--red)">0%</td>
+    </tr>
+  </table>
+  <div class="insight good">
+    <strong>发现：</strong>codeact-glm47 框架使用 think + task_tracker 工具（4.2种独立工具），有效步骤率最高(0.846)且错误率最低(1.42)。相比之下，difficult_cls 虽然只有一半的工具调用量，但错误率最高(2.10)——说明<strong>质量比数量更重要</strong>。这与 InnovatorBench 上 M93(自我修复能力) 是最强预测因子的结论一致。
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 3: 核心发现 — 哪些指标真正有用 -->
+<!-- ============================================================ -->
+<div class="section">
+  <h2><span class="num">3</span> 核心发现：哪些指标最有区分度</h2>
+  <div class="lead">综合三个 benchmark 的统计检验，我们把指标分为4个等级。</div>
+
+  <h3>第一梯队：多个 benchmark 上都表现出色的指标</h3>
+  <p>这些指标在不同数据集上都能区分模型或框架、且与得分/表现相关，<strong>是最可靠的评估维度</strong>。</p>
+  <table>
+    <tr>
+      <th>指标</th>
+      <th>你可以理解为</th>
+      <th>InnovatorBench<br>η² / ρ</th>
+      <th>AgencyBench<br>η² / ρ</th>
+      <th>SWE-bench<br>η²(source)</th>
+      <th>结论</th>
+    </tr>
+    <tr>
+      <td><strong>M93 重试改善率</strong><br><span style="font-size:11px;color:var(--gray-500)">retry_improved / score_delta</span></td>
+      <td>模型在做错之后能否自我修复</td>
+      <td class="mono right">— / +0.53<br>RF第1 (0.38)</td>
+      <td class="mono right">— / +0.57<br>RF第13</td>
+      <td class="mono right">—<br><span style="font-size:11px">SWE无此指标</span></td>
+      <td><span class="tag strong">核心指标</span><br><span style="font-size:11px">InnovatorBench上最强预测因子</span></td>
+    </tr>
+    <tr>
+      <td><strong>M71 得分退化</strong><br><span style="font-size:11px;color:var(--gray-500)">degradation_rate</span></td>
+      <td>随着任务推进，模型表现是否在下降</td>
+      <td class="mono right">0.13 / −0.06</td>
+      <td class="mono right">0.42 / +0.33</td>
+      <td class="mono right">—<br><span style="font-size:11px">SWE无此指标</span></td>
+      <td><span class="tag strong">核心指标</span><br><span style="font-size:11px">AgencyBench上RF第3</span></td>
+    </tr>
+    <tr>
+      <td><strong>M74 行为熵</strong><br><span style="font-size:11px;color:var(--gray-500)">action_entropy</span></td>
+      <td>模型的行动是否多样化，还是只会几招</td>
+      <td class="mono right">0.19 / ~0</td>
+      <td class="mono right">0.62 / +0.18</td>
+      <td class="mono right" style="font-weight:700">0.318</td>
+      <td><span class="tag strong">核心指标</span><br><span style="font-size:11px">三基准一致强区分</span></td>
+    </tr>
+    <tr>
+      <td><strong>M21 错误/格式失败率</strong><br><span style="font-size:11px;color:var(--gray-500)">format_fail / error_rate</span></td>
+      <td>模型犯低级错误（格式错、异常）的频率</td>
+      <td class="mono right">0.21 / −0.08</td>
+      <td class="mono right">0.53 / −0.09</td>
+      <td class="mono right">0.016</td>
+      <td><span class="tag strong">核心指标</span><br><span style="font-size:11px">SWE上η²较低但p=0</span></td>
+    </tr>
+    <tr>
+      <td><strong>M03 子任务/规划数</strong><br><span style="font-size:11px;color:var(--gray-500)">subtask_count</span></td>
+      <td>模型会不会拆分任务、做计划</td>
+      <td class="mono right">0.28 / −0.15</td>
+      <td class="mono right">0.53 / +0.43</td>
+      <td class="mono right">—<br><span style="font-size:11px">SWE无子任务概念</span></td>
+      <td><span class="tag strong">核心指标</span><br><span style="font-size:11px">方向相反，但区分度强</span></td>
+    </tr>
+    <tr>
+      <td><strong>M96 预算利用率</strong><br><span style="font-size:11px;color:var(--gray-500)">budget_utilization</span></td>
+      <td>模型用了多少可用的尝试/步骤配额</td>
+      <td class="mono right">0.11 / −0.11</td>
+      <td class="mono right">0.41 / −0.08</td>
+      <td class="mono right">—<br><span style="font-size:11px">SWE无预算概念</span></td>
+      <td><span class="tag medium">稳定指标</span></td>
+    </tr>
+  </table>
+
+  <div class="insight good">
+    <strong>最重要的发现：</strong>M93（自我修复能力）在 InnovatorBench 和 AgencyBench 上都是与最终得分相关性最强的过程指标（ρ=+0.53 / +0.57）。M74（行为熵）在三个 benchmark 上都有极强区分度（η²=0.19 / 0.62 / 0.32）。这意味着<strong>"做错了能不能改对"和"行为是否多样化"是区分好坏Agent最有力的信号</strong>。SWE-bench 还揭示了 M76(是否有规划) 的η²高达0.976——<strong>think+planning工具的使用是不同框架间最大的差异</strong>。
+  </div>
+
+  <h3>SWE-bench 独有发现：框架差异 &gt; 模型差异</h3>
+  <p>SWE-bench 数据的独特价值在于对比了<strong>三种不同Agent框架</strong>在同一类任务上的行为。Top-5 区分度指标全都描述的是框架设计层面的差异：</p>
+  <table>
+    <tr>
+      <th>排名</th>
+      <th>指标</th>
+      <th>η² (by source)</th>
+      <th>含义</th>
+    </tr>
+    <tr><td>1</td><td><strong>M76_has_planning</strong></td><td class="mono" style="font-weight:700;color:var(--green)">0.976</td><td>codeact有task_tracker+think, 其他两个完全没有</td></tr>
+    <tr><td>2</td><td><strong>M05_unique_tools</strong></td><td class="mono" style="font-weight:700;color:var(--green)">0.883</td><td>codeact平均4.2种工具, sweagent只有3种</td></tr>
+    <tr><td>3</td><td><strong>M72_think_count</strong></td><td class="mono" style="font-weight:700;color:var(--green)">0.852</td><td>只有codeact使用think工具</td></tr>
+    <tr><td>4</td><td><strong>M05_tool_reuse_rate</strong></td><td class="mono">0.430</td><td>sweagent反复使用同类工具的频率更高</td></tr>
+    <tr><td>5</td><td><strong>M74_action_entropy</strong></td><td class="mono">0.318</td><td>codeact行为更多样化(1.22 vs 1.04)</td></tr>
+  </table>
+  <div class="insight">
+    <strong>启示：</strong>SWE数据表明，<strong>Agent框架设计（是否有think/planning工具）</strong>对行为指标的影响远大于模型本身。这为框架优化提供了方向：增加"思考"和"规划"步骤可能比调优模型本身更有效。
+  </div>
+
+  <h3>第二梯队：只在部分 benchmark 上表现突出</h3>
+  <p>这些指标在特定场景下有效，但不具普适性。</p>
+  <table>
+    <tr>
+      <th>指标</th>
+      <th>含义</th>
+      <th>InnovatorBench</th>
+      <th>AgencyBench</th>
+      <th>SWE-bench</th>
+      <th>为什么不一致</th>
+    </tr>
+    <tr>
+      <td><strong>M20 执行时长</strong></td>
+      <td>总耗时</td>
+      <td class="mono">η²=0.29 ρ=+0.32 <span class="tag strong">强</span></td>
+      <td class="mono">仅19条有数据 <span class="tag weak">数据不足</span></td>
+      <td class="mono">— <span class="tag dead">N/A</span></td>
+      <td>AgencyBench/SWE无时间数据</td>
+    </tr>
+    <tr>
+      <td><strong>M19 总Token</strong></td>
+      <td>消耗的token量</td>
+      <td class="mono">η²=0.26 τ=+0.79 <span class="tag strong">强</span></td>
+      <td class="mono">无数据 <span class="tag dead">N/A</span></td>
+      <td class="mono">— <span class="tag dead">N/A</span></td>
+      <td>仅InnovatorBench记录token</td>
+    </tr>
+    <tr>
+      <td><strong>M23 有效步骤率</strong></td>
+      <td>非错误的步骤占比</td>
+      <td class="mono">η²=0.11 <span class="tag medium">中</span></td>
+      <td class="mono">ρ=+0.88, RF第1 <span class="tag strong">极强</span></td>
+      <td class="mono">η²=0.050 <span class="tag medium">弱</span></td>
+      <td>Agency是子任务制更敏感；SWE差异小</td>
+    </tr>
+    <tr>
+      <td><strong>M15 重复查看率</strong></td>
+      <td>反复看同一个文件的比例</td>
+      <td class="mono">η²=0.16 τ=+0.64 <span class="tag strong">强</span></td>
+      <td class="mono">全为0 <span class="tag dead">废指标</span></td>
+      <td class="mono">η²=0.045 <span class="tag medium">弱</span></td>
+      <td>SWE有此指标(0.39-0.48)但框架差异不大</td>
+    </tr>
+    <tr>
+      <td><strong>M14 死锁/卡住</strong></td>
+      <td>陷入死循环的步骤占比</td>
+      <td class="mono">η²=0.10 τ=+0.56 <span class="tag strong">强</span></td>
+      <td class="mono">η²=0.18 <span class="tag medium">弱</span></td>
+      <td class="mono">η²=0.010 <span class="tag weak">弱</span></td>
+      <td>短轨迹里死锁不太发生</td>
+    </tr>
+    <tr>
+      <td><strong>M05 工具多样性</strong></td>
+      <td>使用了多少种不同的工具</td>
+      <td class="mono">η²=0.03 <span class="tag weak">弱</span></td>
+      <td class="mono">η²=0.73 <span class="tag strong">极强</span></td>
+      <td>AgencyBench区分度最高的指标！</td>
+    </tr>
+  </table>
+
+  <h3>第三梯队：可以删掉的冗余/无效指标</h3>
+  <table>
+    <tr>
+      <th>指标</th>
+      <th>问题</th>
+      <th>建议</th>
+    </tr>
+    <tr>
+      <td>M10 盲目重试</td>
+      <td>InnovatorBench全为0；AgencyBench效果弱</td>
+      <td>可能需要重新定义检测逻辑</td>
+    </tr>
+    <tr>
+      <td>M19_input_tokens</td>
+      <td>与 M19_total_tokens 相关性 ρ=0.999</td>
+      <td>删除，保留 total_tokens</td>
+    </tr>
+    <tr>
+      <td>M76_has_planning</td>
+      <td>与 M03_subtask_count 相关性 ρ=1.000</td>
+      <td>合并为一个指标</td>
+    </tr>
+    <tr>
+      <td>M23 vs M96</td>
+      <td>InnovatorBench上二者相关性 ρ=1.000（计算公式相同）</td>
+      <td>保留一个</td>
+    </tr>
+    <tr>
+      <td>M54 探索编辑比</td>
+      <td>两个benchmark上都与得分无关</td>
+      <td>删除或重新定义</td>
+    </tr>
+    <tr>
+      <td>M07 先读后写率</td>
+      <td>两个benchmark上都无显著区分度</td>
+      <td>保留但降优先级</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 4: "过程指标能预测结果吗？" -->
+<!-- ============================================================ -->
+<div class="section">
+  <h2><span class="num">4</span> 关键问题：过程指标能预测最终得分吗？</h2>
+  <div class="lead">这是整个分析最核心的问题。如果过程指标不能预测得分，那我们设计的评估体系就没有实际价值。</div>
+
+  <div class="kpi-row">
+    <div class="kpi blue">
+      <div class="value">87.6%</div>
+      <div class="label">InnovatorBench<br>RF R²（不含得分本身）</div>
+    </div>
+    <div class="kpi purple">
+      <div class="value">99.3%</div>
+      <div class="label">AgencyBench<br>RF R²（不含得分本身）</div>
+    </div>
+  </div>
+
+  <p><strong>答案是：能，而且预测力很强。</strong></p>
+  <p>在 InnovatorBench 上，仅用过程指标就能解释 87.6% 的得分方差。在 AgencyBench 上更是高达 99.3%。这意味着：模型的行为模式几乎完全决定了它的最终表现。</p>
+
+  <h3>InnovatorBench：什么行为最能预测好结果？</h3>
+  <table>
+    <tr><th>#</th><th>指标</th><th>含义</th><th>重要性</th><th style="width:200px">贡献度</th></tr>
+    <tr><td>1</td><td><strong>M93 重试涨分</strong></td><td>做错后能改对</td><td class="mono right">0.383</td><td><div class="bar-bg"><div class="bar-fill blue" style="width:100%"></div></div></td></tr>
+    <tr><td>2</td><td>M72 思考有效性</td><td>reasoning是否带来正面变化</td><td class="mono right">0.049</td><td><div class="bar-bg"><div class="bar-fill blue" style="width:13%"></div></div></td></tr>
+    <tr><td>3</td><td>M19 输出token</td><td>模型输出了多少内容</td><td class="mono right">0.049</td><td><div class="bar-bg"><div class="bar-fill blue" style="width:13%"></div></div></td></tr>
+    <tr><td>4</td><td>M20 执行时长</td><td>愿意花多长时间</td><td class="mono right">0.047</td><td><div class="bar-bg"><div class="bar-fill blue" style="width:12%"></div></div></td></tr>
+    <tr><td>5</td><td>M54 探索编辑比</td><td>阅读 vs 编辑的比例</td><td class="mono right">0.046</td><td><div class="bar-bg"><div class="bar-fill blue" style="width:12%"></div></div></td></tr>
+    <tr><td>6</td><td>M15 重复查看率</td><td>反复检查同一文件</td><td class="mono right">0.041</td><td><div class="bar-bg"><div class="bar-fill blue" style="width:11%"></div></div></td></tr>
+    <tr><td>7</td><td>M43 连续sleep</td><td>等待异步操作的模式</td><td class="mono right">0.037</td><td><div class="bar-bg"><div class="bar-fill blue" style="width:10%"></div></div></td></tr>
+    <tr><td>8</td><td>M74 行为熵</td><td>行动多样性</td><td class="mono right">0.036</td><td><div class="bar-bg"><div class="bar-fill blue" style="width:9%"></div></div></td></tr>
+  </table>
+
+  <div class="insight">
+    <strong>解读：</strong>InnovatorBench 上最重要的单一预测因子是<strong>自我修复能力（M93）</strong>，独占38%的预测力。剩余的指标重要性均匀分布在3-5%，说明好的 Agent 不是靠一招制胜，而是"自我修复"打底 + 多个维度均衡发展。
+  </div>
+
+  <h3>AgencyBench：什么行为最能预测好结果？</h3>
+  <table>
+    <tr><th>#</th><th>指标</th><th>含义</th><th>重要性</th><th style="width:200px">贡献度</th></tr>
+    <tr><td>1</td><td><strong>M23 子任务通过率</strong></td><td>通过了几个子任务</td><td class="mono right">0.696</td><td><div class="bar-bg"><div class="bar-fill purple" style="width:100%"></div></div></td></tr>
+    <tr><td>2</td><td>M03 子任务数</td><td>任务复杂度（几个子任务）</td><td class="mono right">0.081</td><td><div class="bar-bg"><div class="bar-fill purple" style="width:12%"></div></div></td></tr>
+    <tr><td>3</td><td>M71 退化率</td><td>后续子任务得分下降</td><td class="mono right">0.043</td><td><div class="bar-bg"><div class="bar-fill purple" style="width:6%"></div></div></td></tr>
+    <tr><td>4</td><td>M71 退化次数</td><td>得分退步了几次</td><td class="mono right">0.037</td><td><div class="bar-bg"><div class="bar-fill purple" style="width:5%"></div></div></td></tr>
+    <tr><td>5</td><td>AUX 总尝试次数</td><td>用了多少次尝试</td><td class="mono right">0.036</td><td><div class="bar-bg"><div class="bar-fill purple" style="width:5%"></div></div></td></tr>
+    <tr><td>6</td><td>M24 字符/分</td><td>每得一分输出多少字</td><td class="mono right">0.034</td><td><div class="bar-bg"><div class="bar-fill purple" style="width:5%"></div></div></td></tr>
+  </table>
+
+  <div class="insight warn">
+    <strong>注意：</strong>AgencyBench 的 R²=0.993 看起来"太好了"。原因是 M23_effective_subtask_rate（子任务通过率）与最终得分的定义高度重叠——得分本质上就是子任务分数的加总。这不是信息泄漏，但说明 AgencyBench 的得分结构比 InnovatorBench 更简单、更线性。InnovatorBench 的 R²=0.876 更能说明过程指标的真正预测力。
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 5: 信息维度分析 -->
+<!-- ============================================================ -->
+<div class="section">
+  <h2><span class="num">5</span> 指标冗余度：我们测了几个独立维度？</h2>
+  <div class="lead">PCA 分析告诉我们这些指标到底在衡量几个独立的"能力方面"。</div>
+
+  <div class="kpi-row">
+    <div class="kpi blue">
+      <div class="value">&gt;10</div>
+      <div class="label">InnovatorBench<br>需要的主成分数 (80%方差)</div>
+    </div>
+    <div class="kpi purple">
+      <div class="value">9</div>
+      <div class="label">AgencyBench<br>需要的主成分数 (82%方差)</div>
+    </div>
+    <div class="kpi green">
+      <div class="value">9</div>
+      <div class="label">SWE-bench<br>需要的主成分数 (82%方差)</div>
+    </div>
+  </div>
+
+  <p>这是<strong>好消息</strong>：需要这么多主成分才能概括大部分信息，说明我们的指标确实在测量不同方面的能力，不是一堆换了名字的同一个东西。</p>
+
+  <h3>PCA 识别出的5个"能力维度"</h3>
+  <table>
+    <tr><th>维度</th><th>InnovatorBench</th><th>AgencyBench</th><th>SWE-bench</th><th>解读</th></tr>
+    <tr>
+      <td style="font-weight:700;color:var(--blue)">规模/投入</td>
+      <td>tool_chain_depth, total_tokens</td>
+      <td>unique_tools, action_entropy, output_chars</td>
+      <td>assistant_turns, tool_call_count, tool_reuse_rate</td>
+      <td>模型投入了多少资源和精力</td>
+    </tr>
+    <tr>
+      <td style="font-weight:700;color:var(--green)">效率/质量</td>
+      <td>effective_step_rate, -format_fail_rate</td>
+      <td>best_eval_score, effective_subtask_rate</td>
+      <td>error_rate, error_count, -effective_step_rate</td>
+      <td>模型做的事有多少是有效的</td>
+    </tr>
+    <tr>
+      <td style="font-weight:700;color:var(--orange)">规划能力</td>
+      <td>subtask_count, planning_nodes</td>
+      <td>read_before_edit, explore_edit_ratio</td>
+      <td>has_planning, unique_tools, think_count</td>
+      <td>模型是否会先思考再行动</td>
+    </tr>
+    <tr>
+      <td style="font-weight:700;color:var(--red)">自我修复</td>
+      <td>best_eval_score, retry_improved</td>
+      <td>degradation_rate, score_degradation</td>
+      <td>undo_count, undo_rate</td>
+      <td>做错了能不能改对、表现是否退化</td>
+    </tr>
+    <tr>
+      <td style="font-weight:700;color:var(--purple)">资源管理</td>
+      <td>session_leak, session_create_count</td>
+      <td>total_attempts, budget_utilization</td>
+      <td>code_locate_efficiency, explore_edit_ratio</td>
+      <td>模型是否善于管理有限资源</td>
+    </tr>
+  </table>
+
+  <div class="insight good">
+    <strong>验证了框架设计：</strong>PCA 自动发现的5个维度，与我们在 Agent·Eval v4 proposal 中设计的能力分类（§3.2 能力画像 / §3.3 故障级联 / §3.4 交互判断 / §3.5 难度标度）高度吻合。统计分析证明了框架设计的合理性。
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 6: 反直觉发现 -->
+<!-- ============================================================ -->
+<div class="section">
+  <h2><span class="num">6</span> 反直觉的发现</h2>
+  <div class="lead">数据中有几个违背常识预期的现象，值得特别关注。</div>
+
+  <table>
+    <tr><th style="width:50px">#</th><th>发现</th><th>数据</th><th>可能的解释</th></tr>
+    <tr>
+      <td style="font-size:24px;text-align:center">1</td>
+      <td><strong>花更多时间/token的模型得分更高</strong></td>
+      <td>M20 ρ=+0.32, M19 ρ=+0.29<br>(InnovatorBench)</td>
+      <td>在长时间复杂任务上，"愿意坚持"是优势。弱模型往往半途而废，强模型持续迭代直到成功。这<strong>不意味着</strong>效率越低越好——而是说在当前任务难度下，能力不足导致的"快速放弃"才是真正的低效。</td>
+    </tr>
+    <tr>
+      <td style="font-size:24px;text-align:center">2</td>
+      <td><strong>死锁步骤比例高的模型排名也高</strong></td>
+      <td>M14 τ=+0.56<br>(InnovatorBench)</td>
+      <td>强模型做更多复杂操作，偶尔会卡住，但最终能解决。弱模型从不死锁——因为它们根本没走到那一步。就像只有会开车的人才会遇到堵车，不会开车的人根本不上路。</td>
+    </tr>
+    <tr>
+      <td style="font-size:24px;text-align:center">3</td>
+      <td><strong>AgencyBench上得分退化多的模型总分反而更高</strong></td>
+      <td>M71 ρ=+0.39<br>(AgencyBench)</td>
+      <td>强模型做了5个子任务所以有4次退步机会，弱模型只做了2个子任务所以最多退步1次。退步次数多是因为做得多，不是因为做得差。</td>
+    </tr>
+    <tr>
+      <td style="font-size:24px;text-align:center">4</td>
+      <td><strong>M03子任务数在两个benchmark上方向相反</strong></td>
+      <td>InnovatorBench ρ=−0.15<br>AgencyBench ρ=+0.43</td>
+      <td>InnovatorBench中，子任务数是模型自行规划的——弱模型过度拆分反而是能力不足的表现。AgencyBench中，子任务数由题目决定——做了更多子任务的自然得分更高。<strong>同一个指标在不同场景下含义完全不同。</strong></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 7: 推荐的最终指标集 -->
+<!-- ============================================================ -->
+<div class="section">
+  <h2><span class="num">7</span> 推荐：精简后的核心指标集</h2>
+  <div class="lead">从96条候选指标中，基于两个benchmark的联合验证，推荐保留以下<strong>15个核心指标</strong>。</div>
+
+  <table>
+    <tr>
+      <th style="width:40px">#</th>
+      <th>指标</th>
+      <th>维度</th>
+      <th>区分度<br>评级</th>
+      <th>InnovatorBench</th>
+      <th>AgencyBench</th>
+      <th>保留理由</th>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td><strong>M93 重试改善率</strong></td>
+      <td style="color:var(--red)">自我修复</td>
+      <td><span class="tag strong">S</span></td>
+      <td>ρ=+0.53, RF#1</td>
+      <td>ρ=+0.57</td>
+      <td>两个benchmark上最强的"过程→结果"预测器</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><strong>M24 最终得分</strong></td>
+      <td style="color:var(--green)">结果</td>
+      <td><span class="tag strong">S</span></td>
+      <td>η²=0.19</td>
+      <td>η²=0.31</td>
+      <td>基准参考，其他指标的对标标准</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><strong>M74 行为熵</strong></td>
+      <td style="color:var(--blue)">规模</td>
+      <td><span class="tag strong">S</span></td>
+      <td>η²=0.19</td>
+      <td>η²=0.62</td>
+      <td>最能区分模型的行为特征之一</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><strong>M21 错误率</strong></td>
+      <td style="color:var(--green)">效率</td>
+      <td><span class="tag strong">S</span></td>
+      <td>η²=0.21</td>
+      <td>η²=0.53</td>
+      <td>基础能力指标，反映代码质量</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td><strong>M71 退化率</strong></td>
+      <td style="color:var(--red)">自我修复</td>
+      <td><span class="tag strong">A</span></td>
+      <td>η²=0.13</td>
+      <td>η²=0.42, RF#3</td>
+      <td>衡量持久性和稳定性</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td><strong>M03 子任务数</strong></td>
+      <td style="color:var(--orange)">规划</td>
+      <td><span class="tag strong">A</span></td>
+      <td>η²=0.28</td>
+      <td>η²=0.53</td>
+      <td>两个benchmark上都η²极高</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td><strong>M20 执行时长</strong></td>
+      <td style="color:var(--blue)">规模</td>
+      <td><span class="tag strong">A</span></td>
+      <td>η²=0.29, τ=+0.60</td>
+      <td>数据不足</td>
+      <td>InnovatorBench上η²最高的指标</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td><strong>M19 总Token</strong></td>
+      <td style="color:var(--blue)">规模</td>
+      <td><span class="tag strong">A</span></td>
+      <td>η²=0.26, τ=+0.79</td>
+      <td>无数据</td>
+      <td>模型排名一致性最强 τ=0.79</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td><strong>M14 死锁步骤比</strong></td>
+      <td style="color:var(--red)">故障</td>
+      <td><span class="tag medium">B</span></td>
+      <td>η²=0.10, τ=+0.56</td>
+      <td>η²=0.18</td>
+      <td>反直觉但信息量大</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td><strong>M96 预算利用率</strong></td>
+      <td style="color:var(--purple)">资源</td>
+      <td><span class="tag medium">B</span></td>
+      <td>η²=0.11</td>
+      <td>η²=0.41</td>
+      <td>资源管理能力的代理指标</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td><strong>M12 会话泄漏</strong></td>
+      <td style="color:var(--purple)">资源</td>
+      <td><span class="tag medium">B</span></td>
+      <td>η²=0.23</td>
+      <td>格式不同</td>
+      <td>InnovatorBench上PCA独立维度</td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td><strong>M72 思考有效性</strong></td>
+      <td style="color:var(--red)">自我修复</td>
+      <td><span class="tag medium">B</span></td>
+      <td>RF#2 (0.049)</td>
+      <td>格式不同</td>
+      <td>RF第二重要的预测特征</td>
+    </tr>
+    <tr>
+      <td>13</td>
+      <td><strong>M15 重复查看率</strong></td>
+      <td style="color:var(--green)">效率</td>
+      <td><span class="tag medium">B</span></td>
+      <td>η²=0.16, τ=+0.64</td>
+      <td>无数据</td>
+      <td>模型排名一致性高</td>
+    </tr>
+    <tr>
+      <td>14</td>
+      <td><strong>M53 代码定位效率</strong></td>
+      <td style="color:var(--green)">效率</td>
+      <td><span class="tag medium">B</span></td>
+      <td>η²=0.10, τ=−0.52</td>
+      <td>格式不同</td>
+      <td>唯一负向τ——强模型探索范围广</td>
+    </tr>
+    <tr>
+      <td>15</td>
+      <td><strong>M57 修复后验证率</strong></td>
+      <td style="color:var(--orange)">规划</td>
+      <td><span class="tag medium">B</span></td>
+      <td>η²=0.09</td>
+      <td>η²=0.06</td>
+      <td>良好工程习惯的标志</td>
+    </tr>
+  </table>
+
+  <div class="insight good">
+    <strong>指标精简效果：</strong>从96条候选指标 → 41条全自动指标 → 26条可立即计算 → <strong>15条经过统计验证的核心指标</strong>。这15条覆盖了PCA发现的全部5个独立维度（规模/效率/规划/自我修复/资源管理），去掉了冗余和无效指标。
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 8: 下一步 -->
+<!-- ============================================================ -->
+<div class="section">
+  <h2><span class="num">8</span> 下一步建议</h2>
+
+  <table>
+    <tr><th style="width:40px">优先级</th><th>行动</th><th>预期收益</th></tr>
+    <tr>
+      <td style="text-align:center;font-weight:700;color:var(--red)">P0</td>
+      <td><strong>补充 JUDGE 类指标</strong>：当前15个全是 RULE 型（基于规则自动计算），缺少需要 LLM 判断的软指标（如代码风格、方案创新性、沟通清晰度）</td>
+      <td>覆盖"软能力"维度，当前指标主要衡量"做了什么"但不衡量"做得有多好"</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;font-weight:700;color:var(--red)">P0</td>
+      <td><strong>统一数据格式</strong>：AgencyBench 缺少 token 消耗、精确时长等关键字段。建议推动数据采集标准化</td>
+      <td>让跨benchmark对比更有意义；当前40%的指标因数据缺失无法跨benchmark验证</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;font-weight:700;color:var(--orange)">P1</td>
+      <td><strong>修复 M10 盲目重试</strong>：当前检测逻辑过于严格（要求完全相同的错误字符串），导致全为0。改为语义相似度匹配</td>
+      <td>盲目重试是重要的失败模式，但当前算法捕获不到</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;font-weight:700;color:var(--orange)">P1</td>
+      <td><strong>在更多benchmark上验证</strong>：当前只在2个benchmark上跑过，样本量（尤其AgencyBench仅165条）还不够大</td>
+      <td>增强统计置信度，发现更多跨场景稳定的指标</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;font-weight:700;color:var(--blue)">P2</td>
+      <td><strong>实现 AlpacaEval-LC 去偏</strong>：对基于 LLM 的 JUDGE 指标，用 GLM 回归消除长度偏差和位置偏差</td>
+      <td>为 P0 的 JUDGE 类指标做准备</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 9: 全量指标数据表 -->
+<!-- ============================================================ -->
+<div class="section">
+  <h2><span class="num">9</span> 全量数据：每条指标在两个 Benchmark 上的完整统计</h2>
+  <div class="lead">下面两张表包含所有指标的全部统计量，不遗漏任何一条数据。η²=跨模型效应量，ρ=与得分的相关性，τ=模型排名一致性，RF=随机森林重要性。颜色标注了每个数值的强度。</div>
+
+  <h3>InnovatorBench 全量指标（34条 × 655条轨迹 × 15个模型）</h3>
+  <div style="overflow-x:auto">
+  <table style="font-size:12px">
+    <tr>
+      <th>指标</th>
+      <th>n</th>
+      <th>均值</th>
+      <th>标准差</th>
+      <th>H统计量</th>
+      <th>p-value</th>
+      <th>η²</th>
+      <th>Spearman ρ</th>
+      <th>ρ p-value</th>
+      <th>Kendall τ</th>
+      <th>τ p-value</th>
+      <th>RF重要性</th>
+      <th>综合评级</th>
+    </tr>
+    <tr><td><strong>M02_tool_chain_depth</strong></td><td>655</td><td class="mono">159.9</td><td class="mono">169.9</td><td class="mono">145.7</td><td class="mono">5.1e-24</td><td class="mono" style="background:#dcfce7">0.223</td><td class="mono" style="background:#dcfce7">+0.238</td><td class="mono">6.8e-10</td><td class="mono" style="background:#dcfce7">+0.638</td><td class="mono">0.0005</td><td class="mono">0.018</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td><strong>M03_subtask_count</strong></td><td>655</td><td class="mono">5.8</td><td class="mono">50.1</td><td class="mono">180.4</td><td class="mono">5.5e-31</td><td class="mono" style="background:#dcfce7">0.276</td><td class="mono">−0.145</td><td class="mono">1.9e-04</td><td class="mono">−0.162</td><td class="mono">0.435</td><td class="mono">0.000</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td>M05_tool_reuse_rate</td><td>586</td><td class="mono">0.536</td><td class="mono">0.319</td><td class="mono">20.4</td><td class="mono">0.087</td><td class="mono">0.035</td><td class="mono">−0.109</td><td class="mono">0.008</td><td class="mono">+0.077</td><td class="mono">0.747</td><td class="mono">0.000</td><td><span class="tag weak">C</span></td></tr>
+    <tr><td>M07_read_before_edit_rate</td><td>502</td><td class="mono">0.671</td><td class="mono">0.311</td><td class="mono">39.0</td><td class="mono">2.0e-04</td><td class="mono">0.078</td><td class="mono">+0.059</td><td class="mono">0.189</td><td class="mono">+0.209</td><td class="mono">0.331</td><td class="mono">0.015</td><td><span class="tag weak">C</span></td></tr>
+    <tr style="color:var(--gray-500)"><td>M10_max_blind_retry</td><td>655</td><td class="mono">0.0</td><td class="mono">0.0</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">0.000</td><td><span class="tag dead">废</span></td></tr>
+    <tr style="color:var(--gray-500)"><td>M10_blind_retry_step_ratio</td><td>655</td><td class="mono">0.0</td><td class="mono">0.0</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">0.000</td><td><span class="tag dead">废</span></td></tr>
+    <tr><td>M11_eval_abuse_rate</td><td>655</td><td class="mono">0.072</td><td class="mono">0.220</td><td class="mono">20.0</td><td class="mono">0.132</td><td class="mono">0.031</td><td class="mono">+0.110</td><td class="mono">0.005</td><td class="mono" style="background:#fef9c3">+0.467</td><td class="mono">0.016</td><td class="mono">0.004</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td><strong>M12_resource_reclaim_rate</strong></td><td>469</td><td class="mono">0.113</td><td class="mono">0.261</td><td class="mono">74.4</td><td class="mono">3.0e-10</td><td class="mono" style="background:#dcfce7">0.159</td><td class="mono">−0.150</td><td class="mono">0.001</td><td class="mono">+0.219</td><td class="mono">0.282</td><td class="mono">0.007</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td><strong>M12_session_leak</strong></td><td>655</td><td class="mono">1.644</td><td class="mono">2.343</td><td class="mono">148.4</td><td class="mono">1.5e-24</td><td class="mono" style="background:#dcfce7">0.227</td><td class="mono">+0.070</td><td class="mono">0.073</td><td class="mono">+0.257</td><td class="mono">0.202</td><td class="mono">0.014</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td><strong>M14_deadlock_step_ratio</strong></td><td>655</td><td class="mono">0.083</td><td class="mono">0.132</td><td class="mono">62.3</td><td class="mono">4.7e-08</td><td class="mono">0.095</td><td class="mono" style="background:#dcfce7">+0.231</td><td class="mono">2.4e-09</td><td class="mono" style="background:#dcfce7">+0.562</td><td class="mono">0.003</td><td class="mono">0.032</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td><strong>M15_repeated_view_rate</strong></td><td>655</td><td class="mono">0.156</td><td class="mono">0.173</td><td class="mono">107.7</td><td class="mono">1.6e-16</td><td class="mono" style="background:#dcfce7">0.165</td><td class="mono">+0.096</td><td class="mono">0.015</td><td class="mono" style="background:#dcfce7">+0.638</td><td class="mono">0.001</td><td class="mono">0.041</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td>M16_search_vs_open_ratio</td><td>604</td><td class="mono">0.104</td><td class="mono">0.135</td><td class="mono">54.2</td><td class="mono">1.2e-06</td><td class="mono">0.090</td><td class="mono">−0.163</td><td class="mono">5.7e-05</td><td class="mono">−0.067</td><td class="mono">0.771</td><td class="mono">0.019</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td><strong>M19_total_tokens</strong></td><td>655</td><td class="mono">9.29M</td><td class="mono">13.2M</td><td class="mono">172.8</td><td class="mono">1.8e-29</td><td class="mono" style="background:#dcfce7">0.264</td><td class="mono" style="background:#dcfce7">+0.294</td><td class="mono">1.5e-14</td><td class="mono" style="background:#dcfce7">+0.791</td><td class="mono">0.000</td><td class="mono">0.017</td><td><span class="tag strong">S</span></td></tr>
+    <tr style="color:var(--gray-500)"><td>M19_input_tokens</td><td>655</td><td class="mono">9.17M</td><td class="mono">13.1M</td><td class="mono">177.1</td><td class="mono">2.5e-30</td><td class="mono">0.271</td><td class="mono">+0.296</td><td class="mono">1.1e-14</td><td class="mono">+0.791</td><td class="mono">0.000</td><td class="mono">0.019</td><td><span class="tag dead">冗余</span></td></tr>
+    <tr><td>M19_output_tokens</td><td>655</td><td class="mono">35.8K</td><td class="mono">61.1K</td><td class="mono">135.1</td><td class="mono">6.6e-22</td><td class="mono" style="background:#dcfce7">0.207</td><td class="mono">+0.056</td><td class="mono">0.155</td><td class="mono">+0.105</td><td class="mono">0.627</td><td class="mono">0.049</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td><strong>M20_duration_seconds</strong></td><td>655</td><td class="mono">14693</td><td class="mono">18911</td><td class="mono">189.1</td><td class="mono">9.3e-33</td><td class="mono" style="background:#dcfce7">0.289</td><td class="mono" style="background:#dcfce7">+0.324</td><td class="mono">1.9e-17</td><td class="mono" style="background:#dcfce7">+0.600</td><td class="mono">0.001</td><td class="mono">0.047</td><td><span class="tag strong">S</span></td></tr>
+    <tr><td><strong>M21_format_fail_rate</strong></td><td>655</td><td class="mono">0.056</td><td class="mono">0.183</td><td class="mono">138.4</td><td class="mono">1.5e-22</td><td class="mono" style="background:#dcfce7">0.212</td><td class="mono">−0.079</td><td class="mono">0.043</td><td class="mono">−0.219</td><td class="mono">0.282</td><td class="mono">0.024</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td>M23_effective_step_rate</td><td>655</td><td class="mono">0.861</td><td class="mono">0.211</td><td class="mono">69.8</td><td class="mono">2.2e-09</td><td class="mono">0.107</td><td class="mono">−0.113</td><td class="mono">0.004</td><td class="mono">−0.276</td><td class="mono">0.169</td><td class="mono">0.018</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td><strong>M24_token_per_point</strong></td><td>289</td><td class="mono">1.19T</td><td class="mono">7.55T</td><td class="mono">18.9</td><td class="mono">0.064</td><td class="mono">0.065</td><td class="mono" style="background:#dcfce7;color:var(--red)">−0.843</td><td class="mono">2.8e-79</td><td class="mono">−0.212</td><td class="mono">0.381</td><td class="mono">—</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td><strong>M24_best_eval_score</strong></td><td>655</td><td class="mono">11.7</td><td class="mono">22.2</td><td class="mono">124.3</td><td class="mono">9.1e-20</td><td class="mono" style="background:#dcfce7">0.190</td><td class="mono">—</td><td class="mono">—</td><td class="mono" style="background:#dcfce7">+1.000</td><td class="mono">0.000</td><td class="mono">—</td><td><span class="tag strong">S</span></td></tr>
+    <tr><td><strong>M43_max_consecutive_sleep</strong></td><td>655</td><td class="mono">2.191</td><td class="mono">1.578</td><td class="mono">124.9</td><td class="mono">6.8e-20</td><td class="mono" style="background:#dcfce7">0.191</td><td class="mono" style="background:#dcfce7">+0.291</td><td class="mono">3.1e-14</td><td class="mono">+0.162</td><td class="mono">0.435</td><td class="mono">0.037</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td>M43_session_create_count</td><td>655</td><td class="mono">2.002</td><td class="mono">2.678</td><td class="mono">133.4</td><td class="mono">1.4e-21</td><td class="mono" style="background:#dcfce7">0.204</td><td class="mono">+0.027</td><td class="mono">0.484</td><td class="mono">+0.238</td><td class="mono">0.240</td><td class="mono">0.008</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td><strong>M53_code_locate_efficiency</strong></td><td>586</td><td class="mono">0.219</td><td class="mono">0.151</td><td class="mono">56.6</td><td class="mono">2.1e-07</td><td class="mono">0.097</td><td class="mono">−0.149</td><td class="mono">2.9e-04</td><td class="mono" style="background:#fef9c3;color:var(--red)">−0.517</td><td class="mono">0.010</td><td class="mono">0.033</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td>M54_explore_edit_ratio</td><td>586</td><td class="mono">2.888</td><td class="mono">3.556</td><td class="mono">38.0</td><td class="mono">2.9e-04</td><td class="mono">0.065</td><td class="mono">+0.011</td><td class="mono">0.795</td><td class="mono">−0.231</td><td class="mono">0.279</td><td class="mono">0.046</td><td><span class="tag weak">C</span></td></tr>
+    <tr><td>M55_file_reach_rate</td><td>502</td><td class="mono">8.428</td><td class="mono">6.272</td><td class="mono">36.0</td><td class="mono">5.9e-04</td><td class="mono">0.072</td><td class="mono">+0.141</td><td class="mono">0.002</td><td class="mono">+0.297</td><td class="mono">0.157</td><td class="mono">0.032</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td>M57_post_fix_verify</td><td>586</td><td class="mono">0.904</td><td class="mono">0.294</td><td class="mono">55.5</td><td class="mono">3.3e-07</td><td class="mono">0.095</td><td class="mono">+0.125</td><td class="mono">0.002</td><td class="mono">+0.187</td><td class="mono">0.388</td><td class="mono">0.001</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td>M71_reasoning_degradation</td><td>270</td><td class="mono">9.762</td><td class="mono">27.98</td><td class="mono">34.3</td><td class="mono">7.8e-05</td><td class="mono" style="background:#dcfce7">0.128</td><td class="mono">−0.057</td><td class="mono">0.347</td><td class="mono">+0.022</td><td class="mono">1.000</td><td class="mono">—</td><td><span class="tag weak">C</span></td></tr>
+    <tr><td><strong>M72_think_effectiveness</strong></td><td>632</td><td class="mono">−0.003</td><td class="mono">0.245</td><td class="mono">40.9</td><td class="mono">1.8e-04</td><td class="mono">0.065</td><td class="mono">−0.111</td><td class="mono">0.005</td><td class="mono">+0.143</td><td class="mono">0.495</td><td class="mono">0.049</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td><strong>M74_action_entropy</strong></td><td>655</td><td class="mono">4.328</td><td class="mono">0.986</td><td class="mono">126.5</td><td class="mono">3.3e-20</td><td class="mono" style="background:#dcfce7">0.194</td><td class="mono">+0.073</td><td class="mono">0.061</td><td class="mono">+0.200</td><td class="mono">0.328</td><td class="mono">0.036</td><td><span class="tag strong">A</span></td></tr>
+    <tr style="color:var(--gray-500)"><td>M76_has_planning</td><td>655</td><td class="mono">0.029</td><td class="mono">0.168</td><td class="mono">180.4</td><td class="mono">5.3e-31</td><td class="mono">0.276</td><td class="mono">−0.145</td><td class="mono">1.9e-04</td><td class="mono">−0.162</td><td class="mono">0.435</td><td class="mono">0.000</td><td><span class="tag dead">冗余</span></td></tr>
+    <tr style="color:var(--gray-500)"><td>M76_n_planning_nodes</td><td>655</td><td class="mono">0.583</td><td class="mono">5.279</td><td class="mono">180.4</td><td class="mono">5.5e-31</td><td class="mono">0.276</td><td class="mono">−0.145</td><td class="mono">1.9e-04</td><td class="mono">−0.162</td><td class="mono">0.435</td><td class="mono">0.000</td><td><span class="tag dead">冗余</span></td></tr>
+    <tr><td><strong>M93_retry_improved</strong></td><td>344</td><td class="mono">0.314</td><td class="mono">0.464</td><td class="mono">13.7</td><td class="mono">0.251</td><td class="mono">0.040</td><td class="mono" style="background:#dcfce7">+0.530</td><td class="mono">2.9e-26</td><td class="mono">+0.273</td><td class="mono">0.250</td><td class="mono">0.002</td><td><span class="tag strong">S</span></td></tr>
+    <tr><td><strong>M93_score_delta</strong></td><td>344</td><td class="mono">3.399</td><td class="mono">15.45</td><td class="mono">10.2</td><td class="mono">0.511</td><td class="mono">0.030</td><td class="mono" style="background:#dcfce7">+0.271</td><td class="mono">3.4e-07</td><td class="mono" style="background:#fef9c3">+0.485</td><td class="mono">0.031</td><td class="mono">0.383</td><td><span class="tag strong">S</span></td></tr>
+    <tr style="color:var(--gray-500)"><td>M96_budget_utilization</td><td>655</td><td class="mono">0.861</td><td class="mono">0.211</td><td class="mono">69.8</td><td class="mono">2.2e-09</td><td class="mono">0.107</td><td class="mono">−0.113</td><td class="mono">0.004</td><td class="mono">−0.276</td><td class="mono">0.169</td><td class="mono">0.020</td><td><span class="tag dead">冗余</span></td></tr>
+  </table>
+  </div>
+
+  <h3>AgencyBench 全量指标（30条 × 165条轨迹 × 22个模型）</h3>
+  <div style="overflow-x:auto">
+  <table style="font-size:12px">
+    <tr>
+      <th>指标</th>
+      <th>n</th>
+      <th>均值</th>
+      <th>标准差</th>
+      <th>H统计量</th>
+      <th>p-value</th>
+      <th>η²</th>
+      <th>Spearman ρ</th>
+      <th>ρ p-value</th>
+      <th>Kendall τ</th>
+      <th>τ p-value</th>
+      <th>RF重要性</th>
+      <th>综合评级</th>
+    </tr>
+    <tr><td><strong>M03_subtask_count</strong></td><td>165</td><td class="mono">4.18</td><td class="mono">1.49</td><td class="mono">86.4</td><td class="mono">1.4e-10</td><td class="mono" style="background:#f5f3ff">0.534</td><td class="mono" style="background:#f5f3ff">+0.430</td><td class="mono">8.3e-09</td><td class="mono">+0.211</td><td class="mono">0.209</td><td class="mono">0.081</td><td><span class="tag strong">S</span></td></tr>
+    <tr><td><strong>M24_best_eval_score</strong></td><td>165</td><td class="mono">15.4</td><td class="mono">15.4</td><td class="mono">50.2</td><td class="mono">1.2e-04</td><td class="mono" style="background:#f5f3ff">0.310</td><td class="mono">—</td><td class="mono">—</td><td class="mono" style="background:#f5f3ff">+1.000</td><td class="mono">0.000</td><td class="mono">—</td><td><span class="tag strong">S</span></td></tr>
+    <tr><td><strong>M24_score_rate</strong></td><td>165</td><td class="mono">0.348</td><td class="mono">0.339</td><td class="mono">51.4</td><td class="mono">8.0e-05</td><td class="mono" style="background:#f5f3ff">0.318</td><td class="mono">—</td><td class="mono">—</td><td class="mono" style="background:#f5f3ff">+0.811</td><td class="mono">0.000</td><td class="mono">—</td><td><span class="tag strong">S</span></td></tr>
+    <tr><td>M20_duration_seconds</td><td style="color:var(--red)">19</td><td class="mono">612.7</td><td class="mono">504.7</td><td class="mono">3.9</td><td class="mono">0.049</td><td class="mono">0.228</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td><span class="tag weak">数据不足</span></td></tr>
+    <tr style="color:var(--gray-500)"><td>M19_total_tokens</td><td>0</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td><span class="tag dead">无数据</span></td></tr>
+    <tr><td><strong>M02_tool_call_count</strong></td><td>165</td><td class="mono">17.3</td><td class="mono">71.8</td><td class="mono">82.4</td><td class="mono">7.2e-10</td><td class="mono" style="background:#f5f3ff">0.509</td><td class="mono">+0.198</td><td class="mono">0.011</td><td class="mono">+0.274</td><td class="mono">0.098</td><td class="mono">0.001</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td><strong>M21_error_count</strong></td><td>165</td><td class="mono">64.3</td><td class="mono">152.6</td><td class="mono">91.1</td><td class="mono">2.2e-11</td><td class="mono" style="background:#f5f3ff">0.562</td><td class="mono">+0.019</td><td class="mono">0.809</td><td class="mono">+0.316</td><td class="mono">0.055</td><td class="mono">0.009</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td><strong>M21_error_rate</strong></td><td>165</td><td class="mono">6.92</td><td class="mono">14.1</td><td class="mono">85.4</td><td class="mono">2.2e-10</td><td class="mono" style="background:#f5f3ff">0.527</td><td class="mono">−0.093</td><td class="mono">0.234</td><td class="mono">+0.011</td><td class="mono">0.975</td><td class="mono">0.013</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td><strong>M05_unique_tools</strong></td><td>165</td><td class="mono">1.82</td><td class="mono">1.92</td><td class="mono">118.6</td><td class="mono">2.1e-16</td><td class="mono" style="background:#f5f3ff;font-weight:700">0.732</td><td class="mono">+0.170</td><td class="mono">0.029</td><td class="mono">+0.190</td><td class="mono">0.260</td><td class="mono">0.003</td><td><span class="tag strong">S</span></td></tr>
+    <tr><td><strong>M05_tool_reuse_rate</strong></td><td>165</td><td class="mono">11.6</td><td class="mono">24.3</td><td class="mono">109.0</td><td class="mono">1.2e-14</td><td class="mono" style="background:#f5f3ff">0.673</td><td class="mono">+0.023</td><td class="mono">0.772</td><td class="mono">+0.179</td><td class="mono">0.288</td><td class="mono">0.005</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td>M07_read_before_edit_ratio</td><td style="color:var(--orange)">62</td><td class="mono">4.44</td><td class="mono">5.97</td><td class="mono">8.4</td><td class="mono">0.491</td><td class="mono">0.138</td><td class="mono">+0.068</td><td class="mono">0.598</td><td class="mono">+0.022</td><td class="mono">1.000</td><td class="mono">0.001</td><td><span class="tag weak">C</span></td></tr>
+    <tr><td><strong>M16_search_vs_open_ratio</strong></td><td>165</td><td class="mono">0.235</td><td class="mono">0.403</td><td class="mono">50.1</td><td class="mono">1.3e-04</td><td class="mono" style="background:#f5f3ff">0.309</td><td class="mono">+0.155</td><td class="mono">0.047</td><td class="mono">+0.168</td><td class="mono">0.319</td><td class="mono">0.002</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td>M54_explore_edit_ratio</td><td style="color:var(--orange)">62</td><td class="mono">5.11</td><td class="mono">6.06</td><td class="mono">12.2</td><td class="mono">0.202</td><td class="mono">0.200</td><td class="mono">+0.084</td><td class="mono">0.516</td><td class="mono">+0.022</td><td class="mono">1.000</td><td class="mono">0.001</td><td><span class="tag weak">C</span></td></tr>
+    <tr><td><strong>M10_max_blind_retry</strong></td><td>165</td><td class="mono">2.04</td><td class="mono">14.0</td><td class="mono">53.7</td><td class="mono">3.6e-05</td><td class="mono" style="background:#f5f3ff">0.332</td><td class="mono">+0.105</td><td class="mono">0.181</td><td class="mono">+0.116</td><td class="mono">0.501</td><td class="mono">0.001</td><td><span class="tag medium">B</span></td></tr>
+    <tr style="color:var(--gray-500)"><td>M15_repeated_view_rate</td><td>165</td><td class="mono">0.0</td><td class="mono">0.0</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">+0.200</td><td class="mono">0.233</td><td class="mono">0.000</td><td><span class="tag dead">废</span></td></tr>
+    <tr><td><strong>M93_retry_improved</strong></td><td>108</td><td class="mono">0.209</td><td class="mono">0.324</td><td class="mono">17.0</td><td class="mono">0.386</td><td class="mono">0.162</td><td class="mono" style="background:#f5f3ff">+0.568</td><td class="mono">1.5e-10</td><td class="mono">+0.177</td><td class="mono">0.349</td><td class="mono">0.004</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td><strong>M93_score_delta</strong></td><td>108</td><td class="mono">1.56</td><td class="mono">2.96</td><td class="mono">14.6</td><td class="mono">0.555</td><td class="mono">0.139</td><td class="mono" style="background:#f5f3ff">+0.554</td><td class="mono">5.1e-10</td><td class="mono">+0.177</td><td class="mono">0.349</td><td class="mono">0.005</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td><strong>M23_effective_subtask_rate</strong></td><td>165</td><td class="mono">0.294</td><td class="mono">0.334</td><td class="mono">45.8</td><td class="mono">5.3e-04</td><td class="mono" style="background:#f5f3ff">0.283</td><td class="mono" style="background:#f5f3ff;font-weight:700">+0.878</td><td class="mono">5.8e-54</td><td class="mono" style="background:#f5f3ff">+0.568</td><td class="mono">0.000</td><td class="mono">0.696</td><td><span class="tag strong">S</span></td></tr>
+    <tr><td><strong>M96_budget_utilization</strong></td><td>165</td><td class="mono">0.781</td><td class="mono">0.183</td><td class="mono">66.0</td><td class="mono">4.1e-07</td><td class="mono" style="background:#f5f3ff">0.408</td><td class="mono">−0.083</td><td class="mono">0.288</td><td class="mono">−0.137</td><td class="mono">0.422</td><td class="mono">0.021</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td><strong>M74_action_entropy</strong></td><td>165</td><td class="mono">0.583</td><td class="mono">0.737</td><td class="mono">100.1</td><td class="mono">5.1e-13</td><td class="mono" style="background:#f5f3ff">0.618</td><td class="mono">+0.182</td><td class="mono">0.019</td><td class="mono">+0.190</td><td class="mono">0.260</td><td class="mono">0.002</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td>M57_post_fix_verify_rate</td><td style="color:var(--orange)">61</td><td class="mono">0.832</td><td class="mono">0.324</td><td class="mono">3.8</td><td class="mono">0.926</td><td class="mono">0.063</td><td class="mono">−0.189</td><td class="mono">0.144</td><td class="mono">−0.156</td><td class="mono">0.601</td><td class="mono">0.001</td><td><span class="tag weak">C</span></td></tr>
+    <tr><td><strong>M12_files_created</strong></td><td>165</td><td class="mono">1.10</td><td class="mono">3.31</td><td class="mono">66.2</td><td class="mono">3.9e-07</td><td class="mono" style="background:#f5f3ff">0.409</td><td class="mono">+0.038</td><td class="mono">0.629</td><td class="mono">+0.126</td><td class="mono">0.461</td><td class="mono">0.001</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td>M12_resource_reclaim_rate</td><td style="color:var(--orange)">29</td><td class="mono">7.78</td><td class="mono">24.8</td><td class="mono">8.6</td><td class="mono">0.200</td><td class="mono">0.329</td><td class="mono" style="background:#f5f3ff">+0.419</td><td class="mono">0.024</td><td class="mono">+0.143</td><td class="mono">0.773</td><td class="mono">—</td><td><span class="tag weak">数据不足</span></td></tr>
+    <tr><td>M14_stuck_block_count</td><td>165</td><td class="mono">0.170</td><td class="mono">0.599</td><td class="mono">28.9</td><td class="mono">0.067</td><td class="mono">0.179</td><td class="mono">+0.059</td><td class="mono">0.449</td><td class="mono">+0.242</td><td class="mono">0.146</td><td class="mono">0.000</td><td><span class="tag weak">C</span></td></tr>
+    <tr><td><strong>M71_score_degradation</strong></td><td>145</td><td class="mono">1.01</td><td class="mono">0.875</td><td class="mono">73.1</td><td class="mono">1.4e-08</td><td class="mono" style="background:#f5f3ff">0.515</td><td class="mono" style="background:#f5f3ff">+0.394</td><td class="mono">9.3e-07</td><td class="mono">+0.298</td><td class="mono">0.080</td><td class="mono">0.037</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td><strong>M71_degradation_rate</strong></td><td>145</td><td class="mono">0.285</td><td class="mono">0.266</td><td class="mono">59.6</td><td class="mono">2.4e-06</td><td class="mono" style="background:#f5f3ff">0.420</td><td class="mono" style="background:#f5f3ff">+0.331</td><td class="mono">4.8e-05</td><td class="mono">+0.252</td><td class="mono">0.143</td><td class="mono">0.043</td><td><span class="tag strong">A</span></td></tr>
+    <tr style="color:var(--gray-500)"><td>M43_time_per_point</td><td>0</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td><span class="tag dead">无数据</span></td></tr>
+    <tr><td><strong>M24_chars_per_point</strong></td><td>112</td><td class="mono">5821</td><td class="mono">8600</td><td class="mono">72.1</td><td class="mono">4.4e-09</td><td class="mono" style="background:#f5f3ff">0.661</td><td class="mono" style="background:#f5f3ff;color:var(--red)">−0.342</td><td class="mono">2.2e-04</td><td class="mono">+0.338</td><td class="mono">0.063</td><td class="mono">0.034</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td><strong>AUX_output_chars</strong></td><td>165</td><td class="mono">85.8K</td><td class="mono">127K</td><td class="mono">113.6</td><td class="mono">1.7e-15</td><td class="mono" style="background:#f5f3ff;font-weight:700">0.702</td><td class="mono">+0.014</td><td class="mono">0.857</td><td class="mono">+0.263</td><td class="mono">0.113</td><td class="mono">0.006</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td><strong>AUX_total_attempts</strong></td><td>165</td><td class="mono">6.78</td><td class="mono">3.01</td><td class="mono">96.9</td><td class="mono">1.9e-12</td><td class="mono" style="background:#f5f3ff">0.598</td><td class="mono">+0.081</td><td class="mono">0.301</td><td class="mono">−0.095</td><td class="mono">0.586</td><td class="mono">0.036</td><td><span class="tag medium">B</span></td></tr>
+  </table>
+  </div>
+
+  <div class="insight">
+    <strong>评级标准：</strong>
+    <strong>S</strong> = 至少一个 benchmark 上 ρ>0.25 或 τ>0.5 或 RF前3；
+    <strong>A</strong> = η²>0.15 且 τ>0.4 或 ρ>0.15；
+    <strong>B</strong> = η²>0.06 且 p<0.05 但相关性一般；
+    <strong>C</strong> = 不显著或与得分无关；
+    <strong>废/冗余</strong> = 全为0、或与另一指标 |ρ|>0.95。
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Section 9b: SWE-bench 全量指标 -->
+<!-- ============================================================ -->
+<div class="section">
+  <h2><span class="num">9b</span> SWE-bench 全量指标数据</h2>
+  <div class="lead">28个指标 × 26,665条轨迹 × 3个数据源。分组方式：按source（框架）和pass_class。无显式得分，不适用 Spearman/RF 分析。</div>
+
+  <h3>SWE-bench 全量指标（28条 × 26,665条轨迹 × 3个数据源）</h3>
+  <div style="overflow-x:auto">
+  <table style="font-size:12px">
+    <tr>
+      <th>指标</th>
+      <th>n</th>
+      <th>均值</th>
+      <th>标准差</th>
+      <th>H统计量<br>(by source)</th>
+      <th>p-value</th>
+      <th>η²(source)</th>
+      <th>H统计量<br>(by pass_class)</th>
+      <th>p-value</th>
+      <th>η²(pass)</th>
+      <th>综合评级</th>
+    </tr>
+    <tr><td><strong>M76_has_planning</strong></td><td>26665</td><td class="mono">0.443</td><td class="mono">0.497</td><td class="mono" style="font-weight:700">26020</td><td class="mono">0</td><td class="mono" style="background:#dcfce7;font-weight:700">0.9759</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td><span class="tag strong">S</span></td></tr>
+    <tr><td><strong>M05_unique_tools</strong></td><td>26665</td><td class="mono">3.528</td><td class="mono">0.727</td><td class="mono">23537</td><td class="mono">0</td><td class="mono" style="background:#dcfce7;font-weight:700">0.8827</td><td class="mono">13.3</td><td class="mono">1.3e-03</td><td class="mono">0.004</td><td><span class="tag strong">S</span></td></tr>
+    <tr><td><strong>M72_think_count</strong></td><td>26665</td><td class="mono">1.139</td><td class="mono">1.502</td><td class="mono">22720</td><td class="mono">0</td><td class="mono" style="background:#dcfce7;font-weight:700">0.8521</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td><span class="tag strong">S</span></td></tr>
+    <tr><td><strong>M05_tool_reuse_rate</strong></td><td>26665</td><td class="mono">26.46</td><td class="mono">10.85</td><td class="mono">11454</td><td class="mono">0</td><td class="mono" style="background:#dcfce7">0.4296</td><td class="mono">92.9</td><td class="mono">6.7e-21</td><td class="mono">0.030</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td><strong>M74_action_entropy</strong></td><td>26665</td><td class="mono">1.123</td><td class="mono">0.170</td><td class="mono">8468</td><td class="mono">0</td><td class="mono" style="background:#dcfce7">0.3176</td><td class="mono">15.3</td><td class="mono">4.8e-04</td><td class="mono">0.005</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td><strong>AUX_bash_calls</strong></td><td>26665</td><td class="mono">56.36</td><td class="mono">23.82</td><td class="mono">7100</td><td class="mono">0</td><td class="mono" style="background:#dcfce7">0.2663</td><td class="mono">33.2</td><td class="mono">6.3e-08</td><td class="mono">0.011</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td><strong>M02_tool_call_count</strong></td><td>26665</td><td class="mono">90.03</td><td class="mono">30.02</td><td class="mono">6294</td><td class="mono">0</td><td class="mono" style="background:#dcfce7">0.2361</td><td class="mono">100.8</td><td class="mono">1.3e-22</td><td class="mono">0.033</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td><strong>AUX_assistant_turns</strong></td><td>26665</td><td class="mono">90.04</td><td class="mono">30.02</td><td class="mono">6282</td><td class="mono">0</td><td class="mono" style="background:#dcfce7">0.2356</td><td class="mono">100.4</td><td class="mono">1.6e-22</td><td class="mono">0.033</td><td><span class="tag dead">冗余(=M02)</span></td></tr>
+    <tr><td>AUX_observation_chars</td><td>26665</td><td class="mono">155K</td><td class="mono">58K</td><td class="mono">3695</td><td class="mono">0</td><td class="mono">0.1386</td><td class="mono">55.0</td><td class="mono">1.1e-12</td><td class="mono">0.018</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td>AUX_total_chars</td><td>26665</td><td class="mono">160K</td><td class="mono">59K</td><td class="mono">3546</td><td class="mono">0</td><td class="mono">0.1330</td><td class="mono">45.6</td><td class="mono">1.3e-10</td><td class="mono">0.015</td><td><span class="tag dead">冗余(≈obs)</span></td></tr>
+    <tr><td><strong>M55_files_touched</strong></td><td>26665</td><td class="mono">13.94</td><td class="mono">4.81</td><td class="mono">3230</td><td class="mono">0</td><td class="mono">0.1211</td><td class="mono" style="font-weight:700">618.8</td><td class="mono">4.3e-135</td><td class="mono" style="background:#dcfce7">0.200</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td>M16_search_vs_open_ratio</td><td>26665</td><td class="mono">0.338</td><td class="mono">0.110</td><td class="mono">3193</td><td class="mono">0</td><td class="mono">0.1198</td><td class="mono">5.0</td><td class="mono">0.084</td><td class="mono">0.002</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td>M07_read_before_edit_rate</td><td>26596</td><td class="mono">6.258</td><td class="mono">8.642</td><td class="mono">3129</td><td class="mono">0</td><td class="mono">0.1176</td><td class="mono" style="font-weight:700">1441</td><td class="mono">0</td><td class="mono" style="background:#dcfce7;font-weight:700">0.469</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td>M54_explore_edit_ratio</td><td>26596</td><td class="mono">6.258</td><td class="mono">8.642</td><td class="mono">3129</td><td class="mono">0</td><td class="mono">0.1176</td><td class="mono">1441</td><td class="mono">0</td><td class="mono">0.469</td><td><span class="tag dead">冗余(=M07)</span></td></tr>
+    <tr><td>M53_code_locate_efficiency</td><td>26663</td><td class="mono">0.235</td><td class="mono">0.130</td><td class="mono">3095</td><td class="mono">0</td><td class="mono">0.1161</td><td class="mono" style="font-weight:700">1456</td><td class="mono">0</td><td class="mono" style="background:#dcfce7;font-weight:700">0.472</td><td><span class="tag strong">A</span></td></tr>
+    <tr><td>AUX_assistant_chars</td><td>26665</td><td class="mono">4774</td><td class="mono">8163</td><td class="mono">2920</td><td class="mono">0</td><td class="mono">0.1095</td><td class="mono">9.2</td><td class="mono">0.010</td><td class="mono">0.003</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td>AUX_edit_calls</td><td>26665</td><td class="mono">30.22</td><td class="mono">11.61</td><td class="mono">2139</td><td class="mono">0</td><td class="mono">0.0802</td><td class="mono" style="font-weight:700">557.5</td><td class="mono">8.7e-122</td><td class="mono" style="background:#dcfce7">0.181</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td><strong>M57_post_fix_verify_rate</strong></td><td>26596</td><td class="mono">0.702</td><td class="mono">0.213</td><td class="mono">1997</td><td class="mono">0</td><td class="mono">0.0751</td><td class="mono">173.5</td><td class="mono">2.2e-38</td><td class="mono">0.056</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td><strong>M23_effective_step_rate</strong></td><td>26665</td><td class="mono">0.826</td><td class="mono">0.108</td><td class="mono">1326</td><td class="mono">0</td><td class="mono">0.0497</td><td class="mono">2.5</td><td class="mono">0.291</td><td class="mono">0.001</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td>AUX_str_replace_calls</td><td>26665</td><td class="mono">9.104</td><td class="mono">6.382</td><td class="mono">477.2</td><td class="mono">2.4e-104</td><td class="mono">0.0179</td><td class="mono" style="font-weight:700">810.2</td><td class="mono">1.2e-176</td><td class="mono" style="background:#dcfce7">0.262</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td>AUX_view_calls</td><td>26665</td><td class="mono">14.93</td><td class="mono">6.338</td><td class="mono">1216</td><td class="mono">8.8e-265</td><td class="mono">0.0456</td><td class="mono">11.9</td><td class="mono">2.6e-03</td><td class="mono">0.004</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td>M15_repeated_view_rate</td><td>26665</td><td class="mono">0.436</td><td class="mono">0.203</td><td class="mono">1188</td><td class="mono">8.4e-259</td><td class="mono">0.0446</td><td class="mono">8.4</td><td class="mono">0.015</td><td class="mono">0.003</td><td><span class="tag weak">C</span></td></tr>
+    <tr><td>M21_error_count</td><td>26665</td><td class="mono">131.5</td><td class="mono">141.2</td><td class="mono">602.4</td><td class="mono">1.6e-131</td><td class="mono">0.0226</td><td class="mono">40.1</td><td class="mono">1.9e-09</td><td class="mono">0.013</td><td><span class="tag weak">C</span></td></tr>
+    <tr><td>M10_max_blind_retry</td><td>26665</td><td class="mono">1.839</td><td class="mono">1.326</td><td class="mono">512.1</td><td class="mono">6.4e-112</td><td class="mono">0.0192</td><td class="mono" style="font-weight:700">726.7</td><td class="mono">1.6e-158</td><td class="mono" style="background:#dcfce7">0.235</td><td><span class="tag medium">B</span></td></tr>
+    <tr><td>M21_error_rate</td><td>26665</td><td class="mono">1.552</td><td class="mono">1.744</td><td class="mono">433.6</td><td class="mono">7.0e-95</td><td class="mono">0.0163</td><td class="mono">1.2</td><td class="mono">0.556</td><td class="mono">0.000</td><td><span class="tag dead">冗余(≈count)</span></td></tr>
+    <tr><td>M14_stuck_block_count</td><td>26665</td><td class="mono">0.872</td><td class="mono">1.368</td><td class="mono">257.0</td><td class="mono">1.5e-56</td><td class="mono">0.0096</td><td class="mono">7.1</td><td class="mono">0.029</td><td class="mono">0.002</td><td><span class="tag weak">C</span></td></tr>
+    <tr style="color:var(--gray-500)"><td>M12_undo_count</td><td>26665</td><td class="mono">0.006</td><td class="mono">0.081</td><td class="mono">2.4</td><td class="mono">0.304</td><td class="mono">0.000</td><td class="mono">23.2</td><td class="mono">9.2e-06</td><td class="mono">0.008</td><td><span class="tag dead">废(几乎全0)</span></td></tr>
+    <tr style="color:var(--gray-500)"><td>M12_undo_rate</td><td>26665</td><td class="mono">0.001</td><td class="mono">0.009</td><td class="mono">2.4</td><td class="mono">0.299</td><td class="mono">0.000</td><td class="mono">23.3</td><td class="mono">8.9e-06</td><td class="mono">0.008</td><td><span class="tag dead">废(几乎全0)</span></td></tr>
+  </table>
+  </div>
+
+  <h3>SWE-bench 高冗余指标对（|Spearman ρ| &gt; 0.8, 共15对）</h3>
+  <div style="overflow-x:auto">
+  <table style="font-size:12px">
+    <tr><th>指标A</th><th>指标B</th><th>Spearman ρ</th><th>建议</th></tr>
+    <tr><td>M07_read_before_edit_rate</td><td>M54_explore_edit_ratio</td><td class="mono">+1.000</td><td style="color:var(--red)">完全相同，删一个</td></tr>
+    <tr><td>M02_tool_call_count</td><td>AUX_assistant_turns</td><td class="mono">+1.000</td><td style="color:var(--red)">完全相同，删一个</td></tr>
+    <tr><td>M12_undo_count</td><td>M12_undo_rate</td><td class="mono">+1.000</td><td style="color:var(--red)">完全相同，删一个</td></tr>
+    <tr><td>M07_read_before_edit_rate</td><td>M53_code_locate_efficiency</td><td class="mono">−0.999</td><td style="color:var(--red)">互为倒数</td></tr>
+    <tr><td>AUX_total_chars</td><td>AUX_observation_chars</td><td class="mono">+0.989</td><td style="color:var(--orange)">observation占绝大部分</td></tr>
+    <tr><td>M05_unique_tools</td><td>M76_has_planning</td><td class="mono">+0.950</td><td style="color:var(--orange)">think工具的使用决定了两者</td></tr>
+    <tr><td>M72_think_count</td><td>M76_has_planning</td><td class="mono">+0.934</td><td style="color:var(--red)">强冗余</td></tr>
+    <tr><td>M21_error_count</td><td>M21_error_rate</td><td class="mono">+0.892</td><td style="color:var(--orange)">保留rate更有意义</td></tr>
+  </table>
+  </div>
+
+  <h3>SWE-bench 按 pass_class 分组 (difficult_cls 子集)</h3>
+  <p>在 difficult_cls 数据中（3,090条轨迹），M07/M53/M54 按 pass_class 的 η² 高达 0.47——<strong>这是所有三个 benchmark 中按"好坏分组"区分度最高的指标</strong>。这意味着在SWE代码修复任务中，<strong>读代码与写代码的比例</strong>是最强的行为信号。</p>
+  <table>
+    <tr>
+      <th>指标</th>
+      <th>pass0 (n=59)<br>均值</th>
+      <th>pass1 (n=2,298)<br>均值</th>
+      <th>unknown (n=733)<br>均值</th>
+      <th>η²(pass)</th>
+    </tr>
+    <tr><td><strong>M02_tool_call_count</strong></td><td class="mono">53.7</td><td class="mono">49.1</td><td class="mono">41.6</td><td class="mono">0.033</td></tr>
+    <tr><td><strong>M21_error_rate</strong></td><td class="mono">2.11</td><td class="mono">2.12</td><td class="mono">2.04</td><td class="mono">0.000</td></tr>
+    <tr><td><strong>M23_effective_step_rate</strong></td><td class="mono">0.757</td><td class="mono">0.759</td><td class="mono">0.764</td><td class="mono">0.001</td></tr>
+    <tr><td><strong>M55_files_touched</strong></td><td class="mono">7.75</td><td class="mono" style="font-weight:700">11.26</td><td class="mono">7.20</td><td class="mono" style="background:#dcfce7">0.200</td></tr>
+    <tr><td><strong>M57_post_fix_verify_rate</strong></td><td class="mono" style="color:var(--red)">0.600</td><td class="mono">0.748</td><td class="mono" style="font-weight:700;color:var(--green)">0.823</td><td class="mono">0.056</td></tr>
+    <tr><td><strong>M14_stuck_block_count</strong></td><td class="mono">0.983</td><td class="mono">0.708</td><td class="mono">0.767</td><td class="mono">0.002</td></tr>
+  </table>
+
+  <div class="insight">
+    <strong>评级标准（SWE-bench）：</strong>
+    由于SWE-bench无显式得分，评级主要依据 η²(source) 和 η²(pass_class)：
+    <strong>S</strong> = η²(source)>0.5 且 p=0；
+    <strong>A</strong> = η²(source)>0.1 或 η²(pass)>0.1；
+    <strong>B</strong> = η²>0.01 且 p<0.05；
+    <strong>C</strong> = η²<0.01；
+    <strong>废/冗余</strong> = 不显著 或 与另一指标 |ρ|>0.9。
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="section" style="background: var(--gray-100);">
+  <h2><span class="num">10</span> 附录：生成的文件清单</h2>
+  <table>
+    <tr><th>文件</th><th>说明</th><th>行/列</th></tr>
+    <tr><td class="mono">metrics_results_424.csv</td><td>InnovatorBench 原始指标数据</td><td>655行 × 50列</td></tr>
+    <tr><td class="mono">metrics_results_424.json</td><td>同上 JSON 格式</td><td>—</td></tr>
+    <tr><td class="mono">discrimination_report_424.txt</td><td>InnovatorBench 5阶段区分度报告</td><td>—</td></tr>
+    <tr><td class="mono">discrimination_detail_424.csv</td><td>InnovatorBench 每个指标的统计量</td><td>34行 × 11列</td></tr>
+    <tr><td class="mono">agency_results_424.csv</td><td>AgencyBench 原始指标数据</td><td>165行 × 40列</td></tr>
+    <tr><td class="mono">agency_results_424.json</td><td>同上 JSON 格式</td><td>—</td></tr>
+    <tr><td class="mono">agency_discrimination_report_424.txt</td><td>AgencyBench 5阶段区分度报告</td><td>—</td></tr>
+    <tr><td class="mono">agency_discrimination_detail_424.csv</td><td>AgencyBench 每个指标的统计量</td><td>30行 × 11列</td></tr>
+    <tr style="background:var(--green-light)"><td class="mono"><strong>swe_results_424.csv</strong></td><td><strong>SWE-bench 原始指标数据</strong></td><td><strong>26,665行 × 47列</strong></td></tr>
+    <tr style="background:var(--green-light)"><td class="mono"><strong>swe_results_424.json</strong></td><td><strong>同上 JSON 格式</strong></td><td>—</td></tr>
+    <tr style="background:var(--green-light)"><td class="mono"><strong>swe_discrimination_report_424.txt</strong></td><td><strong>SWE-bench 区分度报告</strong></td><td>—</td></tr>
+    <tr style="background:var(--green-light)"><td class="mono"><strong>swe_discrimination_detail_424.csv</strong></td><td><strong>SWE-bench 每个指标的统计量</strong></td><td><strong>28行 × 12列</strong></td></tr>
+    <tr><td class="mono">compute_metrics.py</td><td>InnovatorBench 指标计算脚本</td><td>~400行</td></tr>
+    <tr><td class="mono">compute_metrics_agency.py</td><td>AgencyBench 指标计算脚本</td><td>~340行</td></tr>
+    <tr><td class="mono">compute_metrics_swe.py</td><td>SWE-bench 指标计算脚本</td><td>~480行</td></tr>
+    <tr><td class="mono">analyze_discrimination.py</td><td>InnovatorBench 区分度分析脚本</td><td>~500行</td></tr>
+    <tr><td class="mono">analyze_discrimination_agency.py</td><td>AgencyBench 区分度分析脚本</td><td>~350行</td></tr>
+    <tr><td class="mono">analyze_discrimination_swe.py</td><td>SWE-bench 区分度分析脚本</td><td>~390行</td></tr>
+    <tr style="background:var(--orange-light)"><td class="mono"><strong>Discrimination_Report_Combined.html</strong></td><td><strong>本报告（三基准联合分析）</strong></td><td>—</td></tr>
+  </table>
+</div>
+
+</div><!-- container -->
+
+<div class="footer">
+  Agent·Eval v4 · Metric Discrimination Analysis · Generated 2026-04-25 · 3 Benchmarks · 27,485 Trajectories
+</div>
+
+</body>
+</html>
