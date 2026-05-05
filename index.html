@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InnovatorBench Agent Eval - Fine-Grained Evaluation Framework</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --navy: #0f2440;
+            --accent: #2563eb;
+            --gold: #d97706;
+            --green: #059669;
+            --bg: #fafbfc;
+            --card-bg: #ffffff;
+            --border: #e5e7eb;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --red: #dc2626;
+            --purple: #7c3aed;
+            --radius: 12px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+        }
+
+        .navbar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--navy);
+            text-decoration: none;
+        }
+
+        .navbar-brand span {
+            color: var(--accent);
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 0.25rem;
+            list-style: none;
+        }
+
+        .navbar-links a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .navbar-links a:hover {
+            color: var(--accent);
+            background: rgba(37, 99, 235, 0.06);
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .nav-toggle span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background: var(--navy);
+            margin: 4px 0;
+            transition: 0.3s;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--navy) 0%, #1e3a5f 50%, #0d4a8a 100%);
+            padding: 6rem 2rem 5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at 30% 50%, rgba(37,99,235,0.15) 0%, transparent 60%),
+                        radial-gradient(ellipse at 70% 80%, rgba(217,119,6,0.08) 0%, transparent 50%);
+        }
+
+        .hero-content {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 .dot {
+            color: var(--gold);
+        }
+
+        .hero .subtitle {
+            font-size: 1.25rem;
+            color: rgba(255,255,255,0.8);
+            font-weight: 400;
+            margin-bottom: 2.5rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .hero-stat {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            min-width: 140px;
+            backdrop-filter: blur(4px);
+        }
+
+        .hero-stat .num {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .hero-stat .label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.65);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.25rem;
+        }
+
+        /* Sections */
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-light);
+            font-size: 1.05rem;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        /* Overview Cards */
+        .overview-desc {
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            text-align: center;
+            font-size: 1.05rem;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+
+        .dim-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .dim-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: all 0.2s;
+            cursor: default;
+        }
+
+        .dim-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .dim-card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .dim-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .dim-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .dim-card h3 span {
+            font-weight: 400;
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .dim-card .metrics-list {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            background: var(--bg);
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+        }
+
+        /* Metric Catalog */
+        .catalog-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .catalog-filter {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.4rem 0.9rem;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: var(--card-bg);
+            color: var(--text-light);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(37,99,235,0.05);
+        }
+
+        .metric-table-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        thead {
+            background: var(--bg);
+        }
+
+        th {
+            padding: 0.875rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--navy);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            color: var(--accent);
+        }
+
+        th .sort-arrow {
+            margin-left: 0.25rem;
+            font-size: 0.7rem;
+            opacity: 0.4;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(37,99,235,0.02);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .badge-s { background: rgba(217,119,6,0.12); color: var(--gold); }
+        .badge-a { background: rgba(5,150,105,0.1); color: var(--green); }
+        .badge-b { background: rgba(37,99,235,0.1); color: var(--accent); }
+        .badge-c { background: rgba(107,114,128,0.1); color: var(--text-light); }
+        .badge-d { background: rgba(220,38,38,0.1); color: var(--red); }
+
+        .metric-row {
+            cursor: pointer;
+        }
+
+        .metric-detail {
+            display: none;
+            background: var(--bg);
+        }
+
+        .metric-detail td {
+            padding: 1rem 1.5rem;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            line-height: 1.7;
+        }
+
+        .metric-detail.show {
+            display: table-row;
+        }
+
+        /* Leaderboard */
+        .leaderboard-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            box-shadow: var(--shadow);
+        }
+
+        .leaderboard-wrap table th {
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            z-index: 10;
+        }
+
+        .rank-cell {
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--navy);
+        }
+
+        .model-name {
+            font-weight: 600;
+            color: var(--navy);
+            white-space: nowrap;
+        }
+
+        .score-cell {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+        }
+
+        .top-model td {
+            background: rgba(217,119,6,0.04);
+        }
+
+        /* Chart Section */
+        .chart-container {
+            max-width: 600px;
+            margin: 2rem auto 0;
+            padding: 1.5rem;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        /* Automated Metrics */
+        .auto-metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .auto-metric-list {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .auto-metric-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .auto-metric-item:last-child {
+            border-bottom: none;
+        }
+
+        .auto-metric-rank {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            min-width: 2rem;
+        }
+
+        .auto-metric-name {
+            flex: 1;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 0 0.75rem;
+        }
+
+        .auto-metric-bar-wrap {
+            width: 120px;
+            height: 6px;
+            background: var(--bg);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-right: 0.75rem;
+        }
+
+        .auto-metric-bar {
+            height: 100%;
+            border-radius: 3px;
+            background: var(--accent);
+        }
+
+        .auto-metric-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--navy);
+            font-weight: 600;
+            min-width: 4rem;
+            text-align: right;
+        }
+
+        .rf-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .rf-box h3 {
+            font-size: 1.1rem;
+            color: var(--navy);
+            margin-bottom: 1rem;
+        }
+
+        .rf-score {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--green);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .rf-label {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .rf-feature {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.875rem;
+            color: var(--text);
+        }
+
+        .rf-feature code {
+            background: rgba(37,99,235,0.08);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            color: var(--accent);
+        }
+
+        /* Case Studies */
+        .case-cards {
+            display: grid;
+            gap: 1.25rem;
+        }
+
+        .case-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+
+        .case-card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .case-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .case-card-header:hover {
+            background: var(--bg);
+        }
+
+        .case-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .case-score {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .case-score-good { background: rgba(5,150,105,0.1); color: var(--green); }
+        .case-score-bad { background: rgba(220,38,38,0.1); color: var(--red); }
+
+        .case-card-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .case-card-header .case-task {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .expand-icon {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            transition: transform 0.3s;
+        }
+
+        .case-card.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .case-card-body {
+            display: none;
+            padding: 0 1.5rem 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .case-card.expanded .case-card-body {
+            display: block;
+        }
+
+        .trajectory-flow {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+            margin: 1rem 0;
+        }
+
+        .traj-step {
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+        }
+
+        .traj-think { background: rgba(124,58,237,0.1); color: var(--purple); }
+        .traj-action { background: rgba(37,99,235,0.1); color: var(--accent); }
+        .traj-error { background: rgba(220,38,38,0.1); color: var(--red); }
+        .traj-success { background: rgba(5,150,105,0.1); color: var(--green); }
+        .traj-loop { background: rgba(220,38,38,0.08); color: var(--red); border: 1px dashed var(--red); }
+
+        .traj-arrow {
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+
+        .case-desc {
+            font-size: 0.9rem;
+            color: var(--text);
+            line-height: 1.7;
+            margin-top: 1rem;
+        }
+
+        /* Rubric Showcase */
+        .rubric-cards {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .rubric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .rubric-card-header {
+            padding: 1.25rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .rubric-card-header:hover {
+            background: var(--bg);
+        }
+
+        .rubric-card-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .rubric-card-header h3 code {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+        }
+
+        .rubric-body {
+            display: none;
+            padding: 0 1.5rem 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .rubric-card.expanded .rubric-body {
+            display: block;
+        }
+
+        .rubric-scale {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .rubric-level {
+            text-align: center;
+            padding: 0.75rem 0.5rem;
+            border-radius: 8px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+        }
+
+        .rubric-level-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--navy);
+        }
+
+        .rubric-level-desc {
+            font-size: 0.72rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+
+        .rubric-checks {
+            margin-top: 1rem;
+            list-style: none;
+        }
+
+        .rubric-checks li {
+            padding: 0.4rem 0;
+            font-size: 0.875rem;
+            color: var(--text);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .rubric-checks li::before {
+            content: '\2713';
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        /* Progress Section */
+        .progress-list {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .progress-item:last-child {
+            border-bottom: none;
+        }
+
+        .progress-icon {
+            font-size: 1.1rem;
+            min-width: 1.5rem;
+            text-align: center;
+            padding-top: 0.1rem;
+        }
+
+        .progress-text {
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .progress-text strong {
+            color: var(--navy);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--navy);
+            color: rgba(255,255,255,0.7);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .footer a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            transition: border-color 0.2s;
+        }
+
+        .footer a:hover {
+            border-color: rgba(255,255,255,0.8);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-brand {
+            font-size: 0.85rem;
+            margin-top: 1.5rem;
+            opacity: 0.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar-links {
+                display: none;
+                position: absolute;
+                top: 64px;
+                left: 0;
+                right: 0;
+                background: #fff;
+                flex-direction: column;
+                padding: 1rem;
+                border-bottom: 1px solid var(--border);
+                box-shadow: var(--shadow-lg);
+            }
+
+            .navbar-links.show {
+                display: flex;
+            }
+
+            .nav-toggle {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero-stats {
+                gap: 0.75rem;
+            }
+
+            .hero-stat {
+                min-width: 110px;
+                padding: 0.75rem 1rem;
+            }
+
+            .dim-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .auto-metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rubric-scale {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .section {
+                padding: 3rem 1rem;
+            }
+        }
+
+        /* Utility */
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .text-accent { color: var(--accent); }
+        .text-gold { color: var(--gold); }
+        .text-green { color: var(--green); }
+
+        .separator {
+            width: 60px;
+            height: 3px;
+            background: var(--accent);
+            margin: 1rem auto;
+            border-radius: 2px;
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            z-index: 999;
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Scroll Progress Indicator -->
+<div class="scroll-indicator" id="scrollIndicator"></div>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="navbar-inner">
+        <a href="#hero" class="navbar-brand">InnovatorBench <span>Agent&middot;Eval</span></a>
+        <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
+        <ul class="navbar-links" id="navLinks">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#catalog">Metrics</a></li>
+            <li><a href="#leaderboard">Leaderboard</a></li>
+            <li><a href="#automated">Automated</a></li>
+            <li><a href="#cases">Cases</a></li>
+            <li><a href="#rubrics">Rubrics</a></li>
+            <li><a href="#progress">Progress</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero" id="hero">
+    <div class="hero-content">
+        <h1>InnovatorBench Agent<span class="dot">&middot;</span>Eval</h1>
+        <p class="subtitle">Fine-Grained Evaluation Framework for AI Research Agents</p>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="num">24</div>
+                <div class="label">Judge Metrics</div>
+            </div>
+            <div class="hero-stat">
+                <div class="num">660</div>
+                <div class="label">Trajectories</div>
+            </div>
+            <div class="hero-stat">
+                <div class="num">15</div>
+                <div class="label">Models</div>
+            </div>
+            <div class="hero-stat">
+                <div class="num">15,720</div>
+                <div class="label">Evaluations</div>
+            </div>
+            <div class="hero-stat">
+                <div class="num">34</div>
+                <div class="label">Automated Metrics</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Overview Section -->
+<section class="section" id="overview">
+    <div class="section-header">
+        <h2>Evaluation Framework</h2>
+        <div class="separator"></div>
+        <p>Multi-dimensional assessment of AI agent behavior on complex research tasks</p>
+    </div>
+
+    <p class="overview-desc">
+        This comprehensive evaluation framework goes beyond pass/fail to provide multi-dimensional assessment of AI agent behavior on complex research tasks. We evaluate agents across 6 orthogonal dimensions using 24 carefully calibrated judge metrics and 34 automated metrics.
+    </p>
+
+    <div class="dim-grid">
+        <div class="dim-card">
+            <div class="dim-card-header">
+                <div class="dim-icon" style="background:rgba(217,119,6,0.1);">&#9733;</div>
+                <h3>Overall Quality <span>/ &#24635;&#20307;&#36136;&#37327;</span></h3>
+            </div>
+            <div class="metrics-list">J32 Traj-Satisfy</div>
+        </div>
+        <div class="dim-card">
+            <div class="dim-card-header">
+                <div class="dim-icon" style="background:rgba(220,38,38,0.1);">&#9881;</div>
+                <h3>Robustness <span>/ &#40065;&#26834;&#24615;</span></h3>
+            </div>
+            <div class="metrics-list">J06, J39, J40, J41, J48, J49</div>
+        </div>
+        <div class="dim-card">
+            <div class="dim-card-header">
+                <div class="dim-icon" style="background:rgba(124,58,237,0.1);">&#9889;</div>
+                <h3>Reasoning <span>/ &#25512;&#29702;&#33021;&#21147;</span></h3>
+            </div>
+            <div class="metrics-list">J35, J50, J63, J64, J70, J73</div>
+        </div>
+        <div class="dim-card">
+            <div class="dim-card-header">
+                <div class="dim-icon" style="background:rgba(5,150,105,0.1);">&#9203;</div>
+                <h3>Efficiency <span>/ &#25928;&#29575;</span></h3>
+            </div>
+            <div class="metrics-list">J25, J30, J37, J95</div>
+        </div>
+        <div class="dim-card">
+            <div class="dim-card-header">
+                <div class="dim-icon" style="background:rgba(37,99,235,0.1);">&#9878;</div>
+                <h3>Behavioral Quality <span>/ &#34892;&#20026;&#36136;&#37327;</span></h3>
+            </div>
+            <div class="metrics-list">J13, J42, J68</div>
+        </div>
+        <div class="dim-card">
+            <div class="dim-card-header">
+                <div class="dim-icon" style="background:rgba(16,185,129,0.1);">&#9993;</div>
+                <h3>Interaction <span>/ &#20132;&#20114;&#33021;&#21147;</span></h3>
+            </div>
+            <div class="metrics-list">J60, J61, J65, J66</div>
+        </div>
+    </div>
+</section>
+
+<!-- Metric Catalog Section -->
+<section class="section" id="catalog" style="background: #fff; max-width: none; padding-left: 2rem; padding-right: 2rem;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div class="section-header">
+            <h2>Metric Catalog</h2>
+            <div class="separator"></div>
+            <p>24 judge metrics ranked by statistical quality. Click a row to see rubric details.</p>
+        </div>
+
+        <div class="catalog-controls">
+            <div class="catalog-filter">
+                <button class="filter-btn active" onclick="filterMetrics('all')">All</button>
+                <button class="filter-btn" onclick="filterMetrics('S')">S-Tier</button>
+                <button class="filter-btn" onclick="filterMetrics('A')">A-Tier</button>
+                <button class="filter-btn" onclick="filterMetrics('B')">B-Tier</button>
+                <button class="filter-btn" onclick="filterMetrics('C')">C-Tier</button>
+                <button class="filter-btn" onclick="filterMetrics('D')">D-Tier</button>
+            </div>
+        </div>
+
+        <div class="metric-table-wrap">
+            <table id="catalogTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>ID</th>
+                        <th>English Name</th>
+                        <th>Chinese Name</th>
+                        <th>&rho; (eval)</th>
+                        <th>H (model)</th>
+                        <th>Quality</th>
+                        <th>Rating</th>
+                    </tr>
+                </thead>
+                <tbody id="catalogBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Leaderboard Section -->
+<section class="section" id="leaderboard">
+    <div class="section-header">
+        <h2>Model Leaderboard</h2>
+        <div class="separator"></div>
+        <p>Performance comparison across top judge metrics. Click column headers to sort.</p>
+    </div>
+
+    <div class="leaderboard-wrap">
+        <table id="leaderboardTable">
+            <thead>
+                <tr>
+                    <th onclick="sortLeaderboard(0)"># <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(1)">Model <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(2)">Composite <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(3)">J32 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(4)">J06 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(5)">J39 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(6)">J50 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(7)">J70 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(8)">J68 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(9)">J95 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(10)">J37 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(11)">J25 <span class="sort-arrow">&#9650;</span></th>
+                </tr>
+            </thead>
+            <tbody id="leaderboardBody">
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Radar Chart -->
+    <div class="chart-container">
+        <canvas id="radarChart"></canvas>
+    </div>
+</section>
+
+<!-- Automated Metrics Section -->
+<section class="section" id="automated" style="background: #fff; max-width: none; padding-left: 2rem; padding-right: 2rem;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div class="section-header">
+            <h2>Automated Metric Discrimination</h2>
+            <div class="separator"></div>
+            <p>Top automated metrics ranked by statistical discrimination power (eta-squared from Kruskal-Wallis test)</p>
+        </div>
+
+        <div class="auto-metrics-grid">
+            <div class="auto-metric-list" id="autoMetricList">
+            </div>
+            <div class="rf-box">
+                <h3>Random Forest Ensemble</h3>
+                <div class="rf-score">0.8755</div>
+                <div class="rf-label">R&sup2; Score (Cross-Validated)</div>
+                <div class="rf-feature">
+                    Top Feature: <code>M93_score_delta</code><br>
+                    <span style="color:var(--text-light); font-size:0.82rem;">Feature Importance = 0.38</span>
+                </div>
+                <div class="rf-feature">
+                    <span style="font-size:0.82rem; color:var(--text-light);">34 automated metrics predict composite judge scores with high accuracy, validating the framework's structural coherence.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Case Studies Section -->
+<section class="section" id="cases">
+    <div class="section-header">
+        <h2>Case Studies</h2>
+        <div class="separator"></div>
+        <p>Concrete examples from evaluated trajectories. Click to expand.</p>
+    </div>
+
+    <div class="case-cards">
+        <!-- Case 1 -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="case-score case-score-good">4</span>
+                    <div>
+                        <h3>Error Recovery - Good Recovery</h3>
+                        <div class="case-task">Task: NL2SQL Reward Function Design</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    Agent encountered network failure downloading HuggingFace dataset and pivoted to synthetic data generation (1-step recovery). Then <code>ray start</code> failed, so the agent ran <code>ray stop</code> + restart (2-step recovery). Demonstrates resilient problem-solving.
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-think">think</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-action">list_files</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-action">open_file</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-error">download_fail</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-think">think (pivot)</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-success">create_file (synthetic)</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-error">ray_start_fail</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-action">ray stop</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-success">ray start OK</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 2 -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="case-score case-score-bad">1</span>
+                    <div>
+                        <h3>Loop Trap - No Recovery</h3>
+                        <div class="case-task">Task: Search-Augmented RL (Task 16)</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    Agent edited the same 12 lines of <code>qa.py</code> 58 times without testing. Budget exhausted. Final score = 0. This demonstrates the "Error Solidification" anti-pattern where the agent loops without meaningful progress.
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-loop">edit qa.py:12</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-loop">edit qa.py:12</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-loop">edit qa.py:12</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-loop">... x58</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-error">BUDGET EXHAUSTED</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 3 -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="case-score case-score-good">4</span>
+                    <div>
+                        <h3>Good Hypothesis-Verify</h3>
+                        <div class="case-task">Task: Data Cleaning Pipeline</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    Agent demonstrates systematic scientific method: backup data, apply cleaning transformation, validate format, evaluate results, analyze metrics, and adjust strategy based on evidence. Shows strong hypothesis-verify reasoning loop.
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-action">backup_data</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-action">clean_transform</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-think">validate_format</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-action">evaluate</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-think">analyze_results</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-success">adjust_strategy</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-success">final_output</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Rubric Showcase Section -->
+<section class="section" id="rubrics" style="background: #fff; max-width: none; padding-left: 2rem; padding-right: 2rem;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div class="section-header">
+            <h2>Rubric Showcase</h2>
+            <div class="separator"></div>
+            <p>Detailed scoring rubrics for selected judge metrics. Click to expand.</p>
+        </div>
+
+        <div class="rubric-cards">
+            <!-- J06 -->
+            <div class="rubric-card" onclick="toggleRubric(this)">
+                <div class="rubric-card-header">
+                    <h3><code>J06</code> Error Recovery Count / &#38169;&#35823;&#24674;&#22797;</h3>
+                    <span class="expand-icon">&#9660;</span>
+                </div>
+                <div class="rubric-body">
+                    <ul class="rubric-checks">
+                        <li>Evaluates agent resilience when encountering errors during task execution</li>
+                        <li>Checks: Error Detection, Strategy Change, Forward Progress</li>
+                        <li>Measures recovery speed (steps-to-recover) and effectiveness</li>
+                        <li>Penalizes repeated failures at the same point</li>
+                    </ul>
+                    <div class="rubric-scale">
+                        <div class="rubric-level">
+                            <div class="rubric-level-num">1</div>
+                            <div class="rubric-level-desc">No recovery, stuck or crashes</div>
+                        </div>
+                        <div class="rubric-level">
+                            <div class="rubric-level-num">2</div>
+                            <div class="rubric-level-desc">Partial recovery, slow</div>
+                        </div>
+                        <div class="rubric-level">
+                            <div class="rubric-level-num">3</div>
+                            <div class="rubric-level-desc">Adequate recovery, some delay</div>
+                        </div>
+                        <div class="rubric-level">
+                            <div class="rubric-level-num">4</div>
+                            <div class="rubric-level-desc">Good recovery, quick pivot</div>
+                        </div>
+                        <div class="rubric-level">
+                            <div class="rubric-level-num">5</div>
+                            <div class="rubric-level-desc">Excellent, swift &amp; creative</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- J25 -->
+            <div class="rubric-card" onclick="toggleRubric(this)">
+                <div class="rubric-card-header">
+                    <h3><code>J25</code> Effective Action Ratio / &#26377;&#25928;&#21160;&#20316;&#27604;</h3>
+                    <span class="expand-icon">&#9660;</span>
+                </div>
+                <div class="rubric-body">
+                    <ul class="rubric-checks">
+                        <li>Measures trajectory efficiency by classifying each action</li>
+                        <li>Categories: PRODUCTIVE, EXPLORATORY_USEFUL, OVERHEAD_NECESSARY, REDUNDANT, CIRCULAR, FAILED_WASTED</li>
+                        <li>Effective = (PRODUCTIVE + EXPLORATORY_USEFUL + OVERHEAD_NECESSARY) / Total</li>
+                        <li>Penalizes circular and redundant actions heavily</li>
+                    </ul>
+                    <div class="rubric-scale">
+                        <div class="rubric-level">
+                            <div class="rubric-level-num">1</div>
+                            <div class="rubric-level-desc">&lt;35% effective actions</div>
+                        </div>
+                        <div class="rubric-level">
+                            <div class="rubric-level-num">2</div>
+                            <div class="rubric-level-desc">35-50% effective</div>
+                        </div>
+                        <div class="rubric-level">
+                            <div class="rubric-level-num">3</div>
+                            <div class="rubric-level-desc">50-65% effective</div>
+                        </div>
+                        <div class="rubric-level">
+                            <div class="rubric-level-num">4</div>
+                            <div class="rubric-level-desc">65-80% effective</div>
+                        </div>
+                        <div class="rubric-level">
+                            <div class="rubric-level-num">5</div>
+                            <div class="rubric-level-desc">&gt;80% effective</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- J73 -->
+            <div class="rubric-card" onclick="toggleRubric(this)">
+                <div class="rubric-card-header">
+                    <h3><code>J73</code> Dual-Channel Reasoning / &#21452;&#36890;&#36947;&#19968;&#33268;&#24615;</h3>
+                    <span class="expand-icon">&#9660;</span>
+                </div>
+                <div class="rubric-body">
+                    <ul class="rubric-checks">
+                        <li>Detects "says one thing, does another" - divergence between reasoning and action</li>
+                        <li>Types: ALIGNED, MINOR_DRIFT, CONTENT_DIVERGE, DIRECTION_DIVERGE, CONTRADICTION</li>
+                        <li>Compares agent's stated plan/reasoning with actual tool calls and outputs</li>
+                        <li>Severe contradictions indicate hallucination or goal drift</li>
+                    </ul>
+                    <div class="rubric-scale">
+                        <div class="rubric-level">
+                            <div class="rubric-level-num">1</div>
+                            <div class="rubric-level-desc">Severe contradiction</div>
+                        </div>
+                        <div class="rubric-level">
+                            <div class="rubric-level-num">2</div>
+                            <div class="rubric-level-desc">Direction diverge</div>
+                        </div>
+                        <div class="rubric-level">
+                            <div class="rubric-level-num">3</div>
+                            <div class="rubric-level-desc">Content diverge</div>
+                        </div>
+                        <div class="rubric-level">
+                            <div class="rubric-level-num">4</div>
+                            <div class="rubric-level-desc">Minor drift only</div>
+                        </div>
+                        <div class="rubric-level">
+                            <div class="rubric-level-num">5</div>
+                            <div class="rubric-level-desc">Perfectly aligned</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Progress Section -->
+<section class="section" id="progress">
+    <div class="section-header">
+        <h2>Project Progress</h2>
+        <div class="separator"></div>
+        <p>Current status of the evaluation framework development</p>
+    </div>
+
+    <div class="progress-list">
+        <div class="progress-item">
+            <span class="progress-icon" style="color: var(--green);">&#10003;</span>
+            <div class="progress-text"><strong>96 metrics designed</strong> &mdash; 34 automated + 24 judge implemented + 38 pending calibration</div>
+        </div>
+        <div class="progress-item">
+            <span class="progress-icon" style="color: var(--green);">&#10003;</span>
+            <div class="progress-text"><strong>660 trajectories evaluated</strong> across 15 models, 40 tasks</div>
+        </div>
+        <div class="progress-item">
+            <span class="progress-icon" style="color: var(--green);">&#10003;</span>
+            <div class="progress-text"><strong>Statistical validation</strong> &mdash; Kruskal-Wallis, Spearman correlation, Random Forest (R&sup2;=0.8755)</div>
+        </div>
+        <div class="progress-item">
+            <span class="progress-icon" style="color: var(--green);">&#10003;</span>
+            <div class="progress-text"><strong>PCA analysis</strong> &mdash; 10+ components for 80% variance coverage</div>
+        </div>
+        <div class="progress-item">
+            <span class="progress-icon" style="color: var(--green);">&#10003;</span>
+            <div class="progress-text"><strong>Redundancy detection</strong> &mdash; 9 metric pairs removed via correlation analysis</div>
+        </div>
+        <div class="progress-item">
+            <span class="progress-icon" style="color: var(--green);">&#10003;</span>
+            <div class="progress-text"><strong>Per-task behavioral analysis</strong> &mdash; 20 tasks &times; model interaction profiles</div>
+        </div>
+        <div class="progress-item">
+            <span class="progress-icon" style="color: var(--gold);">&#8635;</span>
+            <div class="progress-text"><strong>Additional judge metrics</strong> being calibrated and validated</div>
+        </div>
+        <div class="progress-item">
+            <span class="progress-icon" style="color: var(--accent);">&#9744;</span>
+            <div class="progress-text"><strong>Paper preparation</strong> in progress</div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-links">
+            <a href="https://github.com/innovatorbench" target="_blank">GitHub Repository</a>
+            <a href="mailto:contact@innovatorbench.org">Contact</a>
+        </div>
+        <div class="footer-brand">Built with InnovatorBench &mdash; Fine-Grained Evaluation for AI Research Agents</div>
+    </div>
+</footer>
+
+<script>
+// ======== DATA ========
+
+const metricData = [
+    {rank:1, id:'J60', en:'Interaction Precision', zh:'交互精确度', rho:0.515, h:599, quality:308, rating:'S', detail:'Measures precision of agent interactions with the environment. Evaluates whether each interaction (tool call, query) is necessary and well-formed. High scores indicate minimal wasted interactions.'},
+    {rank:2, id:'J65', en:'Question Quality', zh:'提问质量', rho:0.595, h:335, quality:200, rating:'S', detail:'Evaluates the quality of questions the agent asks when seeking clarification. Considers relevance, specificity, timing, and whether the question advances task completion.'},
+    {rank:3, id:'J39', en:'Failure Pattern', zh:'失败模式', rho:0.769, h:250, quality:192, rating:'S', detail:'Identifies recurring failure patterns in agent behavior. Classifies failures into types (resource, logic, environment) and assesses whether the agent learns from them.'},
+    {rank:4, id:'J06', en:'Error Recovery', zh:'错误恢复', rho:0.759, h:233, quality:177, rating:'S', detail:'Counts and evaluates error recovery events. Measures detection speed, strategy pivots, and whether recovery leads to forward progress. Core resilience metric.'},
+    {rank:5, id:'J68', en:'Feedback Utilization', zh:'反馈利用率', rho:0.748, h:235, quality:176, rating:'S', detail:'Measures how effectively the agent uses feedback from the environment, error messages, and evaluation signals to improve its approach.'},
+    {rank:6, id:'J95', en:'Subtask Propagation', zh:'子任务传播', rho:0.700, h:214, quality:150, rating:'A', detail:'Evaluates how well the agent decomposes complex tasks and propagates results between subtasks. Measures information flow and dependency management.'},
+    {rank:7, id:'J50', en:'Evidence-Action Gap', zh:'证据行动鸿沟', rho:0.715, h:207, quality:148, rating:'A', detail:'Measures the gap between evidence gathered and actions taken. Penalizes acting without sufficient evidence or gathering evidence without acting on it.'},
+    {rank:8, id:'J32', en:'Traj-Satisfy', zh:'轨迹满意度', rho:0.862, h:172, quality:148, rating:'A', detail:'Overall trajectory satisfaction score. Holistic assessment of whether the trajectory demonstrates competent, efficient progress toward the task goal.'},
+    {rank:9, id:'J70', en:'Hypothesis-Verify', zh:'假设验证', rho:0.732, h:190, quality:139, rating:'A', detail:'Evaluates whether the agent formulates hypotheses and systematically verifies them. Measures scientific reasoning methodology in problem-solving.'},
+    {rank:10, id:'J37', en:'Propagation Length', zh:'传播长度', rho:0.757, h:164, quality:124, rating:'A', detail:'Measures how far information propagates through the agent\'s reasoning chain. Longer effective propagation indicates better working memory and planning.'},
+    {rank:11, id:'J49', en:'Step F1', zh:'步骤F1', rho:0.535, h:190, quality:102, rating:'A', detail:'F1 score of agent steps against a reference solution. Balances precision (no wasted steps) and recall (all necessary steps taken).'},
+    {rank:12, id:'J41', en:'Error-Type Solidification', zh:'按类型错误固化', rho:0.696, h:146, quality:102, rating:'A', detail:'Detects when specific error types become "solidified" - repeated without resolution. Broken down by error category (syntax, logic, resource, environment).'},
+    {rank:13, id:'J48', en:'Step Recall', zh:'步骤召回率', rho:0.539, h:163, quality:88, rating:'A', detail:'Recall of required steps from a reference trajectory. Measures completeness of the agent\'s approach - whether all critical steps are attempted.'},
+    {rank:14, id:'J30', en:'Parameter Accuracy', zh:'参数准确率', rho:0.569, h:150, quality:85, rating:'A', detail:'Evaluates the accuracy of parameters/arguments passed to tools and functions. Catches off-by-one errors, wrong file paths, incorrect API parameters.'},
+    {rank:15, id:'J25', en:'Effective Action Ratio', zh:'有效动作比', rho:0.550, h:153, quality:84, rating:'A', detail:'Ratio of effective actions to total actions. Classifies each action as PRODUCTIVE, EXPLORATORY_USEFUL, OVERHEAD, REDUNDANT, CIRCULAR, or FAILED_WASTED.'},
+    {rank:16, id:'J61', en:'Interaction F1', zh:'交互F1', rho:0.631, h:119, quality:75, rating:'B', detail:'F1 score of agent interactions against expected interaction patterns. Balances interaction precision and recall.'},
+    {rank:17, id:'J40', en:'Error Solidification', zh:'错误固化', rho:0.499, h:140, quality:70, rating:'B', detail:'Overall error solidification rate. Measures whether errors persist across attempts without the agent changing strategy.'},
+    {rank:18, id:'J73', en:'Dual-Channel', zh:'双通道一致性', rho:0.522, h:105, quality:55, rating:'B', detail:'Consistency between reasoning channel (thinking/planning) and action channel (tool use). Detects "says one thing, does another" divergence.'},
+    {rank:19, id:'J13', en:'Cross-Stage Violations', zh:'跨阶段违反', rho:0.579, h:69, quality:40, rating:'B', detail:'Detects violations of stage-appropriate behavior. E.g., executing before planning, or re-planning mid-execution without justification.'},
+    {rank:20, id:'J63', en:'Hedging Frequency', zh:'不确定性表达', rho:0.501, h:60, quality:30, rating:'C', detail:'Frequency of uncertainty expressions and hedging language. Appropriate hedging is good; excessive hedging suggests low confidence.'},
+    {rank:21, id:'J47', en:'Step Precision', zh:'步骤精确率', rho:0.182, h:155, quality:28, rating:'C', detail:'Precision of agent steps against reference. Low rho suggests this metric has limited discriminative power across models.'},
+    {rank:22, id:'J64', en:'Uncertainty Calibration', zh:'不确定性校准', rho:0.474, h:54, quality:26, rating:'C', detail:'How well-calibrated the agent\'s uncertainty expressions are relative to actual outcomes. Overconfidence and underconfidence both penalized.'},
+    {rank:23, id:'J42', en:'CAT Failure', zh:'CAT反模式', rho:0.155, h:146, quality:23, rating:'C', detail:'Detects the Copy-Attempt-Try anti-pattern where agents repeatedly copy code/approaches without understanding, leading to shallow fixes.'},
+    {rank:24, id:'J35', en:'Root Cause', zh:'根因归因', rho:-0.008, h:116, quality:1, rating:'D', detail:'Evaluates whether the agent identifies true root causes vs. symptoms. Negative rho indicates this metric currently anti-correlates with quality - under revision.'}
+];
+
+const leaderboardData = [
+    {model:'kimi-k2.5', composite:3.145, scores:[5.238,2.778,3.0,3.048,2.714,3.048,2.952,2.381,2.476]},
+    {model:'glm47', composite:2.75, scores:[4.35,2.5,2.5,2.7,2.5,2.8,2.65,2.0,2.4]},
+    {model:'glm47_data_w_codeact', composite:2.627, scores:[4.0,2.4,2.345,2.552,2.345,2.655,2.828,1.893,2.414]},
+    {model:'claude-4-sonnet-gzy', composite:2.601, scores:[3.884,2.455,2.425,2.71,2.304,2.623,2.556,1.852,2.44]},
+    {model:'glm-4-5-full-data-gzy', composite:2.592, scores:[3.84,2.5,2.56,2.64,2.36,2.48,2.52,1.84,2.36]},
+    {model:'glm47_data_w_sweagent', composite:2.323, scores:[3.19,2.3,2.143,2.524,2.143,2.476,2.286,1.524,1.952]},
+    {model:'glm-4-5-full-data-w-interact', composite:2.276, scores:[3.14,2.205,2.174,2.512,1.988,2.384,2.337,1.465,2.291]},
+    {model:'kimi-k2-instruct-0905', composite:2.228, scores:[2.857,2.148,2.069,2.345,1.966,2.552,2.138,1.75,2.103]},
+    {model:'glm-4-5-gzy', composite:2.161, scores:[2.735,2.045,2.143,2.388,1.959,2.286,2.184,1.551,2.429]},
+    {model:'glm-4-5-full-data-wo-interact', composite:2.11, scores:[2.828,2.0,1.966,2.483,1.828,2.241,2.069,1.464,2.103]},
+    {model:'gpt-5-gzy', composite:1.834, scores:[2.156,1.822,1.516,2.188,1.844,1.953,1.812,1.383,1.922]},
+    {model:'grok-4', composite:1.866, scores:[2.111,1.875,1.722,2.167,1.667,2.111,1.944,1.333,2.167]},
+    {model:'grok-code-fast-1', composite:1.425, scores:[1.667,1.235,1.389,1.889,1.111,1.611,1.5,1.0,2.056]},
+    {model:'kimi-k2-instruct-0905-gzy', composite:1.046, scores:[1.0,1.0,1.0,1.158,1.0,1.0,1.211,1.0,1.0]}
+];
+
+const autoMetrics = [
+    {name:'M20_duration_seconds', eta:0.2891},
+    {name:'M76_has_planning', eta:0.2759},
+    {name:'M03_subtask_count', eta:0.2758},
+    {name:'M19_input_tokens', eta:0.2708},
+    {name:'M19_total_tokens', eta:0.2643},
+    {name:'M12_session_leak', eta:0.2269},
+    {name:'M02_tool_chain_depth', eta:0.2228},
+    {name:'M21_format_fail_rate', eta:0.2116},
+    {name:'M19_output_tokens', eta:0.2066},
+    {name:'M43_max_consecutive_sleep', eta:0.1910}
+];
+
+// ======== RENDER FUNCTIONS ========
+
+function renderCatalog(filter) {
+    const tbody = document.getElementById('catalogBody');
+    tbody.innerHTML = '';
+    const filtered = filter === 'all' ? metricData : metricData.filter(m => m.rating === filter);
+
+    filtered.forEach(m => {
+        const row = document.createElement('tr');
+        row.className = 'metric-row';
+        row.setAttribute('data-rating', m.rating);
+        row.onclick = function() { toggleMetricDetail(this); };
+        row.innerHTML = `
+            <td>${m.rank}</td>
+            <td><span class="mono" style="font-weight:600;">${m.id}</span></td>
+            <td>${m.en}</td>
+            <td>${m.zh}</td>
+            <td class="mono">${m.rho.toFixed(3)}</td>
+            <td class="mono">${m.h}</td>
+            <td class="mono">${m.quality}</td>
+            <td><span class="badge badge-${m.rating.toLowerCase()}">${m.rating}</span></td>
+        `;
+        tbody.appendChild(row);
+
+        const detailRow = document.createElement('tr');
+        detailRow.className = 'metric-detail';
+        detailRow.innerHTML = `<td colspan="8">${m.detail}</td>`;
+        tbody.appendChild(detailRow);
+    });
+}
+
+function toggleMetricDetail(row) {
+    const detail = row.nextElementSibling;
+    if (detail && detail.classList.contains('metric-detail')) {
+        detail.classList.toggle('show');
+    }
+}
+
+function filterMetrics(rating) {
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    renderCatalog(rating);
+}
+
+function renderLeaderboard() {
+    const tbody = document.getElementById('leaderboardBody');
+    tbody.innerHTML = '';
+
+    leaderboardData.forEach((m, i) => {
+        const row = document.createElement('tr');
+        if (i === 0) row.className = 'top-model';
+
+        let cells = `
+            <td class="rank-cell">${i + 1}</td>
+            <td class="model-name">${m.model}</td>
+            <td class="score-cell" style="font-weight:700; color:var(--navy);">${m.composite.toFixed(3)}</td>
+        `;
+        m.scores.forEach(s => {
+            const color = s >= 3 ? 'var(--green)' : s >= 2 ? 'var(--text)' : 'var(--red)';
+            cells += `<td class="score-cell" style="color:${color}">${s.toFixed(3)}</td>`;
+        });
+        row.innerHTML = cells;
+        tbody.appendChild(row);
+    });
+}
+
+let sortCol = 2;
+let sortAsc = false;
+
+function sortLeaderboard(col) {
+    if (sortCol === col) {
+        sortAsc = !sortAsc;
+    } else {
+        sortCol = col;
+        sortAsc = false;
+    }
+
+    leaderboardData.sort((a, b) => {
+        let va, vb;
+        if (col === 0) { return 0; }
+        if (col === 1) { va = a.model; vb = b.model; return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va); }
+        if (col === 2) { va = a.composite; vb = b.composite; }
+        else { va = a.scores[col - 3]; vb = b.scores[col - 3]; }
+        return sortAsc ? va - vb : vb - va;
+    });
+
+    renderLeaderboard();
+}
+
+function renderAutoMetrics() {
+    const list = document.getElementById('autoMetricList');
+    const maxEta = autoMetrics[0].eta;
+
+    autoMetrics.forEach((m, i) => {
+        const item = document.createElement('div');
+        item.className = 'auto-metric-item';
+        item.innerHTML = `
+            <span class="auto-metric-rank">${i + 1}.</span>
+            <span class="auto-metric-name">${m.name}</span>
+            <div class="auto-metric-bar-wrap">
+                <div class="auto-metric-bar" style="width:${(m.eta / maxEta * 100).toFixed(0)}%; background:${i < 3 ? 'var(--green)' : 'var(--accent)'}"></div>
+            </div>
+            <span class="auto-metric-val">η²=${m.eta.toFixed(4)}</span>
+        `;
+        list.appendChild(item);
+    });
+}
+
+function renderRadarChart() {
+    const ctx = document.getElementById('radarChart').getContext('2d');
+    const labels = ['J32', 'J06', 'J39', 'J50', 'J70', 'J68', 'J95', 'J37', 'J25'];
+    const top5 = leaderboardData.slice(0, 5);
+    const colors = [
+        'rgba(217,119,6,0.8)',
+        'rgba(37,99,235,0.8)',
+        'rgba(5,150,105,0.8)',
+        'rgba(124,58,237,0.8)',
+        'rgba(220,38,38,0.7)'
+    ];
+    const bgColors = [
+        'rgba(217,119,6,0.1)',
+        'rgba(37,99,235,0.1)',
+        'rgba(5,150,105,0.1)',
+        'rgba(124,58,237,0.1)',
+        'rgba(220,38,38,0.05)'
+    ];
+
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: labels,
+            datasets: top5.map((m, i) => ({
+                label: m.model,
+                data: m.scores,
+                borderColor: colors[i],
+                backgroundColor: bgColors[i],
+                borderWidth: 2,
+                pointRadius: 3,
+                pointBackgroundColor: colors[i]
+            }))
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 11, family: 'Inter' },
+                        padding: 15
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Top 5 Models - Metric Comparison',
+                    font: { size: 14, family: 'Inter', weight: '600' },
+                    padding: { bottom: 15 }
+                }
+            },
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 5.5,
+                    ticks: {
+                        stepSize: 1,
+                        font: { size: 10 }
+                    },
+                    pointLabels: {
+                        font: { size: 11, family: 'JetBrains Mono' }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// ======== INTERACTION HANDLERS ========
+
+function toggleCase(card) {
+    card.classList.toggle('expanded');
+}
+
+function toggleRubric(card) {
+    card.classList.toggle('expanded');
+}
+
+function toggleNav() {
+    document.getElementById('navLinks').classList.toggle('show');
+}
+
+// Scroll indicator
+window.addEventListener('scroll', () => {
+    const scrollTop = document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const progress = (scrollTop / scrollHeight) * 100;
+    document.getElementById('scrollIndicator').style.width = progress + '%';
+});
+
+// Close mobile nav on link click
+document.querySelectorAll('.navbar-links a').forEach(link => {
+    link.addEventListener('click', () => {
+        document.getElementById('navLinks').classList.remove('show');
+    });
+});
+
+// ======== INIT ========
+document.addEventListener('DOMContentLoaded', () => {
+    renderCatalog('all');
+    renderLeaderboard();
+    renderAutoMetrics();
+    renderRadarChart();
+});
+</script>
+</body>
+</html>
