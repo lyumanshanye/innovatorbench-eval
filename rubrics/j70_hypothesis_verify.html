@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J70 - Hypothesis-Verify Loop Rate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2440;
+            --accent: #2563eb;
+            --gold: #d97706;
+            --green: #059669;
+            --bg: #fafbfc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --code-bg: #1e1e2e;
+            --code-text: #cdd6f4;
+            --score-1: #dc2626;
+            --score-2: #ea580c;
+            --score-3: #d97706;
+            --score-4: #65a30d;
+            --score-5: #059669;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--navy) 0%, #1a365d 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .metric-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.3rem 0.75rem;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .scoring-scale {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+
+        .scoring-scale h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .scale-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .scale-step {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .scale-step:nth-child(1) { background: var(--score-1); }
+        .scale-step:nth-child(2) { background: var(--score-2); }
+        .scale-step:nth-child(3) { background: var(--score-3); }
+        .scale-step:nth-child(4) { background: var(--score-4); }
+        .scale-step:nth-child(5) { background: var(--score-5); }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 0 0.25rem;
+        }
+
+        .scale-labels span {
+            text-align: center;
+        }
+
+        .scale-details {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .scale-detail {
+            text-align: center;
+            padding: 0.5rem 0.25rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            background: var(--bg);
+        }
+
+        .scale-detail .num {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .scale-detail:nth-child(1) .num { color: var(--score-1); }
+        .scale-detail:nth-child(2) .num { color: var(--score-2); }
+        .scale-detail:nth-child(3) .num { color: var(--score-3); }
+        .scale-detail:nth-child(4) .num { color: var(--score-4); }
+        .scale-detail:nth-child(5) .num { color: var(--score-5); }
+
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .content h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 1.75rem 0 0.75rem;
+        }
+
+        .content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 1.25rem 0 0.5rem;
+        }
+
+        .content p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .content ul, .content ol {
+            margin: 0.75rem 0 1rem 1.5rem;
+        }
+
+        .content li {
+            margin-bottom: 0.4rem;
+            padding-left: 0.25rem;
+        }
+
+        .content li::marker {
+            color: var(--accent);
+        }
+
+        .content strong {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #be185d;
+        }
+
+        .code-block {
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-block pre {
+            background: var(--code-bg);
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--code-text);
+            background: none;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: var(--navy);
+            color: white;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .scale-details {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 4px;
+            }
+
+            .scale-detail {
+                font-size: 0.6rem;
+                padding: 0.4rem 0.1rem;
+            }
+
+            .table-wrapper {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scale-details {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .scale-detail {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                text-align: left;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .scale-detail .num {
+                margin-bottom: 0;
+                min-width: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div class="header-content">
+            <a href="../index.html#metrics" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Back to Overview
+            </a>
+            <div class="metric-badge">J70</div>
+            <h1>Hypothesis-Verify Loop Rate</h1>
+        </div>
+    </header>
+
+    <div class="scoring-scale">
+        <h3>Scoring Scale (1-5)</h3>
+        <div class="scale-bar">
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+        </div>
+        <div class="scale-labels">
+            <span>1 - Worst</span>
+            <span>2</span>
+            <span>3 - Mid</span>
+            <span>4</span>
+            <span>5 - Best</span>
+        </div>
+        <div class="scale-details">
+            <div class="scale-detail"><span class="num">1</span> Poor / None</div>
+            <div class="scale-detail"><span class="num">2</span> Below Average</div>
+            <div class="scale-detail"><span class="num">3</span> Moderate</div>
+            <div class="scale-detail"><span class="num">4</span> Good</div>
+            <div class="scale-detail"><span class="num">5</span> Excellent</div>
+        </div>
+    </div>
+
+    <main class="content">
+        <h2>Role</h2>
+<p>You are an expert evaluator assessing whether an AI agent demonstrates <strong>scientific reasoning discipline</strong> — specifically, whether it forms hypotheses and then takes deliberate verification actions before committing to a course of action.</p>
+<h2>Inputs</h2>
+<ol>
+<li><code>task_description</code> — The original task and success criteria</li>
+<li><code>agent_trajectory</code> — Ordered (action, observation) pairs with thought/reasoning content</li>
+<li><code>final_eval_score</code> — Ground-truth score</li>
+</ol>
+<h2>Evaluation Procedure</h2>
+<h3>Step 1: Identify hypothesis points</h3>
+<p>A <strong>hypothesis point</strong> is any moment where the agent:</p>
+<ul>
+<li>States an assumption about how something works</li>
+<li>Plans an approach that could fail</li>
+<li>Makes a choice between alternatives</li>
+<li>Creates something that needs validation (code, data, configuration)</li>
+<li>Receives ambiguous information requiring interpretation</li>
+</ul>
+<h3>Step 2: For each hypothesis point, check for verification</h3>
+<p>A proper <strong>verification action</strong> must:</p>
+<ul>
+<li>Be explicitly targeted at testing the hypothesis (not just the next step in a rote sequence)</li>
+<li>Occur BEFORE committing significant resources (time, edits, training runs) based on the hypothesis</li>
+<li>Produce information that could falsify the hypothesis</li>
+</ul>
+<p>Types of verification:</p>
+<ul>
+<li><strong>Data verification</strong>: Checking a sample before processing all data</li>
+<li><strong>Code verification</strong>: Running a small test before full execution</li>
+<li><strong>Assumption verification</strong>: Checking documentation/format before building on assumption</li>
+<li><strong>Result verification</strong>: Checking intermediate output before proceeding to next phase</li>
+<li><strong>Backup verification</strong>: Saving state before risky changes (allows rollback)</li>
+</ul>
+<h3>Step 3: Compute the loop rate</h3>
+<ul>
+<li>Hypothesis-Verify Loop Rate = (hypotheses with verification) / (total hypothesis points)</li>
+</ul>
+<h2>Scoring Scale (1-5)</h2>
+<div class="table-wrapper"><table><thead><tr><th>Score</th><th>Label</th><th>Criteria</th></tr></thead><tbody>
+<tr><td>5</td><td>Systematic Verification</td><td>&gt;80% of hypothesis points have verification; agent actively seeks disconfirming evidence</td></tr>
+<tr><td>4</td><td>Mostly Verified</td><td>60-80% verified; agent tests most assumptions before committing</td></tr>
+<tr><td>3</td><td>Partial Verification</td><td>40-60% verified; some good verification habits mixed with leaps of faith</td></tr>
+<tr><td>2</td><td>Rare Verification</td><td>20-40% verified; agent mostly proceeds on assumptions without checking</td></tr>
+<tr><td>1</td><td>No Verification</td><td>&lt;20% verified; agent never tests assumptions; commits blindly</td></tr>
+</tbody></table></div>
+<h2>Output Format</h2>
+<div class="code-block"><pre><code class="language-json">{
+  &quot;score&quot;: &lt;1|2|3|4|5&gt;,
+  &quot;hypothesis_verify_rate&quot;: &lt;float 0-1&gt;,
+  &quot;total_hypothesis_points&quot;: &lt;int&gt;,
+  &quot;verified_count&quot;: &lt;int&gt;,
+  &quot;unverified_count&quot;: &lt;int&gt;,
+  &quot;verification_examples&quot;: [
+    {
+      &quot;hypothesis&quot;: &quot;&lt;what the agent assumed/planned&gt;&quot;,
+      &quot;verification_action&quot;: &quot;&lt;what it did to test&gt;&quot;,
+      &quot;outcome&quot;: &quot;&lt;confirmed|falsified|inconclusive&gt;&quot;,
+      &quot;quality&quot;: &quot;&lt;good|adequate|superficial&gt;&quot;
+    }
+  ],
+  &quot;missed_verifications&quot;: [
+    {
+      &quot;hypothesis&quot;: &quot;&lt;what should have been tested&gt;&quot;,
+      &quot;risk&quot;: &quot;&lt;what could go wrong&gt;&quot;,
+      &quot;actual_consequence&quot;: &quot;&lt;what actually happened&gt;&quot;
+    }
+  ],
+  &quot;reason&quot;: &quot;&lt;2-3 sentence justification&gt;&quot;
+}</code></pre></div>
+<h2>Examples</h2>
+<h3>Example 1: Score 4 (Task 5, Data Cleaning)</h3>
+<p>Agent formed 5 hypothesis points: (1) cleaning rules will improve quality — backed up data before enhancement (verified via eval), (2) data format is correct — ran JSON validation (verified), (3) line count preserved — checked count after cleaning (verified), (4) enhanced rules are better — eval&#x27;d (verified, found they were worse), (5) rollback restores score — eval&#x27;d (not verified before assuming it would work exactly). Rate: 4/5 = 80%.</p>
+<div class="code-block"><pre><code class="language-json">{&quot;score&quot;: 4, &quot;hypothesis_verify_rate&quot;: 0.80, &quot;total_hypothesis_points&quot;: 5, &quot;verified_count&quot;: 4, &quot;unverified_count&quot;: 1, &quot;verification_examples&quot;: [{&quot;hypothesis&quot;: &quot;Enhanced cleaning rules will improve quality score&quot;, &quot;verification_action&quot;: &quot;Created backup of original output before running enhanced version, then compared eval scores&quot;, &quot;outcome&quot;: &quot;falsified&quot;, &quot;quality&quot;: &quot;good&quot;}, {&quot;hypothesis&quot;: &quot;Output maintains required 100K line count&quot;, &quot;verification_action&quot;: &quot;Ran wc -l on output file immediately after cleaning&quot;, &quot;outcome&quot;: &quot;confirmed&quot;, &quot;quality&quot;: &quot;good&quot;}], &quot;missed_verifications&quot;: [{&quot;hypothesis&quot;: &quot;Rollback to backup will restore original score&quot;, &quot;risk&quot;: &quot;Eval might be non-deterministic; backup might not match submitted version exactly&quot;, &quot;actual_consequence&quot;: &quot;Third eval scored even lower than second (13.08 vs 14.88), suggesting eval non-determinism&quot;}], &quot;reason&quot;: &quot;Strong verification discipline. Agent consistently tests before committing: backup before risky changes, format validation, line count checks, eval comparison. Only missed the assumption that rollback would perfectly restore scores.&quot;}</code></pre></div>
+<h3>Example 2: Score 1 (Task 16, RL Reward)</h3>
+<p>Agent had 6 hypothesis points but verified 0: (1) reward function logic is correct — never tested with sample data, (2) regex patterns match expected format — never ran test input, (3) training will work with this reward — never attempted training, (4) file syntax is correct — only checked py_compile (superficial), (5) output format matches expected — never validated, (6) task is complete — declared done without checking output exists.</p>
+<div class="code-block"><pre><code class="language-json">{&quot;score&quot;: 1, &quot;hypothesis_verify_rate&quot;: 0.0, &quot;total_hypothesis_points&quot;: 6, &quot;verified_count&quot;: 0, &quot;unverified_count&quot;: 6, &quot;verification_examples&quot;: [], &quot;missed_verifications&quot;: [{&quot;hypothesis&quot;: &quot;Reward function correctly scores search-augmented reasoning&quot;, &quot;risk&quot;: &quot;Function might not parse format, give wrong rewards, or crash during training&quot;, &quot;actual_consequence&quot;: &quot;Never tested — score = 0 because training was never attempted&quot;}, {&quot;hypothesis&quot;: &quot;Task is complete and output exists&quot;, &quot;risk&quot;: &quot;Output file might not exist at expected path&quot;, &quot;actual_consequence&quot;: &quot;Agent submitted task_completed=true but /workspace/data/outputs/test.json did not exist&quot;}], &quot;reason&quot;: &quot;Zero verification in entire trajectory. Agent coded for 156 steps without ever testing the reward function on sample data, running training, or checking that required outputs exist. This is purely faith-based execution.&quot;}</code></pre></div>
+<h3>Example 3: Score 3 (Task 18, Agent/Workflow)</h3>
+<p>Agent had 5 hypothesis points: (1) code compiles — verified with py_compile (good), (2) imports work — tested with python -c import (good), (3) code handles edge cases — checked with cat -A for hidden chars (adequate), (4) full pipeline works end-to-end — ran only 1 test question (partial), (5) agent can complete all test questions — never verified (ran out of time).</p>
+<div class="code-block"><pre><code class="language-json">{&quot;score&quot;: 3, &quot;hypothesis_verify_rate&quot;: 0.50, &quot;total_hypothesis_points&quot;: 5, &quot;verified_count&quot;: 3, &quot;unverified_count&quot;: 2, &quot;verification_examples&quot;: [{&quot;hypothesis&quot;: &quot;Code compiles without syntax errors&quot;, &quot;verification_action&quot;: &quot;Ran py_compile.compile() on each modified file&quot;, &quot;outcome&quot;: &quot;falsified multiple times, then confirmed after fixes&quot;, &quot;quality&quot;: &quot;good&quot;}, {&quot;hypothesis&quot;: &quot;Code runs correctly on real input&quot;, &quot;verification_action&quot;: &quot;Ran python main.py --split=dev --max-questions=1&quot;, &quot;outcome&quot;: &quot;confirmed for 1 question&quot;, &quot;quality&quot;: &quot;superficial&quot;}], &quot;missed_verifications&quot;: [{&quot;hypothesis&quot;: &quot;Agent can handle full test set within time budget&quot;, &quot;risk&quot;: &quot;Might timeout or hit edge cases on other questions&quot;, &quot;actual_consequence&quot;: &quot;Never ran full eval — trajectory ended after single test question&quot;}], &quot;reason&quot;: &quot;Partial verification at syntax/import level but weak at end-to-end level. Agent verified compilation rigorously but only tested one question before running out of time. The verification that matters most (full pipeline on test set) was never attempted.&quot;}</code></pre></div>
+    </main>
+
+    <footer class="footer">
+        <a href="../index.html#metrics">&#8592; Back to Metrics Overview</a>
+    </footer>
+</body>
+</html>

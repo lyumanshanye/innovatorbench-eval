@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J50 - Evidence Action Gap</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2440;
+            --accent: #2563eb;
+            --gold: #d97706;
+            --green: #059669;
+            --bg: #fafbfc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --code-bg: #1e1e2e;
+            --code-text: #cdd6f4;
+            --score-1: #dc2626;
+            --score-2: #ea580c;
+            --score-3: #d97706;
+            --score-4: #65a30d;
+            --score-5: #059669;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--navy) 0%, #1a365d 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .metric-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.3rem 0.75rem;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .scoring-scale {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+
+        .scoring-scale h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .scale-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .scale-step {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .scale-step:nth-child(1) { background: var(--score-1); }
+        .scale-step:nth-child(2) { background: var(--score-2); }
+        .scale-step:nth-child(3) { background: var(--score-3); }
+        .scale-step:nth-child(4) { background: var(--score-4); }
+        .scale-step:nth-child(5) { background: var(--score-5); }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 0 0.25rem;
+        }
+
+        .scale-labels span {
+            text-align: center;
+        }
+
+        .scale-details {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .scale-detail {
+            text-align: center;
+            padding: 0.5rem 0.25rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            background: var(--bg);
+        }
+
+        .scale-detail .num {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .scale-detail:nth-child(1) .num { color: var(--score-1); }
+        .scale-detail:nth-child(2) .num { color: var(--score-2); }
+        .scale-detail:nth-child(3) .num { color: var(--score-3); }
+        .scale-detail:nth-child(4) .num { color: var(--score-4); }
+        .scale-detail:nth-child(5) .num { color: var(--score-5); }
+
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .content h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 1.75rem 0 0.75rem;
+        }
+
+        .content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 1.25rem 0 0.5rem;
+        }
+
+        .content p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .content ul, .content ol {
+            margin: 0.75rem 0 1rem 1.5rem;
+        }
+
+        .content li {
+            margin-bottom: 0.4rem;
+            padding-left: 0.25rem;
+        }
+
+        .content li::marker {
+            color: var(--accent);
+        }
+
+        .content strong {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #be185d;
+        }
+
+        .code-block {
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-block pre {
+            background: var(--code-bg);
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--code-text);
+            background: none;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: var(--navy);
+            color: white;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .scale-details {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 4px;
+            }
+
+            .scale-detail {
+                font-size: 0.6rem;
+                padding: 0.4rem 0.1rem;
+            }
+
+            .table-wrapper {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scale-details {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .scale-detail {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                text-align: left;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .scale-detail .num {
+                margin-bottom: 0;
+                min-width: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div class="header-content">
+            <a href="../index.html#metrics" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Back to Overview
+            </a>
+            <div class="metric-badge">J50</div>
+            <h1>Evidence Action Gap</h1>
+        </div>
+    </header>
+
+    <div class="scoring-scale">
+        <h3>Scoring Scale (1-5)</h3>
+        <div class="scale-bar">
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+        </div>
+        <div class="scale-labels">
+            <span>1 - Worst</span>
+            <span>2</span>
+            <span>3 - Mid</span>
+            <span>4</span>
+            <span>5 - Best</span>
+        </div>
+        <div class="scale-details">
+            <div class="scale-detail"><span class="num">1</span> Poor / None</div>
+            <div class="scale-detail"><span class="num">2</span> Below Average</div>
+            <div class="scale-detail"><span class="num">3</span> Moderate</div>
+            <div class="scale-detail"><span class="num">4</span> Good</div>
+            <div class="scale-detail"><span class="num">5</span> Excellent</div>
+        </div>
+    </div>
+
+    <main class="content">
+        <p>You are an expert evaluator assessing AI agent trajectories from the InnovatorBench benchmark. Your task is to measure the <strong>Evidence-to-Action Gap</strong>: the degree to which an agent collects correct or useful information (by reading files, observing command outputs, receiving error messages, discovering facts) but then fails to act on that information. This metric quantifies &quot;wasted knowledge&quot; — evidence gathered that never translates into a decision or action.</p>
+<p>You will receive a complete agent trajectory consisting of thoughts, tool calls, observations, and outputs. Evaluate it according to the procedure and scoring scale below.</p>
+<h2>Definitions</h2>
+<ul>
+<li><strong>Evidence</strong>: Any information the agent actively or passively acquires during the trajectory. This includes:</li>
+<li>File contents read via tool calls (e.g., <code>cat</code>, <code>read_file</code>, <code>open</code>)</li>
+<li>Command outputs (stdout, stderr, return codes)</li>
+<li>Error messages and stack traces</li>
+<li>API responses, log entries, metric values</li>
+<li>Information discovered through search, listing directories, or inspecting configurations</li>
+<li>Observations stated by the agent in its reasoning about the environment</li>
+</ul>
+<ul>
+<li><strong>Action</strong>: A concrete step the agent takes that uses or responds to evidence. This includes:</li>
+<li>Modifying code or configuration based on discovered information</li>
+<li>Changing strategy or approach after receiving an error</li>
+<li>Using a discovered file path, variable name, or parameter in a subsequent command</li>
+<li>Explicitly deciding NOT to act because the evidence indicates no action is needed (this counts as acting on evidence)</li>
+</ul>
+<ul>
+<li><strong>Gap</strong>: When evidence is gathered but:</li>
+<li>Never referenced again in reasoning or actions</li>
+<li>Contradicts the agent&#x27;s subsequent actions (agent acts as if it never saw the evidence)</li>
+<li>Is re-discovered later because the agent forgot it already had the information</li>
+<li>Is partially used (agent picks up one detail but ignores other important details from the same source)</li>
+</ul>
+<h2>Procedure</h2>
+<p>Follow these steps in order:</p>
+<ol>
+<li><strong>Catalog all evidence-gathering steps.</strong> Walk through the trajectory chronologically. For each step where the agent reads a file, runs a command, or receives output, record:</li>
+<li>Step number or position in the trajectory</li>
+<li>What information was obtained</li>
+<li>Whether the information was relevant to the task at hand</li>
+</ol>
+<ol>
+<li><strong>Trace evidence utilization.</strong> For each piece of relevant evidence cataloged in step 1, check subsequent steps to determine:</li>
+<li>Was this evidence referenced (explicitly or implicitly) in later reasoning?</li>
+<li>Did the agent take an action that demonstrates awareness of this evidence?</li>
+<li>Was the evidence rendered moot by a change in direction (legitimate pivot vs. ignoring)?</li>
+</ol>
+<ol>
+<li><strong>Identify gap instances.</strong> Flag each case where relevant evidence was gathered but not acted upon. For each gap, assess:</li>
+<li><strong>Severity</strong>: Was the unused evidence critical (would have prevented an error, saved time, or changed the outcome) or peripheral (nice-to-know but not essential)?</li>
+<li><strong>Type</strong>: Was this a forgetting gap (agent clearly lost track), a reasoning gap (agent saw it but drew the wrong conclusion), or an integration gap (agent couldn&#x27;t connect the dots between evidence and required action)?</li>
+</ol>
+<ol>
+<li><strong>Compute the overall gap assessment.</strong> Consider:</li>
+<li>Total number of gap instances relative to total evidence gathered</li>
+<li>Severity distribution (many minor gaps vs. few critical gaps)</li>
+<li>Whether gaps led to tangible negative outcomes (wasted steps, repeated errors, failed task)</li>
+<li>Whether the agent showed a pattern of gap behavior or if gaps were isolated</li>
+</ol>
+<ol>
+<li><strong>Assign a score</strong> using the scale below.</li>
+</ol>
+<h2>Scoring Scale</h2>
+<div class="table-wrapper"><table><thead><tr><th>Score</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<tr><td><strong>5</strong></td><td>No gap</td><td>Every piece of relevant evidence collected is acted upon appropriately. The agent demonstrates tight coupling between information gathering and decision-making. Evidence drives actions consistently throughout the trajectory.</td></tr>
+<tr><td><strong>4</strong></td><td>Minor gap</td><td>1-2 pieces of information are not utilized, but they are non-critical. The unused evidence would not have materially changed the outcome. The agent otherwise shows strong evidence-to-action integration.</td></tr>
+<tr><td><strong>3</strong></td><td>Moderate gap</td><td>Clear instances (3-4) where useful information is gathered and then ignored. At least one instance involves evidence that would have been meaningfully helpful. The agent shows inconsistent evidence utilization — sometimes good, sometimes careless.</td></tr>
+<tr><td><strong>2</strong></td><td>Significant gap</td><td>The agent repeatedly discovers relevant information but does not use it. Multiple critical pieces of evidence are wasted. The agent may re-discover information it already had, or act in direct contradiction to evidence it collected. The gap demonstrably harms task progress.</td></tr>
+<tr><td><strong>1</strong></td><td>Severe gap</td><td>The agent systematically ignores evidence it collects. Information gathering appears decoupled from decision-making. The agent may read files and then proceed as if it never saw them, receive error messages and repeat the same failing action, or discover key facts that are never integrated into its approach.</td></tr>
+</tbody></table></div>
+<h2>Edge Cases</h2>
+<ul>
+<li><strong>Trajectory has fewer than 5 steps</strong>: If the trajectory is very short, there may be insufficient evidence-gathering steps to assess a gap. In this case, evaluate based on whatever evidence exchange exists. If the agent gathered evidence and acted on it in those few steps, score 5. If it gathered evidence and ignored it even in a short trajectory, score accordingly. Note the short trajectory length in your reason.</li>
+</ul>
+<ul>
+<li><strong>No errors occur and task succeeds</strong>: A successful trajectory can still have evidence-to-action gaps (e.g., the agent read unnecessary files, gathered information it never used, or took a roundabout path despite having evidence for a direct one). Evaluate the gap independently of task success — but acknowledge that if the agent succeeded efficiently, minor unused evidence is less concerning.</li>
+</ul>
+<ul>
+<li><strong>Agent gathers evidence for future contingencies</strong>: If the agent reads files or gathers information that it does not immediately use but reasonably might need later (defensive information gathering), do not count this as a gap unless the information was clearly relevant and time-sensitive.</li>
+</ul>
+<ul>
+<li><strong>Agent explicitly reasons about and dismisses evidence</strong>: If the agent gathers evidence, considers it, and explicitly decides it is not relevant or actionable, this is NOT a gap. The agent acted on the evidence by evaluating and dismissing it.</li>
+</ul>
+<ul>
+<li><strong>Repeated information gathering</strong>: If the agent reads the same file or runs the same diagnostic command multiple times, this is a gap signal (it forgot or failed to use the earlier result) unless there is a legitimate reason to re-check (e.g., the file may have changed).</li>
+</ul>
+<ul>
+<li><strong>Trajectory is a planning-only or summarization-only loop</strong>: If the agent never takes concrete actions (only plans and summarizes), evidence utilization should be assessed in terms of whether gathered information influenced the plans and summaries. Score will likely be low because no real actions occur.</li>
+</ul>
+<h2>Output Format</h2>
+<p>Return ONLY valid JSON with no additional text, markdown formatting, or code fences:</p>
+<p>{&quot;score&quot;: N, &quot;reason&quot;: &quot;A 2-4 sentence explanation of the score, referencing specific evidence-action gaps or the lack thereof.&quot;, &quot;evidence&quot;: [&quot;Step X: Agent read config.yaml and discovered param=5 but never adjusted the training script accordingly.&quot;, &quot;Step Y: Agent received OOM error message but did not reduce batch size.&quot;, &quot;...&quot;]}</p>
+<p>Notes on the JSON output:</p>
+<ul>
+<li><code>score</code> must be an integer from 1 to 5.</li>
+<li><code>reason</code> should be concise but specific. Reference concrete trajectory steps or events.</li>
+<li><code>evidence</code> is an array of strings, each describing a specific gap instance (or, for high scores, noting that evidence was well-utilized). Include 1-5 evidence items. For a score of 5, evidence items should note examples of good evidence-to-action coupling.</li>
+</ul>
+    </main>
+
+    <footer class="footer">
+        <a href="../index.html#metrics">&#8592; Back to Metrics Overview</a>
+    </footer>
+</body>
+</html>

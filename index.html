@@ -895,6 +895,137 @@
             }
         }
 
+        /* Task Behavioral Analysis */
+        .task-stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 2.5rem;
+            padding: 1.25rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .task-stat-item {
+            text-align: center;
+        }
+
+        .task-stat-item .stat-num {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--navy);
+        }
+
+        .task-stat-item .stat-label {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .task-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s;
+            display: block;
+        }
+
+        .task-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .task-card.border-green { border-color: var(--green); }
+        .task-card.border-orange { border-color: var(--gold); }
+        .task-card.border-blue { border-color: var(--accent); }
+
+        .task-card-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .task-card-score {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .task-progress-bar {
+            display: flex;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+            background: #f3f4f6;
+        }
+
+        .task-progress-bar .bar-scored { background: var(--green); }
+        .task-progress-bar .bar-zero { background: var(--gold); }
+        .task-progress-bar .bar-noeval { background: var(--red); }
+
+        .task-card-best {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            margin-top: 0.4rem;
+        }
+
+        .task-card-best .best-badge {
+            display: inline-block;
+            background: rgba(37,99,235,0.08);
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            margin-left: 0.25rem;
+        }
+
+        .task-leaderboard-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+        }
+
+        @media (max-width: 1024px) {
+            .task-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .task-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .task-stats-bar {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .task-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* Utility */
         .mono {
             font-family: 'JetBrains Mono', monospace;
@@ -943,6 +1074,7 @@
             <li><a href="#automated">Automated</a></li>
             <li><a href="#cases">Cases</a></li>
             <li><a href="#rubrics">Rubrics</a></li>
+            <li><a href="#tasks">Tasks</a></li>
             <li><a href="#progress">Progress</a></li>
         </ul>
     </div>
@@ -1385,6 +1517,60 @@
     </div>
 </section>
 
+<!-- Task Behavioral Analysis Section -->
+<section class="section" id="tasks">
+    <div class="section-header">
+        <h2>Task Behavioral Analysis</h2>
+        <div class="separator"></div>
+        <p>Per-task behavioral analysis across 20 tasks with model interaction profiles</p>
+    </div>
+
+    <div class="task-stats-bar">
+        <div class="task-stat-item">
+            <div class="stat-num">20</div>
+            <div class="stat-label">Tasks</div>
+        </div>
+        <div class="task-stat-item">
+            <div class="stat-num">200</div>
+            <div class="stat-label">Total Runs</div>
+        </div>
+        <div class="task-stat-item">
+            <div class="stat-num" style="color:var(--green);">160</div>
+            <div class="stat-label">Scored &gt; 0</div>
+        </div>
+        <div class="task-stat-item">
+            <div class="stat-num" style="color:var(--gold);">23</div>
+            <div class="stat-label">Zero Score</div>
+        </div>
+        <div class="task-stat-item">
+            <div class="stat-num" style="color:var(--red);">17</div>
+            <div class="stat-label">No-Eval</div>
+        </div>
+    </div>
+
+    <div class="task-grid" id="taskGrid"></div>
+
+    <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--navy);">Summary Leaderboard (by Pass Rate)</h3>
+    <div class="task-leaderboard-wrap">
+        <table id="taskLeaderboardTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Task</th>
+                    <th>Scored/Total</th>
+                    <th>Pass Rate</th>
+                    <th>Best Model</th>
+                    <th>Best Score</th>
+                    <th>Families</th>
+                    <th>Zero</th>
+                    <th>No-Eval</th>
+                </tr>
+            </thead>
+            <tbody id="taskLeaderboardBody"></tbody>
+        </table>
+    </div>
+</section>
+
 <!-- Progress Section -->
 <section class="section" id="progress">
     <div class="section-header">
@@ -1470,30 +1656,30 @@
 // ======== DATA ========
 
 const metricData = [
-    {rank:1, id:'J60', en:'Interaction Precision', zh:'交互精确度', n:655, mean:2.03, std:0.23, rho:0.515, h:598.8, quality:308, rating:'S', range:'2-4', detail:'Measures precision of agent interactions with the environment. Among proactive interactions, what fraction truly requires human decision. High scores indicate minimal wasted interactions.'},
-    {rank:2, id:'J65', en:'Question Quality', zh:'提问质量', n:655, mean:1.96, std:0.44, rho:0.595, h:335.4, quality:200, rating:'S', range:'1-4', detail:'Evaluates specificity, answerability, and value of proactive questions the agent asks. Considers relevance, timing, and whether the question advances task completion.'},
-    {rank:3, id:'J39', en:'Failure Pattern', zh:'失败模式', n:655, mean:2.17, std:0.85, rho:0.769, h:249.7, quality:192, rating:'S', range:'1-5', detail:'Classifies failure patterns: instant crash / format collapse / delayed explosion / summary-lock / resource exhaustion / monitor deadlock. Strongest eval correlation (ρ=0.769).'},
-    {rank:4, id:'J06', en:'Error Recovery', zh:'错误恢复', n:591, mean:2.22, std:0.68, rho:0.759, h:233.3, quality:177, rating:'S', range:'1-4', detail:'Counts successful recoveries from errors. Requires: (1) Detection, (2) Strategy Change, (3) Forward Progress. Measures recovery speed and effectiveness. Core resilience metric.'},
-    {rank:5, id:'J68', en:'Feedback Utilization', zh:'反馈利用率', n:655, mean:2.40, std:0.76, rho:0.748, h:235.3, quality:176, rating:'S', range:'1-5', detail:'Post-human-feedback coverage: measures how effectively the agent incorporates feedback from environment/error/evaluation signals to improve approach.'},
-    {rank:6, id:'J95', en:'Subtask Propagation', zh:'子任务传播', n:655, mean:2.32, std:0.87, rho:0.700, h:213.6, quality:150, rating:'A', range:'1-5', detail:'Error propagation distance across subtasks. Measures how well the agent isolates failures and prevents contamination of downstream subtasks.'},
-    {rank:7, id:'J50', en:'Evidence-Action Gap', zh:'证据行动鸿沟', n:655, mean:2.49, std:0.66, rho:0.715, h:207.3, quality:148, rating:'A', range:'1-4', detail:'Correct information collected but not acted on. Penalizes agents that gather evidence without using it, or act without sufficient evidence.'},
-    {rank:8, id:'J32', en:'Traj-Satisfy', zh:'轨迹满意度', n:654, mean:3.27, std:1.93, rho:0.862, h:171.9, quality:148, rating:'A', range:'0-10', detail:'Holistic LLM satisfaction with trajectory quality on 0-10 scale. Strongest single-metric correlation with eval score (ρ=0.862). Wide dynamic range.'},
-    {rank:9, id:'J70', en:'Hypothesis-Verify', zh:'假设验证', n:655, mean:2.08, std:0.75, rho:0.732, h:190.1, quality:139, rating:'A', range:'1-4', detail:'After hypothesis, does agent take verification action? Measures scientific reasoning: Data/Code/Assumption/Result/Backup verification before committing resources.'},
-    {rank:10, id:'J37', en:'Propagation Length', zh:'传播长度', n:642, mean:1.66, std:0.91, rho:0.757, h:163.6, quality:124, rating:'A', range:'1-5', detail:'Steps from root cause to failure exposure. Shorter propagation = errors caught earlier. Directly reflects engineering rigor and test coverage.'},
-    {rank:11, id:'J49', en:'Step F1', zh:'步骤F1', n:655, mean:2.38, std:0.79, rho:0.535, h:190.4, quality:102, rating:'A', range:'1-5', detail:'Harmonic mean of step precision and recall. Balances completeness (all needed steps) with efficiency (no wasted steps).'},
-    {rank:12, id:'J41', en:'Error-Type Solidification', zh:'按类型错误固化', n:653, mean:2.64, std:0.72, rho:0.696, h:145.9, quality:102, rating:'A', range:'1-5', detail:'Per-error-type solidification rates: syntax-class vs design-decision. Detects when specific error types become stuck without resolution.'},
-    {rank:13, id:'J48', en:'Step Recall', zh:'步骤召回率', n:655, mean:2.56, std:0.80, rho:0.539, h:162.8, quality:88, rating:'A', range:'1-5', detail:'Recall of actual failed steps. Measures whether the agent identifies and addresses all critical failure points in its trajectory.'},
-    {rank:14, id:'J30', en:'Parameter Accuracy', zh:'参数准确率', n:655, mean:3.63, std:0.57, rho:0.569, h:150.2, quality:85, rating:'A', range:'1-5', detail:'Tool call argument values match expected/correct values. Catches wrong file paths, incorrect API parameters, off-by-one errors.'},
-    {rank:15, id:'J25', en:'Effective Action Ratio', zh:'有效动作比', n:655, mean:2.25, std:0.71, rho:0.550, h:153.1, quality:84, rating:'A', range:'1-5', detail:'Classifies actions as PRODUCTIVE / EXPLORATORY_USEFUL / OVERHEAD_NECESSARY / REDUNDANT / CIRCULAR / FAILED_WASTED. Effective = first 3 / total.'},
-    {rank:16, id:'J61', en:'Interaction F1', zh:'交互F1', n:655, mean:3.82, std:0.96, rho:0.631, h:118.7, quality:75, rating:'B', range:'1-5', detail:'Harmonic mean of checkpoint recall and interaction precision. Balances completeness of interactions with their necessity.'},
-    {rank:17, id:'J40', en:'Error Solidification', zh:'错误固化', n:655, mean:2.57, std:0.83, rho:0.499, h:139.9, quality:70, rating:'B', range:'1-5', detail:'Errors persisting after context summarization. Measures whether errors become permanently embedded vs. eventually resolved.'},
-    {rank:18, id:'J73', en:'Dual-Channel', zh:'双通道一致性', n:655, mean:3.38, std:0.60, rho:0.522, h:105.2, quality:55, rating:'B', range:'1-5', detail:'Reasoning stream vs action stream divergence. Types: ALIGNED / MINOR_DRIFT / CONTENT_DIVERGE / DIRECTION_DIVERGE / CONTRADICTION.'},
-    {rank:19, id:'J13', en:'Cross-Stage Violations', zh:'跨阶段违反', n:585, mean:3.45, std:0.75, rho:0.579, h:69.4, quality:40, rating:'B', range:'1-5', detail:'Late-pipeline decisions that violate earlier choices. E.g., executing before planning, or re-planning mid-execution without justification.'},
-    {rank:20, id:'J63', en:'Hedging Frequency', zh:'不确定性表达', n:148, mean:3.09, std:0.54, rho:0.501, h:59.9, quality:30, rating:'C', range:'2-4', detail:'Uncertainty expression density in reasoning stream. Only evaluated on trajectories with explicit reasoning (n=148). Appropriate hedging is good; excessive hedging suggests low confidence.'},
-    {rank:21, id:'J47', en:'Step Precision', zh:'步骤精确率', n:655, mean:4.13, std:0.73, rho:0.182, h:154.9, quality:28, rating:'C', range:'3-5', detail:'Precision at marking failed steps vs reference. High mean (4.13) with low ρ suggests ceiling effect — most models score well, limiting discrimination.'},
-    {rank:22, id:'J64', en:'Uncertainty Calibration', zh:'不确定性校准', n:183, mean:2.65, std:0.55, rho:0.474, h:54.3, quality:26, rating:'C', range:'2-4', detail:'Hedging intensity vs actual accuracy (ECE score). Only evaluated on trajectories with uncertainty expressions (n=183).'},
-    {rank:23, id:'J42', en:'CAT Failure', zh:'CAT反模式', n:631, mean:3.48, std:0.81, rho:0.155, h:146.3, quality:23, rating:'C', range:'2-5', detail:'Blind-retry + eval-abuse + resource-leak + cross-stage violations combined. Low ρ (0.155) indicates weak link to eval outcome despite high discrimination.'},
-    {rank:24, id:'J35', en:'Root Cause', zh:'根因归因', n:611, mean:3.37, std:0.91, rho:-0.008, h:115.6, quality:1, rating:'D', range:'2-5', detail:'Accurately identifying root cause of failure from trajectory evidence. Negative ρ indicates this metric is independent of eval outcome — measures diagnostic clarity, not task success.'}
+    {rank:1, id:'J60', url:'j60_interaction_precision.html', en:'Interaction Precision', zh:'交互精确度', n:655, mean:2.03, std:0.23, rho:0.515, h:598.8, quality:308, rating:'S', range:'2-4', detail:'Measures precision of agent interactions with the environment. Among proactive interactions, what fraction truly requires human decision. High scores indicate minimal wasted interactions.'},
+    {rank:2, id:'J65', url:'j65_question_quality.html', en:'Question Quality', zh:'提问质量', n:655, mean:1.96, std:0.44, rho:0.595, h:335.4, quality:200, rating:'S', range:'1-4', detail:'Evaluates specificity, answerability, and value of proactive questions the agent asks. Considers relevance, timing, and whether the question advances task completion.'},
+    {rank:3, id:'J39', url:'j39_failure_pattern.html', en:'Failure Pattern', zh:'失败模式', n:655, mean:2.17, std:0.85, rho:0.769, h:249.7, quality:192, rating:'S', range:'1-5', detail:'Classifies failure patterns: instant crash / format collapse / delayed explosion / summary-lock / resource exhaustion / monitor deadlock. Strongest eval correlation (ρ=0.769).'},
+    {rank:4, id:'J06', url:'j06_error_recovery.html', en:'Error Recovery', zh:'错误恢复', n:591, mean:2.22, std:0.68, rho:0.759, h:233.3, quality:177, rating:'S', range:'1-4', detail:'Counts successful recoveries from errors. Requires: (1) Detection, (2) Strategy Change, (3) Forward Progress. Measures recovery speed and effectiveness. Core resilience metric.'},
+    {rank:5, id:'J68', url:'j68_feedback_utilization.html', en:'Feedback Utilization', zh:'反馈利用率', n:655, mean:2.40, std:0.76, rho:0.748, h:235.3, quality:176, rating:'S', range:'1-5', detail:'Post-human-feedback coverage: measures how effectively the agent incorporates feedback from environment/error/evaluation signals to improve approach.'},
+    {rank:6, id:'J95', url:'j95_subtask_propagation.html', en:'Subtask Propagation', zh:'子任务传播', n:655, mean:2.32, std:0.87, rho:0.700, h:213.6, quality:150, rating:'A', range:'1-5', detail:'Error propagation distance across subtasks. Measures how well the agent isolates failures and prevents contamination of downstream subtasks.'},
+    {rank:7, id:'J50', url:'j50_evidence_action_gap.html', en:'Evidence-Action Gap', zh:'证据行动鸿沟', n:655, mean:2.49, std:0.66, rho:0.715, h:207.3, quality:148, rating:'A', range:'1-4', detail:'Correct information collected but not acted on. Penalizes agents that gather evidence without using it, or act without sufficient evidence.'},
+    {rank:8, id:'J32', url:'j32_traj_satisfy.html', en:'Traj-Satisfy', zh:'轨迹满意度', n:654, mean:3.27, std:1.93, rho:0.862, h:171.9, quality:148, rating:'A', range:'0-10', detail:'Holistic LLM satisfaction with trajectory quality on 0-10 scale. Strongest single-metric correlation with eval score (ρ=0.862). Wide dynamic range.'},
+    {rank:9, id:'J70', url:'j70_hypothesis_verify.html', en:'Hypothesis-Verify', zh:'假设验证', n:655, mean:2.08, std:0.75, rho:0.732, h:190.1, quality:139, rating:'A', range:'1-4', detail:'After hypothesis, does agent take verification action? Measures scientific reasoning: Data/Code/Assumption/Result/Backup verification before committing resources.'},
+    {rank:10, id:'J37', url:'j37_propagation_length.html', en:'Propagation Length', zh:'传播长度', n:642, mean:1.66, std:0.91, rho:0.757, h:163.6, quality:124, rating:'A', range:'1-5', detail:'Steps from root cause to failure exposure. Shorter propagation = errors caught earlier. Directly reflects engineering rigor and test coverage.'},
+    {rank:11, id:'J49', url:'j49_step_f1.html', en:'Step F1', zh:'步骤F1', n:655, mean:2.38, std:0.79, rho:0.535, h:190.4, quality:102, rating:'A', range:'1-5', detail:'Harmonic mean of step precision and recall. Balances completeness (all needed steps) with efficiency (no wasted steps).'},
+    {rank:12, id:'J41', url:'j41_error_type_solidification.html', en:'Error-Type Solidification', zh:'按类型错误固化', n:653, mean:2.64, std:0.72, rho:0.696, h:145.9, quality:102, rating:'A', range:'1-5', detail:'Per-error-type solidification rates: syntax-class vs design-decision. Detects when specific error types become stuck without resolution.'},
+    {rank:13, id:'J48', url:'j48_step_recall.html', en:'Step Recall', zh:'步骤召回率', n:655, mean:2.56, std:0.80, rho:0.539, h:162.8, quality:88, rating:'A', range:'1-5', detail:'Recall of actual failed steps. Measures whether the agent identifies and addresses all critical failure points in its trajectory.'},
+    {rank:14, id:'J30', url:'j30_parameter_accuracy.html', en:'Parameter Accuracy', zh:'参数准确率', n:655, mean:3.63, std:0.57, rho:0.569, h:150.2, quality:85, rating:'A', range:'1-5', detail:'Tool call argument values match expected/correct values. Catches wrong file paths, incorrect API parameters, off-by-one errors.'},
+    {rank:15, id:'J25', url:'j25_effective_action_ratio.html', en:'Effective Action Ratio', zh:'有效动作比', n:655, mean:2.25, std:0.71, rho:0.550, h:153.1, quality:84, rating:'A', range:'1-5', detail:'Classifies actions as PRODUCTIVE / EXPLORATORY_USEFUL / OVERHEAD_NECESSARY / REDUNDANT / CIRCULAR / FAILED_WASTED. Effective = first 3 / total.'},
+    {rank:16, id:'J61', url:'j61_interaction_f1.html', en:'Interaction F1', zh:'交互F1', n:655, mean:3.82, std:0.96, rho:0.631, h:118.7, quality:75, rating:'B', range:'1-5', detail:'Harmonic mean of checkpoint recall and interaction precision. Balances completeness of interactions with their necessity.'},
+    {rank:17, id:'J40', url:'j40_error_solidification.html', en:'Error Solidification', zh:'错误固化', n:655, mean:2.57, std:0.83, rho:0.499, h:139.9, quality:70, rating:'B', range:'1-5', detail:'Errors persisting after context summarization. Measures whether errors become permanently embedded vs. eventually resolved.'},
+    {rank:18, id:'J73', url:'j73_dual_channel_divergence.html', en:'Dual-Channel', zh:'双通道一致性', n:655, mean:3.38, std:0.60, rho:0.522, h:105.2, quality:55, rating:'B', range:'1-5', detail:'Reasoning stream vs action stream divergence. Types: ALIGNED / MINOR_DRIFT / CONTENT_DIVERGE / DIRECTION_DIVERGE / CONTRADICTION.'},
+    {rank:19, id:'J13', url:'j13_cross_stage_violations.html', en:'Cross-Stage Violations', zh:'跨阶段违反', n:585, mean:3.45, std:0.75, rho:0.579, h:69.4, quality:40, rating:'B', range:'1-5', detail:'Late-pipeline decisions that violate earlier choices. E.g., executing before planning, or re-planning mid-execution without justification.'},
+    {rank:20, id:'J63', url:'j63_hedging_frequency.html', en:'Hedging Frequency', zh:'不确定性表达', n:148, mean:3.09, std:0.54, rho:0.501, h:59.9, quality:30, rating:'C', range:'2-4', detail:'Uncertainty expression density in reasoning stream. Only evaluated on trajectories with explicit reasoning (n=148). Appropriate hedging is good; excessive hedging suggests low confidence.'},
+    {rank:21, id:'J47', url:'j47_step_precision.html', en:'Step Precision', zh:'步骤精确率', n:655, mean:4.13, std:0.73, rho:0.182, h:154.9, quality:28, rating:'C', range:'3-5', detail:'Precision at marking failed steps vs reference. High mean (4.13) with low ρ suggests ceiling effect — most models score well, limiting discrimination.'},
+    {rank:22, id:'J64', url:'j64_uncertainty_calibration.html', en:'Uncertainty Calibration', zh:'不确定性校准', n:183, mean:2.65, std:0.55, rho:0.474, h:54.3, quality:26, rating:'C', range:'2-4', detail:'Hedging intensity vs actual accuracy (ECE score). Only evaluated on trajectories with uncertainty expressions (n=183).'},
+    {rank:23, id:'J42', url:'j42_cat_failure.html', en:'CAT Failure', zh:'CAT反模式', n:631, mean:3.48, std:0.81, rho:0.155, h:146.3, quality:23, rating:'C', range:'2-5', detail:'Blind-retry + eval-abuse + resource-leak + cross-stage violations combined. Low ρ (0.155) indicates weak link to eval outcome despite high discrimination.'},
+    {rank:24, id:'J35', url:'j35_root_cause.html', en:'Root Cause', zh:'根因归因', n:611, mean:3.37, std:0.91, rho:-0.008, h:115.6, quality:1, rating:'D', range:'2-5', detail:'Accurately identifying root cause of failure from trajectory evidence. Negative ρ indicates this metric is independent of eval outcome — measures diagnostic clarity, not task success.'}
 ];
 
 const leaderboardData = [
@@ -1540,7 +1726,7 @@ function renderCatalog(filter) {
         row.onclick = function() { toggleMetricDetail(this); };
         row.innerHTML = `
             <td>${m.rank}</td>
-            <td><span class="mono" style="font-weight:600;">${m.id}</span></td>
+            <td><a href="rubrics/${m.url}" class="mono" style="font-weight:600; color:var(--accent);">${m.id}</a></td>
             <td>${m.en}</td>
             <td>${m.zh}</td>
             <td class="mono">${m.n || ''}</td>
@@ -1733,12 +1919,90 @@ document.querySelectorAll('.navbar-links a').forEach(link => {
     });
 });
 
+// ======== TASK BEHAVIORAL DATA ========
+
+const taskData = [
+    {task:1, scored:10, total:10, best:'glm-4-5-full-data', bestScore:96.4, families:7, zero:0, noeval:0},
+    {task:2, scored:10, total:10, best:'claude-4-sonnet', bestScore:39.4, families:7, zero:0, noeval:0},
+    {task:3, scored:10, total:10, best:'glm-4-5', bestScore:18.9, families:6, zero:0, noeval:0},
+    {task:4, scored:10, total:10, best:'kimi-k2.5', bestScore:100.0, families:8, zero:0, noeval:0},
+    {task:5, scored:10, total:10, best:'claude-4-sonnet', bestScore:23.2, families:8, zero:0, noeval:0},
+    {task:6, scored:10, total:10, best:'glm-4-5-full-data-wo-interact', bestScore:100.0, families:7, zero:0, noeval:0},
+    {task:7, scored:10, total:10, best:'claude-4-sonnet', bestScore:25.8, families:8, zero:0, noeval:0},
+    {task:8, scored:10, total:10, best:'glm47-codeact', bestScore:38.0, families:8, zero:0, noeval:0},
+    {task:9, scored:2, total:10, best:'glm47', bestScore:60.8, families:5, zero:5, noeval:3},
+    {task:10, scored:1, total:10, best:'kimi-k2.5', bestScore:15.5, families:6, zero:6, noeval:3},
+    {task:11, scored:10, total:10, best:'claude-4-sonnet', bestScore:86.3, families:6, zero:0, noeval:0},
+    {task:12, scored:7, total:10, best:'kimi-k2.5', bestScore:95.4, families:7, zero:2, noeval:1},
+    {task:13, scored:10, total:10, best:'glm47', bestScore:31.4, families:6, zero:0, noeval:0},
+    {task:14, scored:6, total:10, best:'claude-4-sonnet', bestScore:37.4, families:4, zero:1, noeval:3},
+    {task:15, scored:9, total:10, best:'glm-4-5-full-data-w-interact-w-filter', bestScore:75.7, families:6, zero:0, noeval:1},
+    {task:16, scored:0, total:10, best:'claude-4-sonnet', bestScore:0.0, families:4, zero:9, noeval:1},
+    {task:17, scored:10, total:10, best:'glm47', bestScore:55.9, families:6, zero:0, noeval:0},
+    {task:18, scored:5, total:10, best:'glm47-sweagent', bestScore:70.0, families:5, zero:0, noeval:5},
+    {task:19, scored:10, total:10, best:'gpt-5', bestScore:92.5, families:7, zero:0, noeval:0},
+    {task:20, scored:10, total:10, best:'gpt-5', bestScore:87.8, families:6, zero:0, noeval:0}
+];
+
+function renderTaskGrid() {
+    const grid = document.getElementById('taskGrid');
+    grid.innerHTML = '';
+
+    taskData.forEach(t => {
+        const borderClass = t.scored > 7 ? 'border-green' : t.scored === 0 ? 'border-orange' : 'border-blue';
+        const scoredPct = (t.scored / t.total) * 100;
+        const zeroPct = (t.zero / t.total) * 100;
+        const noevalPct = (t.noeval / t.total) * 100;
+
+        const card = document.createElement('a');
+        card.className = `task-card ${borderClass}`;
+        card.href = `tasks/Task${t.task}_Behavioral_Analysis.html`;
+        card.innerHTML = `
+            <div class="task-card-title">Task ${t.task}</div>
+            <div class="task-card-score">${t.scored}/${t.total} scored &gt; 0</div>
+            <div class="task-progress-bar">
+                <div class="bar-scored" style="width:${scoredPct}%"></div>
+                <div class="bar-zero" style="width:${zeroPct}%"></div>
+                <div class="bar-noeval" style="width:${noevalPct}%"></div>
+            </div>
+            <div class="task-card-best">Best: ${t.best} <span class="best-badge">${t.bestScore.toFixed(1)}</span></div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function renderTaskLeaderboard() {
+    const tbody = document.getElementById('taskLeaderboardBody');
+    tbody.innerHTML = '';
+
+    const sorted = [...taskData].sort((a, b) => (b.scored / b.total) - (a.scored / a.total));
+
+    sorted.forEach((t, i) => {
+        const passRate = ((t.scored / t.total) * 100).toFixed(0);
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="rank-cell">${i + 1}</td>
+            <td><a href="tasks/Task${t.task}_Behavioral_Analysis.html" style="color:var(--accent); text-decoration:none; font-weight:600;">Task ${t.task}</a></td>
+            <td class="mono">${t.scored}/${t.total}</td>
+            <td class="mono" style="font-weight:600; color:${passRate >= 80 ? 'var(--green)' : passRate >= 50 ? 'var(--text)' : 'var(--red)'};">${passRate}%</td>
+            <td style="font-size:0.82rem;">${t.best}</td>
+            <td class="mono" style="font-weight:600;">${t.bestScore.toFixed(1)}</td>
+            <td class="mono">${t.families}</td>
+            <td class="mono" style="color:${t.zero > 0 ? 'var(--gold)' : 'var(--text-light)'};">${t.zero}</td>
+            <td class="mono" style="color:${t.noeval > 0 ? 'var(--red)' : 'var(--text-light)'};">${t.noeval}</td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
 // ======== INIT ========
 document.addEventListener('DOMContentLoaded', () => {
     renderCatalog('all');
     renderLeaderboard();
     renderAutoMetrics();
     renderRadarChart();
+    renderTaskGrid();
+    renderTaskLeaderboard();
 });
 </script>
 </body>

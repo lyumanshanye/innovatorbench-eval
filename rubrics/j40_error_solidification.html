@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J40 - Error Solidification</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2440;
+            --accent: #2563eb;
+            --gold: #d97706;
+            --green: #059669;
+            --bg: #fafbfc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --code-bg: #1e1e2e;
+            --code-text: #cdd6f4;
+            --score-1: #dc2626;
+            --score-2: #ea580c;
+            --score-3: #d97706;
+            --score-4: #65a30d;
+            --score-5: #059669;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--navy) 0%, #1a365d 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .metric-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.3rem 0.75rem;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .scoring-scale {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+
+        .scoring-scale h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .scale-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .scale-step {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .scale-step:nth-child(1) { background: var(--score-1); }
+        .scale-step:nth-child(2) { background: var(--score-2); }
+        .scale-step:nth-child(3) { background: var(--score-3); }
+        .scale-step:nth-child(4) { background: var(--score-4); }
+        .scale-step:nth-child(5) { background: var(--score-5); }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 0 0.25rem;
+        }
+
+        .scale-labels span {
+            text-align: center;
+        }
+
+        .scale-details {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .scale-detail {
+            text-align: center;
+            padding: 0.5rem 0.25rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            background: var(--bg);
+        }
+
+        .scale-detail .num {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .scale-detail:nth-child(1) .num { color: var(--score-1); }
+        .scale-detail:nth-child(2) .num { color: var(--score-2); }
+        .scale-detail:nth-child(3) .num { color: var(--score-3); }
+        .scale-detail:nth-child(4) .num { color: var(--score-4); }
+        .scale-detail:nth-child(5) .num { color: var(--score-5); }
+
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .content h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 1.75rem 0 0.75rem;
+        }
+
+        .content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 1.25rem 0 0.5rem;
+        }
+
+        .content p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .content ul, .content ol {
+            margin: 0.75rem 0 1rem 1.5rem;
+        }
+
+        .content li {
+            margin-bottom: 0.4rem;
+            padding-left: 0.25rem;
+        }
+
+        .content li::marker {
+            color: var(--accent);
+        }
+
+        .content strong {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #be185d;
+        }
+
+        .code-block {
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-block pre {
+            background: var(--code-bg);
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--code-text);
+            background: none;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: var(--navy);
+            color: white;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .scale-details {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 4px;
+            }
+
+            .scale-detail {
+                font-size: 0.6rem;
+                padding: 0.4rem 0.1rem;
+            }
+
+            .table-wrapper {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scale-details {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .scale-detail {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                text-align: left;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .scale-detail .num {
+                margin-bottom: 0;
+                min-width: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div class="header-content">
+            <a href="../index.html#metrics" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Back to Overview
+            </a>
+            <div class="metric-badge">J40</div>
+            <h1>Error Solidification</h1>
+        </div>
+    </header>
+
+    <div class="scoring-scale">
+        <h3>Scoring Scale (1-5)</h3>
+        <div class="scale-bar">
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+        </div>
+        <div class="scale-labels">
+            <span>1 - Worst</span>
+            <span>2</span>
+            <span>3 - Mid</span>
+            <span>4</span>
+            <span>5 - Best</span>
+        </div>
+        <div class="scale-details">
+            <div class="scale-detail"><span class="num">1</span> Poor / None</div>
+            <div class="scale-detail"><span class="num">2</span> Below Average</div>
+            <div class="scale-detail"><span class="num">3</span> Moderate</div>
+            <div class="scale-detail"><span class="num">4</span> Good</div>
+            <div class="scale-detail"><span class="num">5</span> Excellent</div>
+        </div>
+    </div>
+
+    <main class="content">
+        <p>You are an expert evaluator assessing AI agent trajectories from the InnovatorBench benchmark. Your task is to measure the <strong>Error Solidification Rate</strong>: the degree to which errors made by the agent persist, survive context compression or forgetting, and become treated as correct facts in subsequent reasoning. This metric captures a particularly insidious failure mode — when mistakes become invisible and the agent builds on a wrong foundation.</p>
+<p>You will receive a complete agent trajectory consisting of thoughts, tool calls, observations, and outputs. Evaluate it according to the procedure and scoring scale below.</p>
+<h2>Definitions</h2>
+<ul>
+<li><strong>Error</strong>: A factually incorrect statement, wrong assumption, buggy code, incorrect interpretation of output, flawed parameter choice, or any other mistake the agent makes during the trajectory. Errors can be:</li>
+<li><strong>Explicit</strong>: The agent writes incorrect code, states a wrong fact, or misinterprets an error message.</li>
+<li><strong>Implicit</strong>: The agent proceeds under an incorrect assumption without stating it explicitly (e.g., assuming a file is in CSV format when it is TSV).</li>
+</ul>
+<ul>
+<li><strong>Solidification</strong>: The process by which an error transitions from a &quot;live mistake&quot; (potentially recognizable and correctable) to a &quot;settled fact&quot; (treated as established truth in subsequent reasoning). Solidification occurs when:</li>
+<li>The agent references the error later as if it were correct, without re-examining it.</li>
+<li>The agent builds new logic, code, or decisions on top of the erroneous foundation.</li>
+<li>Context compression or summarization strips away the evidence that the original statement was uncertain or wrong.</li>
+<li>The agent defends or reinforces the error when confronted with contradicting evidence.</li>
+</ul>
+<ul>
+<li><strong>Context compression indicators</strong>: Signs that the agent may have lost detailed context include:</li>
+<li>The agent restating earlier findings in summarized form (details lost).</li>
+<li>Long trajectories where early steps are far from current context.</li>
+<li>The agent re-reading files or re-running commands it ran earlier (suggesting lost context).</li>
+<li>Shifts in how the agent describes earlier work (abstractions replacing specifics).</li>
+</ul>
+<ul>
+<li><strong>Error correction</strong>: The agent recognizes a previous error and takes corrective action. This is the opposite of solidification — the error is caught before it can solidify.</li>
+</ul>
+<h2>Procedure</h2>
+<p>Follow these steps in order:</p>
+<ol>
+<li><strong>Identify all errors in the trajectory.</strong> Walk through the trajectory chronologically and flag every mistake, incorrect assumption, or wrong output. For each error, record:</li>
+<li>When it occurred (step number or position)</li>
+<li>What the error was (be specific)</li>
+<li>How obvious the error was (would a competent human engineer catch it immediately, or is it subtle?)</li>
+<li>The potential impact if left uncorrected (trivial, moderate, or foundational)</li>
+</ol>
+<ol>
+<li><strong>Track error lifecycle.</strong> For each error identified in step 1, trace what happens to it:</li>
+<li><strong>Corrected</strong>: The agent later recognizes the error and fixes it. Note when and how.</li>
+<li><strong>Solidified</strong>: The agent later treats the error as correct. Note the first instance where the error is referenced as fact.</li>
+<li><strong>Abandoned</strong>: The agent moves to a different approach, making the error irrelevant. Note whether this was deliberate or accidental.</li>
+<li><strong>Indeterminate</strong>: The error is neither clearly corrected nor clearly solidified (e.g., the trajectory ends before the error&#x27;s impact becomes apparent).</li>
+</ol>
+<ol>
+<li><strong>Assess solidification depth.</strong> For each solidified error, determine how deeply it became embedded:</li>
+<li><strong>Surface solidification</strong>: The error persists but does not significantly affect downstream work (e.g., a wrong comment in code, an incorrect variable name that happens to work).</li>
+<li><strong>Structural solidification</strong>: The error affects the logical structure of subsequent work (e.g., wrong data preprocessing that propagates through the pipeline, incorrect hyperparameter that shapes the entire training run).</li>
+<li><strong>Foundational solidification</strong>: The error defines the agent&#x27;s entire approach, and correcting it would require starting over (e.g., fundamentally misunderstanding the task requirements, choosing the wrong model architecture based on an early misreading).</li>
+</ol>
+<ol>
+<li><strong>Look for compounding solidification.</strong> Check whether multiple solidified errors interact — does one solidified error make it harder to detect another? Do solidified errors create a self-reinforcing incorrect worldview?</li>
+</ol>
+<ol>
+<li><strong>Assign a score</strong> using the scale below.</li>
+</ol>
+<h2>Scoring Scale</h2>
+<div class="table-wrapper"><table><thead><tr><th>Score</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<tr><td><strong>5</strong></td><td>No solidification</td><td>Either no errors occur in the trajectory, or every error that does occur is caught and corrected before it can influence subsequent reasoning. The agent demonstrates strong self-monitoring and course-correction capability.</td></tr>
+<tr><td><strong>4</strong></td><td>Minimal solidification</td><td>One instance where an old error persists into later steps, but the agent eventually catches and corrects it, or the error has only surface-level impact. The vast majority of errors are handled well.</td></tr>
+<tr><td><strong>3</strong></td><td>Moderate solidification</td><td>Some errors (2-3) survive into later reasoning and affect subsequent decisions. The agent shows mixed self-correction ability — catches some errors but misses others. At least one error reaches structural solidification depth.</td></tr>
+<tr><td><strong>2</strong></td><td>Significant solidification</td><td>Multiple errors solidify and the agent builds incorrect assumptions on top of them. The agent shows poor self-monitoring — it does not revisit or question earlier conclusions even when evidence suggests they were wrong. Solidified errors demonstrably degrade the final outcome.</td></tr>
+<tr><td><strong>1</strong></td><td>Severe solidification</td><td>Foundational errors made early in the trajectory become fully embedded. The agent treats incorrect premises as established facts throughout. All subsequent work is built on a wrong foundation. The agent may even defend its errors when confronted with contradicting evidence. Multiple errors may compound, creating a self-reinforcing incorrect framework.</td></tr>
+</tbody></table></div>
+<h2>Edge Cases</h2>
+<ul>
+<li><strong>Trajectory has fewer than 5 steps</strong>: Very short trajectories have limited opportunity for solidification (errors need time to become embedded). If no errors are present, score 5. If an error occurs and is not corrected in the remaining steps, assess based on whether the error would likely have solidified given more steps — but lean toward scoring 4 rather than 3, since the trajectory did not actually demonstrate solidification. Note the short length in your reason.</li>
+</ul>
+<ul>
+<li><strong>No errors occur throughout the trajectory</strong>: Score 5. A clean trajectory with no errors has a solidification rate of zero by definition. Note in your reason that no errors were identified to track.</li>
+</ul>
+<ul>
+<li><strong>Agent makes errors but immediately corrects them</strong>: This is healthy error handling. If all errors are caught and corrected within 1-2 steps of occurring, score 5. The ability to self-correct is exactly what prevents solidification.</li>
+</ul>
+<ul>
+<li><strong>Trajectory involves context compression or summarization</strong>: Pay special attention to what happens at compression boundaries. Errors that existed before compression and survive afterward in simplified form are prime candidates for solidification. The compression itself may strip away the nuance that would have allowed the agent to recognize the error.</li>
+</ul>
+<ul>
+<li><strong>Agent re-derives correct information from scratch</strong>: If the agent makes an error, later re-examines the source material, and arrives at the correct answer independently (without explicitly referencing the earlier error), this counts as correction even if the agent does not explicitly acknowledge the original mistake.</li>
+</ul>
+<ul>
+<li><strong>The error is in a domain where correctness is ambiguous</strong>: If the agent makes a judgment call that could be argued either way (e.g., choosing a learning rate within a reasonable range), do not classify this as an error unless the trajectory later reveals it was clearly wrong (e.g., training diverges).</li>
+</ul>
+<ul>
+<li><strong>Agent explicitly builds on an error while acknowledging uncertainty</strong>: If the agent says something like &quot;I believe X is correct, but I am not sure — proceeding with this assumption for now,&quot; this is a weaker form of solidification. The uncertainty acknowledgment mitigates the score penalty compared to full solidification where the agent treats X as certain.</li>
+</ul>
+<h2>Output Format</h2>
+<p>Return ONLY valid JSON with no additional text, markdown formatting, or code fences:</p>
+<p>{&quot;score&quot;: N, &quot;reason&quot;: &quot;A 2-4 sentence explanation of the solidification assessment, referencing specific errors and their lifecycle.&quot;, &quot;evidence&quot;: [&quot;Step X: Agent incorrectly concluded the dataset has 1000 rows (actual: 10000). By step Y, this was treated as fact and batch size was calculated based on 1000 rows.&quot;, &quot;Step Z: Agent misread the loss function as MSE when it was cross-entropy. This was never corrected and all hyperparameter tuning was done for the wrong objective.&quot;, &quot;...&quot;]}</p>
+<p>Notes on the JSON output:</p>
+<ul>
+<li><code>score</code> must be an integer from 1 to 5.</li>
+<li><code>reason</code> should be concise but specific. Identify the most consequential solidified errors and explain how they persisted.</li>
+<li><code>evidence</code> is an array of strings (1-5 items), each tracing a specific error from its origin through its solidification (or correction). For high scores (4-5), evidence items should note errors that were caught and corrected, or confirm that no significant errors were found.</li>
+</ul>
+    </main>
+
+    <footer class="footer">
+        <a href="../index.html#metrics">&#8592; Back to Metrics Overview</a>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J35 - Root Cause Attribution</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2440;
+            --accent: #2563eb;
+            --gold: #d97706;
+            --green: #059669;
+            --bg: #fafbfc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --code-bg: #1e1e2e;
+            --code-text: #cdd6f4;
+            --score-1: #dc2626;
+            --score-2: #ea580c;
+            --score-3: #d97706;
+            --score-4: #65a30d;
+            --score-5: #059669;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--navy) 0%, #1a365d 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .metric-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.3rem 0.75rem;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .scoring-scale {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+
+        .scoring-scale h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .scale-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .scale-step {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .scale-step:nth-child(1) { background: var(--score-1); }
+        .scale-step:nth-child(2) { background: var(--score-2); }
+        .scale-step:nth-child(3) { background: var(--score-3); }
+        .scale-step:nth-child(4) { background: var(--score-4); }
+        .scale-step:nth-child(5) { background: var(--score-5); }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 0 0.25rem;
+        }
+
+        .scale-labels span {
+            text-align: center;
+        }
+
+        .scale-details {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .scale-detail {
+            text-align: center;
+            padding: 0.5rem 0.25rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            background: var(--bg);
+        }
+
+        .scale-detail .num {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .scale-detail:nth-child(1) .num { color: var(--score-1); }
+        .scale-detail:nth-child(2) .num { color: var(--score-2); }
+        .scale-detail:nth-child(3) .num { color: var(--score-3); }
+        .scale-detail:nth-child(4) .num { color: var(--score-4); }
+        .scale-detail:nth-child(5) .num { color: var(--score-5); }
+
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .content h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 1.75rem 0 0.75rem;
+        }
+
+        .content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 1.25rem 0 0.5rem;
+        }
+
+        .content p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .content ul, .content ol {
+            margin: 0.75rem 0 1rem 1.5rem;
+        }
+
+        .content li {
+            margin-bottom: 0.4rem;
+            padding-left: 0.25rem;
+        }
+
+        .content li::marker {
+            color: var(--accent);
+        }
+
+        .content strong {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #be185d;
+        }
+
+        .code-block {
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-block pre {
+            background: var(--code-bg);
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--code-text);
+            background: none;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: var(--navy);
+            color: white;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .scale-details {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 4px;
+            }
+
+            .scale-detail {
+                font-size: 0.6rem;
+                padding: 0.4rem 0.1rem;
+            }
+
+            .table-wrapper {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scale-details {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .scale-detail {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                text-align: left;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .scale-detail .num {
+                margin-bottom: 0;
+                min-width: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div class="header-content">
+            <a href="../index.html#metrics" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Back to Overview
+            </a>
+            <div class="metric-badge">J35</div>
+            <h1>Root Cause Attribution</h1>
+        </div>
+    </header>
+
+    <div class="scoring-scale">
+        <h3>Scoring Scale (1-5)</h3>
+        <div class="scale-bar">
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+        </div>
+        <div class="scale-labels">
+            <span>1 - Worst</span>
+            <span>2</span>
+            <span>3 - Mid</span>
+            <span>4</span>
+            <span>5 - Best</span>
+        </div>
+        <div class="scale-details">
+            <div class="scale-detail"><span class="num">1</span> Poor / None</div>
+            <div class="scale-detail"><span class="num">2</span> Below Average</div>
+            <div class="scale-detail"><span class="num">3</span> Moderate</div>
+            <div class="scale-detail"><span class="num">4</span> Good</div>
+            <div class="scale-detail"><span class="num">5</span> Excellent</div>
+        </div>
+    </div>
+
+    <main class="content">
+        <h2>Role</h2>
+<p>You are an expert evaluator determining whether you can accurately identify the <strong>root cause</strong> of failure (or suboptimal performance) in an AI agent&#x27;s trajectory. This metric assesses diagnostic clarity: given the trajectory, how clearly can the fundamental problem be identified?</p>
+<h2>Inputs</h2>
+<ol>
+<li><code>task_description</code> — The original task and success criteria</li>
+<li><code>agent_trajectory</code> — Ordered (action, observation) pairs with full context</li>
+<li><code>final_eval_score</code> — Ground-truth score (0-100)</li>
+<li><code>task_stats</code> — Best/median/mean scores from other agents on this task</li>
+</ol>
+<h2>Evaluation Procedure</h2>
+<h3>Step 1: Identify the outcome gap</h3>
+<ul>
+<li>Compare <code>final_eval_score</code> to <code>task_stats.best_eval</code> and <code>task_stats.median_eval</code></li>
+<li>If score is at/near best: root cause = &quot;no significant failure&quot; (score N/A)</li>
+<li>If score is below median or zero: proceed to root cause analysis</li>
+</ul>
+<h3>Step 2: Generate root cause hypothesis</h3>
+<p>Classify into one of these root cause categories:</p>
+<ul>
+<li><strong>PLANNING_FAILURE</strong>: Wrong strategy chosen at the outset (e.g., wrong algorithm, wrong order of operations)</li>
+<li><strong>TIME_MANAGEMENT</strong>: Ran out of budget before completing critical steps</li>
+<li><strong>LOOP_TRAP</strong>: Agent got stuck in circular/repetitive behavior</li>
+<li><strong>COMPREHENSION_FAILURE</strong>: Misunderstood the task requirements</li>
+<li><strong>RESOURCE_FAILURE</strong>: External resource unavailable (network, GPU, disk)</li>
+<li><strong>CASCADING_ERROR</strong>: Early error propagated and contaminated later steps</li>
+<li><strong>EXECUTION_BUG</strong>: Correct strategy but implementation has bugs</li>
+<li><strong>SCOPE_CREEP</strong>: Over-engineered one component at expense of the whole</li>
+</ul>
+<h3>Step 3: Trace the causal chain</h3>
+<ul>
+<li>Identify the FIRST step where the failure path begins</li>
+<li>Trace how it propagated to the final outcome</li>
+<li>Identify if there were opportunities to recover that were missed</li>
+</ul>
+<h3>Step 4: Assess confidence</h3>
+<ul>
+<li>How clearly does the evidence support this root cause?</li>
+<li>Are there alternative explanations?</li>
+</ul>
+<h2>Scoring Scale (1-5)</h2>
+<div class="table-wrapper"><table><thead><tr><th>Score</th><th>Label</th><th>Criteria</th></tr></thead><tbody>
+<tr><td>5</td><td>Clear Single Root Cause</td><td>One unambiguous root cause with clear causal chain; evidence is overwhelming</td></tr>
+<tr><td>4</td><td>Primary Root Cause + Contributing Factors</td><td>Main cause identified with high confidence; minor contributing factors exist</td></tr>
+<tr><td>3</td><td>Multiple Interacting Causes</td><td>2-3 causes of similar weight; difficult to isolate a single root</td></tr>
+<tr><td>2</td><td>Unclear Root Cause</td><td>Evidence is ambiguous; multiple conflicting hypotheses; poor observability</td></tr>
+<tr><td>1</td><td>Undiagnosable</td><td>Cannot determine root cause from available evidence</td></tr>
+</tbody></table></div>
+<p><strong>Special case:</strong> If <code>final_eval_score</code> is at/above <code>task_stats.median_eval</code>, score = N/A (no significant failure to diagnose).</p>
+<h2>Output Format</h2>
+<div class="code-block"><pre><code class="language-json">{
+  &quot;score&quot;: &lt;1|2|3|4|5|&quot;N/A&quot;&gt;,
+  &quot;root_cause_category&quot;: &quot;&lt;PLANNING_FAILURE|TIME_MANAGEMENT|LOOP_TRAP|COMPREHENSION_FAILURE|RESOURCE_FAILURE|CASCADING_ERROR|EXECUTION_BUG|SCOPE_CREEP|NO_FAILURE&gt;&quot;,
+  &quot;root_cause_description&quot;: &quot;&lt;specific description of what went wrong&gt;&quot;,
+  &quot;first_failure_step&quot;: &lt;int or null&gt;,
+  &quot;causal_chain&quot;: [&quot;&lt;step 1 of propagation&gt;&quot;, &quot;&lt;step 2&gt;&quot;, &quot;...&quot;],
+  &quot;missed_recovery_opportunities&quot;: [&quot;&lt;opportunity 1&gt;&quot;, &quot;...&quot;],
+  &quot;alternative_hypotheses&quot;: [&quot;&lt;alt explanation&gt;&quot;, &quot;...&quot;],
+  &quot;confidence&quot;: &lt;float 0-1&gt;,
+  &quot;reason&quot;: &quot;&lt;3-4 sentence diagnosis&gt;&quot;
+}</code></pre></div>
+<h2>Examples</h2>
+<h3>Example 1: Score 5 (Task 16, RL Reward, score=0)</h3>
+<p>Root cause is unambiguous: LOOP_TRAP. Agent entered a micro-editing loop on line 83-95 of qa.py (58 edits) and never progressed to training or inference. The causal chain is: edit loop → all time consumed → no training → no output → score 0.</p>
+<div class="code-block"><pre><code class="language-json">{&quot;score&quot;: 5, &quot;root_cause_category&quot;: &quot;LOOP_TRAP&quot;, &quot;root_cause_description&quot;: &quot;Agent entered pathological edit loop on reward function (58 edits to same lines in qa.py) without ever testing the function, consuming entire time budget&quot;, &quot;first_failure_step&quot;: 36, &quot;causal_chain&quot;: [&quot;Step 36: First edit to qa.py line 83&quot;, &quot;Steps 36-155: 58 repeated edits to same lines without compilation or testing&quot;, &quot;Budget exhausted: no time for train→infer pipeline&quot;, &quot;No output file produced, score = 0&quot;], &quot;missed_recovery_opportunities&quot;: [&quot;After 10th edit: should have tested current version&quot;, &quot;After 50th step: should have assessed time remaining and prioritized end-to-end run&quot;, &quot;Think node 3 recognized need to simplify but didn&#x27;t act on it&quot;], &quot;alternative_hypotheses&quot;: [&quot;SCOPE_CREEP: over-engineering reward function&quot;], &quot;confidence&quot;: 0.95, &quot;reason&quot;: &quot;Crystal clear root cause. The agent&#x27;s 58 edits to the same file lines constitute an unmistakable loop trap. This directly caused budget exhaustion and zero output. No alternative explanation is plausible.&quot;}</code></pre></div>
+<h3>Example 2: Score 3 (Task 5, Data Cleaning, score=17.44)</h3>
+<p>Multiple interacting causes: (a) initial cleaning rules too aggressive (logic issue), (b) enhancement made it worse (regression), (c) eval non-determinism confused rollback strategy. Hard to isolate one root cause.</p>
+<div class="code-block"><pre><code class="language-json">{&quot;score&quot;: 3, &quot;root_cause_category&quot;: &quot;EXECUTION_BUG&quot;, &quot;root_cause_description&quot;: &quot;Cleaning heuristics either too aggressive (removed good content) or too weak (kept noise). Enhancement attempt introduced worse heuristics rather than fixing the original issue&quot;, &quot;first_failure_step&quot;: 5, &quot;causal_chain&quot;: [&quot;Step 5: Initial cleaning rules designed without analyzing what makes content &#x27;good&#x27;&quot;, &quot;Step 19: First eval shows 3.186/5 quality — above baseline but not high&quot;, &quot;Steps 20-35: Enhancement adds more aggressive filters&quot;, &quot;Step 36: Score drops to 3.122 — enhancement was counterproductive&quot;, &quot;Step 38: Rollback attempted but third eval even lower (3.077)&quot;], &quot;missed_recovery_opportunities&quot;: [&quot;Before enhancement: should have sampled and analyzed what the judge considers &#x27;quality&#x27;&quot;, &quot;After first score drop: should have analyzed which new filters removed good content&quot;], &quot;alternative_hypotheses&quot;: [&quot;Eval non-determinism: same data scored differently across runs&quot;, &quot;PLANNING_FAILURE: should have used LLM-based quality scoring rather than heuristic rules&quot;], &quot;confidence&quot;: 0.55, &quot;reason&quot;: &quot;Multiple interacting factors. The heuristic approach may be fundamentally limited, but the enhancement regression and eval score inconsistency (rollback scored lower than original) suggest additional confounds. Cannot isolate a single root cause with high confidence.&quot;}</code></pre></div>
+<h3>Example 3: Score 4 (Task 18, Agent/Workflow, no eval)</h3>
+<p>Primary cause: TIME_MANAGEMENT. Agent spent too long debugging import/syntax errors (~45 steps) before getting the code to run. Contributing factor: code was written in one large chunk rather than incrementally tested.</p>
+<div class="code-block"><pre><code class="language-json">{&quot;score&quot;: 4, &quot;root_cause_category&quot;: &quot;TIME_MANAGEMENT&quot;, &quot;root_cause_description&quot;: &quot;Agent spent ~45 steps (37% of trajectory) debugging import and syntax errors in research_agent.py, leaving insufficient time to run full test set and submit eval&quot;, &quot;first_failure_step&quot;: 50, &quot;causal_chain&quot;: [&quot;Steps 11-45: Agent writes large implementation in one go&quot;, &quot;Steps 50-95: 8 rounds of test-fail-edit debugging cycle&quot;, &quot;Steps 95-115: Late-stage rapid thrashing on specific code section&quot;, &quot;Steps 116-120: Finally runs one test question but runs out of time before full eval&quot;], &quot;missed_recovery_opportunities&quot;: [&quot;After first import error: should have tested smallest possible code first&quot;, &quot;After 5th debugging round: should have prioritized getting minimal version running over fixing all issues&quot;], &quot;alternative_hypotheses&quot;: [&quot;EXECUTION_BUG: fundamental coding issues in the implementation&quot;], &quot;confidence&quot;: 0.75, &quot;reason&quot;: &quot;Primary root cause is clear: time consumed by debugging cycle left no budget for full evaluation. Contributing factor is the &#x27;big-bang implementation&#x27; strategy (write everything, then debug) rather than incremental development. The debugging itself was methodical — the problem was starting it too late.&quot;}</code></pre></div>
+    </main>
+
+    <footer class="footer">
+        <a href="../index.html#metrics">&#8592; Back to Metrics Overview</a>
+    </footer>
+</body>
+</html>

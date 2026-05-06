@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J63 - Thinking Hedging Frequency</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2440;
+            --accent: #2563eb;
+            --gold: #d97706;
+            --green: #059669;
+            --bg: #fafbfc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --code-bg: #1e1e2e;
+            --code-text: #cdd6f4;
+            --score-1: #dc2626;
+            --score-2: #ea580c;
+            --score-3: #d97706;
+            --score-4: #65a30d;
+            --score-5: #059669;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--navy) 0%, #1a365d 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .metric-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.3rem 0.75rem;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .scoring-scale {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+
+        .scoring-scale h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .scale-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .scale-step {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .scale-step:nth-child(1) { background: var(--score-1); }
+        .scale-step:nth-child(2) { background: var(--score-2); }
+        .scale-step:nth-child(3) { background: var(--score-3); }
+        .scale-step:nth-child(4) { background: var(--score-4); }
+        .scale-step:nth-child(5) { background: var(--score-5); }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 0 0.25rem;
+        }
+
+        .scale-labels span {
+            text-align: center;
+        }
+
+        .scale-details {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .scale-detail {
+            text-align: center;
+            padding: 0.5rem 0.25rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            background: var(--bg);
+        }
+
+        .scale-detail .num {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .scale-detail:nth-child(1) .num { color: var(--score-1); }
+        .scale-detail:nth-child(2) .num { color: var(--score-2); }
+        .scale-detail:nth-child(3) .num { color: var(--score-3); }
+        .scale-detail:nth-child(4) .num { color: var(--score-4); }
+        .scale-detail:nth-child(5) .num { color: var(--score-5); }
+
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .content h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 1.75rem 0 0.75rem;
+        }
+
+        .content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 1.25rem 0 0.5rem;
+        }
+
+        .content p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .content ul, .content ol {
+            margin: 0.75rem 0 1rem 1.5rem;
+        }
+
+        .content li {
+            margin-bottom: 0.4rem;
+            padding-left: 0.25rem;
+        }
+
+        .content li::marker {
+            color: var(--accent);
+        }
+
+        .content strong {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #be185d;
+        }
+
+        .code-block {
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-block pre {
+            background: var(--code-bg);
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--code-text);
+            background: none;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: var(--navy);
+            color: white;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .scale-details {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 4px;
+            }
+
+            .scale-detail {
+                font-size: 0.6rem;
+                padding: 0.4rem 0.1rem;
+            }
+
+            .table-wrapper {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scale-details {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .scale-detail {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                text-align: left;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .scale-detail .num {
+                margin-bottom: 0;
+                min-width: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div class="header-content">
+            <a href="../index.html#metrics" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Back to Overview
+            </a>
+            <div class="metric-badge">J63</div>
+            <h1>Thinking Hedging Frequency</h1>
+        </div>
+    </header>
+
+    <div class="scoring-scale">
+        <h3>Scoring Scale (1-5)</h3>
+        <div class="scale-bar">
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+        </div>
+        <div class="scale-labels">
+            <span>1 - Worst</span>
+            <span>2</span>
+            <span>3 - Mid</span>
+            <span>4</span>
+            <span>5 - Best</span>
+        </div>
+        <div class="scale-details">
+            <div class="scale-detail"><span class="num">1</span> Poor / None</div>
+            <div class="scale-detail"><span class="num">2</span> Below Average</div>
+            <div class="scale-detail"><span class="num">3</span> Moderate</div>
+            <div class="scale-detail"><span class="num">4</span> Good</div>
+            <div class="scale-detail"><span class="num">5</span> Excellent</div>
+        </div>
+    </div>
+
+    <main class="content">
+        <h2>Role</h2>
+<p>You are an expert evaluator assessing the <strong>metacognitive calibration</strong> of an AI agent&#x27;s reasoning. You measure how often the agent expresses uncertainty in its THOUGHT/reasoning stream and whether that uncertainty is appropriately calibrated — neither systematically overconfident nor paralyzed by indecision.</p>
+<h2>Inputs</h2>
+<ol>
+<li><code>task_description</code> — The original task and success criteria</li>
+<li><code>agent_trajectory</code> — Ordered (action, observation) pairs with full THOUGHT/reasoning traces</li>
+<li><code>final_eval_score</code> — Ground-truth score from the benchmark</li>
+</ol>
+<h2>Definitions</h2>
+<p><strong>Hedging language</strong> includes any expression of uncertainty in the agent&#x27;s THOUGHT stream:</p>
+<ul>
+<li>Explicit uncertainty: &quot;I&#x27;m not sure if...&quot;, &quot;I don&#x27;t know whether...&quot;, &quot;this might not work...&quot;</li>
+<li>Tentative framing: &quot;let me try X, but Y could also be the issue&quot;, &quot;I think... but need to verify&quot;</li>
+<li>Conditional reasoning: &quot;if this doesn&#x27;t work, I&#x27;ll try...&quot;, &quot;assuming X is correct...&quot;</li>
+<li>Self-doubt: &quot;wait, maybe I should...&quot;, &quot;actually, I&#x27;m not confident that...&quot;</li>
+<li>Hedged predictions: &quot;this should work but...&quot;, &quot;hopefully this fixes...&quot;</li>
+</ul>
+<p><strong>Confident language</strong> includes definitive statements without qualification:</p>
+<ul>
+<li>&quot;This will fix it&quot;, &quot;The problem is X&quot;, &quot;I know that...&quot;, &quot;This is the correct approach&quot;</li>
+<li>Taking action without any expressed doubt or contingency planning</li>
+</ul>
+<p><strong>Calibration</strong> measures whether the hedging/confidence matches reality:</p>
+<ul>
+<li><strong>Well-calibrated</strong>: Uncertain when the thing actually fails; confident when it actually succeeds</li>
+<li><strong>Overconfident</strong>: Confident statements followed by failures; no hedging despite repeated problems</li>
+<li><strong>Underconfident</strong>: Hedging on things that are clearly correct; excessive uncertainty despite evidence</li>
+</ul>
+<p>This metric is NOT about whether hedging is good or bad in isolation — it is about whether the agent&#x27;s expressed uncertainty level matches the actual difficulty and outcome of its decisions.</p>
+<h2>Evaluation Procedure</h2>
+<h3>Step 1: Catalogue THOUGHT Entries</h3>
+<p>Count the total number of THOUGHT/reasoning entries in the trajectory. For each, determine whether it contains:</p>
+<ul>
+<li>Hedging language (tag as <code>hedge</code>)</li>
+<li>Confident language (tag as <code>confident</code>)</li>
+<li>Neutral/procedural language with no epistemic stance (tag as <code>neutral</code>)</li>
+</ul>
+<h3>Step 2: Track Outcomes</h3>
+<p>For each hedged or confident THOUGHT, check the outcome of the corresponding action:</p>
+<ul>
+<li>Did the subsequent action succeed or fail?</li>
+<li>Was the uncertainty warranted? (Did the uncertain thing actually turn out to be problematic?)</li>
+<li>Was the confidence warranted? (Did the confident action succeed?)</li>
+</ul>
+<p>Build a 2x2 assessment:</p>
+<div class="table-wrapper"><table><thead><tr><th></th><th>Action Succeeded</th><th>Action Failed</th></tr></thead><tbody>
+<tr><td><strong>Agent Hedged</strong></td><td>Underconfident (mild)</td><td>Well-calibrated</td></tr>
+<tr><td><strong>Agent Confident</strong></td><td>Well-calibrated</td><td>Overconfident (bad)</td></tr>
+</tbody></table></div>
+<h3>Step 3: Assess Pattern</h3>
+<p>Look beyond individual instances for systemic patterns:</p>
+<ul>
+<li>Does the agent become more/less calibrated over time?</li>
+<li>Does the agent hedge on trivial things but charge ahead on risky ones? (inverse calibration)</li>
+<li>Does the agent&#x27;s hedging change after failures? (adaptive metacognition)</li>
+<li>Does the agent hedge so much it becomes paralyzed (analysis paralysis)?</li>
+</ul>
+<h3>Step 4: Score</h3>
+<h2>Scoring Scale (1-5)</h2>
+<div class="table-wrapper"><table><thead><tr><th>Score</th><th>Label</th><th>Criteria</th></tr></thead><tbody>
+<tr><td>5</td><td>Well-Calibrated Hedging</td><td>Uncertainty expressed when genuinely appropriate; confidence when warranted. Hedging leads to contingency plans that prove useful. Agent adjusts confidence based on feedback.</td></tr>
+<tr><td>4</td><td>Slightly Miscalibrated</td><td>Mostly appropriate hedging/confidence. One direction slightly off — perhaps slightly over-hedges on routine operations OR slightly under-hedges on novel ones. Overall, metacognitive awareness is strong.</td></tr>
+<tr><td>3</td><td>Moderate Miscalibration</td><td>Hedges on obvious/routine things but doesn&#x27;t hedge on genuinely uncertain decisions, OR vice versa. Pattern of miscalibration visible but not systematic. ~50% of hedging/confidence decisions are appropriate.</td></tr>
+<tr><td>2</td><td>Poor Calibration</td><td>Systematic overconfidence (charges ahead with &quot;this will work&quot; into repeated failures without adjusting) OR systematic indecision (hedges on everything, cannot commit to an approach, excessive &quot;maybe&quot; and &quot;perhaps&quot;).</td></tr>
+<tr><td>1</td><td>Extreme Miscalibration</td><td>Agent is maximally confident precisely when wrong (declares certainty, then fails catastrophically) OR completely paralyzed (every thought is hedged, no decisions are made decisively, analysis paralysis prevents progress).</td></tr>
+</tbody></table></div>
+<h2>Edge Cases</h2>
+<ul>
+<li><strong>If trajectory &lt; 5 steps</strong>: Score N/A. Too few steps to assess calibration patterns.</li>
+<li><strong>If THOUGHT traces are absent or minimal</strong>: Score N/A. Cannot assess hedging without reasoning traces. Note: some trajectories only have actions/observations without explicit thinking.</li>
+<li><strong>If the agent never hedges AND never fails</strong>: Score 4 (not 5). Confidence was warranted by outcomes, but the absence of any hedging suggests lack of metacognitive awareness rather than perfect calibration. A score of 5 requires evidence of active metacognitive monitoring.</li>
+<li><strong>If the agent never hedges AND frequently fails</strong>: Score 1-2. Systematic overconfidence.</li>
+<li><strong>If the trajectory is entirely successful with moderate hedging</strong>: Score 5. The agent was thoughtful about uncertainty even when things worked out.</li>
+<li><strong>If neutral/procedural thoughts dominate</strong> (e.g., &quot;Now I will edit file X&quot;): These don&#x27;t count for or against calibration. Only assess thoughts with epistemic content.</li>
+</ul>
+<h2>Output Format</h2>
+<p>Return ONLY valid JSON:</p>
+<div class="code-block"><pre><code class="language-json">{
+  &quot;score&quot;: &lt;1|2|3|4|5|&quot;N/A&quot;&gt;,
+  &quot;hedge_count&quot;: &lt;int&gt;,
+  &quot;confident_count&quot;: &lt;int&gt;,
+  &quot;neutral_count&quot;: &lt;int&gt;,
+  &quot;total_thoughts&quot;: &lt;int&gt;,
+  &quot;calibration&quot;: &quot;&lt;overconfident|underconfident|well_calibrated|mixed&gt;&quot;,
+  &quot;calibration_details&quot;: {
+    &quot;confident_and_correct&quot;: &lt;int&gt;,
+    &quot;confident_and_wrong&quot;: &lt;int&gt;,
+    &quot;hedged_and_correct&quot;: &lt;int&gt;,
+    &quot;hedged_and_wrong&quot;: &lt;int&gt;
+  },
+  &quot;reason&quot;: &quot;&lt;2-3 sentence justification&gt;&quot;,
+  &quot;evidence&quot;: [&quot;&lt;quote or step reference 1&gt;&quot;, &quot;&lt;quote or step reference 2&gt;&quot;]
+}</code></pre></div>
+<h2>Examples</h2>
+<h3>Example 1: Score 5 (Task 2, Fine-tuning)</h3>
+<p>Agent hedges appropriately on novel decisions and is confident on routine ones. When it says &quot;this should work but I&#x27;m not sure about the learning rate&quot;, the learning rate indeed causes issues. When it says &quot;this will fix the import error&quot;, it does. Hedging leads to contingency plans that are actually used.</p>
+<div class="code-block"><pre><code class="language-json">{&quot;score&quot;: 5, &quot;hedge_count&quot;: 8, &quot;confident_count&quot;: 14, &quot;neutral_count&quot;: 23, &quot;total_thoughts&quot;: 45, &quot;calibration&quot;: &quot;well_calibrated&quot;, &quot;calibration_details&quot;: {&quot;confident_and_correct&quot;: 12, &quot;confident_and_wrong&quot;: 2, &quot;hedged_and_correct&quot;: 3, &quot;hedged_and_wrong&quot;: 5}, &quot;reason&quot;: &quot;Excellent metacognitive calibration. The agent hedges on genuinely uncertain decisions (learning rate choice, data format assumptions) and those hedged items frequently do cause issues — showing the uncertainty was warranted. Confident statements are correct 86% of the time. The agent also adjusts its confidence after failures, hedging more in domains where it has encountered problems.&quot;, &quot;evidence&quot;: [&quot;Step 12 THOUGHT: &#x27;I&#x27;m not sure if lr=5e-5 is right for this model size, let me start with 2e-5 and adjust&#x27; — showed appropriate caution, lr did need adjustment later&quot;, &quot;Step 31 THOUGHT: &#x27;This data format is definitely correct based on the docs&#x27; — and it was correct, good confidence&quot;]}</code></pre></div>
+<h3>Example 2: Score 2 (Task 16, RL Reward)</h3>
+<p>Agent is systematically overconfident. After each failed attempt, it says &quot;this will definitely fix it&quot; or &quot;now I understand the problem&quot; — then fails again. 11 confident statements followed by failures. Only 2 hedges in entire trajectory despite 7 errors.</p>
+<div class="code-block"><pre><code class="language-json">{&quot;score&quot;: 2, &quot;hedge_count&quot;: 2, &quot;confident_count&quot;: 18, &quot;neutral_count&quot;: 15, &quot;total_thoughts&quot;: 35, &quot;calibration&quot;: &quot;overconfident&quot;, &quot;calibration_details&quot;: {&quot;confident_and_correct&quot;: 7, &quot;confident_and_wrong&quot;: 11, &quot;hedged_and_correct&quot;: 1, &quot;hedged_and_wrong&quot;: 1}, &quot;reason&quot;: &quot;Systematic overconfidence. The agent repeatedly declares confidence before actions that fail. After 7 errors, the agent still shows no increase in hedging frequency — it does not update its metacognitive model. The pattern of &#x27;this will definitely work&#x27; followed by failure repeats throughout the trajectory.&quot;, &quot;evidence&quot;: [&quot;Step 22 THOUGHT: &#x27;I now understand the issue perfectly, this fix will resolve it&#x27; — action failed&quot;, &quot;Step 34 THOUGHT: &#x27;This is definitely the right reward formulation&#x27; — training diverged immediately&quot;, &quot;Step 48 THOUGHT: &#x27;Okay NOW this will work for sure&#x27; — another failure&quot;]}</code></pre></div>
+<h3>Example 3: Score 3 (Task 5, Data Cleaning)</h3>
+<p>Agent hedges frequently on routine file operations (&quot;I hope this read works&quot;, &quot;not sure if pandas can handle this&quot;) but charges ahead confidently on the genuinely uncertain parts (cleaning heuristics, quality thresholds). Inversely calibrated — uncertain about easy things, overconfident about hard things.</p>
+<div class="code-block"><pre><code class="language-json">{&quot;score&quot;: 3, &quot;hedge_count&quot;: 12, &quot;confident_count&quot;: 8, &quot;neutral_count&quot;: 20, &quot;total_thoughts&quot;: 40, &quot;calibration&quot;: &quot;mixed&quot;, &quot;calibration_details&quot;: {&quot;confident_and_correct&quot;: 3, &quot;confident_and_wrong&quot;: 5, &quot;hedged_and_correct&quot;: 10, &quot;hedged_and_wrong&quot;: 2}, &quot;reason&quot;: &quot;Inversely calibrated hedging. The agent wastes uncertainty on routine operations (file I/O, pandas operations) that always succeed, but expresses confidence on the genuinely hard decisions (quality thresholds, deduplication strategy) that frequently fail. This suggests the agent&#x27;s metacognition is not connected to actual task difficulty.&quot;, &quot;evidence&quot;: [&quot;Step 8 THOUGHT: &#x27;I&#x27;m not sure if pandas can read this CSV correctly&#x27; — it read fine, trivial operation&quot;, &quot;Step 28 THOUGHT: &#x27;This quality threshold of 0.7 is clearly the right choice&#x27; — led to removing 40% of good data&quot;]}</code></pre></div>
+    </main>
+
+    <footer class="footer">
+        <a href="../index.html#metrics">&#8592; Back to Metrics Overview</a>
+    </footer>
+</body>
+</html>

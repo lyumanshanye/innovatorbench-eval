@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J13 - Cross-Stage Constraint Violations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2440;
+            --accent: #2563eb;
+            --gold: #d97706;
+            --green: #059669;
+            --bg: #fafbfc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --code-bg: #1e1e2e;
+            --code-text: #cdd6f4;
+            --score-1: #dc2626;
+            --score-2: #ea580c;
+            --score-3: #d97706;
+            --score-4: #65a30d;
+            --score-5: #059669;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--navy) 0%, #1a365d 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .metric-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.3rem 0.75rem;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .scoring-scale {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+
+        .scoring-scale h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .scale-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .scale-step {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .scale-step:nth-child(1) { background: var(--score-1); }
+        .scale-step:nth-child(2) { background: var(--score-2); }
+        .scale-step:nth-child(3) { background: var(--score-3); }
+        .scale-step:nth-child(4) { background: var(--score-4); }
+        .scale-step:nth-child(5) { background: var(--score-5); }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 0 0.25rem;
+        }
+
+        .scale-labels span {
+            text-align: center;
+        }
+
+        .scale-details {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .scale-detail {
+            text-align: center;
+            padding: 0.5rem 0.25rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            background: var(--bg);
+        }
+
+        .scale-detail .num {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .scale-detail:nth-child(1) .num { color: var(--score-1); }
+        .scale-detail:nth-child(2) .num { color: var(--score-2); }
+        .scale-detail:nth-child(3) .num { color: var(--score-3); }
+        .scale-detail:nth-child(4) .num { color: var(--score-4); }
+        .scale-detail:nth-child(5) .num { color: var(--score-5); }
+
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .content h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 1.75rem 0 0.75rem;
+        }
+
+        .content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 1.25rem 0 0.5rem;
+        }
+
+        .content p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .content ul, .content ol {
+            margin: 0.75rem 0 1rem 1.5rem;
+        }
+
+        .content li {
+            margin-bottom: 0.4rem;
+            padding-left: 0.25rem;
+        }
+
+        .content li::marker {
+            color: var(--accent);
+        }
+
+        .content strong {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #be185d;
+        }
+
+        .code-block {
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-block pre {
+            background: var(--code-bg);
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--code-text);
+            background: none;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: var(--navy);
+            color: white;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .scale-details {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 4px;
+            }
+
+            .scale-detail {
+                font-size: 0.6rem;
+                padding: 0.4rem 0.1rem;
+            }
+
+            .table-wrapper {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scale-details {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .scale-detail {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                text-align: left;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .scale-detail .num {
+                margin-bottom: 0;
+                min-width: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div class="header-content">
+            <a href="../index.html#metrics" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Back to Overview
+            </a>
+            <div class="metric-badge">J13</div>
+            <h1>Cross-Stage Constraint Violations</h1>
+        </div>
+    </header>
+
+    <div class="scoring-scale">
+        <h3>Scoring Scale (1-5)</h3>
+        <div class="scale-bar">
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+        </div>
+        <div class="scale-labels">
+            <span>1 - Worst</span>
+            <span>2</span>
+            <span>3 - Mid</span>
+            <span>4</span>
+            <span>5 - Best</span>
+        </div>
+        <div class="scale-details">
+            <div class="scale-detail"><span class="num">1</span> Poor / None</div>
+            <div class="scale-detail"><span class="num">2</span> Below Average</div>
+            <div class="scale-detail"><span class="num">3</span> Moderate</div>
+            <div class="scale-detail"><span class="num">4</span> Good</div>
+            <div class="scale-detail"><span class="num">5</span> Excellent</div>
+        </div>
+    </div>
+
+    <main class="content">
+        <h2>Role</h2>
+<p>You are an expert evaluator assessing <strong>internal consistency</strong> across an AI agent&#x27;s trajectory. You detect decisions made later in the trajectory that violate or contradict constraints, choices, or requirements established earlier. This metric measures whether the agent maintains a coherent plan throughout execution.</p>
+<h2>Inputs</h2>
+<ol>
+<li><code>task_description</code> — The original task and success criteria</li>
+<li><code>agent_trajectory</code> — Ordered (action, observation) pairs with full context including THOUGHT/reasoning traces</li>
+<li><code>final_eval_score</code> — Ground-truth score from the benchmark</li>
+</ol>
+<h2>Definitions</h2>
+<p>A <strong>constraint-setting step</strong> is any step where:</p>
+<ul>
+<li>The agent reads or acknowledges task requirements (e.g., &quot;must use format A&quot;, &quot;output should be CSV&quot;)</li>
+<li>The agent makes an architectural or design decision (e.g., &quot;I will use PyTorch&quot;, &quot;I will structure the pipeline as X then Y&quot;)</li>
+<li>The agent sets a configuration value that other parts of the system depend on (e.g., learning rate, batch size, column names)</li>
+<li>The agent establishes a convention or pattern (e.g., file naming, data schema, API contract)</li>
+</ul>
+<p>A <strong>cross-stage violation</strong> occurs when a later step:</p>
+<ul>
+<li>Directly contradicts an earlier explicit decision (e.g., picks framework X, later imports framework Y incompatibly)</li>
+<li>Changes a dependency without updating dependents (e.g., renames a column in preprocessing but hardcodes the old name in evaluation)</li>
+<li>Ignores a requirement that was previously read and acknowledged (e.g., agent reads &quot;output must be JSONL&quot; then writes CSV)</li>
+<li>Implements something that breaks an earlier architectural choice (e.g., designs stateless pipeline, then introduces shared mutable state)</li>
+<li>Sets a hyperparameter, then later changes a dependent config without updating the hyperparameter (e.g., changes model architecture but keeps old learning rate schedule)</li>
+</ul>
+<h2>Evaluation Procedure</h2>
+<h3>Step 1: Identify Constraint-Setting Steps</h3>
+<p>Scan the trajectory chronologically and catalogue every step that establishes a constraint, requirement, design choice, or configuration. For each, record:</p>
+<ul>
+<li>Step number</li>
+<li>Type: <code>requirement</code> (from task), <code>design_choice</code> (agent&#x27;s architectural decision), <code>config</code> (parameter/setting), <code>convention</code> (naming, format, pattern)</li>
+<li>The specific constraint (brief description)</li>
+</ul>
+<h3>Step 2: Trace Adherence Through Subsequent Steps</h3>
+<p>For each constraint identified in Step 1, trace through ALL subsequent steps and check whether the constraint is respected. Pay special attention to:</p>
+<ul>
+<li>Steps where the agent switches tools, files, or components (transition points are high-risk for violations)</li>
+<li>Steps where the agent revisits or modifies earlier work</li>
+<li>Steps near the end of the trajectory (time pressure increases violation risk)</li>
+<li>Steps following errors or failures (recovery attempts may violate earlier constraints)</li>
+</ul>
+<h3>Step 3: Classify Each Violation</h3>
+<p>For each violation found, assess:</p>
+<ul>
+<li><strong>Severity</strong>: Critical (breaks correctness/eval), Major (causes errors requiring rework), Minor (cosmetic or non-impactful)</li>
+<li><strong>Detection</strong>: Did the agent notice the violation? Did it cause a visible error?</li>
+<li><strong>Impact</strong>: Did the violation degrade the final outcome?</li>
+</ul>
+<h3>Step 4: Score</h3>
+<h2>Scoring Scale (1-5)</h2>
+<div class="table-wrapper"><table><thead><tr><th>Score</th><th>Label</th><th>Criteria</th></tr></thead><tbody>
+<tr><td>5</td><td>Perfect Consistency</td><td>All late decisions respect early constraints. No violations detected. The agent maintains a coherent plan from start to finish.</td></tr>
+<tr><td>4</td><td>Minor Inconsistency</td><td>One violation detected, but it is non-critical and does not meaningfully affect the final outcome. Example: agent said it would use one variable name but used a slightly different one, with no downstream breakage.</td></tr>
+<tr><td>3</td><td>Moderate Violations</td><td>2-3 violations detected, with some impact on progress. At least one causes a visible error or requires rework, but the agent partially recovers.</td></tr>
+<tr><td>2</td><td>Significant Violations</td><td>Repeated violations (4+) causing errors, rework, or wasted steps. The agent frequently contradicts its own earlier decisions. Clear pattern of not maintaining plan coherence.</td></tr>
+<tr><td>1</td><td>Severe Incoherence</td><td>Fundamental early decisions are contradicted. The trajectory is internally incoherent — the agent appears to have no memory of or regard for its own prior choices. Early requirements are ignored wholesale.</td></tr>
+</tbody></table></div>
+<h2>Edge Cases</h2>
+<ul>
+<li><strong>If trajectory &lt; 5 steps</strong>: Score N/A. Too few steps to establish and then violate constraints.</li>
+<li><strong>If no constraint-setting steps are identifiable</strong>: Score N/A. This can happen if the agent jumps straight into execution without reading requirements or making explicit decisions.</li>
+<li><strong>If the agent deliberately revises a decision with explanation</strong>: This is NOT a violation. Explicit, reasoned revision (e.g., &quot;I initially planned X but Y is better because...&quot;) shows adaptive planning. Only score as a violation if the change is implicit, unacknowledged, or contradicts without justification.</li>
+<li><strong>If the task itself has contradictory requirements</strong>: Note this in the reason but do not penalize the agent for navigating genuine ambiguity.</li>
+<li><strong>If no violations occur and trajectory succeeds</strong>: Score 5.</li>
+<li><strong>If no violations occur but trajectory fails</strong>: Still score 5 for this metric. Cross-stage consistency is independent of task success.</li>
+</ul>
+<h2>Output Format</h2>
+<p>Return ONLY valid JSON:</p>
+<div class="code-block"><pre><code class="language-json">{
+  &quot;score&quot;: &lt;1|2|3|4|5|&quot;N/A&quot;&gt;,
+  &quot;total_constraints_identified&quot;: &lt;int&gt;,
+  &quot;total_violations&quot;: &lt;int&gt;,
+  &quot;critical_violations&quot;: &lt;int&gt;,
+  &quot;major_violations&quot;: &lt;int&gt;,
+  &quot;minor_violations&quot;: &lt;int&gt;,
+  &quot;violations&quot;: [
+    {
+      &quot;constraint_step&quot;: &lt;int&gt;,
+      &quot;constraint_description&quot;: &quot;&lt;what was established&gt;&quot;,
+      &quot;violation_step&quot;: &lt;int&gt;,
+      &quot;violation_description&quot;: &quot;&lt;what contradicted it&gt;&quot;,
+      &quot;severity&quot;: &quot;&lt;critical|major|minor&gt;&quot;,
+      &quot;agent_noticed&quot;: &lt;true|false&gt;,
+      &quot;impact_on_outcome&quot;: &quot;&lt;description or &#x27;none&#x27;&gt;&quot;
+    }
+  ],
+  &quot;reason&quot;: &quot;&lt;2-3 sentence justification&gt;&quot;,
+  &quot;evidence&quot;: [&quot;&lt;quote or step reference 1&gt;&quot;, &quot;&lt;quote or step reference 2&gt;&quot;]
+}</code></pre></div>
+<h2>Examples</h2>
+<h3>Example 1: Score 5 (Task 3, Fine-tuning)</h3>
+<p>Agent reads requirements specifying JSONL format, designs data pipeline accordingly, and consistently outputs JSONL throughout. All hyperparameters set early are respected or explicitly revised with justification. No cross-stage violations.</p>
+<div class="code-block"><pre><code class="language-json">{&quot;score&quot;: 5, &quot;total_constraints_identified&quot;: 6, &quot;total_violations&quot;: 0, &quot;critical_violations&quot;: 0, &quot;major_violations&quot;: 0, &quot;minor_violations&quot;: 0, &quot;violations&quot;: [], &quot;reason&quot;: &quot;Perfect cross-stage consistency. The agent established 6 constraints (output format, model choice, learning rate, data schema, eval metric, file paths) and respected all of them throughout the trajectory. One hyperparameter was revised mid-trajectory but with explicit justification.&quot;, &quot;evidence&quot;: [&quot;Step 3: &#x27;Requirements specify JSONL output format&#x27;&quot;, &quot;Step 45: &#x27;Output written as output.jsonl — consistent with requirements&#x27;&quot;]}</code></pre></div>
+<h3>Example 2: Score 3 (Task 12, Data Cleaning)</h3>
+<p>Agent establishes column schema in step 8, then in step 34 renames a column during a cleaning pass without updating the downstream evaluation script. This causes an error in step 41 that takes 5 steps to debug. A second violation: agent reads &quot;preserve original IDs&quot; requirement but later deduplicates by dropping rows, losing some IDs.</p>
+<div class="code-block"><pre><code class="language-json">{&quot;score&quot;: 3, &quot;total_constraints_identified&quot;: 5, &quot;total_violations&quot;: 2, &quot;critical_violations&quot;: 0, &quot;major_violations&quot;: 2, &quot;minor_violations&quot;: 0, &quot;violations&quot;: [{&quot;constraint_step&quot;: 8, &quot;constraint_description&quot;: &quot;Column schema: [&#x27;id&#x27;, &#x27;text&#x27;, &#x27;label&#x27;, &#x27;source&#x27;]&quot;, &quot;violation_step&quot;: 34, &quot;violation_description&quot;: &quot;Renamed &#x27;source&#x27; to &#x27;data_source&#x27; in cleaning script without updating eval script&quot;, &quot;severity&quot;: &quot;major&quot;, &quot;agent_noticed&quot;: true, &quot;impact_on_outcome&quot;: &quot;Caused KeyError in step 41, required 5 steps to debug and fix&quot;}, {&quot;constraint_step&quot;: 5, &quot;constraint_description&quot;: &quot;Task requirement: preserve all original IDs&quot;, &quot;violation_step&quot;: 52, &quot;violation_description&quot;: &quot;Deduplication dropped 12 rows, losing their original IDs&quot;, &quot;severity&quot;: &quot;major&quot;, &quot;agent_noticed&quot;: false, &quot;impact_on_outcome&quot;: &quot;Eval penalized for missing IDs, contributing to lower final score&quot;}], &quot;reason&quot;: &quot;Two major cross-stage violations. The column rename was eventually caught and fixed but wasted 5 steps. The ID preservation violation went unnoticed and directly impacted the eval score. Both show the agent losing track of earlier constraints during execution.&quot;, &quot;evidence&quot;: [&quot;Step 8: &#x27;Schema columns: id, text, label, source&#x27;&quot;, &quot;Step 34: &#x27;df.rename(columns={\&quot;source\&quot;: \&quot;data_source\&quot;})&#x27;&quot;, &quot;Step 5: &#x27;Important: preserve all original document IDs&#x27;&quot;, &quot;Step 52: &#x27;df.drop_duplicates(subset=[\&quot;text\&quot;])&#x27;  — drops rows with unique IDs&quot;]}</code></pre></div>
+<h3>Example 3: Score 1 (Task 22, Agent/Workflow)</h3>
+<p>Agent reads a complex multi-step task, plans a modular architecture in step 4, then completely abandons the plan. Implements a monolithic script that violates the modular design. Later contradicts its own chosen API format, uses wrong endpoint names, and ignores the specified output schema. At least 6 violations, most critical.</p>
+<div class="code-block"><pre><code class="language-json">{&quot;score&quot;: 1, &quot;total_constraints_identified&quot;: 8, &quot;total_violations&quot;: 6, &quot;critical_violations&quot;: 4, &quot;major_violations&quot;: 2, &quot;minor_violations&quot;: 0, &quot;violations&quot;: [{&quot;constraint_step&quot;: 4, &quot;constraint_description&quot;: &quot;Planned modular architecture: separate retriever, processor, and generator modules&quot;, &quot;violation_step&quot;: 15, &quot;violation_description&quot;: &quot;Implemented everything in a single 400-line script with no modularity&quot;, &quot;severity&quot;: &quot;critical&quot;, &quot;agent_noticed&quot;: false, &quot;impact_on_outcome&quot;: &quot;Made debugging impossible when errors occurred in steps 30-50&quot;}, {&quot;constraint_step&quot;: 6, &quot;constraint_description&quot;: &quot;Output schema: {query, answer, sources, confidence}&quot;, &quot;violation_step&quot;: 60, &quot;violation_description&quot;: &quot;Final output has {question, response, refs} — completely different field names&quot;, &quot;severity&quot;: &quot;critical&quot;, &quot;agent_noticed&quot;: false, &quot;impact_on_outcome&quot;: &quot;Eval parser cannot read output, score = 0&quot;}], &quot;reason&quot;: &quot;Severe incoherence. The agent&#x27;s trajectory reads as if different agents handled different phases. The planned architecture was completely abandoned, the output schema was ignored, and API contracts were violated. Six violations, four critical, resulting in a non-functional submission.&quot;, &quot;evidence&quot;: [&quot;Step 4: &#x27;Architecture plan: 3 modules — retriever.py, processor.py, generator.py&#x27;&quot;, &quot;Step 15: &#x27;Writing complete solution in main.py&#x27;&quot;, &quot;Step 6: &#x27;Output format: {query, answer, sources, confidence}&#x27;&quot;, &quot;Step 60: &#x27;json.dumps({\&quot;question\&quot;: q, \&quot;response\&quot;: resp, \&quot;refs\&quot;: refs})&#x27;&quot;]}</code></pre></div>
+    </main>
+
+    <footer class="footer">
+        <a href="../index.html#metrics">&#8592; Back to Metrics Overview</a>
+    </footer>
+</body>
+</html>

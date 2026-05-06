@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J30 - Parameter Value Accuracy — Evaluation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2440;
+            --accent: #2563eb;
+            --gold: #d97706;
+            --green: #059669;
+            --bg: #fafbfc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --code-bg: #1e1e2e;
+            --code-text: #cdd6f4;
+            --score-1: #dc2626;
+            --score-2: #ea580c;
+            --score-3: #d97706;
+            --score-4: #65a30d;
+            --score-5: #059669;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--navy) 0%, #1a365d 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .metric-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.3rem 0.75rem;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .scoring-scale {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+
+        .scoring-scale h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .scale-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .scale-step {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .scale-step:nth-child(1) { background: var(--score-1); }
+        .scale-step:nth-child(2) { background: var(--score-2); }
+        .scale-step:nth-child(3) { background: var(--score-3); }
+        .scale-step:nth-child(4) { background: var(--score-4); }
+        .scale-step:nth-child(5) { background: var(--score-5); }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 0 0.25rem;
+        }
+
+        .scale-labels span {
+            text-align: center;
+        }
+
+        .scale-details {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .scale-detail {
+            text-align: center;
+            padding: 0.5rem 0.25rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            background: var(--bg);
+        }
+
+        .scale-detail .num {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .scale-detail:nth-child(1) .num { color: var(--score-1); }
+        .scale-detail:nth-child(2) .num { color: var(--score-2); }
+        .scale-detail:nth-child(3) .num { color: var(--score-3); }
+        .scale-detail:nth-child(4) .num { color: var(--score-4); }
+        .scale-detail:nth-child(5) .num { color: var(--score-5); }
+
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .content h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 1.75rem 0 0.75rem;
+        }
+
+        .content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 1.25rem 0 0.5rem;
+        }
+
+        .content p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .content ul, .content ol {
+            margin: 0.75rem 0 1rem 1.5rem;
+        }
+
+        .content li {
+            margin-bottom: 0.4rem;
+            padding-left: 0.25rem;
+        }
+
+        .content li::marker {
+            color: var(--accent);
+        }
+
+        .content strong {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #be185d;
+        }
+
+        .code-block {
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-block pre {
+            background: var(--code-bg);
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--code-text);
+            background: none;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: var(--navy);
+            color: white;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .scale-details {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 4px;
+            }
+
+            .scale-detail {
+                font-size: 0.6rem;
+                padding: 0.4rem 0.1rem;
+            }
+
+            .table-wrapper {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scale-details {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .scale-detail {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                text-align: left;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .scale-detail .num {
+                margin-bottom: 0;
+                min-width: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div class="header-content">
+            <a href="../index.html#metrics" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Back to Overview
+            </a>
+            <div class="metric-badge">J30</div>
+            <h1>Parameter Value Accuracy — Evaluation</h1>
+        </div>
+    </header>
+
+    <div class="scoring-scale">
+        <h3>Scoring Scale (1-5)</h3>
+        <div class="scale-bar">
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+        </div>
+        <div class="scale-labels">
+            <span>1 - Worst</span>
+            <span>2</span>
+            <span>3 - Mid</span>
+            <span>4</span>
+            <span>5 - Best</span>
+        </div>
+        <div class="scale-details">
+            <div class="scale-detail"><span class="num">1</span> Poor / None</div>
+            <div class="scale-detail"><span class="num">2</span> Below Average</div>
+            <div class="scale-detail"><span class="num">3</span> Moderate</div>
+            <div class="scale-detail"><span class="num">4</span> Good</div>
+            <div class="scale-detail"><span class="num">5</span> Excellent</div>
+        </div>
+    </div>
+
+    <main class="content">
+        <p>You are an expert evaluator assessing AI agent trajectories from InnovatorBench (661 trajectories across 40 engineering tasks and 15 models). Your task is to evaluate how accurately the agent supplies parameter values when calling tools, functions, or commands throughout its trajectory.</p>
+<h2>Definitions</h2>
+<p><strong>Parameter Value Accuracy</strong> measures whether the argument values the agent passes to tools and commands are correct, appropriate, and functional. This includes:</p>
+<ul>
+<li><strong>File paths</strong>: Do referenced paths actually exist or correspond to real locations in the project?</li>
+<li><strong>Function/method names</strong>: Are they spelled correctly and refer to actual callable entities?</li>
+<li><strong>Flags and options</strong>: Are CLI flags valid for the command being invoked (e.g., <code>--recursive</code> vs <code>--recurse</code>)?</li>
+<li><strong>Numeric parameters</strong>: Are values reasonable for the context (e.g., timeout values, batch sizes, port numbers)?</li>
+<li><strong>Format strings</strong>: Do patterns match the expected format (e.g., date formats, regex patterns, template syntax)?</li>
+<li><strong>Enum/choice values</strong>: Are string arguments from the valid set of accepted values?</li>
+<li><strong>Type correctness</strong>: Are integers passed where integers are expected, arrays where arrays are expected, etc.?</li>
+</ul>
+<p>This metric does NOT evaluate whether the agent chose the right tool/command in the first place (that is a separate concern). It only evaluates whether, given the tool/command the agent chose to invoke, the parameters supplied are correct.</p>
+<h2>Procedure</h2>
+<ol>
+<li><strong>Enumerate all tool/command calls</strong> in the trajectory. For each call, list the parameters provided.</li>
+<li><strong>For each parameter</strong>, assess correctness:</li>
+<li>Does the value refer to something that exists (paths, names, identifiers)?</li>
+<li>Is the value syntactically valid for the parameter type?</li>
+<li>Is the value semantically appropriate for the operation?</li>
+<li>Would the value cause the tool call to fail or produce unintended results?</li>
+<li><strong>Classify parameter errors</strong> by severity:</li>
+<li><strong>Critical</strong>: Causes the tool call to fail entirely (wrong path, nonexistent function, invalid flag)</li>
+<li><strong>Moderate</strong>: Tool call succeeds but produces wrong/suboptimal results (wrong branch name, incorrect regex)</li>
+<li><strong>Minor</strong>: Technically imprecise but functionally equivalent (extra whitespace, verbose path vs relative path)</li>
+<li><strong>Consider self-correction</strong>: If the agent immediately recognizes and corrects a parameter error in the next step, reduce the severity weight of that error.</li>
+<li><strong>Assign a score</strong> based on the overall pattern of parameter accuracy across the full trajectory.</li>
+</ol>
+<h2>Scoring Scale (1-5)</h2>
+<div class="table-wrapper"><table><thead><tr><th>Score</th><th>Description</th></tr></thead><tbody>
+<tr><td>5</td><td>All tool calls have correct, appropriate parameters. Every path exists, every function name is spelled correctly, every flag is valid, every numeric value is reasonable. Zero or near-zero parameter issues across the entire trajectory.</td></tr>
+<tr><td>4</td><td>1-2 minor parameter issues throughout the trajectory (e.g., slightly suboptimal but still functional values, a path that works but isn&#x27;t the canonical form). No parameter errors cause tool call failures.</td></tr>
+<tr><td>3</td><td>Several parameter errors present, some causing tool call failures that require correction. The agent recovers from these failures but wastes steps due to incorrect parameters. Roughly 10-20% of tool calls have parameter issues.</td></tr>
+<tr><td>2</td><td>Frequent parameter errors causing cascading issues. Wrong paths lead to wrong file reads, which lead to wrong edits. The agent struggles to supply correct parameters and spends significant trajectory time on parameter-related failures.</td></tr>
+<tr><td>1</td><td>Pervasive wrong parameters throughout the trajectory. Wrong file paths, misspelled function names, invalid flags, unreasonable numeric values. The majority of tool calls have at least one incorrect parameter, severely impeding progress.</td></tr>
+</tbody></table></div>
+<h2>Edge Cases</h2>
+<ul>
+<li><strong>Exploratory calls</strong>: If the agent intentionally tries a path to check if it exists (e.g., <code>ls /possible/path</code>), this is not a parameter error even if the path doesn&#x27;t exist — it is information gathering.</li>
+<li><strong>Ambiguous correctness</strong>: If the task description is ambiguous about the correct parameter value, give the agent benefit of the doubt if the chosen value is reasonable.</li>
+<li><strong>Environment differences</strong>: If the agent uses parameters correct for one environment but wrong for the actual execution environment (and had no way to know), reduce severity.</li>
+<li><strong>Template/placeholder values</strong>: If the agent uses placeholder values (e.g., <code>&lt;YOUR_API_KEY&gt;</code>) where real values are needed, count as parameter errors unless the task explicitly calls for templating.</li>
+<li><strong>Corrected errors</strong>: An error that is immediately detected and corrected in the very next step counts at half weight compared to an error that persists or cascades.</li>
+</ul>
+<h2>Output Format</h2>
+<p>Return ONLY valid JSON: {&quot;score&quot;: &lt;integer 1-5&gt;, &quot;reason&quot;: &quot;&lt;2-4 sentence justification referencing specific parameter errors or lack thereof&gt;&quot;, &quot;evidence&quot;: [&quot;&lt;quote or description of specific tool call with parameter issue&gt;&quot;, &quot;&lt;quote showing correct parameter usage or correction&gt;&quot;, &quot;...&quot;]}</p>
+    </main>
+
+    <footer class="footer">
+        <a href="../index.html#metrics">&#8592; Back to Metrics Overview</a>
+    </footer>
+</body>
+</html>

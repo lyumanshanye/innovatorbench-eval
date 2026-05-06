@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J39 - Failure Pattern</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2440;
+            --accent: #2563eb;
+            --gold: #d97706;
+            --green: #059669;
+            --bg: #fafbfc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --code-bg: #1e1e2e;
+            --code-text: #cdd6f4;
+            --score-1: #dc2626;
+            --score-2: #ea580c;
+            --score-3: #d97706;
+            --score-4: #65a30d;
+            --score-5: #059669;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--navy) 0%, #1a365d 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .metric-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.3rem 0.75rem;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .scoring-scale {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+
+        .scoring-scale h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .scale-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .scale-step {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .scale-step:nth-child(1) { background: var(--score-1); }
+        .scale-step:nth-child(2) { background: var(--score-2); }
+        .scale-step:nth-child(3) { background: var(--score-3); }
+        .scale-step:nth-child(4) { background: var(--score-4); }
+        .scale-step:nth-child(5) { background: var(--score-5); }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 0 0.25rem;
+        }
+
+        .scale-labels span {
+            text-align: center;
+        }
+
+        .scale-details {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .scale-detail {
+            text-align: center;
+            padding: 0.5rem 0.25rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            background: var(--bg);
+        }
+
+        .scale-detail .num {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .scale-detail:nth-child(1) .num { color: var(--score-1); }
+        .scale-detail:nth-child(2) .num { color: var(--score-2); }
+        .scale-detail:nth-child(3) .num { color: var(--score-3); }
+        .scale-detail:nth-child(4) .num { color: var(--score-4); }
+        .scale-detail:nth-child(5) .num { color: var(--score-5); }
+
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .content h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 1.75rem 0 0.75rem;
+        }
+
+        .content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 1.25rem 0 0.5rem;
+        }
+
+        .content p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .content ul, .content ol {
+            margin: 0.75rem 0 1rem 1.5rem;
+        }
+
+        .content li {
+            margin-bottom: 0.4rem;
+            padding-left: 0.25rem;
+        }
+
+        .content li::marker {
+            color: var(--accent);
+        }
+
+        .content strong {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #be185d;
+        }
+
+        .code-block {
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-block pre {
+            background: var(--code-bg);
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--code-text);
+            background: none;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: var(--navy);
+            color: white;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .scale-details {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 4px;
+            }
+
+            .scale-detail {
+                font-size: 0.6rem;
+                padding: 0.4rem 0.1rem;
+            }
+
+            .table-wrapper {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scale-details {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .scale-detail {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                text-align: left;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .scale-detail .num {
+                margin-bottom: 0;
+                min-width: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div class="header-content">
+            <a href="../index.html#metrics" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Back to Overview
+            </a>
+            <div class="metric-badge">J39</div>
+            <h1>Failure Pattern</h1>
+        </div>
+    </header>
+
+    <div class="scoring-scale">
+        <h3>Scoring Scale (1-5)</h3>
+        <div class="scale-bar">
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+        </div>
+        <div class="scale-labels">
+            <span>1 - Worst</span>
+            <span>2</span>
+            <span>3 - Mid</span>
+            <span>4</span>
+            <span>5 - Best</span>
+        </div>
+        <div class="scale-details">
+            <div class="scale-detail"><span class="num">1</span> Poor / None</div>
+            <div class="scale-detail"><span class="num">2</span> Below Average</div>
+            <div class="scale-detail"><span class="num">3</span> Moderate</div>
+            <div class="scale-detail"><span class="num">4</span> Good</div>
+            <div class="scale-detail"><span class="num">5</span> Excellent</div>
+        </div>
+    </div>
+
+    <main class="content">
+        <p>You are an expert evaluator assessing AI agent trajectories from the InnovatorBench benchmark. Your task is to classify the <strong>dominant failure pattern</strong> in a trajectory and score the trajectory&#x27;s quality inversely to failure severity. This metric identifies recurring structural failure modes that impair agent performance across engineering tasks (fine-tuning, data cleaning, RL reward design, agent workflow).</p>
+<p>You will receive a complete agent trajectory consisting of thoughts, tool calls, observations, and outputs. Evaluate it according to the procedure and scoring scale below.</p>
+<h2>Definitions</h2>
+<h3>Failure Pattern Categories</h3>
+<ul>
+<li><strong>INSTANT_CRASH</strong>: The agent encounters a fatal error within the first few steps (typically steps 1-5) and either halts entirely or enters an unrecoverable state. Characterized by: immediate import errors, environment misconfiguration, catastrophic misunderstanding of the task, or hard crashes with no meaningful recovery attempt.</li>
+</ul>
+<ul>
+<li><strong>FORMAT_COLLAPSE</strong>: The agent&#x27;s output, code, or reasoning degrades into repetitive, malformed, or structurally broken content. Characterized by: repeated identical code blocks, degenerate loops in generated text, syntax that becomes progressively more garbled, copy-paste artifacts accumulating, or loss of coherent structure in produced artifacts.</li>
+</ul>
+<ul>
+<li><strong>DELAYED_EXPLOSION</strong>: The trajectory starts well — the agent makes reasonable progress — but cascading failures emerge later. Characterized by: a successful early phase followed by compounding errors, an initial approach that works on simple cases but fails on edge cases, technical debt from early shortcuts causing later breakdowns, or a single mid-trajectory mistake that propagates.</li>
+</ul>
+<ul>
+<li><strong>SUMMARY_LOCK</strong>: The agent becomes trapped in a loop of summarizing, planning, or reflecting without executing concrete actions. Characterized by: repeated statements of intent without execution, re-reading the same information multiple times without acting, producing plans and then producing revised plans instead of implementing, or cycling between &quot;let me think about this&quot; and &quot;here is my plan&quot; without tool calls.</li>
+</ul>
+<ul>
+<li><strong>RESOURCE_EXHAUSTION</strong>: The agent runs out of available resources — time, tokens, API calls, disk space, or retry attempts. Characterized by: truncated trajectories, &quot;maximum steps reached&quot; termination, token limit warnings, progressively shorter responses as context fills, or the agent explicitly noting it is running low on resources.</li>
+</ul>
+<ul>
+<li><strong>MONITOR_DEADLOCK</strong>: The agent becomes stuck in a monitoring or polling loop, repeatedly checking status without making progress or taking corrective action. Characterized by: repeated <code>status</code> or <code>check</code> commands with identical output, waiting for a condition that will never be met, polling a training run without adjusting parameters when metrics plateau, or watching logs without intervening.</li>
+</ul>
+<ul>
+<li><strong>NO_FAILURE</strong>: The trajectory completes successfully without any significant failure pattern. The agent proceeds methodically, handles obstacles appropriately, and achieves the task objective. Minor hiccups that are quickly resolved do not constitute a failure pattern.</li>
+</ul>
+<h3>Additional Terminology</h3>
+<ul>
+<li><strong>Recovery</strong>: The agent recognizes a failure and takes corrective action that changes the trajectory&#x27;s direction. Partial recovery means the agent attempts correction but does not fully escape the failure pattern. Full recovery means the agent resumes productive progress after the failure.</li>
+</ul>
+<ul>
+<li><strong>Dominant pattern</strong>: The failure pattern that most significantly impacts the trajectory&#x27;s outcome. A trajectory may exhibit traces of multiple patterns, but the dominant one is the primary contributor to degraded performance.</li>
+</ul>
+<h2>Procedure</h2>
+<p>Follow these steps in order:</p>
+<ol>
+<li><strong>Read the full trajectory end-to-end.</strong> Before classifying, understand the complete arc: what the agent attempted, where it struggled, and how the trajectory concluded (success, partial success, or failure).</li>
+</ol>
+<ol>
+<li><strong>Identify failure events.</strong> Mark each point in the trajectory where something goes wrong — errors, stalls, regressions, repeated actions, or loss of progress. For each failure event, note:</li>
+<li>When it occurred (early, mid, late trajectory)</li>
+<li>What triggered it</li>
+<li>Whether and how the agent responded</li>
+</ol>
+<ol>
+<li><strong>Map failure events to pattern categories.</strong> For each failure event, determine which category (or categories) it best fits. A single event may map to multiple categories, but focus on the primary classification.</li>
+</ol>
+<ol>
+<li><strong>Determine the dominant pattern.</strong> Consider:</li>
+<li>Which pattern accounts for the most wasted steps or time?</li>
+<li>Which pattern most directly caused the final outcome (success or failure)?</li>
+<li>If multiple patterns are present, which one is the root cause vs. a downstream effect?</li>
+<li>If no significant failure pattern is present, classify as NO_FAILURE.</li>
+</ol>
+<ol>
+<li><strong>Assess recovery attempts.</strong> For each failure pattern identified, evaluate:</li>
+<li>Did the agent attempt recovery?</li>
+<li>Was the recovery effective (full, partial, or failed)?</li>
+<li>How quickly did the agent recognize the failure?</li>
+</ol>
+<ol>
+<li><strong>Assign a score</strong> using the scale below.</li>
+</ol>
+<h2>Scoring Scale</h2>
+<div class="table-wrapper"><table><thead><tr><th>Score</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<tr><td><strong>5</strong></td><td>Clean execution</td><td>NO_FAILURE — the trajectory proceeds without any significant failure pattern. The agent handles minor obstacles gracefully and achieves the task. Occasional small errors that are immediately corrected do not prevent a score of 5.</td></tr>
+<tr><td><strong>4</strong></td><td>Minor failure, resolved</td><td>One failure pattern appears but the agent recognizes and recovers from it quickly. Examples: a DELAYED_EXPLOSION that the agent catches and fixes within a few steps, a brief SUMMARY_LOCK that the agent breaks out of, or a single INSTANT_CRASH-like error that the agent diagnoses and works around. The failure does not significantly impact the final outcome.</td></tr>
+<tr><td><strong>3</strong></td><td>Significant failure, partially managed</td><td>One clear failure pattern is present and materially affects the trajectory. The agent shows awareness of the problem and makes partial attempts to address it, but the failure still consumes substantial trajectory steps or degrades the final output. The agent achieves a partial result despite the failure.</td></tr>
+<tr><td><strong>2</strong></td><td>Dominant failure, severely impacts outcome</td><td>One dominant failure pattern severely degrades the trajectory. The agent may or may not recognize the failure, but recovery attempts are insufficient. The pattern consumes a large fraction of the trajectory&#x27;s steps. The final outcome is substantially worse than what was achievable. Alternatively, two distinct failure patterns are present and both materially impact the trajectory.</td></tr>
+<tr><td><strong>1</strong></td><td>Catastrophic or compound failure</td><td>Multiple failure patterns are present and compound each other (e.g., SUMMARY_LOCK leads to RESOURCE_EXHAUSTION), OR the trajectory exhibits INSTANT_CRASH with no recovery, OR a single failure pattern is so pervasive that the agent makes essentially no useful progress toward the task.</td></tr>
+</tbody></table></div>
+<h2>Edge Cases</h2>
+<ul>
+<li><strong>Trajectory has fewer than 5 steps</strong>: A very short trajectory may be an INSTANT_CRASH (agent failed immediately) or may simply be a concise successful execution. Distinguish by checking whether the agent achieved anything useful. If the task was completed in few steps, score 5. If the agent crashed immediately, score 1 with pattern INSTANT_CRASH.</li>
+</ul>
+<ul>
+<li><strong>No errors occur</strong>: If the trajectory is error-free and successful, score 5 with pattern NO_FAILURE. If the trajectory is error-free but unsuccessful (the agent simply did the wrong thing smoothly), still classify the structural failure pattern — this might be SUMMARY_LOCK (never acted) or a subtle DELAYED_EXPLOSION (approach was flawed from the start but executed cleanly).</li>
+</ul>
+<ul>
+<li><strong>Agent runs out of steps/tokens</strong>: This is typically RESOURCE_EXHAUSTION, but check whether the exhaustion was caused by another pattern (e.g., MONITOR_DEADLOCK consuming all available steps). Classify the root cause as the dominant pattern.</li>
+</ul>
+<ul>
+<li><strong>Trajectory contains only planning with no tool use</strong>: Likely SUMMARY_LOCK. Score 1-2 depending on whether the plans themselves are coherent and useful (even if not executed).</li>
+</ul>
+<ul>
+<li><strong>Multiple patterns with equal impact</strong>: If two failure patterns are equally dominant, report the one that appeared first as the primary pattern and note the second in your reason. Score 2 or lower.</li>
+</ul>
+<ul>
+<li><strong>Ambiguous between NO_FAILURE and minor failure</strong>: If the agent encountered small hiccups (a typo in a command, a minor misunderstanding corrected within one step), these do not constitute a failure pattern. Score 5 with NO_FAILURE.</li>
+</ul>
+<h2>Output Format</h2>
+<p>Return ONLY valid JSON with no additional text, markdown formatting, or code fences:</p>
+<p>{&quot;score&quot;: N, &quot;pattern&quot;: &quot;CATEGORY&quot;, &quot;reason&quot;: &quot;A 2-4 sentence explanation identifying the dominant failure pattern and its impact on the trajectory. Reference specific steps or events.&quot;, &quot;evidence&quot;: [&quot;Step X: Agent encountered ImportError but made no attempt to install the missing package.&quot;, &quot;Steps Y-Z: Agent repeated the same training command 4 times without changing hyperparameters.&quot;, &quot;...&quot;]}</p>
+<p>Notes on the JSON output:</p>
+<ul>
+<li><code>score</code> must be an integer from 1 to 5.</li>
+<li><code>pattern</code> must be exactly one of: <code>INSTANT_CRASH</code>, <code>FORMAT_COLLAPSE</code>, <code>DELAYED_EXPLOSION</code>, <code>SUMMARY_LOCK</code>, <code>RESOURCE_EXHAUSTION</code>, <code>MONITOR_DEADLOCK</code>, <code>NO_FAILURE</code>.</li>
+<li><code>reason</code> should be concise but specific. Explain why this pattern was selected as dominant and how it affected the outcome.</li>
+<li><code>evidence</code> is an array of strings (1-5 items), each citing a specific trajectory event that supports the classification. For NO_FAILURE, cite examples of the agent handling obstacles well or proceeding efficiently.</li>
+</ul>
+    </main>
+
+    <footer class="footer">
+        <a href="../index.html#metrics">&#8592; Back to Metrics Overview</a>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J61 - Interaction F1 — Evaluation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2440;
+            --accent: #2563eb;
+            --gold: #d97706;
+            --green: #059669;
+            --bg: #fafbfc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --code-bg: #1e1e2e;
+            --code-text: #cdd6f4;
+            --score-1: #dc2626;
+            --score-2: #ea580c;
+            --score-3: #d97706;
+            --score-4: #65a30d;
+            --score-5: #059669;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--navy) 0%, #1a365d 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .metric-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.3rem 0.75rem;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .scoring-scale {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+
+        .scoring-scale h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .scale-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .scale-step {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .scale-step:nth-child(1) { background: var(--score-1); }
+        .scale-step:nth-child(2) { background: var(--score-2); }
+        .scale-step:nth-child(3) { background: var(--score-3); }
+        .scale-step:nth-child(4) { background: var(--score-4); }
+        .scale-step:nth-child(5) { background: var(--score-5); }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 0 0.25rem;
+        }
+
+        .scale-labels span {
+            text-align: center;
+        }
+
+        .scale-details {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .scale-detail {
+            text-align: center;
+            padding: 0.5rem 0.25rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            background: var(--bg);
+        }
+
+        .scale-detail .num {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .scale-detail:nth-child(1) .num { color: var(--score-1); }
+        .scale-detail:nth-child(2) .num { color: var(--score-2); }
+        .scale-detail:nth-child(3) .num { color: var(--score-3); }
+        .scale-detail:nth-child(4) .num { color: var(--score-4); }
+        .scale-detail:nth-child(5) .num { color: var(--score-5); }
+
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .content h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 1.75rem 0 0.75rem;
+        }
+
+        .content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 1.25rem 0 0.5rem;
+        }
+
+        .content p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .content ul, .content ol {
+            margin: 0.75rem 0 1rem 1.5rem;
+        }
+
+        .content li {
+            margin-bottom: 0.4rem;
+            padding-left: 0.25rem;
+        }
+
+        .content li::marker {
+            color: var(--accent);
+        }
+
+        .content strong {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #be185d;
+        }
+
+        .code-block {
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-block pre {
+            background: var(--code-bg);
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--code-text);
+            background: none;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: var(--navy);
+            color: white;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .scale-details {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 4px;
+            }
+
+            .scale-detail {
+                font-size: 0.6rem;
+                padding: 0.4rem 0.1rem;
+            }
+
+            .table-wrapper {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scale-details {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .scale-detail {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                text-align: left;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .scale-detail .num {
+                margin-bottom: 0;
+                min-width: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div class="header-content">
+            <a href="../index.html#metrics" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Back to Overview
+            </a>
+            <div class="metric-badge">J61</div>
+            <h1>Interaction F1 — Evaluation</h1>
+        </div>
+    </header>
+
+    <div class="scoring-scale">
+        <h3>Scoring Scale (1-5)</h3>
+        <div class="scale-bar">
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+        </div>
+        <div class="scale-labels">
+            <span>1 - Worst</span>
+            <span>2</span>
+            <span>3 - Mid</span>
+            <span>4</span>
+            <span>5 - Best</span>
+        </div>
+        <div class="scale-details">
+            <div class="scale-detail"><span class="num">1</span> Poor / None</div>
+            <div class="scale-detail"><span class="num">2</span> Below Average</div>
+            <div class="scale-detail"><span class="num">3</span> Moderate</div>
+            <div class="scale-detail"><span class="num">4</span> Good</div>
+            <div class="scale-detail"><span class="num">5</span> Excellent</div>
+        </div>
+    </div>
+
+    <main class="content">
+        <p>You are an expert evaluator assessing AI agent trajectories from InnovatorBench (661 trajectories across 40 engineering tasks and 15 models). Your task is to evaluate the harmonic mean of interaction precision and checkpoint recall — whether the agent asked the right questions at the right times.</p>
+<h2>Definitions</h2>
+<p><strong>Interaction F1</strong>: The harmonic mean of two complementary measures:</p>
+<ol>
+<li><strong>Interaction Precision</strong> — Were the agent&#x27;s proactive questions/requests to the user actually necessary? (Unnecessary questions waste user time and signal poor autonomy.)</li>
+<li><strong>Checkpoint Recall</strong> — Did the agent ask at all the critical decision points where human input was needed? (Missing critical checkpoints leads to wasted effort on wrong approaches.)</li>
+</ol>
+<p><strong>Critical decision points</strong> (checkpoints): Moments where:</p>
+<ul>
+<li>The task specification is ambiguous and multiple valid interpretations exist</li>
+<li>A choice will have irreversible or expensive consequences</li>
+<li>Domain expertise is needed that the agent demonstrably lacks</li>
+<li>The agent is about to deviate significantly from the stated requirements</li>
+<li>Resource-intensive operations depend on unverified assumptions</li>
+</ul>
+<p><strong>Necessary questions</strong>: Questions that:</p>
+<ul>
+<li>Resolve genuine ambiguity in the task</li>
+<li>Clarify requirements that materially affect the approach</li>
+<li>Confirm high-stakes decisions before irreversible actions</li>
+<li>Request information the agent cannot reasonably infer</li>
+</ul>
+<p><strong>Unnecessary questions</strong>: Questions that:</p>
+<ul>
+<li>Ask about information clearly stated in the task description</li>
+<li>Request trivial confirmations the agent should handle autonomously</li>
+<li>Repeat questions already answered</li>
+<li>Ask about implementation details that don&#x27;t affect the outcome</li>
+</ul>
+<h2>Procedure</h2>
+<ol>
+<li><strong>Determine interaction mode</strong>: Check whether the trajectory contains any human interaction (user messages beyond the initial task). Classify as interactive or autonomous.</li>
+</ol>
+<ol>
+<li><strong>For interactive trajectories</strong>:</li>
+</ol>
+<p>   a. Count total questions/requests the agent directed at the user (questions_asked)    b. For each question, assess whether it was necessary (necessary_questions)    c. Identify all critical decision points in the trajectory (whether or not the agent asked)    d. Count how many critical decision points the agent missed (missed_checkpoints)    e. Compute conceptual precision = necessary_questions / questions_asked    f. Compute conceptual recall = checkpoints_hit / total_critical_checkpoints</p>
+<ol>
+<li><strong>For autonomous trajectories</strong> (no interaction):</li>
+</ol>
+<p>   a. Set questions_asked = 0, necessary_questions = 0    b. Identify all critical decision points where asking WOULD have helped    c. Count these as missed_checkpoints    d. Assess whether the task was clear enough for full autonomy, or whether the agent made assumptions that led to wasted effort</p>
+<ol>
+<li><strong>Assign score</strong> based on the overall balance of precision and recall (or missed opportunities for autonomous trajectories).</li>
+</ol>
+<h2>Scoring Scale (1-5)</h2>
+<h3>For Interactive Trajectories</h3>
+<div class="table-wrapper"><table><thead><tr><th>Score</th><th>Description</th></tr></thead><tbody>
+<tr><td>5</td><td>Perfect balance: asked exactly when needed, never asked unnecessarily, never missed a critical checkpoint. Both precision and recall are near-perfect.</td></tr>
+<tr><td>4</td><td>Good: either slightly too many questions (1-2 unnecessary) OR missed 1 non-critical checkpoint. Overall interaction is efficient and well-targeted.</td></tr>
+<tr><td>3</td><td>Moderate: either asks several unnecessary questions OR misses important checkpoints. One side of the F1 is clearly weaker.</td></tr>
+<tr><td>2</td><td>Poor: severely unbalanced — either floods user with trivial questions (low precision) OR never asks despite critical ambiguity (low recall).</td></tr>
+<tr><td>1</td><td>Terrible: both precision and recall are bad — asks wrong questions AND misses critical ones. Interaction actively harms rather than helps.</td></tr>
+</tbody></table></div>
+<h3>For Autonomous Trajectories (No Interaction)</h3>
+<div class="table-wrapper"><table><thead><tr><th>Score</th><th>Description</th></tr></thead><tbody>
+<tr><td>5</td><td>No missed opportunities. The task was clear enough for full autonomy. Agent correctly identified that no human input was needed.</td></tr>
+<tr><td>4</td><td>1 minor point where asking might have helped, but the agent made a reasonable default choice.</td></tr>
+<tr><td>3</td><td>2-3 points where asking would have helped. Agent made assumptions that caused moderate rework or suboptimal results.</td></tr>
+<tr><td>2</td><td>Multiple points where asking was clearly needed. Agent proceeded on wrong assumptions causing significant wasted effort.</td></tr>
+<tr><td>1</td><td>Multiple critical misunderstandings that a single question would have resolved. Agent wasted most of its trajectory on incorrect interpretations.</td></tr>
+</tbody></table></div>
+<h2>Edge Cases</h2>
+<ul>
+<li><strong>Task provides perfect specification</strong>: If the task description is unambiguous and complete, full autonomy is correct. Score 5 for autonomous trajectories in this case.</li>
+<li><strong>Agent asks questions but gets no response</strong>: Evaluate the quality of questions asked, not whether answers were received. Score based on whether the right questions were posed.</li>
+<li><strong>Agent asks rhetorical/self-directed questions</strong>: These do not count as interaction questions. Only count explicit requests directed at the user.</li>
+<li><strong>Implicit questions via partial output</strong>: If the agent shows partial work and asks &quot;does this look right?&quot;, count this as a question. Assess whether it was at a meaningful checkpoint.</li>
+<li><strong>Repeated questions</strong>: If the agent asks the same question multiple times, count each instance. Repetition indicates low precision.</li>
+<li><strong>Very short trajectories</strong>: If the trajectory is very brief (&lt; 5 actions), there may be few opportunities for checkpoints. Adjust expectations accordingly.</li>
+</ul>
+<h2>Output Format</h2>
+<p>Return ONLY valid JSON: {&quot;score&quot;: N, &quot;has_interaction&quot;: true/false, &quot;questions_asked&quot;: N, &quot;necessary_questions&quot;: N, &quot;missed_checkpoints&quot;: N, &quot;reason&quot;: &quot;...&quot;, &quot;evidence&quot;: [...]}</p>
+<p>Where:</p>
+<ul>
+<li>score: Integer 1-5 per the scale above</li>
+<li>has_interaction: Whether the trajectory contains human interaction beyond the initial task</li>
+<li>questions_asked: Total number of questions/requests the agent directed at the user (0 for autonomous)</li>
+<li>necessary_questions: How many of those questions were actually necessary (0 for autonomous)</li>
+<li>missed_checkpoints: Number of critical decision points where the agent should have asked but did not</li>
+<li>reason: 1-3 sentence explanation of the score</li>
+<li>evidence: Array of strings citing specific moments of good/bad interaction or missed opportunities</li>
+</ul>
+    </main>
+
+    <footer class="footer">
+        <a href="../index.html#metrics">&#8592; Back to Metrics Overview</a>
+    </footer>
+</body>
+</html>

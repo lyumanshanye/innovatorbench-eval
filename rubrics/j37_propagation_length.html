@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J37 - Propagation Length</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2440;
+            --accent: #2563eb;
+            --gold: #d97706;
+            --green: #059669;
+            --bg: #fafbfc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --code-bg: #1e1e2e;
+            --code-text: #cdd6f4;
+            --score-1: #dc2626;
+            --score-2: #ea580c;
+            --score-3: #d97706;
+            --score-4: #65a30d;
+            --score-5: #059669;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--navy) 0%, #1a365d 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .metric-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.3rem 0.75rem;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .scoring-scale {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+
+        .scoring-scale h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .scale-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .scale-step {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .scale-step:nth-child(1) { background: var(--score-1); }
+        .scale-step:nth-child(2) { background: var(--score-2); }
+        .scale-step:nth-child(3) { background: var(--score-3); }
+        .scale-step:nth-child(4) { background: var(--score-4); }
+        .scale-step:nth-child(5) { background: var(--score-5); }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 0 0.25rem;
+        }
+
+        .scale-labels span {
+            text-align: center;
+        }
+
+        .scale-details {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .scale-detail {
+            text-align: center;
+            padding: 0.5rem 0.25rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            background: var(--bg);
+        }
+
+        .scale-detail .num {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .scale-detail:nth-child(1) .num { color: var(--score-1); }
+        .scale-detail:nth-child(2) .num { color: var(--score-2); }
+        .scale-detail:nth-child(3) .num { color: var(--score-3); }
+        .scale-detail:nth-child(4) .num { color: var(--score-4); }
+        .scale-detail:nth-child(5) .num { color: var(--score-5); }
+
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .content h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 1.75rem 0 0.75rem;
+        }
+
+        .content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 1.25rem 0 0.5rem;
+        }
+
+        .content p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .content ul, .content ol {
+            margin: 0.75rem 0 1rem 1.5rem;
+        }
+
+        .content li {
+            margin-bottom: 0.4rem;
+            padding-left: 0.25rem;
+        }
+
+        .content li::marker {
+            color: var(--accent);
+        }
+
+        .content strong {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #be185d;
+        }
+
+        .code-block {
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-block pre {
+            background: var(--code-bg);
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--code-text);
+            background: none;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: var(--navy);
+            color: white;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .scale-details {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 4px;
+            }
+
+            .scale-detail {
+                font-size: 0.6rem;
+                padding: 0.4rem 0.1rem;
+            }
+
+            .table-wrapper {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scale-details {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .scale-detail {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                text-align: left;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .scale-detail .num {
+                margin-bottom: 0;
+                min-width: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div class="header-content">
+            <a href="../index.html#metrics" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Back to Overview
+            </a>
+            <div class="metric-badge">J37</div>
+            <h1>Propagation Length</h1>
+        </div>
+    </header>
+
+    <div class="scoring-scale">
+        <h3>Scoring Scale (1-5)</h3>
+        <div class="scale-bar">
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+        </div>
+        <div class="scale-labels">
+            <span>1 - Worst</span>
+            <span>2</span>
+            <span>3 - Mid</span>
+            <span>4</span>
+            <span>5 - Best</span>
+        </div>
+        <div class="scale-details">
+            <div class="scale-detail"><span class="num">1</span> Poor / None</div>
+            <div class="scale-detail"><span class="num">2</span> Below Average</div>
+            <div class="scale-detail"><span class="num">3</span> Moderate</div>
+            <div class="scale-detail"><span class="num">4</span> Good</div>
+            <div class="scale-detail"><span class="num">5</span> Excellent</div>
+        </div>
+    </div>
+
+    <main class="content">
+        <h2>Role</h2>
+<p>You are an expert evaluator measuring <strong>error propagation distance</strong> in an AI agent&#x27;s trajectory. When a root-cause error occurs, you determine how many steps pass before it manifests as a visible failure. Short propagation means errors are caught early (good engineering practice); long propagation means hidden errors accumulate silently (poor observability and testing discipline).</p>
+<h2>Inputs</h2>
+<ol>
+<li><code>task_description</code> — The original task and success criteria</li>
+<li><code>agent_trajectory</code> — Ordered (action, observation) pairs with full context including THOUGHT/reasoning traces</li>
+<li><code>final_eval_score</code> — Ground-truth score from the benchmark</li>
+</ol>
+<h2>Definitions</h2>
+<p>A <strong>root-cause error</strong> is the FIRST step where something goes wrong that will eventually lead to a visible failure. Examples:</p>
+<ul>
+<li>A typo in a config file that will cause a crash later</li>
+<li>A wrong assumption about data format that will produce incorrect output</li>
+<li>A logic error in a function that will return wrong results downstream</li>
+<li>An incorrect import or dependency that will fail at runtime</li>
+<li>A misread requirement that leads to building the wrong thing</li>
+</ul>
+<p>A <strong>detection point</strong> is when the error becomes visible through:</p>
+<ul>
+<li>An explicit error message, traceback, or crash</li>
+<li>The agent noticing unexpected output or behavior in its THOUGHT stream</li>
+<li>An eval score revealing the problem</li>
+<li>The agent explicitly acknowledging something is wrong</li>
+</ul>
+<p><strong>Propagation length</strong> = detection_step - root_cause_step (measured in trajectory steps, not lines of code).</p>
+<h2>Evaluation Procedure</h2>
+<h3>Step 1: Identify All Root-Cause Errors</h3>
+<p>Scan the trajectory and identify each point where a mistake is introduced. A mistake is any action that:</p>
+<ul>
+<li>Contains a factual error (wrong API, wrong syntax, wrong assumption)</li>
+<li>Violates task requirements</li>
+<li>Introduces a bug or misconfiguration</li>
+<li>Makes an incorrect decision based on wrong information</li>
+</ul>
+<p>For each, record the step number and nature of the error.</p>
+<h3>Step 2: Find Each Error&#x27;s Detection Point</h3>
+<p>For each root-cause error, find the FIRST subsequent step where the error becomes visible. This could be:</p>
+<ul>
+<li>An observation containing an error message or unexpected result</li>
+<li>The agent&#x27;s THOUGHT stream noting something is wrong</li>
+<li>A test or eval revealing the issue</li>
+<li>The end of the trajectory (if the error is never detected)</li>
+</ul>
+<p>If the error is never detected within the trajectory, the detection point is the final step (or mark as &quot;never detected&quot;).</p>
+<h3>Step 3: Compute Propagation Length</h3>
+<p>For each error: propagation_length = detection_step - root_cause_step.</p>
+<h3>Step 4: Determine Worst Case</h3>
+<p>If multiple errors exist, use the WORST (longest) propagation length for scoring. Also consider the average propagation if there are many errors.</p>
+<h3>Step 5: Score</h3>
+<h2>Scoring Scale (1-5)</h2>
+<div class="table-wrapper"><table><thead><tr><th>Score</th><th>Label</th><th>Propagation Length</th><th>Criteria</th></tr></thead><tbody>
+<tr><td>5</td><td>Immediate Detection</td><td>0-2 steps (or no errors)</td><td>Errors caught within 1-2 steps of introduction. Agent tests frequently, validates assumptions immediately. OR: no errors occur in the trajectory.</td></tr>
+<tr><td>4</td><td>Quick Detection</td><td>3-5 steps</td><td>Errors caught within 3-5 steps. Agent has reasonable validation cadence but doesn&#x27;t catch every mistake instantly.</td></tr>
+<tr><td>3</td><td>Moderate Delay</td><td>6-10 steps</td><td>Errors propagate 6-10 steps before detection. Agent does some validation but has gaps — errors hide through several actions before surfacing.</td></tr>
+<tr><td>2</td><td>Long Propagation</td><td>11-20 steps</td><td>Errors propagate 11-20 steps before surfacing. Agent builds significantly on a faulty foundation before discovering the problem. Substantial rework required.</td></tr>
+<tr><td>1</td><td>Silent Propagation</td><td>&gt;20 steps or never detected</td><td>Errors propagate more than 20 steps, or are NEVER detected within the trajectory. The agent has essentially no error-detection discipline. Errors only surface at final eval (or not at all).</td></tr>
+</tbody></table></div>
+<h2>Edge Cases</h2>
+<ul>
+<li><strong>If trajectory &lt; 5 steps</strong>: Score N/A. Too few steps for meaningful propagation measurement.</li>
+<li><strong>If no errors occur in the trajectory</strong>: Score 5. The absence of errors means there is nothing to propagate. Note this in the reason.</li>
+<li><strong>If the agent introduces an error and immediately catches it in the same step</strong> (e.g., runs code, sees error, fixes it): Propagation length = 0. This is excellent and contributes to a score of 5.</li>
+<li><strong>If errors are introduced but only surface at the final eval</strong>: This counts as propagation to end-of-trajectory and is scored as 1 or 2 depending on trajectory length.</li>
+<li><strong>If the agent deliberately introduces something &quot;wrong&quot; as an experiment</strong> (e.g., &quot;let me try X to see if it works&quot;): This is NOT an error if the agent explicitly plans to validate the result. Only count it as an error if the agent does NOT follow up with validation.</li>
+<li><strong>If the trajectory has many short-propagation errors and one long-propagation error</strong>: Score based on the worst case, but note the overall pattern in the reason.</li>
+</ul>
+<h2>Output Format</h2>
+<p>Return ONLY valid JSON:</p>
+<div class="code-block"><pre><code class="language-json">{
+  &quot;score&quot;: &lt;1|2|3|4|5|&quot;N/A&quot;&gt;,
+  &quot;propagation_steps&quot;: &lt;int or null&gt;,
+  &quot;root_cause_step&quot;: &lt;int or null&gt;,
+  &quot;detection_step&quot;: &lt;int or null&gt;,
+  &quot;total_errors_tracked&quot;: &lt;int&gt;,
+  &quot;errors&quot;: [
+    {
+      &quot;root_cause_step&quot;: &lt;int&gt;,
+      &quot;root_cause_description&quot;: &quot;&lt;what went wrong&gt;&quot;,
+      &quot;detection_step&quot;: &lt;int or &quot;never&quot;&gt;,
+      &quot;detection_method&quot;: &quot;&lt;error_message|agent_thought|eval_feedback|never_detected&gt;&quot;,
+      &quot;propagation_length&quot;: &lt;int or &quot;inf&quot;&gt;,
+      &quot;impact&quot;: &quot;&lt;description of downstream effects&gt;&quot;
+    }
+  ],
+  &quot;reason&quot;: &quot;&lt;2-3 sentence justification&gt;&quot;,
+  &quot;evidence&quot;: [&quot;&lt;quote or step reference 1&gt;&quot;, &quot;&lt;quote or step reference 2&gt;&quot;]
+}</code></pre></div>
+<p>Note: The top-level <code>propagation_steps</code>, <code>root_cause_step</code>, and <code>detection_step</code> should reflect the WORST (longest propagation) error. If no errors, all are null.</p>
+<h2>Examples</h2>
+<h3>Example 1: Score 5 (Task 7, Fine-tuning)</h3>
+<p>Agent writes code incrementally, running after each change. Two small errors introduced (wrong dtype, missing import) but both caught within 1 step via immediate execution.</p>
+<div class="code-block"><pre><code class="language-json">{&quot;score&quot;: 5, &quot;propagation_steps&quot;: 1, &quot;root_cause_step&quot;: 22, &quot;detection_step&quot;: 23, &quot;total_errors_tracked&quot;: 2, &quot;errors&quot;: [{&quot;root_cause_step&quot;: 22, &quot;root_cause_description&quot;: &quot;Used float16 dtype on CPU which doesn&#x27;t support it&quot;, &quot;detection_step&quot;: 23, &quot;detection_method&quot;: &quot;error_message&quot;, &quot;propagation_length&quot;: 1, &quot;impact&quot;: &quot;RuntimeError caught immediately, fixed in step 24&quot;}, {&quot;root_cause_step&quot;: 38, &quot;root_cause_description&quot;: &quot;Missing &#x27;import json&#x27; for output serialization&quot;, &quot;detection_step&quot;: 39, &quot;detection_method&quot;: &quot;error_message&quot;, &quot;propagation_length&quot;: 1, &quot;impact&quot;: &quot;ImportError caught immediately, fixed in step 40&quot;}], &quot;reason&quot;: &quot;Excellent error detection discipline. Both errors were caught within 1 step because the agent runs code after every meaningful change. Propagation is minimal — the agent never builds on faulty foundations.&quot;, &quot;evidence&quot;: [&quot;Step 22: &#x27;model.half()&#x27; on CPU&quot;, &quot;Step 23: &#x27;RuntimeError: \&quot;slow_conv2d_cpu\&quot; not implemented for Half&#x27;&quot;]}</code></pre></div>
+<h3>Example 2: Score 2 (Task 14, RL Reward)</h3>
+<p>Agent writes a reward function with a sign error (penalizing good behavior instead of rewarding it) in step 18. Proceeds to set up the entire training pipeline, configs, and launch training. The error only surfaces at step 42 when training rewards trend negative instead of positive — 24 steps of wasted work.</p>
+<div class="code-block"><pre><code class="language-json">{&quot;score&quot;: 2, &quot;propagation_steps&quot;: 24, &quot;root_cause_step&quot;: 18, &quot;detection_step&quot;: 42, &quot;total_errors_tracked&quot;: 1, &quot;errors&quot;: [{&quot;root_cause_step&quot;: 18, &quot;root_cause_description&quot;: &quot;Sign error in reward function: return -score instead of +score for correct answers&quot;, &quot;detection_step&quot;: 42, &quot;detection_method&quot;: &quot;agent_thought&quot;, &quot;propagation_length&quot;: 24, &quot;impact&quot;: &quot;24 steps of pipeline setup and training wasted. Agent had to rewrite reward function and retrain from scratch, consuming half the remaining budget.&quot;}], &quot;reason&quot;: &quot;Long propagation due to lack of unit testing. The agent wrote the reward function and immediately moved to infrastructure work without ever testing the function on sample inputs. A single test case would have caught the sign error instantly. Instead, it propagated through 24 steps of pipeline work.&quot;, &quot;evidence&quot;: [&quot;Step 18: &#x27;return -similarity_score  # penalize low similarity&#x27; — sign is inverted&quot;, &quot;Step 42: &#x27;THOUGHT: Reward is trending negative... this shouldn&#x27;t happen if the model is learning&#x27;&quot;]}</code></pre></div>
+<h3>Example 3: Score 1 (Task 9, Data Cleaning)</h3>
+<p>Agent misreads the eval metric in step 3, believing higher = better when actually lower = better. This causes all subsequent optimization decisions to go in the wrong direction. The agent never realizes the mistake — it celebrates &quot;improvements&quot; that are actually regressions. Error is never detected within the trajectory.</p>
+<div class="code-block"><pre><code class="language-json">{&quot;score&quot;: 1, &quot;propagation_steps&quot;: &quot;inf&quot;, &quot;root_cause_step&quot;: 3, &quot;detection_step&quot;: &quot;never&quot;, &quot;total_errors_tracked&quot;: 1, &quot;errors&quot;: [{&quot;root_cause_step&quot;: 3, &quot;root_cause_description&quot;: &quot;Misread eval metric direction: assumed higher is better, but metric is error rate (lower is better)&quot;, &quot;detection_step&quot;: &quot;never&quot;, &quot;detection_method&quot;: &quot;never_detected&quot;, &quot;propagation_length&quot;: &quot;inf&quot;, &quot;impact&quot;: &quot;Every optimization decision in the trajectory is inverted. Agent makes data &#x27;worse&#x27; by the true metric while believing it&#x27;s improving. Final score is near-worst among all agents.&quot;}], &quot;reason&quot;: &quot;Silent propagation of a fundamental misunderstanding. The agent never tested its assumption about the metric direction and never questioned why its &#x27;improvements&#x27; produced numbers that would be poor under the correct interpretation. The error infected the entire trajectory from step 3 onward.&quot;, &quot;evidence&quot;: [&quot;Step 3: &#x27;THOUGHT: I need to maximize this score — higher values mean better quality&#x27;&quot;, &quot;Step 55: &#x27;THOUGHT: Great, score went from 0.12 to 0.45, significant improvement!&#x27; — actually a regression&quot;]}</code></pre></div>
+    </main>
+
+    <footer class="footer">
+        <a href="../index.html#metrics">&#8592; Back to Metrics Overview</a>
+    </footer>
+</body>
+</html>

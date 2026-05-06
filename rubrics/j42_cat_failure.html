@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J42 - Cat Failure</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2440;
+            --accent: #2563eb;
+            --gold: #d97706;
+            --green: #059669;
+            --bg: #fafbfc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --code-bg: #1e1e2e;
+            --code-text: #cdd6f4;
+            --score-1: #dc2626;
+            --score-2: #ea580c;
+            --score-3: #d97706;
+            --score-4: #65a30d;
+            --score-5: #059669;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--navy) 0%, #1a365d 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .metric-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.3rem 0.75rem;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .scoring-scale {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+
+        .scoring-scale h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .scale-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .scale-step {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .scale-step:nth-child(1) { background: var(--score-1); }
+        .scale-step:nth-child(2) { background: var(--score-2); }
+        .scale-step:nth-child(3) { background: var(--score-3); }
+        .scale-step:nth-child(4) { background: var(--score-4); }
+        .scale-step:nth-child(5) { background: var(--score-5); }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 0 0.25rem;
+        }
+
+        .scale-labels span {
+            text-align: center;
+        }
+
+        .scale-details {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .scale-detail {
+            text-align: center;
+            padding: 0.5rem 0.25rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            background: var(--bg);
+        }
+
+        .scale-detail .num {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .scale-detail:nth-child(1) .num { color: var(--score-1); }
+        .scale-detail:nth-child(2) .num { color: var(--score-2); }
+        .scale-detail:nth-child(3) .num { color: var(--score-3); }
+        .scale-detail:nth-child(4) .num { color: var(--score-4); }
+        .scale-detail:nth-child(5) .num { color: var(--score-5); }
+
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .content h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 1.75rem 0 0.75rem;
+        }
+
+        .content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 1.25rem 0 0.5rem;
+        }
+
+        .content p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .content ul, .content ol {
+            margin: 0.75rem 0 1rem 1.5rem;
+        }
+
+        .content li {
+            margin-bottom: 0.4rem;
+            padding-left: 0.25rem;
+        }
+
+        .content li::marker {
+            color: var(--accent);
+        }
+
+        .content strong {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #be185d;
+        }
+
+        .code-block {
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-block pre {
+            background: var(--code-bg);
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--code-text);
+            background: none;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: var(--navy);
+            color: white;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .scale-details {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 4px;
+            }
+
+            .scale-detail {
+                font-size: 0.6rem;
+                padding: 0.4rem 0.1rem;
+            }
+
+            .table-wrapper {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scale-details {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .scale-detail {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                text-align: left;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .scale-detail .num {
+                margin-bottom: 0;
+                min-width: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div class="header-content">
+            <a href="../index.html#metrics" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Back to Overview
+            </a>
+            <div class="metric-badge">J42</div>
+            <h1>Cat Failure</h1>
+        </div>
+    </header>
+
+    <div class="scoring-scale">
+        <h3>Scoring Scale (1-5)</h3>
+        <div class="scale-bar">
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+        </div>
+        <div class="scale-labels">
+            <span>1 - Worst</span>
+            <span>2</span>
+            <span>3 - Mid</span>
+            <span>4</span>
+            <span>5 - Best</span>
+        </div>
+        <div class="scale-details">
+            <div class="scale-detail"><span class="num">1</span> Poor / None</div>
+            <div class="scale-detail"><span class="num">2</span> Below Average</div>
+            <div class="scale-detail"><span class="num">3</span> Moderate</div>
+            <div class="scale-detail"><span class="num">4</span> Good</div>
+            <div class="scale-detail"><span class="num">5</span> Excellent</div>
+        </div>
+    </div>
+
+    <main class="content">
+        <p>You are an expert evaluator assessing AI agent trajectories from the InnovatorBench benchmark. Your task is to measure the <strong>CAT Failure Rate</strong> — the prevalence of three Common Anti-pattern Triad behaviors: Blind Retry, Eval Abuse, and Resource Leak. These anti-patterns represent wasteful, ineffective, or harmful agent behaviors that are frequently observed across engineering tasks (fine-tuning, data cleaning, RL reward design, agent workflow).</p>
+<p>You will receive a complete agent trajectory consisting of thoughts, tool calls, observations, and outputs. Evaluate it according to the procedure and scoring scale below.</p>
+<h2>Definitions</h2>
+<h3>Anti-pattern 1: BLIND_RETRY</h3>
+<p>The agent repeats the exact same action (or a near-identical action) after it has already failed, without meaningfully changing its approach. This is distinct from legitimate retry (e.g., retrying a network request that may have transiently failed).</p>
+<p><strong>Counts as BLIND_RETRY:</strong></p>
+<ul>
+<li>Running the same command with identical arguments after it produced an error</li>
+<li>Re-executing the same code block without modifications after it raised an exception</li>
+<li>Submitting the same solution after it was rejected</li>
+<li>Re-running a failing test without changing the code under test</li>
+<li>Attempting the same installation command that just failed without trying alternatives</li>
+</ul>
+<p><strong>Does NOT count as BLIND_RETRY:</strong></p>
+<ul>
+<li>Retrying a network request or API call that may have failed due to transient issues (up to 2-3 retries is reasonable)</li>
+<li>Re-running a command after making a change that could plausibly fix the issue</li>
+<li>Running the same command in a different environment or directory</li>
+<li>Re-running a stochastic process (e.g., training with random seeds) where different outcomes are expected</li>
+</ul>
+<h3>Anti-pattern 2: EVAL_ABUSE</h3>
+<p>The agent runs evaluation, scoring, or benchmarking commands repeatedly without making substantive changes between evaluations, hoping for different or better results. This wastes compute and trajectory steps.</p>
+<p><strong>Counts as EVAL_ABUSE:</strong></p>
+<ul>
+<li>Running an evaluation script multiple times on the same unchanged model/code</li>
+<li>Submitting the same answer for scoring repeatedly</li>
+<li>Running the same test suite multiple times without code changes in between</li>
+<li>Repeatedly checking metrics without intervening modifications to the system</li>
+<li>Running validation after each trivially small change (e.g., evaluating after changing a comment)</li>
+</ul>
+<p><strong>Does NOT count as EVAL_ABUSE:</strong></p>
+<ul>
+<li>Running evaluation after making a meaningful change to see its effect</li>
+<li>Running different evaluation scripts or with different parameters</li>
+<li>Running evaluation once at the end to confirm results</li>
+<li>Running evaluation on different data splits or subsets</li>
+<li>Periodic evaluation during a training loop (this is standard practice)</li>
+</ul>
+<h3>Anti-pattern 3: RESOURCE_LEAK</h3>
+<p>The agent starts processes, services, containers, or other resources without proper cleanup, leading to accumulation of zombie processes, port conflicts, memory exhaustion, or disk space issues. This includes failing to stop background processes, not shutting down servers, or creating temporary files that are never cleaned up.</p>
+<p><strong>Counts as RESOURCE_LEAK:</strong></p>
+<ul>
+<li>Starting a background training process and starting another without stopping the first</li>
+<li>Launching a server or service and never terminating it</li>
+<li>Creating large temporary files that are never deleted</li>
+<li>Opening database connections without closing them</li>
+<li>Spawning subprocesses that outlive their usefulness</li>
+<li>Starting multiple instances of the same service on different ports</li>
+<li>Leaving GPU memory allocated from abandoned training runs</li>
+</ul>
+<p><strong>Does NOT count as RESOURCE_LEAK:</strong></p>
+<ul>
+<li>Starting a single long-running process that the agent monitors to completion</li>
+<li>Creating files that are part of the expected output</li>
+<li>Starting a service that is needed for the remainder of the trajectory</li>
+<li>Processes that are automatically cleaned up by the environment</li>
+</ul>
+<h2>Procedure</h2>
+<p>Follow these steps in order:</p>
+<ol>
+<li><strong>Scan for BLIND_RETRY instances.</strong> Walk through the trajectory and identify every case where the agent repeats an action after failure. For each candidate:</li>
+<li>Compare the repeated action to the original: are the arguments, code, or parameters identical or near-identical?</li>
+<li>Check what happened between the attempts: did the agent make any changes that could plausibly address the failure?</li>
+<li>Classify as BLIND_RETRY or legitimate retry.</li>
+<li>Count the total number of BLIND_RETRY instances.</li>
+</ol>
+<ol>
+<li><strong>Scan for EVAL_ABUSE instances.</strong> Identify every evaluation, scoring, or testing action. For each:</li>
+<li>Check what changes (if any) the agent made since the previous evaluation.</li>
+<li>Determine whether the evaluation was justified (meaningful change between evals) or abusive (no change or trivial change).</li>
+<li>Count the total number of EVAL_ABUSE instances.</li>
+</ol>
+<ol>
+<li><strong>Scan for RESOURCE_LEAK instances.</strong> Identify every action where the agent starts a process, service, or creates a significant resource. For each:</li>
+<li>Check whether the resource was properly cleaned up or terminated.</li>
+<li>Check whether the resource conflicted with other resources (port conflicts, memory issues).</li>
+<li>Determine whether the agent showed awareness of resource management.</li>
+<li>Count the total number of RESOURCE_LEAK instances.</li>
+</ol>
+<ol>
+<li><strong>Assess overall anti-pattern impact.</strong> Consider:</li>
+<li>Total count of instances across all three categories.</li>
+<li>How much of the trajectory was consumed by anti-pattern behavior.</li>
+<li>Whether anti-patterns caused downstream problems (e.g., resource leak causing an OOM that derailed the trajectory).</li>
+<li>Whether the agent showed any self-awareness or correction of anti-pattern behavior.</li>
+</ol>
+<ol>
+<li><strong>Assign a score</strong> using the scale below.</li>
+</ol>
+<h2>Scoring Scale</h2>
+<div class="table-wrapper"><table><thead><tr><th>Score</th><th>Label</th><th>Description</th></tr></thead><tbody>
+<tr><td><strong>5</strong></td><td>No anti-patterns</td><td>None of the three anti-patterns are detected. The agent retries only when meaningful changes are made, evaluates only when justified, and manages resources responsibly. The trajectory is clean of wasteful behavior.</td></tr>
+<tr><td><strong>4</strong></td><td>Minimal anti-patterns</td><td>One minor instance of one anti-pattern is present. For example: a single unnecessary retry, one extra evaluation run without changes, or one unkilled background process. The instance does not materially impact the trajectory&#x27;s efficiency or outcome.</td></tr>
+<tr><td><strong>3</strong></td><td>Moderate anti-patterns</td><td>Clear instances of 1 anti-pattern category (2-3 occurrences), OR minor instances of 2 different anti-pattern categories. The anti-pattern behavior is noticeable and wastes some trajectory steps or resources, but the agent still makes meaningful progress overall.</td></tr>
+<tr><td><strong>2</strong></td><td>Significant anti-patterns</td><td>Significant instances of 2 or more anti-pattern categories. Anti-pattern behavior consumes a substantial portion of trajectory steps or causes concrete negative consequences (e.g., resource leaks leading to OOM, blind retries wasting 10+ steps). The agent shows little awareness of its wasteful behavior.</td></tr>
+<tr><td><strong>1</strong></td><td>Pervasive anti-patterns</td><td>Anti-patterns dominate the trajectory. The agent spends more time on wasteful retries, redundant evaluations, and leaked resources than on productive work. Multiple anti-pattern categories are present at high frequency, and they may compound each other (e.g., blind retrying an evaluation — combining BLIND_RETRY and EVAL_ABUSE).</td></tr>
+</tbody></table></div>
+<h2>Edge Cases</h2>
+<ul>
+<li><strong>Trajectory has fewer than 5 steps</strong>: Very short trajectories have limited opportunity for anti-patterns. If no anti-patterns are present, score 5. If even a short trajectory contains anti-patterns (e.g., agent runs the same failing command twice in 4 steps), score accordingly but note the short length. A single retry in a 3-step trajectory is more concerning proportionally than in a 50-step trajectory.</li>
+</ul>
+<ul>
+<li><strong>No errors occur throughout the trajectory</strong>: If no errors occur, BLIND_RETRY is impossible (nothing failed to retry). EVAL_ABUSE and RESOURCE_LEAK can still occur in error-free trajectories. If none of the three anti-patterns are present, score 5.</li>
+</ul>
+<ul>
+<li><strong>Agent explicitly acknowledges anti-pattern behavior</strong>: If the agent says something like &quot;let me try this again to see if it works&quot; without making changes but shows awareness that this is a long shot, it is still BLIND_RETRY. Awareness without behavioral change does not mitigate the count, though it may soften the score by half a point (e.g., 3 instead of 2 in a borderline case).</li>
+</ul>
+<ul>
+<li><strong>Environment causes the anti-pattern</strong>: If the agent retries because the environment returned an inconsistent or misleading error (e.g., a flaky test), this is a legitimate retry, not BLIND_RETRY. Judge based on whether the agent&#x27;s decision to retry was reasonable given the information available.</li>
+</ul>
+<ul>
+<li><strong>Training loops with periodic evaluation</strong>: Standard machine learning training loops that evaluate every N epochs are NOT EVAL_ABUSE. This is expected practice. EVAL_ABUSE applies when the agent manually triggers evaluation outside of a training loop without making intervening changes.</li>
+</ul>
+<ul>
+<li><strong>Agent creates resources that are needed for the task</strong>: Starting a server or process that is part of the task requirements is not a RESOURCE_LEAK, even if the agent does not shut it down (the task may expect it to remain running). Only count cases where the resource is clearly abandoned or duplicated unnecessarily.</li>
+</ul>
+<h2>Output Format</h2>
+<p>Return ONLY valid JSON with no additional text, markdown formatting, or code fences:</p>
+<p>{&quot;score&quot;: N, &quot;anti_patterns&quot;: {&quot;blind_retry&quot;: M, &quot;eval_abuse&quot;: M, &quot;resource_leak&quot;: M}, &quot;reason&quot;: &quot;A 2-4 sentence explanation of the anti-pattern assessment, referencing specific instances.&quot;, &quot;evidence&quot;: [&quot;Steps X-Y: Agent ran <code>python train.py --lr 0.01</code> three consecutive times after OOM errors without reducing batch size or model size.&quot;, &quot;Steps A-B: Agent ran eval.py twice with no code changes between runs.&quot;, &quot;...&quot;]}</p>
+<p>Notes on the JSON output:</p>
+<ul>
+<li><code>score</code> must be an integer from 1 to 5.</li>
+<li><code>anti_patterns</code> is an object with integer counts for each of the three categories. A count of 0 means the anti-pattern was not observed.</li>
+<li><code>reason</code> should be concise but specific. Identify which anti-patterns were found and their impact.</li>
+<li><code>evidence</code> is an array of strings (1-5 items), each citing a specific anti-pattern instance with step references. For a score of 5, evidence items should note examples of good retry discipline, justified evaluations, or proper resource management.</li>
+</ul>
+    </main>
+
+    <footer class="footer">
+        <a href="../index.html#metrics">&#8592; Back to Metrics Overview</a>
+    </footer>
+</body>
+</html>
