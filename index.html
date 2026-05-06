@@ -1064,6 +1064,9 @@
                         <th>ID</th>
                         <th>English Name</th>
                         <th>Chinese Name</th>
+                        <th>n</th>
+                        <th>Mean</th>
+                        <th>Std</th>
                         <th>&rho; (eval)</th>
                         <th>H (model)</th>
                         <th>Quality</th>
@@ -1467,30 +1470,30 @@
 // ======== DATA ========
 
 const metricData = [
-    {rank:1, id:'J60', en:'Interaction Precision', zh:'交互精确度', rho:0.515, h:599, quality:308, rating:'S', detail:'Measures precision of agent interactions with the environment. Evaluates whether each interaction (tool call, query) is necessary and well-formed. High scores indicate minimal wasted interactions.'},
-    {rank:2, id:'J65', en:'Question Quality', zh:'提问质量', rho:0.595, h:335, quality:200, rating:'S', detail:'Evaluates the quality of questions the agent asks when seeking clarification. Considers relevance, specificity, timing, and whether the question advances task completion.'},
-    {rank:3, id:'J39', en:'Failure Pattern', zh:'失败模式', rho:0.769, h:250, quality:192, rating:'S', detail:'Identifies recurring failure patterns in agent behavior. Classifies failures into types (resource, logic, environment) and assesses whether the agent learns from them.'},
-    {rank:4, id:'J06', en:'Error Recovery', zh:'错误恢复', rho:0.759, h:233, quality:177, rating:'S', detail:'Counts and evaluates error recovery events. Measures detection speed, strategy pivots, and whether recovery leads to forward progress. Core resilience metric.'},
-    {rank:5, id:'J68', en:'Feedback Utilization', zh:'反馈利用率', rho:0.748, h:235, quality:176, rating:'S', detail:'Measures how effectively the agent uses feedback from the environment, error messages, and evaluation signals to improve its approach.'},
-    {rank:6, id:'J95', en:'Subtask Propagation', zh:'子任务传播', rho:0.700, h:214, quality:150, rating:'A', detail:'Evaluates how well the agent decomposes complex tasks and propagates results between subtasks. Measures information flow and dependency management.'},
-    {rank:7, id:'J50', en:'Evidence-Action Gap', zh:'证据行动鸿沟', rho:0.715, h:207, quality:148, rating:'A', detail:'Measures the gap between evidence gathered and actions taken. Penalizes acting without sufficient evidence or gathering evidence without acting on it.'},
-    {rank:8, id:'J32', en:'Traj-Satisfy', zh:'轨迹满意度', rho:0.862, h:172, quality:148, rating:'A', detail:'Overall trajectory satisfaction score. Holistic assessment of whether the trajectory demonstrates competent, efficient progress toward the task goal.'},
-    {rank:9, id:'J70', en:'Hypothesis-Verify', zh:'假设验证', rho:0.732, h:190, quality:139, rating:'A', detail:'Evaluates whether the agent formulates hypotheses and systematically verifies them. Measures scientific reasoning methodology in problem-solving.'},
-    {rank:10, id:'J37', en:'Propagation Length', zh:'传播长度', rho:0.757, h:164, quality:124, rating:'A', detail:'Measures how far information propagates through the agent\'s reasoning chain. Longer effective propagation indicates better working memory and planning.'},
-    {rank:11, id:'J49', en:'Step F1', zh:'步骤F1', rho:0.535, h:190, quality:102, rating:'A', detail:'F1 score of agent steps against a reference solution. Balances precision (no wasted steps) and recall (all necessary steps taken).'},
-    {rank:12, id:'J41', en:'Error-Type Solidification', zh:'按类型错误固化', rho:0.696, h:146, quality:102, rating:'A', detail:'Detects when specific error types become "solidified" - repeated without resolution. Broken down by error category (syntax, logic, resource, environment).'},
-    {rank:13, id:'J48', en:'Step Recall', zh:'步骤召回率', rho:0.539, h:163, quality:88, rating:'A', detail:'Recall of required steps from a reference trajectory. Measures completeness of the agent\'s approach - whether all critical steps are attempted.'},
-    {rank:14, id:'J30', en:'Parameter Accuracy', zh:'参数准确率', rho:0.569, h:150, quality:85, rating:'A', detail:'Evaluates the accuracy of parameters/arguments passed to tools and functions. Catches off-by-one errors, wrong file paths, incorrect API parameters.'},
-    {rank:15, id:'J25', en:'Effective Action Ratio', zh:'有效动作比', rho:0.550, h:153, quality:84, rating:'A', detail:'Ratio of effective actions to total actions. Classifies each action as PRODUCTIVE, EXPLORATORY_USEFUL, OVERHEAD, REDUNDANT, CIRCULAR, or FAILED_WASTED.'},
-    {rank:16, id:'J61', en:'Interaction F1', zh:'交互F1', rho:0.631, h:119, quality:75, rating:'B', detail:'F1 score of agent interactions against expected interaction patterns. Balances interaction precision and recall.'},
-    {rank:17, id:'J40', en:'Error Solidification', zh:'错误固化', rho:0.499, h:140, quality:70, rating:'B', detail:'Overall error solidification rate. Measures whether errors persist across attempts without the agent changing strategy.'},
-    {rank:18, id:'J73', en:'Dual-Channel', zh:'双通道一致性', rho:0.522, h:105, quality:55, rating:'B', detail:'Consistency between reasoning channel (thinking/planning) and action channel (tool use). Detects "says one thing, does another" divergence.'},
-    {rank:19, id:'J13', en:'Cross-Stage Violations', zh:'跨阶段违反', rho:0.579, h:69, quality:40, rating:'B', detail:'Detects violations of stage-appropriate behavior. E.g., executing before planning, or re-planning mid-execution without justification.'},
-    {rank:20, id:'J63', en:'Hedging Frequency', zh:'不确定性表达', rho:0.501, h:60, quality:30, rating:'C', detail:'Frequency of uncertainty expressions and hedging language. Appropriate hedging is good; excessive hedging suggests low confidence.'},
-    {rank:21, id:'J47', en:'Step Precision', zh:'步骤精确率', rho:0.182, h:155, quality:28, rating:'C', detail:'Precision of agent steps against reference. Low rho suggests this metric has limited discriminative power across models.'},
-    {rank:22, id:'J64', en:'Uncertainty Calibration', zh:'不确定性校准', rho:0.474, h:54, quality:26, rating:'C', detail:'How well-calibrated the agent\'s uncertainty expressions are relative to actual outcomes. Overconfidence and underconfidence both penalized.'},
-    {rank:23, id:'J42', en:'CAT Failure', zh:'CAT反模式', rho:0.155, h:146, quality:23, rating:'C', detail:'Detects the Copy-Attempt-Try anti-pattern where agents repeatedly copy code/approaches without understanding, leading to shallow fixes.'},
-    {rank:24, id:'J35', en:'Root Cause', zh:'根因归因', rho:-0.008, h:116, quality:1, rating:'D', detail:'Evaluates whether the agent identifies true root causes vs. symptoms. Negative rho indicates this metric currently anti-correlates with quality - under revision.'}
+    {rank:1, id:'J60', en:'Interaction Precision', zh:'交互精确度', n:655, mean:2.03, std:0.23, rho:0.515, h:598.8, quality:308, rating:'S', range:'2-4', detail:'Measures precision of agent interactions with the environment. Among proactive interactions, what fraction truly requires human decision. High scores indicate minimal wasted interactions.'},
+    {rank:2, id:'J65', en:'Question Quality', zh:'提问质量', n:655, mean:1.96, std:0.44, rho:0.595, h:335.4, quality:200, rating:'S', range:'1-4', detail:'Evaluates specificity, answerability, and value of proactive questions the agent asks. Considers relevance, timing, and whether the question advances task completion.'},
+    {rank:3, id:'J39', en:'Failure Pattern', zh:'失败模式', n:655, mean:2.17, std:0.85, rho:0.769, h:249.7, quality:192, rating:'S', range:'1-5', detail:'Classifies failure patterns: instant crash / format collapse / delayed explosion / summary-lock / resource exhaustion / monitor deadlock. Strongest eval correlation (ρ=0.769).'},
+    {rank:4, id:'J06', en:'Error Recovery', zh:'错误恢复', n:591, mean:2.22, std:0.68, rho:0.759, h:233.3, quality:177, rating:'S', range:'1-4', detail:'Counts successful recoveries from errors. Requires: (1) Detection, (2) Strategy Change, (3) Forward Progress. Measures recovery speed and effectiveness. Core resilience metric.'},
+    {rank:5, id:'J68', en:'Feedback Utilization', zh:'反馈利用率', n:655, mean:2.40, std:0.76, rho:0.748, h:235.3, quality:176, rating:'S', range:'1-5', detail:'Post-human-feedback coverage: measures how effectively the agent incorporates feedback from environment/error/evaluation signals to improve approach.'},
+    {rank:6, id:'J95', en:'Subtask Propagation', zh:'子任务传播', n:655, mean:2.32, std:0.87, rho:0.700, h:213.6, quality:150, rating:'A', range:'1-5', detail:'Error propagation distance across subtasks. Measures how well the agent isolates failures and prevents contamination of downstream subtasks.'},
+    {rank:7, id:'J50', en:'Evidence-Action Gap', zh:'证据行动鸿沟', n:655, mean:2.49, std:0.66, rho:0.715, h:207.3, quality:148, rating:'A', range:'1-4', detail:'Correct information collected but not acted on. Penalizes agents that gather evidence without using it, or act without sufficient evidence.'},
+    {rank:8, id:'J32', en:'Traj-Satisfy', zh:'轨迹满意度', n:654, mean:3.27, std:1.93, rho:0.862, h:171.9, quality:148, rating:'A', range:'0-10', detail:'Holistic LLM satisfaction with trajectory quality on 0-10 scale. Strongest single-metric correlation with eval score (ρ=0.862). Wide dynamic range.'},
+    {rank:9, id:'J70', en:'Hypothesis-Verify', zh:'假设验证', n:655, mean:2.08, std:0.75, rho:0.732, h:190.1, quality:139, rating:'A', range:'1-4', detail:'After hypothesis, does agent take verification action? Measures scientific reasoning: Data/Code/Assumption/Result/Backup verification before committing resources.'},
+    {rank:10, id:'J37', en:'Propagation Length', zh:'传播长度', n:642, mean:1.66, std:0.91, rho:0.757, h:163.6, quality:124, rating:'A', range:'1-5', detail:'Steps from root cause to failure exposure. Shorter propagation = errors caught earlier. Directly reflects engineering rigor and test coverage.'},
+    {rank:11, id:'J49', en:'Step F1', zh:'步骤F1', n:655, mean:2.38, std:0.79, rho:0.535, h:190.4, quality:102, rating:'A', range:'1-5', detail:'Harmonic mean of step precision and recall. Balances completeness (all needed steps) with efficiency (no wasted steps).'},
+    {rank:12, id:'J41', en:'Error-Type Solidification', zh:'按类型错误固化', n:653, mean:2.64, std:0.72, rho:0.696, h:145.9, quality:102, rating:'A', range:'1-5', detail:'Per-error-type solidification rates: syntax-class vs design-decision. Detects when specific error types become stuck without resolution.'},
+    {rank:13, id:'J48', en:'Step Recall', zh:'步骤召回率', n:655, mean:2.56, std:0.80, rho:0.539, h:162.8, quality:88, rating:'A', range:'1-5', detail:'Recall of actual failed steps. Measures whether the agent identifies and addresses all critical failure points in its trajectory.'},
+    {rank:14, id:'J30', en:'Parameter Accuracy', zh:'参数准确率', n:655, mean:3.63, std:0.57, rho:0.569, h:150.2, quality:85, rating:'A', range:'1-5', detail:'Tool call argument values match expected/correct values. Catches wrong file paths, incorrect API parameters, off-by-one errors.'},
+    {rank:15, id:'J25', en:'Effective Action Ratio', zh:'有效动作比', n:655, mean:2.25, std:0.71, rho:0.550, h:153.1, quality:84, rating:'A', range:'1-5', detail:'Classifies actions as PRODUCTIVE / EXPLORATORY_USEFUL / OVERHEAD_NECESSARY / REDUNDANT / CIRCULAR / FAILED_WASTED. Effective = first 3 / total.'},
+    {rank:16, id:'J61', en:'Interaction F1', zh:'交互F1', n:655, mean:3.82, std:0.96, rho:0.631, h:118.7, quality:75, rating:'B', range:'1-5', detail:'Harmonic mean of checkpoint recall and interaction precision. Balances completeness of interactions with their necessity.'},
+    {rank:17, id:'J40', en:'Error Solidification', zh:'错误固化', n:655, mean:2.57, std:0.83, rho:0.499, h:139.9, quality:70, rating:'B', range:'1-5', detail:'Errors persisting after context summarization. Measures whether errors become permanently embedded vs. eventually resolved.'},
+    {rank:18, id:'J73', en:'Dual-Channel', zh:'双通道一致性', n:655, mean:3.38, std:0.60, rho:0.522, h:105.2, quality:55, rating:'B', range:'1-5', detail:'Reasoning stream vs action stream divergence. Types: ALIGNED / MINOR_DRIFT / CONTENT_DIVERGE / DIRECTION_DIVERGE / CONTRADICTION.'},
+    {rank:19, id:'J13', en:'Cross-Stage Violations', zh:'跨阶段违反', n:585, mean:3.45, std:0.75, rho:0.579, h:69.4, quality:40, rating:'B', range:'1-5', detail:'Late-pipeline decisions that violate earlier choices. E.g., executing before planning, or re-planning mid-execution without justification.'},
+    {rank:20, id:'J63', en:'Hedging Frequency', zh:'不确定性表达', n:148, mean:3.09, std:0.54, rho:0.501, h:59.9, quality:30, rating:'C', range:'2-4', detail:'Uncertainty expression density in reasoning stream. Only evaluated on trajectories with explicit reasoning (n=148). Appropriate hedging is good; excessive hedging suggests low confidence.'},
+    {rank:21, id:'J47', en:'Step Precision', zh:'步骤精确率', n:655, mean:4.13, std:0.73, rho:0.182, h:154.9, quality:28, rating:'C', range:'3-5', detail:'Precision at marking failed steps vs reference. High mean (4.13) with low ρ suggests ceiling effect — most models score well, limiting discrimination.'},
+    {rank:22, id:'J64', en:'Uncertainty Calibration', zh:'不确定性校准', n:183, mean:2.65, std:0.55, rho:0.474, h:54.3, quality:26, rating:'C', range:'2-4', detail:'Hedging intensity vs actual accuracy (ECE score). Only evaluated on trajectories with uncertainty expressions (n=183).'},
+    {rank:23, id:'J42', en:'CAT Failure', zh:'CAT反模式', n:631, mean:3.48, std:0.81, rho:0.155, h:146.3, quality:23, rating:'C', range:'2-5', detail:'Blind-retry + eval-abuse + resource-leak + cross-stage violations combined. Low ρ (0.155) indicates weak link to eval outcome despite high discrimination.'},
+    {rank:24, id:'J35', en:'Root Cause', zh:'根因归因', n:611, mean:3.37, std:0.91, rho:-0.008, h:115.6, quality:1, rating:'D', range:'2-5', detail:'Accurately identifying root cause of failure from trajectory evidence. Negative ρ indicates this metric is independent of eval outcome — measures diagnostic clarity, not task success.'}
 ];
 
 const leaderboardData = [
@@ -1540,16 +1543,19 @@ function renderCatalog(filter) {
             <td><span class="mono" style="font-weight:600;">${m.id}</span></td>
             <td>${m.en}</td>
             <td>${m.zh}</td>
+            <td class="mono">${m.n || ''}</td>
+            <td class="mono">${m.mean ? m.mean.toFixed(2) : ''}</td>
+            <td class="mono">${m.std ? m.std.toFixed(2) : ''}</td>
             <td class="mono">${m.rho.toFixed(3)}</td>
-            <td class="mono">${m.h}</td>
-            <td class="mono">${m.quality}</td>
+            <td class="mono">${typeof m.h === 'number' ? m.h.toFixed(1) : m.h}</td>
+            <td class="mono">${typeof m.quality === 'number' ? m.quality.toFixed(0) : m.quality}</td>
             <td><span class="badge badge-${m.rating.toLowerCase()}">${m.rating}</span></td>
         `;
         tbody.appendChild(row);
 
         const detailRow = document.createElement('tr');
         detailRow.className = 'metric-detail';
-        detailRow.innerHTML = `<td colspan="8">${m.detail}</td>`;
+        detailRow.innerHTML = `<td colspan="11"><strong>Range:</strong> ${m.range || 'N/A'} &nbsp;|&nbsp; ${m.detail}</td>`;
         tbody.appendChild(detailRow);
     });
 }
