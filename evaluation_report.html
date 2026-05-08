@@ -2,205 +2,242 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>InnovatorBench 完整细粒度评估报告 — 24个Judge指标</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InnovatorBench - Fine-Grained Evaluation Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 20px; background: #f8f9fa; color: #333; line-height: 1.5; }
-h1 { color: #1a1a2e; border-bottom: 3px solid #e94560; padding-bottom: 10px; }
-h2 { color: #16213e; margin-top: 40px; border-left: 4px solid #e94560; padding-left: 12px; }
-h3 { color: #0f3460; }
-.summary-box { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 20px 0; }
-.stat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: 20px 0; }
-.stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px; border-radius: 8px; text-align: center; }
-.stat-card .number { font-size: 24px; font-weight: bold; }
-.stat-card .label { font-size: 11px; opacity: 0.9; }
-table { border-collapse: collapse; width: 100%; margin: 15px 0; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-th, td { padding: 6px 10px; text-align: center; border: 1px solid #e0e0e0; font-size: 12px; }
-th { background: #2c3e50; color: white; font-weight: 600; position: sticky; top: 0; }
-tr:nth-child(even) { background: #f8f9fa; }
-tr:hover { background: #e8f4fd; }
-.good { color: #27ae60; font-weight: bold; }
-.bad { color: #e74c3c; font-weight: bold; }
-.neutral { color: #f39c12; }
-.tier-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
-.tier-s { background: #ffd700; color: #333; }
-.tier-a { background: #28a745; color: white; }
-.tier-b { background: #17a2b8; color: white; }
-.tier-c { background: #6c757d; color: white; }
-.tier-d { background: #dc3545; color: white; }
-.insight { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px 15px; margin: 15px 0; border-radius: 0 8px 8px 0; }
-.insight-good { background: #d4edda; border-left-color: #28a745; }
-.insight-bad { background: #f8d7da; border-left-color: #dc3545; }
-.dimension { display: inline-block; padding: 3px 10px; border-radius: 15px; font-size: 11px; margin: 2px; }
-.dim-quality { background: #e3f2fd; color: #1565c0; }
-.dim-robust { background: #fce4ec; color: #c62828; }
-.dim-reason { background: #e8f5e9; color: #2e7d32; }
-.dim-efficiency { background: #fff3e0; color: #e65100; }
-.dim-behavior { background: #f3e5f5; color: #6a1b9a; }
-.dim-interact { background: #e0f7fa; color: #00695c; }
+:root {
+    --primary: #6366f1;
+    --primary-light: #818cf8;
+    --accent: #06b6d4;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --dark: #0f172a;
+    --dark2: #1e293b;
+    --text: #334155;
+    --text-light: #64748b;
+    --border: #e2e8f0;
+    --radius: 16px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+
+/* Hero */
+.hero { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #312e81 100%); padding: 80px 24px 60px; text-align:center; position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%; background: radial-gradient(circle at 30% 70%, rgba(99,102,241,0.15) 0%, transparent 50%), radial-gradient(circle at 70% 30%, rgba(6,182,212,0.1) 0%, transparent 50%); }
+.hero h1 { font-size:2.5rem; font-weight:800; color:#fff; position:relative; letter-spacing:-0.02em; }
+.hero h1 span { background: linear-gradient(135deg, #60a5fa, #a78bfa, #06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.hero p { color:rgba(255,255,255,0.7); font-size:1rem; margin-top:12px; position:relative; }
+.hero-stats { display:flex; gap:24px; justify-content:center; margin-top:32px; position:relative; flex-wrap:wrap; }
+.hero-stat { text-align:center; }
+.hero-stat .num { font-size:2rem; font-weight:800; color:#fff; }
+.hero-stat .lab { font-size:0.75rem; color:rgba(255,255,255,0.6); text-transform:uppercase; letter-spacing:0.05em; }
+
+/* Container */
+.container { max-width:1200px; margin:0 auto; padding:40px 24px; }
+
+/* Section */
+.section-title { font-size:1.5rem; font-weight:700; color:var(--dark); margin-bottom:8px; }
+.section-sub { color:var(--text-light); font-size:0.9rem; margin-bottom:24px; }
+.section-block { margin-bottom:48px; }
+
+/* Cards */
+.card { background:var(--card); border-radius:var(--radius); border:1px solid var(--border); padding:24px; box-shadow:0 1px 3px rgba(0,0,0,0.04); transition:box-shadow 0.2s; }
+.card:hover { box-shadow:0 8px 25px rgba(0,0,0,0.08); }
+
+/* Tables */
+.table-wrap { overflow-x:auto; border-radius:12px; border:1px solid var(--border); }
+table { width:100%; border-collapse:collapse; font-size:0.82rem; }
+th { background:var(--dark2); color:#e2e8f0; padding:12px 10px; font-weight:600; text-align:left; white-space:nowrap; position:sticky; top:0; z-index:1; }
+th:first-child { border-radius:0; }
+td { padding:10px; border-bottom:1px solid var(--border); }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:#f1f5f9; }
+td.model-name { font-weight:600; color:var(--dark); white-space:nowrap; }
+
+/* Tier badges */
+.tier { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:8px; font-size:0.75rem; font-weight:700; }
+.tier-s { background:linear-gradient(135deg,#fbbf24,#f59e0b); color:#78350f; }
+.tier-a { background:linear-gradient(135deg,#34d399,#10b981); color:#064e3b; }
+.tier-b { background:linear-gradient(135deg,#60a5fa,#3b82f6); color:#1e3a5f; }
+.tier-c { background:linear-gradient(135deg,#a78bfa,#7c3aed); color:#fff; }
+.tier-d { background:linear-gradient(135deg,#f87171,#ef4444); color:#fff; }
+
+/* Dimension tags */
+.dim { display:inline-block; padding:3px 10px; border-radius:20px; font-size:0.7rem; font-weight:600; letter-spacing:0.02em; }
+.dim-quality { background:#dbeafe; color:#1d4ed8; }
+.dim-robust { background:#fce7f3; color:#be185d; }
+.dim-reason { background:#d1fae5; color:#065f46; }
+.dim-efficiency { background:#fef3c7; color:#92400e; }
+.dim-behavior { background:#ede9fe; color:#5b21b6; }
+.dim-interact { background:#cffafe; color:#0e7490; }
+
+/* Score bar */
+.score-bar { height:6px; border-radius:3px; background:#e2e8f0; position:relative; min-width:60px; }
+.score-bar-fill { height:100%; border-radius:3px; transition:width 0.6s ease; }
+
+/* Insight blocks */
+.insight-block { padding:16px 20px; border-radius:12px; margin:16px 0; font-size:0.88rem; }
+.insight-block.good { background:#ecfdf5; border:1px solid #a7f3d0; }
+.insight-block.warn { background:#fffbeb; border:1px solid #fde68a; }
+.insight-block.bad { background:#fef2f2; border:1px solid #fecaca; }
+.insight-block strong { display:block; margin-bottom:4px; font-size:0.92rem; }
+
+/* Rank column */
+.rank { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%; font-weight:700; font-size:0.8rem; }
+.rank-1 { background:linear-gradient(135deg,#fbbf24,#f59e0b); color:#78350f; }
+.rank-2 { background:#e2e8f0; color:#475569; }
+.rank-3 { background:#fde68a; color:#78350f; }
+.rank-other { background:#f1f5f9; color:#64748b; }
+
+/* Responsive */
+@media(max-width:768px) { .hero h1 { font-size:1.6rem; } .hero-stats { gap:16px; } .container { padding:20px 16px; } }
+
+/* Back link */
+.back-link { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; background:var(--card); border:1px solid var(--border); border-radius:8px; text-decoration:none; color:var(--text); font-size:0.85rem; font-weight:500; margin-bottom:24px; transition:all 0.2s; }
+.back-link:hover { border-color:var(--primary); color:var(--primary); }
 </style>
 </head>
 <body>
-<h1>InnovatorBench 完整细粒度Agent评估报告</h1>
-<p style="font-size:16px; color:#555;">24个LLM-as-Judge指标 | 660条轨迹 | 15个模型 | 15,720次评估 | 错误率 0.03%</p>
 
-<div class="stat-grid">
-<div class="stat-card"><div class="number">24</div><div class="label">评估指标</div></div>
-<div class="stat-card"><div class="number">15,720</div><div class="label">总评估次数</div></div>
-<div class="stat-card"><div class="number">15</div><div class="label">参评模型</div></div>
-<div class="stat-card"><div class="number">660</div><div class="label">Agent轨迹</div></div>
-<div class="stat-card"><div class="number">0.03%</div><div class="label">错误率</div></div>
+<div class="hero">
+    <h1>InnovatorBench <span>Fine-Grained Evaluation</span></h1>
+    <p>24 LLM-as-Judge Metrics | 660 Trajectories | 15 Models | 15,720 Assessments</p>
+    <div class="hero-stats">
+        <div class="hero-stat"><div class="num">24</div><div class="lab">Judge Metrics</div></div>
+        <div class="hero-stat"><div class="num">15,720</div><div class="lab">Evaluations</div></div>
+        <div class="hero-stat"><div class="num">15</div><div class="lab">Models</div></div>
+        <div class="hero-stat"><div class="num">660</div><div class="lab">Trajectories</div></div>
+        <div class="hero-stat"><div class="num">0.03%</div><div class="lab">Error Rate</div></div>
+    </div>
 </div>
 
-<h2>一、指标质量排名</h2>
-<div class="summary-box">
-<p>按 <b>综合质量分 = K-W H × |Spearman ρ|</b> 排序（兼顾模型区分度和评估相关性）：</p>
-<table>
-<tr><th>#</th><th>ID</th><th>英文名</th><th>中文名</th><th>n</th><th>Mean</th><th>Std</th><th>ρ (eval)</th><th>H (模型)</th><th>质量分</th><th>评级</th><th>维度</th></tr>
-<tr><td>1</td><td><b>J60</b></td><td>Interaction Precision</td><td>交互精确度</td><td>655</td><td>2.03</td><td>0.23</td><td class="neutral">0.515</td><td class="good">599</td><td><b>308</b></td><td><span class="tier-badge tier-s">S</span></td><td><span class="dimension dim-interact">交互能力</span></td></tr>
-<tr><td>2</td><td><b>J65</b></td><td>Question Quality</td><td>提问质量</td><td>655</td><td>1.96</td><td>0.44</td><td class="neutral">0.595</td><td class="good">335</td><td><b>200</b></td><td><span class="tier-badge tier-s">S</span></td><td><span class="dimension dim-interact">交互能力</span></td></tr>
-<tr><td>3</td><td><b>J39</b></td><td>Failure Pattern</td><td>失败模式</td><td>655</td><td>2.17</td><td>0.85</td><td class="good">0.769</td><td class="good">250</td><td><b>192</b></td><td><span class="tier-badge tier-s">S</span></td><td><span class="dimension dim-robust">鲁棒性</span></td></tr>
-<tr><td>4</td><td><b>J06</b></td><td>Error Recovery</td><td>错误恢复</td><td>591</td><td>2.22</td><td>0.68</td><td class="good">0.759</td><td class="good">233</td><td><b>177</b></td><td><span class="tier-badge tier-s">S</span></td><td><span class="dimension dim-robust">鲁棒性</span></td></tr>
-<tr><td>5</td><td><b>J68</b></td><td>Feedback Utilization</td><td>反馈利用率</td><td>655</td><td>2.4</td><td>0.76</td><td class="good">0.748</td><td class="good">235</td><td><b>176</b></td><td><span class="tier-badge tier-s">S</span></td><td><span class="dimension dim-behavior">行为质量</span></td></tr>
-<tr><td>6</td><td><b>J95</b></td><td>Subtask Propagation</td><td>子任务传播</td><td>655</td><td>2.32</td><td>0.87</td><td class="good">0.700</td><td class="good">214</td><td><b>150</b></td><td><span class="tier-badge tier-a">A</span></td><td><span class="dimension dim-efficiency">效率</span></td></tr>
-<tr><td>7</td><td><b>J50</b></td><td>Evidence-Action Gap</td><td>证据行动鸿沟</td><td>655</td><td>2.49</td><td>0.66</td><td class="good">0.715</td><td class="good">207</td><td><b>148</b></td><td><span class="tier-badge tier-a">A</span></td><td><span class="dimension dim-reason">推理能力</span></td></tr>
-<tr><td>8</td><td><b>J32</b></td><td>Traj-Satisfy</td><td>轨迹满意度</td><td>654</td><td>3.27</td><td>1.93</td><td class="good">0.862</td><td class="good">172</td><td><b>148</b></td><td><span class="tier-badge tier-a">A</span></td><td><span class="dimension dim-quality">总体质量</span></td></tr>
-<tr><td>9</td><td><b>J70</b></td><td>Hypothesis-Verify</td><td>假设验证</td><td>655</td><td>2.08</td><td>0.75</td><td class="good">0.732</td><td class="good">190</td><td><b>139</b></td><td><span class="tier-badge tier-a">A</span></td><td><span class="dimension dim-reason">推理能力</span></td></tr>
-<tr><td>10</td><td><b>J37</b></td><td>Propagation Length</td><td>传播长度</td><td>642</td><td>1.66</td><td>0.91</td><td class="good">0.757</td><td class="good">164</td><td><b>124</b></td><td><span class="tier-badge tier-a">A</span></td><td><span class="dimension dim-efficiency">效率</span></td></tr>
-<tr><td>11</td><td><b>J49</b></td><td>Step F1</td><td>步骤F1</td><td>655</td><td>2.38</td><td>0.79</td><td class="neutral">0.535</td><td class="good">190</td><td><b>102</b></td><td><span class="tier-badge tier-a">A</span></td><td><span class="dimension dim-robust">鲁棒性</span></td></tr>
-<tr><td>12</td><td><b>J41</b></td><td>Error-Type Solidification</td><td>按类型错误固化</td><td>653</td><td>2.64</td><td>0.72</td><td class="good">0.696</td><td class="neutral">146</td><td><b>102</b></td><td><span class="tier-badge tier-a">A</span></td><td><span class="dimension dim-robust">鲁棒性</span></td></tr>
-<tr><td>13</td><td><b>J48</b></td><td>Step Recall</td><td>步骤召回率</td><td>655</td><td>2.56</td><td>0.8</td><td class="neutral">0.539</td><td class="good">163</td><td><b>88</b></td><td><span class="tier-badge tier-a">A</span></td><td><span class="dimension dim-robust">鲁棒性</span></td></tr>
-<tr><td>14</td><td><b>J30</b></td><td>Parameter Accuracy</td><td>参数准确率</td><td>655</td><td>3.63</td><td>0.57</td><td class="neutral">0.569</td><td class="good">150</td><td><b>85</b></td><td><span class="tier-badge tier-a">A</span></td><td><span class="dimension dim-efficiency">效率</span></td></tr>
-<tr><td>15</td><td><b>J25</b></td><td>Effective Action Ratio</td><td>有效动作比</td><td>655</td><td>2.25</td><td>0.71</td><td class="neutral">0.550</td><td class="good">153</td><td><b>84</b></td><td><span class="tier-badge tier-a">A</span></td><td><span class="dimension dim-efficiency">效率</span></td></tr>
-<tr><td>16</td><td><b>J61</b></td><td>Interaction F1</td><td>交互F1</td><td>655</td><td>3.82</td><td>0.96</td><td class="good">0.631</td><td class="neutral">119</td><td><b>75</b></td><td><span class="tier-badge tier-b">B</span></td><td><span class="dimension dim-interact">交互能力</span></td></tr>
-<tr><td>17</td><td><b>J40</b></td><td>Error Solidification</td><td>错误固化</td><td>655</td><td>2.57</td><td>0.83</td><td class="neutral">0.499</td><td class="neutral">140</td><td><b>70</b></td><td><span class="tier-badge tier-b">B</span></td><td><span class="dimension dim-robust">鲁棒性</span></td></tr>
-<tr><td>18</td><td><b>J73</b></td><td>Dual-Channel</td><td>双通道一致性</td><td>655</td><td>3.38</td><td>0.6</td><td class="neutral">0.522</td><td class="neutral">105</td><td><b>55</b></td><td><span class="tier-badge tier-b">B</span></td><td><span class="dimension dim-reason">推理能力</span></td></tr>
-<tr><td>19</td><td><b>J13</b></td><td>Cross-Stage Violations</td><td>跨阶段违反</td><td>585</td><td>3.45</td><td>0.75</td><td class="neutral">0.579</td><td class="bad">69</td><td><b>40</b></td><td><span class="tier-badge tier-b">B</span></td><td><span class="dimension dim-behavior">行为质量</span></td></tr>
-<tr><td>20</td><td><b>J63</b></td><td>Hedging Frequency</td><td>不确定性表达</td><td>148</td><td>3.09</td><td>0.54</td><td class="neutral">0.501</td><td class="bad">60</td><td><b>30</b></td><td><span class="tier-badge tier-c">C</span></td><td><span class="dimension dim-reason">推理能力</span></td></tr>
-<tr><td>21</td><td><b>J47</b></td><td>Step Precision</td><td>步骤精确率</td><td>655</td><td>4.13</td><td>0.73</td><td class="bad">0.182</td><td class="good">155</td><td><b>28</b></td><td><span class="tier-badge tier-c">C</span></td><td><span class="dimension dim-robust">鲁棒性</span></td></tr>
-<tr><td>22</td><td><b>J64</b></td><td>Uncertainty Calibration</td><td>不确定性校准</td><td>183</td><td>2.65</td><td>0.55</td><td class="neutral">0.474</td><td class="bad">54</td><td><b>26</b></td><td><span class="tier-badge tier-c">C</span></td><td><span class="dimension dim-reason">推理能力</span></td></tr>
-<tr><td>23</td><td><b>J42</b></td><td>CAT Failure</td><td>CAT反模式</td><td>631</td><td>3.48</td><td>0.81</td><td class="bad">0.155</td><td class="neutral">146</td><td><b>23</b></td><td><span class="tier-badge tier-c">C</span></td><td><span class="dimension dim-behavior">行为质量</span></td></tr>
-<tr><td>24</td><td><b>J35</b></td><td>Root Cause</td><td>根因归因</td><td>611</td><td>3.37</td><td>0.91</td><td class="bad">-0.008</td><td class="neutral">116</td><td><b>1</b></td><td><span class="tier-badge tier-d">D</span></td><td><span class="dimension dim-reason">推理能力</span></td></tr>
-</table>
-<p><b>评级：</b> S(&gt;150) | A(80-150) | B(40-80) | C(15-40) | D(&lt;15)</p>
+<div class="container">
+<a href="index.html" class="back-link">&larr; Back to Overview</a>
+
+<!-- Section 1: Metric Quality Ranking -->
+<div class="section-block">
+    <h2 class="section-title">Metric Quality Ranking</h2>
+    <p class="section-sub">Ranked by composite quality = K-W H (model discrimination) &times; |Spearman &rho;| (eval correlation)</p>
+
+    <div class="table-wrap">
+    <table>
+    <thead><tr><th>#</th><th>ID</th><th>Metric</th><th>Dim</th><th>N</th><th>Mean</th><th>&rho;</th><th>H</th><th>Quality</th><th>Tier</th></tr></thead>
+    <tbody>
+    <tr><td><span class="rank rank-1">1</span></td><td><strong>J60</strong></td><td>交互精确度<br><small style="color:var(--text-light)">Interaction Precision</small></td><td><span class="dim dim-interact">交互</span></td><td>655</td><td>2.03</td><td>0.515</td><td>599</td><td><strong>308</strong></td><td><span class="tier tier-s">S</span></td></tr>
+    <tr><td><span class="rank rank-2">2</span></td><td><strong>J65</strong></td><td>提问质量<br><small style="color:var(--text-light)">Question Quality</small></td><td><span class="dim dim-interact">交互</span></td><td>655</td><td>1.96</td><td>0.595</td><td>335</td><td><strong>200</strong></td><td><span class="tier tier-s">S</span></td></tr>
+    <tr><td><span class="rank rank-3">3</span></td><td><strong>J39</strong></td><td>失败模式<br><small style="color:var(--text-light)">Failure Pattern</small></td><td><span class="dim dim-robust">鲁棒</span></td><td>655</td><td>2.17</td><td>0.769</td><td>250</td><td><strong>192</strong></td><td><span class="tier tier-s">S</span></td></tr>
+    <tr><td><span class="rank rank-other">4</span></td><td><strong>J06</strong></td><td>错误恢复<br><small style="color:var(--text-light)">Error Recovery</small></td><td><span class="dim dim-robust">鲁棒</span></td><td>591</td><td>2.22</td><td>0.759</td><td>233</td><td><strong>177</strong></td><td><span class="tier tier-s">S</span></td></tr>
+    <tr><td><span class="rank rank-other">5</span></td><td><strong>J68</strong></td><td>反馈利用率<br><small style="color:var(--text-light)">Feedback Utilization</small></td><td><span class="dim dim-behavior">行为</span></td><td>655</td><td>2.40</td><td>0.748</td><td>235</td><td><strong>176</strong></td><td><span class="tier tier-s">S</span></td></tr>
+    <tr><td><span class="rank rank-other">6</span></td><td><strong>J95</strong></td><td>子任务传播<br><small style="color:var(--text-light)">Subtask Propagation</small></td><td><span class="dim dim-efficiency">效率</span></td><td>655</td><td>2.32</td><td>0.700</td><td>214</td><td><strong>150</strong></td><td><span class="tier tier-a">A</span></td></tr>
+    <tr><td><span class="rank rank-other">7</span></td><td><strong>J50</strong></td><td>证据行动鸿沟<br><small style="color:var(--text-light)">Evidence-Action Gap</small></td><td><span class="dim dim-reason">推理</span></td><td>655</td><td>2.49</td><td>0.715</td><td>207</td><td><strong>148</strong></td><td><span class="tier tier-a">A</span></td></tr>
+    <tr><td><span class="rank rank-other">8</span></td><td><strong>J32</strong></td><td>轨迹满意度<br><small style="color:var(--text-light)">Traj-Satisfy</small></td><td><span class="dim dim-quality">总体</span></td><td>654</td><td>3.27</td><td>0.862</td><td>172</td><td><strong>148</strong></td><td><span class="tier tier-a">A</span></td></tr>
+    <tr><td><span class="rank rank-other">9</span></td><td><strong>J70</strong></td><td>假设验证<br><small style="color:var(--text-light)">Hypothesis-Verify</small></td><td><span class="dim dim-reason">推理</span></td><td>655</td><td>2.08</td><td>0.732</td><td>190</td><td><strong>139</strong></td><td><span class="tier tier-a">A</span></td></tr>
+    <tr><td><span class="rank rank-other">10</span></td><td><strong>J37</strong></td><td>传播长度<br><small style="color:var(--text-light)">Propagation Length</small></td><td><span class="dim dim-efficiency">效率</span></td><td>642</td><td>1.66</td><td>0.757</td><td>164</td><td><strong>124</strong></td><td><span class="tier tier-a">A</span></td></tr>
+    <tr><td><span class="rank rank-other">11</span></td><td>J49</td><td>步骤F1 <small style="color:var(--text-light)">Step F1</small></td><td><span class="dim dim-robust">鲁棒</span></td><td>655</td><td>2.38</td><td>0.535</td><td>190</td><td>102</td><td><span class="tier tier-a">A</span></td></tr>
+    <tr><td><span class="rank rank-other">12</span></td><td>J41</td><td>按类型错误固化 <small style="color:var(--text-light)">Error-Type Solidification</small></td><td><span class="dim dim-robust">鲁棒</span></td><td>653</td><td>2.64</td><td>0.696</td><td>146</td><td>102</td><td><span class="tier tier-a">A</span></td></tr>
+    <tr><td><span class="rank rank-other">13</span></td><td>J48</td><td>步骤召回率 <small style="color:var(--text-light)">Step Recall</small></td><td><span class="dim dim-robust">鲁棒</span></td><td>655</td><td>2.56</td><td>0.539</td><td>163</td><td>88</td><td><span class="tier tier-a">A</span></td></tr>
+    <tr><td><span class="rank rank-other">14</span></td><td>J30</td><td>参数准确率 <small style="color:var(--text-light)">Parameter Accuracy</small></td><td><span class="dim dim-efficiency">效率</span></td><td>655</td><td>3.63</td><td>0.569</td><td>150</td><td>85</td><td><span class="tier tier-a">A</span></td></tr>
+    <tr><td><span class="rank rank-other">15</span></td><td>J25</td><td>有效动作比 <small style="color:var(--text-light)">Effective Action Ratio</small></td><td><span class="dim dim-efficiency">效率</span></td><td>655</td><td>2.25</td><td>0.550</td><td>153</td><td>84</td><td><span class="tier tier-a">A</span></td></tr>
+    <tr><td><span class="rank rank-other">16</span></td><td>J61</td><td>交互F1 <small style="color:var(--text-light)">Interaction F1</small></td><td><span class="dim dim-interact">交互</span></td><td>655</td><td>3.82</td><td>0.631</td><td>119</td><td>75</td><td><span class="tier tier-b">B</span></td></tr>
+    <tr><td><span class="rank rank-other">17</span></td><td>J40</td><td>错误固化 <small style="color:var(--text-light)">Error Solidification</small></td><td><span class="dim dim-robust">鲁棒</span></td><td>655</td><td>2.57</td><td>0.499</td><td>140</td><td>70</td><td><span class="tier tier-b">B</span></td></tr>
+    <tr><td><span class="rank rank-other">18</span></td><td>J73</td><td>双通道一致性 <small style="color:var(--text-light)">Dual-Channel</small></td><td><span class="dim dim-reason">推理</span></td><td>655</td><td>3.38</td><td>0.522</td><td>105</td><td>55</td><td><span class="tier tier-b">B</span></td></tr>
+    <tr><td><span class="rank rank-other">19</span></td><td>J13</td><td>跨阶段违反 <small style="color:var(--text-light)">Cross-Stage Violations</small></td><td><span class="dim dim-behavior">行为</span></td><td>585</td><td>3.45</td><td>0.579</td><td>69</td><td>40</td><td><span class="tier tier-b">B</span></td></tr>
+    <tr><td><span class="rank rank-other">20</span></td><td>J63</td><td>不确定性表达 <small style="color:var(--text-light)">Hedging Frequency</small></td><td><span class="dim dim-reason">推理</span></td><td>148</td><td>3.09</td><td>0.501</td><td>60</td><td>30</td><td><span class="tier tier-c">C</span></td></tr>
+    <tr><td><span class="rank rank-other">21</span></td><td>J47</td><td>步骤精确率 <small style="color:var(--text-light)">Step Precision</small></td><td><span class="dim dim-robust">鲁棒</span></td><td>655</td><td>4.13</td><td>0.182</td><td>155</td><td>28</td><td><span class="tier tier-c">C</span></td></tr>
+    <tr><td><span class="rank rank-other">22</span></td><td>J64</td><td>不确定性校准 <small style="color:var(--text-light)">Uncertainty Calibration</small></td><td><span class="dim dim-reason">推理</span></td><td>183</td><td>2.65</td><td>0.474</td><td>54</td><td>26</td><td><span class="tier tier-c">C</span></td></tr>
+    <tr><td><span class="rank rank-other">23</span></td><td>J42</td><td>CAT反模式 <small style="color:var(--text-light)">CAT Failure</small></td><td><span class="dim dim-behavior">行为</span></td><td>631</td><td>3.48</td><td>0.155</td><td>146</td><td>23</td><td><span class="tier tier-c">C</span></td></tr>
+    <tr><td><span class="rank rank-other">24</span></td><td>J35</td><td>根因归因 <small style="color:var(--text-light)">Root Cause</small></td><td><span class="dim dim-reason">推理</span></td><td>611</td><td>3.37</td><td>-0.008</td><td>116</td><td>1</td><td><span class="tier tier-d">D</span></td></tr>
+    </tbody>
+    </table>
+    </div>
+    <p style="margin-top:12px; font-size:0.8rem; color:var(--text-light);">Tier: S(&gt;150) | A(80-150) | B(40-80) | C(15-40) | D(&lt;15)</p>
 </div>
 
-<div class="insight insight-good">
-<h3>S级指标（质量分>150，最适合用于论文和模型评估）：</h3>
-<ul>
-<li><b>J60 (交互精确度)</b>: ρ=0.515, H=599, 质量分=308</li>
-<li><b>J65 (提问质量)</b>: ρ=0.595, H=335, 质量分=200</li>
-<li><b>J39 (失败模式)</b>: ρ=0.769, H=250, 质量分=192</li>
-<li><b>J06 (错误恢复)</b>: ρ=0.759, H=233, 质量分=177</li>
-<li><b>J68 (反馈利用率)</b>: ρ=0.748, H=235, 质量分=176</li>
-</ul></div>
+<!-- Section 2: Model Leaderboard -->
+<div class="section-block">
+    <h2 class="section-title">Model Leaderboard</h2>
+    <p class="section-sub">Ranked by mean of 8 core metrics (J32/J06/J39/J50/J70/J68/J95/J37)</p>
 
-<h2>二、模型综合排名</h2>
-<div class="summary-box">
-<p>按8个核心指标(J32/J06/J39/J50/J70/J68/J95/J37)均值排序：</p>
-<table>
-<tr><th>排名</th><th>模型</th><th>J32</th><th>J06</th><th>J39</th><th>J50</th><th>J70</th><th>J68</th><th>J95</th><th>J37</th><th>J25</th><th>J41</th><th>J48</th><th>J49</th><th>综合</th></tr>
-<tr><td><b>1</b></td><td style="text-align:left">Kimi-K2.5</td><td style="color:#27ae60;font-size:11px">5.24</td><td style="color:#27ae60;font-size:11px">2.78</td><td style="color:#27ae60;font-size:11px">3.0</td><td style="color:#27ae60;font-size:11px">3.05</td><td style="color:#27ae60;font-size:11px">2.71</td><td style="color:#27ae60;font-size:11px">3.05</td><td style="color:#27ae60;font-size:11px">2.95</td><td style="color:#27ae60;font-size:11px">2.38</td><td style="color:#27ae60;font-size:11px">2.48</td><td style="color:#27ae60;font-size:11px">3.14</td><td style="color:#27ae60;font-size:11px">3.05</td><td style="color:#27ae60;font-size:11px">2.81</td><td><b>3.15</b></td></tr>
-<tr><td><b>2</b></td><td style="text-align:left">GLM4.7</td><td style="color:#27ae60;font-size:11px">4.35</td><td style="color:#27ae60;font-size:11px">2.5</td><td style="color:#27ae60;font-size:11px">2.5</td><td style="color:#27ae60;font-size:11px">2.7</td><td style="color:#27ae60;font-size:11px">2.5</td><td style="color:#27ae60;font-size:11px">2.8</td><td style="color:#27ae60;font-size:11px">2.65</td><td style="color:#27ae60;font-size:11px">2.0</td><td style="color:#333;font-size:11px">2.4</td><td style="color:#27ae60;font-size:11px">2.85</td><td style="color:#333;font-size:11px">2.75</td><td style="color:#27ae60;font-size:11px">2.6</td><td><b>2.75</b></td></tr>
-<tr><td><b>3</b></td><td style="text-align:left">GLM4.7-CodeAct</td><td style="color:#27ae60;font-size:11px">4.0</td><td style="color:#333;font-size:11px">2.4</td><td style="color:#333;font-size:11px">2.34</td><td style="color:#333;font-size:11px">2.55</td><td style="color:#27ae60;font-size:11px">2.34</td><td style="color:#27ae60;font-size:11px">2.66</td><td style="color:#27ae60;font-size:11px">2.83</td><td style="color:#27ae60;font-size:11px">1.89</td><td style="color:#333;font-size:11px">2.41</td><td style="color:#27ae60;font-size:11px">2.86</td><td style="color:#333;font-size:11px">2.69</td><td style="color:#333;font-size:11px">2.41</td><td><b>2.63</b></td></tr>
-<tr><td><b>4</b></td><td style="text-align:left">Claude-4-Sonnet</td><td style="color:#27ae60;font-size:11px">3.88</td><td style="color:#27ae60;font-size:11px">2.46</td><td style="color:#27ae60;font-size:11px">2.43</td><td style="color:#27ae60;font-size:11px">2.71</td><td style="color:#27ae60;font-size:11px">2.3</td><td style="color:#27ae60;font-size:11px">2.62</td><td style="color:#27ae60;font-size:11px">2.56</td><td style="color:#333;font-size:11px">1.85</td><td style="color:#333;font-size:11px">2.44</td><td style="color:#333;font-size:11px">2.79</td><td style="color:#333;font-size:11px">2.71</td><td style="color:#27ae60;font-size:11px">2.59</td><td><b>2.6</b></td></tr>
-<tr><td><b>5</b></td><td style="text-align:left">GLM4.5-Full</td><td style="color:#27ae60;font-size:11px">3.84</td><td style="color:#27ae60;font-size:11px">2.5</td><td style="color:#27ae60;font-size:11px">2.56</td><td style="color:#333;font-size:11px">2.64</td><td style="color:#27ae60;font-size:11px">2.36</td><td style="color:#333;font-size:11px">2.48</td><td style="color:#333;font-size:11px">2.52</td><td style="color:#333;font-size:11px">1.84</td><td style="color:#333;font-size:11px">2.36</td><td style="color:#333;font-size:11px">2.68</td><td style="color:#333;font-size:11px">2.64</td><td style="color:#333;font-size:11px">2.28</td><td><b>2.59</b></td></tr>
-<tr><td><b>6</b></td><td style="text-align:left">GLM4.5-NoInter-Filt</td><td style="color:#333;font-size:11px">3.35</td><td style="color:#333;font-size:11px">2.4</td><td style="color:#333;font-size:11px">2.35</td><td style="color:#333;font-size:11px">2.6</td><td style="color:#333;font-size:11px">2.0</td><td style="color:#333;font-size:11px">2.45</td><td style="color:#333;font-size:11px">2.5</td><td style="color:#333;font-size:11px">1.6</td><td style="color:#333;font-size:11px">2.15</td><td style="color:#333;font-size:11px">2.75</td><td style="color:#333;font-size:11px">2.45</td><td style="color:#333;font-size:11px">2.35</td><td><b>2.41</b></td></tr>
-<tr><td><b>7</b></td><td style="text-align:left">GLM4.7-SWE</td><td style="color:#333;font-size:11px">3.19</td><td style="color:#333;font-size:11px">2.3</td><td style="color:#333;font-size:11px">2.14</td><td style="color:#333;font-size:11px">2.52</td><td style="color:#333;font-size:11px">2.14</td><td style="color:#333;font-size:11px">2.48</td><td style="color:#333;font-size:11px">2.29</td><td style="color:#333;font-size:11px">1.52</td><td style="color:#e74c3c;font-size:11px">1.95</td><td style="color:#333;font-size:11px">2.67</td><td style="color:#333;font-size:11px">2.38</td><td style="color:#333;font-size:11px">2.52</td><td><b>2.32</b></td></tr>
-<tr><td><b>8</b></td><td style="text-align:left">GLM4.5-Inter-Filter</td><td style="color:#333;font-size:11px">3.14</td><td style="color:#333;font-size:11px">2.2</td><td style="color:#333;font-size:11px">2.17</td><td style="color:#333;font-size:11px">2.51</td><td style="color:#333;font-size:11px">1.99</td><td style="color:#333;font-size:11px">2.38</td><td style="color:#333;font-size:11px">2.34</td><td style="color:#333;font-size:11px">1.47</td><td style="color:#333;font-size:11px">2.29</td><td style="color:#333;font-size:11px">2.55</td><td style="color:#333;font-size:11px">2.37</td><td style="color:#333;font-size:11px">2.28</td><td><b>2.27</b></td></tr>
-<tr><td><b>9</b></td><td style="text-align:left">Kimi-K2-Instruct</td><td style="color:#e74c3c;font-size:11px">2.86</td><td style="color:#333;font-size:11px">2.15</td><td style="color:#333;font-size:11px">2.07</td><td style="color:#333;font-size:11px">2.34</td><td style="color:#333;font-size:11px">1.97</td><td style="color:#333;font-size:11px">2.55</td><td style="color:#333;font-size:11px">2.14</td><td style="color:#333;font-size:11px">1.75</td><td style="color:#333;font-size:11px">2.1</td><td style="color:#333;font-size:11px">2.52</td><td style="color:#27ae60;font-size:11px">2.79</td><td style="color:#27ae60;font-size:11px">2.62</td><td><b>2.23</b></td></tr>
-<tr><td><b>10</b></td><td style="text-align:left">GLM4.5-Base</td><td style="color:#e74c3c;font-size:11px">2.73</td><td style="color:#333;font-size:11px">2.05</td><td style="color:#333;font-size:11px">2.14</td><td style="color:#333;font-size:11px">2.39</td><td style="color:#333;font-size:11px">1.96</td><td style="color:#333;font-size:11px">2.29</td><td style="color:#333;font-size:11px">2.18</td><td style="color:#333;font-size:11px">1.55</td><td style="color:#333;font-size:11px">2.43</td><td style="color:#333;font-size:11px">2.51</td><td style="color:#333;font-size:11px">2.51</td><td style="color:#333;font-size:11px">2.41</td><td><b>2.16</b></td></tr>
-<tr><td><b>11</b></td><td style="text-align:left">GLM4.5-NoInteract</td><td style="color:#e74c3c;font-size:11px">2.83</td><td style="color:#e74c3c;font-size:11px">2.0</td><td style="color:#333;font-size:11px">1.97</td><td style="color:#333;font-size:11px">2.48</td><td style="color:#e74c3c;font-size:11px">1.83</td><td style="color:#333;font-size:11px">2.24</td><td style="color:#e74c3c;font-size:11px">2.07</td><td style="color:#333;font-size:11px">1.46</td><td style="color:#333;font-size:11px">2.1</td><td style="color:#333;font-size:11px">2.54</td><td style="color:#333;font-size:11px">2.76</td><td style="color:#333;font-size:11px">2.48</td><td><b>2.11</b></td></tr>
-<tr><td><b>12</b></td><td style="text-align:left">Grok-4</td><td style="color:#e74c3c;font-size:11px">2.11</td><td style="color:#e74c3c;font-size:11px">1.88</td><td style="color:#e74c3c;font-size:11px">1.72</td><td style="color:#e74c3c;font-size:11px">2.17</td><td style="color:#e74c3c;font-size:11px">1.67</td><td style="color:#e74c3c;font-size:11px">2.11</td><td style="color:#e74c3c;font-size:11px">1.94</td><td style="color:#e74c3c;font-size:11px">1.33</td><td style="color:#333;font-size:11px">2.17</td><td style="color:#e74c3c;font-size:11px">2.33</td><td style="color:#e74c3c;font-size:11px">2.22</td><td style="color:#e74c3c;font-size:11px">2.06</td><td><b>1.87</b></td></tr>
-<tr><td><b>13</b></td><td style="text-align:left">GPT-5</td><td style="color:#e74c3c;font-size:11px">2.16</td><td style="color:#e74c3c;font-size:11px">1.82</td><td style="color:#e74c3c;font-size:11px">1.52</td><td style="color:#e74c3c;font-size:11px">2.19</td><td style="color:#e74c3c;font-size:11px">1.84</td><td style="color:#e74c3c;font-size:11px">1.95</td><td style="color:#e74c3c;font-size:11px">1.81</td><td style="color:#e74c3c;font-size:11px">1.38</td><td style="color:#e74c3c;font-size:11px">1.92</td><td style="color:#e74c3c;font-size:11px">2.42</td><td style="color:#333;font-size:11px">2.56</td><td style="color:#e74c3c;font-size:11px">1.94</td><td><b>1.83</b></td></tr>
-<tr><td><b>14</b></td><td style="text-align:left">Grok-Code-Fast</td><td style="color:#e74c3c;font-size:11px">1.67</td><td style="color:#e74c3c;font-size:11px">1.24</td><td style="color:#e74c3c;font-size:11px">1.39</td><td style="color:#e74c3c;font-size:11px">1.89</td><td style="color:#e74c3c;font-size:11px">1.11</td><td style="color:#e74c3c;font-size:11px">1.61</td><td style="color:#e74c3c;font-size:11px">1.5</td><td style="color:#e74c3c;font-size:11px">1.0</td><td style="color:#333;font-size:11px">2.06</td><td style="color:#e74c3c;font-size:11px">2.17</td><td style="color:#e74c3c;font-size:11px">2.17</td><td style="color:#e74c3c;font-size:11px">1.94</td><td><b>1.43</b></td></tr>
-<tr><td><b>15</b></td><td style="text-align:left">Kimi-K2-Inst-GZY</td><td style="color:#e74c3c;font-size:11px">1.0</td><td style="color:#e74c3c;font-size:11px">1.0</td><td style="color:#e74c3c;font-size:11px">1.0</td><td style="color:#e74c3c;font-size:11px">1.16</td><td style="color:#e74c3c;font-size:11px">1.0</td><td style="color:#e74c3c;font-size:11px">1.0</td><td style="color:#e74c3c;font-size:11px">1.21</td><td style="color:#e74c3c;font-size:11px">1.0</td><td style="color:#e74c3c;font-size:11px">1.0</td><td style="color:#e74c3c;font-size:11px">2.37</td><td style="color:#e74c3c;font-size:11px">1.26</td><td style="color:#e74c3c;font-size:11px">1.42</td><td><b>1.05</b></td></tr>
-</table></div>
-
-<h2>三、六维能力雷达分析</h2>
-<div class="summary-box">
-<p>将24个指标归入6个能力维度，计算每个模型在各维度的表现：</p>
-<table><tr><th>模型</th><th>总体质量</th><th>鲁棒性</th><th>推理能力</th><th>效率</th><th>行为质量</th><th>交互能力</th><th>综合</th></tr>
-<tr><td style="text-align:left"><b>Kimi-K2.5</b></td><td style="color:#333">52%</td><td style="color:#333">52%</td><td style="color:#27ae60">59%</td><td style="color:#333">48%</td><td style="color:#27ae60">57%</td><td style="color:#333">42%</td><td><b>52%</b></td></tr>
-<tr><td style="text-align:left"><b>GLM4.7</b></td><td style="color:#333">43%</td><td style="color:#333">42%</td><td style="color:#333">50%</td><td style="color:#333">42%</td><td style="color:#333">51%</td><td style="color:#333">40%</td><td><b>45%</b></td></tr>
-<tr><td style="text-align:left"><b>GLM4.7-CodeAct</b></td><td style="color:#333">40%</td><td style="color:#333">43%</td><td style="color:#333">47%</td><td style="color:#333">43%</td><td style="color:#333">50%</td><td style="color:#333">38%</td><td><b>44%</b></td></tr>
-<tr><td style="text-align:left"><b>Claude-4-Sonnet</b></td><td style="color:#333">39%</td><td style="color:#333">43%</td><td style="color:#333">49%</td><td style="color:#333">41%</td><td style="color:#333">51%</td><td style="color:#333">38%</td><td><b>44%</b></td></tr>
-<tr><td style="text-align:left"><b>GLM4.5-Full</b></td><td style="color:#333">38%</td><td style="color:#333">41%</td><td style="color:#333">47%</td><td style="color:#333">40%</td><td style="color:#333">47%</td><td style="color:#333">38%</td><td><b>42%</b></td></tr>
-<tr><td style="text-align:left"><b>GLM4.5-NoInter-Filt</b></td><td style="color:#e74c3c">34%</td><td style="color:#333">39%</td><td style="color:#333">46%</td><td style="color:#333">37%</td><td style="color:#333">44%</td><td style="color:#e74c3c">34%</td><td><b>39%</b></td></tr>
-<tr><td style="text-align:left"><b>GLM4.7-SWE</b></td><td style="color:#e74c3c">32%</td><td style="color:#333">36%</td><td style="color:#333">45%</td><td style="color:#e74c3c">34%</td><td style="color:#333">43%</td><td style="color:#e74c3c">32%</td><td><b>37%</b></td></tr>
-<tr><td style="text-align:left"><b>GLM4.5-Inter-Filter</b></td><td style="color:#e74c3c">31%</td><td style="color:#333">37%</td><td style="color:#333">43%</td><td style="color:#333">36%</td><td style="color:#333">48%</td><td style="color:#e74c3c">33%</td><td><b>38%</b></td></tr>
-<tr><td style="text-align:left"><b>Kimi-K2-Instruct</b></td><td style="color:#e74c3c">29%</td><td style="color:#333">37%</td><td style="color:#333">46%</td><td style="color:#e74c3c">34%</td><td style="color:#333">41%</td><td style="color:#333">37%</td><td><b>37%</b></td></tr>
-<tr><td style="text-align:left"><b>GLM4.5-Base</b></td><td style="color:#e74c3c">27%</td><td style="color:#333">38%</td><td style="color:#e74c3c">30%</td><td style="color:#333">36%</td><td style="color:#333">48%</td><td style="color:#e74c3c">34%</td><td><b>36%</b></td></tr>
-</table></div>
-
-<h2>四、核心发现</h2>
-
-<div class="insight insight-good">
-<h3>1. Batch 3 新增的超强指标</h3>
-<ul>
-<li><b>J68 (反馈利用率)</b>: H=235.3, ρ=0.748 — 是否真正利用了错误反馈来改进，区分度极强</li>
-<li><b>J95 (子任务传播)</b>: H=213.6, ρ=0.700 — 错误跨子任务传播距离，直接反映工程规范性</li>
-<li><b>J49 (步骤F1)</b>: H=190.4, ρ=0.535 — 失败检测的综合能力</li>
-<li><b>J48 (步骤召回)</b>: H=162.8, ρ=0.539 — 能否发现所有失败</li>
-</ul>
+    <div class="table-wrap">
+    <table>
+    <thead><tr><th>#</th><th>Model</th><th>J32</th><th>J06</th><th>J39</th><th>J50</th><th>J70</th><th>J68</th><th>J95</th><th>J37</th><th>Composite</th><th>Bar</th></tr></thead>
+    <tbody>
+    <tr><td><span class="rank rank-1">1</span></td><td class="model-name">Kimi-K2.5</td><td>5.24</td><td>2.78</td><td>3.00</td><td>3.05</td><td>2.71</td><td>3.05</td><td>2.95</td><td>2.38</td><td><strong>3.15</strong></td><td><div class="score-bar"><div class="score-bar-fill" style="width:100%;background:linear-gradient(90deg,var(--primary),var(--accent))"></div></div></td></tr>
+    <tr><td><span class="rank rank-2">2</span></td><td class="model-name">GLM4.7</td><td>4.35</td><td>2.50</td><td>2.50</td><td>2.70</td><td>2.50</td><td>2.80</td><td>2.65</td><td>2.00</td><td><strong>2.75</strong></td><td><div class="score-bar"><div class="score-bar-fill" style="width:87%;background:linear-gradient(90deg,var(--primary),var(--accent))"></div></div></td></tr>
+    <tr><td><span class="rank rank-3">3</span></td><td class="model-name">GLM4.7-CodeAct</td><td>4.00</td><td>2.40</td><td>2.34</td><td>2.55</td><td>2.34</td><td>2.66</td><td>2.83</td><td>1.89</td><td><strong>2.63</strong></td><td><div class="score-bar"><div class="score-bar-fill" style="width:83%;background:linear-gradient(90deg,var(--primary),var(--accent))"></div></div></td></tr>
+    <tr><td><span class="rank rank-other">4</span></td><td class="model-name">Claude-4-Sonnet</td><td>3.88</td><td>2.46</td><td>2.43</td><td>2.71</td><td>2.30</td><td>2.62</td><td>2.56</td><td>1.85</td><td><strong>2.60</strong></td><td><div class="score-bar"><div class="score-bar-fill" style="width:83%;background:var(--primary-light)"></div></div></td></tr>
+    <tr><td><span class="rank rank-other">5</span></td><td class="model-name">GLM4.5-Full</td><td>3.84</td><td>2.50</td><td>2.56</td><td>2.64</td><td>2.36</td><td>2.48</td><td>2.52</td><td>1.84</td><td><strong>2.59</strong></td><td><div class="score-bar"><div class="score-bar-fill" style="width:82%;background:var(--primary-light)"></div></div></td></tr>
+    <tr><td><span class="rank rank-other">6</span></td><td class="model-name">GLM4.5-NoInter-Filt</td><td>3.35</td><td>2.40</td><td>2.35</td><td>2.60</td><td>2.00</td><td>2.45</td><td>2.50</td><td>1.60</td><td><strong>2.41</strong></td><td><div class="score-bar"><div class="score-bar-fill" style="width:76%;background:#94a3b8"></div></div></td></tr>
+    <tr><td><span class="rank rank-other">7</span></td><td class="model-name">GLM4.7-SWE</td><td>3.19</td><td>2.30</td><td>2.14</td><td>2.52</td><td>2.14</td><td>2.48</td><td>2.29</td><td>1.52</td><td><strong>2.32</strong></td><td><div class="score-bar"><div class="score-bar-fill" style="width:74%;background:#94a3b8"></div></div></td></tr>
+    <tr><td><span class="rank rank-other">8</span></td><td class="model-name">GLM4.5-Inter-Filter</td><td>3.14</td><td>2.20</td><td>2.17</td><td>2.51</td><td>1.99</td><td>2.38</td><td>2.34</td><td>1.47</td><td><strong>2.27</strong></td><td><div class="score-bar"><div class="score-bar-fill" style="width:72%;background:#94a3b8"></div></div></td></tr>
+    <tr><td><span class="rank rank-other">9</span></td><td class="model-name">Kimi-K2-Instruct</td><td>2.86</td><td>2.15</td><td>2.07</td><td>2.34</td><td>1.97</td><td>2.55</td><td>2.14</td><td>1.75</td><td><strong>2.23</strong></td><td><div class="score-bar"><div class="score-bar-fill" style="width:71%;background:#94a3b8"></div></div></td></tr>
+    <tr><td><span class="rank rank-other">10</span></td><td class="model-name">GLM4.5-Base</td><td>2.73</td><td>2.05</td><td>2.14</td><td>2.39</td><td>1.96</td><td>2.29</td><td>2.18</td><td>1.55</td><td><strong>2.16</strong></td><td><div class="score-bar"><div class="score-bar-fill" style="width:69%;background:#94a3b8"></div></div></td></tr>
+    <tr><td><span class="rank rank-other">11</span></td><td class="model-name">GLM4.5-NoInteract</td><td>2.83</td><td>2.00</td><td>1.97</td><td>2.48</td><td>1.83</td><td>2.24</td><td>2.07</td><td>1.46</td><td><strong>2.11</strong></td><td><div class="score-bar"><div class="score-bar-fill" style="width:67%;background:#cbd5e1"></div></div></td></tr>
+    <tr><td><span class="rank rank-other">12</span></td><td class="model-name">Grok-4</td><td>2.11</td><td>1.88</td><td>1.72</td><td>2.17</td><td>1.67</td><td>2.11</td><td>1.94</td><td>1.33</td><td><strong>1.87</strong></td><td><div class="score-bar"><div class="score-bar-fill" style="width:59%;background:#cbd5e1"></div></div></td></tr>
+    <tr><td><span class="rank rank-other">13</span></td><td class="model-name">GPT-5</td><td>2.16</td><td>1.82</td><td>1.52</td><td>2.19</td><td>1.84</td><td>1.95</td><td>1.81</td><td>1.38</td><td><strong>1.83</strong></td><td><div class="score-bar"><div class="score-bar-fill" style="width:58%;background:#cbd5e1"></div></div></td></tr>
+    <tr><td><span class="rank rank-other">14</span></td><td class="model-name">Grok-Code-Fast</td><td>1.67</td><td>1.24</td><td>1.39</td><td>1.89</td><td>1.11</td><td>1.61</td><td>1.50</td><td>1.00</td><td><strong>1.43</strong></td><td><div class="score-bar"><div class="score-bar-fill" style="width:45%;background:var(--danger)"></div></div></td></tr>
+    <tr><td><span class="rank rank-other">15</span></td><td class="model-name">Kimi-K2-Inst-GZY</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.16</td><td>1.00</td><td>1.00</td><td>1.21</td><td>1.00</td><td><strong>1.05</strong></td><td><div class="score-bar"><div class="score-bar-fill" style="width:33%;background:var(--danger)"></div></div></td></tr>
+    </tbody>
+    </table>
+    </div>
 </div>
 
-<div class="insight">
-<h3>2. 指标维度分布</h3>
-<p>24个指标覆盖6个维度，其中<b>鲁棒性</b>维度有7个指标（最多），
-<b>推理能力</b>有6个，<b>效率</b>有4个，<b>行为质量</b>和<b>交互能力</b>各3个，
-<b>总体质量</b>1个（J32作为综合分）。</p>
+<!-- Section 3: Key Findings -->
+<div class="section-block">
+    <h2 class="section-title">Key Findings</h2>
+    <p class="section-sub">Core insights from 15,720 evaluations</p>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); gap:16px;">
+        <div class="insight-block good">
+            <strong style="color:#065f46">S-Tier Metrics (Quality &gt; 150)</strong>
+            J60 (Interaction Precision), J65 (Question Quality), J39 (Failure Pattern), J06 (Error Recovery), J68 (Feedback Utilization) — these are the most reliable for model evaluation and paper use.
+        </div>
+        <div class="insight-block bad">
+            <strong style="color:#991b1b">Low Discrimination Metrics</strong>
+            J60/J65: std too low in automated benchmarks (no real interaction). J63/J64: insufficient data (n&lt;200). J47: ceiling effect (mean=4.13). Consider removing from automated-only evaluation.
+        </div>
+        <div class="insight-block warn">
+            <strong style="color:#92400e">Dimension Coverage</strong>
+            Robustness has 7 metrics (most), Reasoning has 6, Efficiency 4, Behavioral 3, Interaction 3, Overall Quality 1 (J32). Consider adding more Overall/Interaction metrics for balance.
+        </div>
+    </div>
 </div>
 
-<div class="insight insight-bad">
-<h3>3. 区分度不足的指标</h3>
-<ul>
-<li><b>J60 (交互精确度)</b>: std=0.23，几乎所有轨迹得分相同(2分) — 因为都是自动化轨迹，没有真正交互</li>
-<li><b>J65 (提问质量)</b>: std=0.44, mean=1.96 — 同样因为自动化，agent不提问</li>
-<li><b>J63/J64 (不确定性)</b>: n<200，很多轨迹THOUGHT太短无法评估</li>
-</ul>
-<p>建议：J60/J65在纯自动化benchmark上价值有限，更适合有人机交互的评估场景。</p>
+<!-- Section 4: Recommended Config -->
+<div class="section-block">
+    <h2 class="section-title">Recommended Evaluation Config</h2>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-top:16px;">
+        <div class="card">
+            <h3 style="font-size:1rem; margin-bottom:12px; color:var(--primary);">Lite (6 metrics)</h3>
+            <table style="font-size:0.82rem;">
+            <tr><th>Purpose</th><th>Metric</th><th>Quality</th></tr>
+            <tr><td>Overall</td><td>J32</td><td>148</td></tr>
+            <tr><td>Robustness</td><td>J39</td><td>192</td></tr>
+            <tr><td>Reasoning</td><td>J50</td><td>148</td></tr>
+            <tr><td>Efficiency</td><td>J95</td><td>150</td></tr>
+            <tr><td>Learning</td><td>J68</td><td>176</td></tr>
+            <tr><td>Process</td><td>J70</td><td>139</td></tr>
+            </table>
+        </div>
+        <div class="card">
+            <h3 style="font-size:1rem; margin-bottom:12px; color:var(--primary);">Full (12 metrics)</h3>
+            <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:8px;">Lite 6 + additional depth:</p>
+            <p style="font-size:0.85rem;">+ J06 (Error Recovery) + J37 (Propagation) + J25 (Action Ratio) + J41 (Type Solidification) + J49 (Step F1) + J42 (CAT Pattern)</p>
+            <p style="margin-top:12px; font-size:0.8rem; color:var(--danger); font-weight:500;">Not recommended for this benchmark: J60, J65 (no interaction), J63/J64 (low n), J47 (ceiling)</p>
+        </div>
+    </div>
 </div>
 
-<div class="insight">
-<h3>4. 模型能力画像</h3>
-<table>
-<tr><th>模型</th><th>优势</th><th>短板</th></tr>
-<tr><td><b>Kimi-K2.5</b></td><td class="good">J32(+2.0), J06(+0.6), J39(+0.8), J50(+0.6)</td><td class="bad"></td></tr>
-<tr><td><b>GLM4.7</b></td><td class="good">J32(+1.1), J39(+0.3), J70(+0.4), J68(+0.4)</td><td class="bad"></td></tr>
-<tr><td><b>GLM4.7-CodeAct</b></td><td class="good">J32(+0.7), J95(+0.5)</td><td class="bad"></td></tr>
-<tr><td><b>Claude-4-Sonnet</b></td><td class="good">J32(+0.6)</td><td class="bad"></td></tr>
-<tr><td><b>GLM4.5-Full</b></td><td class="good">J32(+0.6), J39(+0.4)</td><td class="bad"></td></tr>
-</table>
 </div>
 
-<h2>五、推荐评估配置</h2>
-<div class="summary-box">
-<h3>精简版（6指标，适合快速评估）</h3>
-<table>
-<tr><th>用途</th><th>指标</th><th>质量分</th></tr>
-<tr><td>总体质量</td><td>J32 (轨迹满意度)</td><td>148</td></tr>
-<tr><td>鲁棒性</td><td>J39 (失败模式)</td><td>192</td></tr>
-<tr><td>推理</td><td>J50 (证据利用)</td><td>148</td></tr>
-<tr><td>效率</td><td>J95 (子任务传播)</td><td>150</td></tr>
-<tr><td>反馈学习</td><td>J68 (反馈利用率)</td><td>176</td></tr>
-<tr><td>过程质量</td><td>J70 (假设验证)</td><td>139</td></tr>
-</table>
-
-<h3>完整版（12指标，适合论文深度分析）</h3>
-<p>精简版6个 + J06(错误恢复) + J37(传播长度) + J25(有效动作) + J41(按类型固化) + J49(步骤F1) + J42(CAT反模式)</p>
-
-<h3>不推荐用于此benchmark的指标</h3>
-<ul>
-<li>J60, J65: 自动化轨迹无交互，std极低</li>
-<li>J63, J64: 数据量不足(n<200)</li>
-<li>J47: ceiling effect严重(mean=4.13)</li>
-</ul>
-</div>
-
-<footer style="margin-top:40px; padding:15px; background:#2c3e50; color:white; border-radius:8px; text-align:center;">
-<p><b>InnovatorBench Complete Fine-Grained Evaluation</b></p>
-<p>24 LLM-Judge Metrics | 15,720 Assessments | 660 Trajectories | 15 Models</p>
-<p>Generated: 2026-05-05 | Judge: Claude-4.7-Opus | 3 Batches | Error Rate: 0.03%</p>
+<footer style="background:var(--dark); padding:32px; text-align:center; color:rgba(255,255,255,0.7); font-size:0.85rem;">
+    <p style="font-weight:600; color:#fff; margin-bottom:4px;">InnovatorBench Fine-Grained Evaluation</p>
+    <p>24 LLM-Judge Metrics | Judge: Claude-4.7-Opus | 3 Batches | Generated 2026-05-05</p>
 </footer>
 </body>
 </html>
