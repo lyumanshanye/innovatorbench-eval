@@ -94,6 +94,84 @@
             background: rgba(37, 99, 235, 0.06);
         }
 
+        /* Dropdown Navigation */
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .nav-dropdown-toggle {
+            cursor: pointer;
+        }
+
+        .nav-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: var(--shadow-xl);
+            padding: 1rem;
+            min-width: 280px;
+            z-index: 2000;
+            gap: 0.5rem;
+        }
+
+        .nav-dropdown-wide {
+            min-width: 580px;
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .nav-dropdown-tasks {
+            min-width: 300px;
+            display: none;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .nav-dropdown:hover .nav-dropdown-menu {
+            display: grid;
+        }
+
+        .dropdown-section {
+            padding: 0.5rem;
+        }
+
+        .dropdown-section-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-light);
+            padding: 0.25rem 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-dropdown-menu a {
+            display: block;
+            padding: 0.4rem 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.15s;
+            line-height: 1.4;
+        }
+
+        .nav-dropdown-menu a:hover {
+            background: rgba(37, 99, 235, 0.06);
+            color: var(--accent);
+        }
+
+        .nav-dropdown-menu a small {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--text-light);
+            margin-top: 1px;
+        }
+
         .nav-toggle {
             display: none;
             background: none;
@@ -392,8 +470,8 @@
         }
 
         .metric-detail td {
-            padding: 1rem 1.5rem;
-            color: var(--text-light);
+            padding: 1.25rem 1.5rem;
+            color: var(--text);
             font-size: 0.85rem;
             line-height: 1.7;
         }
@@ -855,6 +933,8 @@
                 padding: 1rem;
                 border-bottom: 1px solid var(--border);
                 box-shadow: var(--shadow-lg);
+                max-height: 80vh;
+                overflow-y: auto;
             }
 
             .navbar-links.show {
@@ -863,6 +943,31 @@
 
             .nav-toggle {
                 display: block;
+            }
+
+            .nav-dropdown-menu {
+                position: static;
+                transform: none;
+                box-shadow: none;
+                border: none;
+                padding: 0 0 0 0.75rem;
+                min-width: unset;
+                border-left: 2px solid var(--border);
+                margin: 0.25rem 0;
+            }
+
+            .nav-dropdown-wide,
+            .nav-dropdown-tasks {
+                min-width: unset;
+                grid-template-columns: 1fr;
+            }
+
+            .nav-dropdown:hover .nav-dropdown-menu {
+                display: none;
+            }
+
+            .nav-dropdown.mobile-open .nav-dropdown-menu {
+                display: grid !important;
             }
 
             .hero h1 {
@@ -1072,9 +1177,94 @@
             <li><a href="#catalog">Metrics</a></li>
             <li><a href="#leaderboard">Leaderboard</a></li>
             <li><a href="#automated">Automated</a></li>
-            <li><a href="#cases">Cases</a></li>
-            <li><a href="#rubrics">Rubrics</a></li>
-            <li><a href="#tasks">Tasks</a></li>
+            <li class="nav-dropdown">
+                <a href="#" class="nav-dropdown-toggle">Reports &#9662;</a>
+                <div class="nav-dropdown-menu">
+                    <div class="dropdown-section">
+                        <div class="dropdown-section-title">Core Reports</div>
+                        <a href="evaluation_report.html">Full Evaluation Report<small>24 judges, 15,720 evaluations</small></a>
+                        <a href="p0_judge_report.html">P0 Judge Report<small>J67 + J69 + J52 deep analysis</small></a>
+                        <a href="j67_self_assessment.html">J67 Self-Assessment<small>595 trajectories calibration</small></a>
+                        <a href="discrimination_report.html">Discrimination Analysis<small>Statistical power of metrics</small></a>
+                    </div>
+                    <div class="dropdown-section">
+                        <div class="dropdown-section-title">Framework</div>
+                        <a href="proposal_v4.html">Research Proposal v4<small>Methodology & framework design</small></a>
+                        <a href="metrics_all.html">Complete Metric Catalog<small>All 96 metrics defined</small></a>
+                        <a href="behavioral_index.html">Task Behavioral Index<small>20 tasks behavioral profiles</small></a>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-dropdown">
+                <a href="#" class="nav-dropdown-toggle">Rubrics &#9662;</a>
+                <div class="nav-dropdown-menu nav-dropdown-wide">
+                    <div class="dropdown-section">
+                        <div class="dropdown-section-title">S-Tier</div>
+                        <a href="rubrics/j60_interaction_precision.html">J60 Interaction Precision</a>
+                        <a href="rubrics/j65_question_quality.html">J65 Question Quality</a>
+                        <a href="rubrics/j39_failure_pattern.html">J39 Failure Pattern</a>
+                        <a href="rubrics/j06_error_recovery.html">J06 Error Recovery</a>
+                        <a href="rubrics/j68_feedback_utilization.html">J68 Feedback Utilization</a>
+                    </div>
+                    <div class="dropdown-section">
+                        <div class="dropdown-section-title">A-Tier</div>
+                        <a href="rubrics/j95_subtask_propagation.html">J95 Subtask Propagation</a>
+                        <a href="rubrics/j50_evidence_action_gap.html">J50 Evidence-Action Gap</a>
+                        <a href="rubrics/j32_traj_satisfy.html">J32 Traj-Satisfy</a>
+                        <a href="rubrics/j70_hypothesis_verify.html">J70 Hypothesis-Verify</a>
+                        <a href="rubrics/j37_propagation_length.html">J37 Propagation Length</a>
+                        <a href="rubrics/j49_step_f1.html">J49 Step F1</a>
+                        <a href="rubrics/j41_error_type_solidification.html">J41 Error-Type Solidification</a>
+                        <a href="rubrics/j48_step_recall.html">J48 Step Recall</a>
+                        <a href="rubrics/j30_parameter_accuracy.html">J30 Parameter Accuracy</a>
+                        <a href="rubrics/j25_effective_action_ratio.html">J25 Effective Action Ratio</a>
+                    </div>
+                    <div class="dropdown-section">
+                        <div class="dropdown-section-title">B/C/D-Tier</div>
+                        <a href="rubrics/j61_interaction_f1.html">J61 Interaction F1</a>
+                        <a href="rubrics/j40_error_solidification.html">J40 Error Solidification</a>
+                        <a href="rubrics/j73_dual_channel_divergence.html">J73 Dual-Channel</a>
+                        <a href="rubrics/j13_cross_stage_violations.html">J13 Cross-Stage Violations</a>
+                        <a href="rubrics/j63_hedging_frequency.html">J63 Hedging Frequency</a>
+                        <a href="rubrics/j47_step_precision.html">J47 Step Precision</a>
+                        <a href="rubrics/j64_uncertainty_calibration.html">J64 Uncertainty Calibration</a>
+                        <a href="rubrics/j42_cat_failure.html">J42 CAT Failure</a>
+                        <a href="rubrics/j35_root_cause.html">J35 Root Cause</a>
+                        <a href="rubrics/j66_feedback_execution.html">J66 Feedback Execution</a>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-dropdown">
+                <a href="#" class="nav-dropdown-toggle">Tasks &#9662;</a>
+                <div class="nav-dropdown-menu nav-dropdown-tasks">
+                    <div class="dropdown-section">
+                        <div class="dropdown-section-title">Task 1–10</div>
+                        <a href="tasks/Task1_Behavioral_Analysis.html">Task 1</a>
+                        <a href="tasks/Task2_Behavioral_Analysis.html">Task 2</a>
+                        <a href="tasks/Task3_Behavioral_Analysis.html">Task 3</a>
+                        <a href="tasks/Task4_Behavioral_Analysis.html">Task 4</a>
+                        <a href="tasks/Task5_Behavioral_Analysis.html">Task 5</a>
+                        <a href="tasks/Task6_Behavioral_Analysis.html">Task 6</a>
+                        <a href="tasks/Task7_Behavioral_Analysis.html">Task 7</a>
+                        <a href="tasks/Task8_Behavioral_Analysis.html">Task 8</a>
+                        <a href="tasks/Task9_Behavioral_Analysis.html">Task 9</a>
+                        <a href="tasks/Task10_Behavioral_Analysis.html">Task 10</a>
+                    </div>
+                    <div class="dropdown-section">
+                        <div class="dropdown-section-title">Task 11–20</div>
+                        <a href="tasks/Task11_Behavioral_Analysis.html">Task 11</a>
+                        <a href="tasks/Task12_Behavioral_Analysis.html">Task 12</a>
+                        <a href="tasks/Task13_Behavioral_Analysis.html">Task 13</a>
+                        <a href="tasks/Task14_Behavioral_Analysis.html">Task 14</a>
+                        <a href="tasks/Task15_Behavioral_Analysis.html">Task 15</a>
+                        <a href="tasks/Task16_Behavioral_Analysis.html">Task 16</a>
+                        <a href="tasks/Task17_Behavioral_Analysis.html">Task 17</a>
+                        <a href="tasks/Task18_Behavioral_Analysis.html">Task 18</a>
+                        <a href="tasks/Task19_Behavioral_Analysis.html">Task 19</a>
+                        <a href="tasks/Task20_Behavioral_Analysis.html">Task 20</a>
+                    </div>
+                </div>
+            </li>
             <li><a href="#progress">Progress</a></li>
         </ul>
     </div>
@@ -1174,17 +1364,26 @@
         <div class="section-header">
             <h2>Metric Catalog</h2>
             <div class="separator"></div>
-            <p>24 judge metrics ranked by statistical quality. Click a row to see rubric details.</p>
+            <p>24 LLM-as-Judge metrics ranked by statistical quality (ρ×H composite). Click any row to expand scoring criteria, formula, and dimension details.</p>
         </div>
 
         <div class="catalog-controls">
             <div class="catalog-filter">
-                <button class="filter-btn active" onclick="filterMetrics('all')">All</button>
-                <button class="filter-btn" onclick="filterMetrics('S')">S-Tier</button>
-                <button class="filter-btn" onclick="filterMetrics('A')">A-Tier</button>
-                <button class="filter-btn" onclick="filterMetrics('B')">B-Tier</button>
-                <button class="filter-btn" onclick="filterMetrics('C')">C-Tier</button>
-                <button class="filter-btn" onclick="filterMetrics('D')">D-Tier</button>
+                <button class="filter-btn active" onclick="filterMetrics('all')">All (24)</button>
+                <button class="filter-btn" onclick="filterMetrics('S')">S-Tier (5)</button>
+                <button class="filter-btn" onclick="filterMetrics('A')">A-Tier (10)</button>
+                <button class="filter-btn" onclick="filterMetrics('B')">B-Tier (4)</button>
+                <button class="filter-btn" onclick="filterMetrics('C')">C-Tier (4)</button>
+                <button class="filter-btn" onclick="filterMetrics('D')">D-Tier (1)</button>
+            </div>
+            <div class="catalog-filter" style="margin-top:0.5rem;">
+                <button class="filter-btn dim-filter" onclick="filterByDim('all')">All Dims</button>
+                <button class="filter-btn dim-filter" onclick="filterByDim('Robustness')" style="border-color:#dc262640;">Robustness</button>
+                <button class="filter-btn dim-filter" onclick="filterByDim('Reasoning')" style="border-color:#7c3aed40;">Reasoning</button>
+                <button class="filter-btn dim-filter" onclick="filterByDim('Efficiency')" style="border-color:#05966940;">Efficiency</button>
+                <button class="filter-btn dim-filter" onclick="filterByDim('Interaction')" style="border-color:#0d948840;">Interaction</button>
+                <button class="filter-btn dim-filter" onclick="filterByDim('Behavioral')" style="border-color:#2563eb40;">Behavioral</button>
+                <button class="filter-btn dim-filter" onclick="filterByDim('Overall Quality')" style="border-color:#d9770640;">Overall</button>
             </div>
         </div>
 
@@ -1629,6 +1828,14 @@
                 <strong style="color: var(--accent);">Full Evaluation Report</strong>
                 <p style="font-size: 13px; color: var(--text-light); margin-top: 4px;">24 judge metrics, 15,720 evaluations</p>
             </a>
+            <a href="p0_judge_report.html" style="display:block; padding: 16px; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); text-decoration: none; color: var(--text); transition: box-shadow 0.2s;">
+                <strong style="color: var(--accent);">P0 Judge Report</strong>
+                <p style="font-size: 13px; color: var(--text-light); margin-top: 4px;">J67 + J69 + J52 metrics deep analysis</p>
+            </a>
+            <a href="j67_self_assessment.html" style="display:block; padding: 16px; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); text-decoration: none; color: var(--text); transition: box-shadow 0.2s;">
+                <strong style="color: var(--accent);">J67 Self-Assessment Calibration</strong>
+                <p style="font-size: 13px; color: var(--text-light); margin-top: 4px;">595 trajectories, self-assessment accuracy</p>
+            </a>
             <a href="discrimination_report.html" style="display:block; padding: 16px; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); text-decoration: none; color: var(--text); transition: box-shadow 0.2s;">
                 <strong style="color: var(--accent);">Discrimination Analysis</strong>
                 <p style="font-size: 13px; color: var(--text-light); margin-top: 4px;">Statistical discrimination power of metrics</p>
@@ -1656,30 +1863,126 @@
 // ======== DATA ========
 
 const metricData = [
-    {rank:1, id:'J60', url:'j60_interaction_precision.html', en:'Interaction Precision', zh:'交互精确度', n:655, mean:2.03, std:0.23, rho:0.515, h:598.8, quality:308, rating:'S', range:'2-4', detail:'Measures precision of agent interactions with the environment. Among proactive interactions, what fraction truly requires human decision. High scores indicate minimal wasted interactions.'},
-    {rank:2, id:'J65', url:'j65_question_quality.html', en:'Question Quality', zh:'提问质量', n:655, mean:1.96, std:0.44, rho:0.595, h:335.4, quality:200, rating:'S', range:'1-4', detail:'Evaluates specificity, answerability, and value of proactive questions the agent asks. Considers relevance, timing, and whether the question advances task completion.'},
-    {rank:3, id:'J39', url:'j39_failure_pattern.html', en:'Failure Pattern', zh:'失败模式', n:655, mean:2.17, std:0.85, rho:0.769, h:249.7, quality:192, rating:'S', range:'1-5', detail:'Classifies failure patterns: instant crash / format collapse / delayed explosion / summary-lock / resource exhaustion / monitor deadlock. Strongest eval correlation (ρ=0.769).'},
-    {rank:4, id:'J06', url:'j06_error_recovery.html', en:'Error Recovery', zh:'错误恢复', n:591, mean:2.22, std:0.68, rho:0.759, h:233.3, quality:177, rating:'S', range:'1-4', detail:'Counts successful recoveries from errors. Requires: (1) Detection, (2) Strategy Change, (3) Forward Progress. Measures recovery speed and effectiveness. Core resilience metric.'},
-    {rank:5, id:'J68', url:'j68_feedback_utilization.html', en:'Feedback Utilization', zh:'反馈利用率', n:655, mean:2.40, std:0.76, rho:0.748, h:235.3, quality:176, rating:'S', range:'1-5', detail:'Post-human-feedback coverage: measures how effectively the agent incorporates feedback from environment/error/evaluation signals to improve approach.'},
-    {rank:6, id:'J95', url:'j95_subtask_propagation.html', en:'Subtask Propagation', zh:'子任务传播', n:655, mean:2.32, std:0.87, rho:0.700, h:213.6, quality:150, rating:'A', range:'1-5', detail:'Error propagation distance across subtasks. Measures how well the agent isolates failures and prevents contamination of downstream subtasks.'},
-    {rank:7, id:'J50', url:'j50_evidence_action_gap.html', en:'Evidence-Action Gap', zh:'证据行动鸿沟', n:655, mean:2.49, std:0.66, rho:0.715, h:207.3, quality:148, rating:'A', range:'1-4', detail:'Correct information collected but not acted on. Penalizes agents that gather evidence without using it, or act without sufficient evidence.'},
-    {rank:8, id:'J32', url:'j32_traj_satisfy.html', en:'Traj-Satisfy', zh:'轨迹满意度', n:654, mean:3.27, std:1.93, rho:0.862, h:171.9, quality:148, rating:'A', range:'0-10', detail:'Holistic LLM satisfaction with trajectory quality on 0-10 scale. Strongest single-metric correlation with eval score (ρ=0.862). Wide dynamic range.'},
-    {rank:9, id:'J70', url:'j70_hypothesis_verify.html', en:'Hypothesis-Verify', zh:'假设验证', n:655, mean:2.08, std:0.75, rho:0.732, h:190.1, quality:139, rating:'A', range:'1-4', detail:'After hypothesis, does agent take verification action? Measures scientific reasoning: Data/Code/Assumption/Result/Backup verification before committing resources.'},
-    {rank:10, id:'J37', url:'j37_propagation_length.html', en:'Propagation Length', zh:'传播长度', n:642, mean:1.66, std:0.91, rho:0.757, h:163.6, quality:124, rating:'A', range:'1-5', detail:'Steps from root cause to failure exposure. Shorter propagation = errors caught earlier. Directly reflects engineering rigor and test coverage.'},
-    {rank:11, id:'J49', url:'j49_step_f1.html', en:'Step F1', zh:'步骤F1', n:655, mean:2.38, std:0.79, rho:0.535, h:190.4, quality:102, rating:'A', range:'1-5', detail:'Harmonic mean of step precision and recall. Balances completeness (all needed steps) with efficiency (no wasted steps).'},
-    {rank:12, id:'J41', url:'j41_error_type_solidification.html', en:'Error-Type Solidification', zh:'按类型错误固化', n:653, mean:2.64, std:0.72, rho:0.696, h:145.9, quality:102, rating:'A', range:'1-5', detail:'Per-error-type solidification rates: syntax-class vs design-decision. Detects when specific error types become stuck without resolution.'},
-    {rank:13, id:'J48', url:'j48_step_recall.html', en:'Step Recall', zh:'步骤召回率', n:655, mean:2.56, std:0.80, rho:0.539, h:162.8, quality:88, rating:'A', range:'1-5', detail:'Recall of actual failed steps. Measures whether the agent identifies and addresses all critical failure points in its trajectory.'},
-    {rank:14, id:'J30', url:'j30_parameter_accuracy.html', en:'Parameter Accuracy', zh:'参数准确率', n:655, mean:3.63, std:0.57, rho:0.569, h:150.2, quality:85, rating:'A', range:'1-5', detail:'Tool call argument values match expected/correct values. Catches wrong file paths, incorrect API parameters, off-by-one errors.'},
-    {rank:15, id:'J25', url:'j25_effective_action_ratio.html', en:'Effective Action Ratio', zh:'有效动作比', n:655, mean:2.25, std:0.71, rho:0.550, h:153.1, quality:84, rating:'A', range:'1-5', detail:'Classifies actions as PRODUCTIVE / EXPLORATORY_USEFUL / OVERHEAD_NECESSARY / REDUNDANT / CIRCULAR / FAILED_WASTED. Effective = first 3 / total.'},
-    {rank:16, id:'J61', url:'j61_interaction_f1.html', en:'Interaction F1', zh:'交互F1', n:655, mean:3.82, std:0.96, rho:0.631, h:118.7, quality:75, rating:'B', range:'1-5', detail:'Harmonic mean of checkpoint recall and interaction precision. Balances completeness of interactions with their necessity.'},
-    {rank:17, id:'J40', url:'j40_error_solidification.html', en:'Error Solidification', zh:'错误固化', n:655, mean:2.57, std:0.83, rho:0.499, h:139.9, quality:70, rating:'B', range:'1-5', detail:'Errors persisting after context summarization. Measures whether errors become permanently embedded vs. eventually resolved.'},
-    {rank:18, id:'J73', url:'j73_dual_channel_divergence.html', en:'Dual-Channel', zh:'双通道一致性', n:655, mean:3.38, std:0.60, rho:0.522, h:105.2, quality:55, rating:'B', range:'1-5', detail:'Reasoning stream vs action stream divergence. Types: ALIGNED / MINOR_DRIFT / CONTENT_DIVERGE / DIRECTION_DIVERGE / CONTRADICTION.'},
-    {rank:19, id:'J13', url:'j13_cross_stage_violations.html', en:'Cross-Stage Violations', zh:'跨阶段违反', n:585, mean:3.45, std:0.75, rho:0.579, h:69.4, quality:40, rating:'B', range:'1-5', detail:'Late-pipeline decisions that violate earlier choices. E.g., executing before planning, or re-planning mid-execution without justification.'},
-    {rank:20, id:'J63', url:'j63_hedging_frequency.html', en:'Hedging Frequency', zh:'不确定性表达', n:148, mean:3.09, std:0.54, rho:0.501, h:59.9, quality:30, rating:'C', range:'2-4', detail:'Uncertainty expression density in reasoning stream. Only evaluated on trajectories with explicit reasoning (n=148). Appropriate hedging is good; excessive hedging suggests low confidence.'},
-    {rank:21, id:'J47', url:'j47_step_precision.html', en:'Step Precision', zh:'步骤精确率', n:655, mean:4.13, std:0.73, rho:0.182, h:154.9, quality:28, rating:'C', range:'3-5', detail:'Precision at marking failed steps vs reference. High mean (4.13) with low ρ suggests ceiling effect — most models score well, limiting discrimination.'},
-    {rank:22, id:'J64', url:'j64_uncertainty_calibration.html', en:'Uncertainty Calibration', zh:'不确定性校准', n:183, mean:2.65, std:0.55, rho:0.474, h:54.3, quality:26, rating:'C', range:'2-4', detail:'Hedging intensity vs actual accuracy (ECE score). Only evaluated on trajectories with uncertainty expressions (n=183).'},
-    {rank:23, id:'J42', url:'j42_cat_failure.html', en:'CAT Failure', zh:'CAT反模式', n:631, mean:3.48, std:0.81, rho:0.155, h:146.3, quality:23, rating:'C', range:'2-5', detail:'Blind-retry + eval-abuse + resource-leak + cross-stage violations combined. Low ρ (0.155) indicates weak link to eval outcome despite high discrimination.'},
-    {rank:24, id:'J35', url:'j35_root_cause.html', en:'Root Cause', zh:'根因归因', n:611, mean:3.37, std:0.91, rho:-0.008, h:115.6, quality:1, rating:'D', range:'2-5', detail:'Accurately identifying root cause of failure from trajectory evidence. Negative ρ indicates this metric is independent of eval outcome — measures diagnostic clarity, not task success.'}
+    {rank:1, id:'J60', url:'j60_interaction_precision.html', en:'Interaction Precision', zh:'交互精确度', n:655, mean:2.03, std:0.23, rho:0.515, h:598.8, quality:308, rating:'S', range:'1-5',
+     dim:'Interaction', detect:'JUDGE', source:'v3',
+     formula:'Precision = (NECESSARY + HELPFUL_BUT_OPTIONAL) / Total_interactions',
+     scoring:'5=Precise & Valuable: All interactions necessary, questions specific & well-timed, no missed opportunities; 4=Mostly Precise: >75% necessary/helpful, minor unnecessary asks, questions well-formed; 3=Mixed Precision: 50-75% necessary, some unnecessary asks, some missed opportunities; 2=Low Precision: <50% necessary, frequent unnecessary interruptions, or critically missed opportunities; 1=Poor Interaction: Mostly unnecessary/counterproductive asks, OR never interacts when clearly should',
+     detail:'Measures precision of agent interactions with the environment. Among proactive interactions, what fraction truly requires human decision. Classifies each as NECESSARY, HELPFUL_BUT_OPTIONAL, UNNECESSARY, COUNTERPRODUCTIVE, or PREMATURE. Highest H-statistic (598.8) means strongest model discrimination power of all metrics.'},
+    {rank:2, id:'J65', url:'j65_question_quality.html', en:'Question Quality', zh:'提问质量', n:655, mean:1.96, std:0.44, rho:0.595, h:335.4, quality:200, rating:'S', range:'1-5',
+     dim:'Interaction', detect:'JUDGE', source:'v3-M',
+     formula:'Score = f(SPECIFICITY, ANSWERABILITY, VALUE, TIMING) across explicit + self-directed questions',
+     scoring:'5=All questions specific, answerable, high-value, well-timed; demonstrates deep understanding targeting most important uncertainties; 4=Most questions good, 1-2 slightly too vague or poorly timed, overall effective; 3=Mixed quality, some good questions identifying real uncertainties, some too broad/low-value/poorly timed; 2=Mostly poor: vague, unanswerable, or wrong timing; few demonstrate targeted thinking; 1=No meaningful questions despite clear uncertainty, OR all questions useless (vague, unanswerable, irrelevant)',
+     detail:'Evaluates quality of questions the agent asks on four dimensions: SPECIFICITY (precise vs vague), ANSWERABILITY (can it be answered?), VALUE (would answer significantly help?), TIMING (asked at right moment?). Evaluates both explicit user-directed and self-directed questions in reasoning. Low mean (1.96) indicates most agents ask poor questions.'},
+    {rank:3, id:'J39', url:'j39_failure_pattern.html', en:'Failure Pattern', zh:'失败模式', n:655, mean:2.17, std:0.85, rho:0.769, h:249.7, quality:192, rating:'S', range:'1-5',
+     dim:'Robustness', detect:'JUDGE', source:'v3',
+     formula:'Classify dominant pattern: INSTANT_CRASH / FORMAT_COLLAPSE / DELAYED_EXPLOSION / SUMMARY_LOCK / RESOURCE_EXHAUSTION / MONITOR_DEADLOCK / NO_FAILURE',
+     scoring:'5=Clean execution (NO_FAILURE): trajectory proceeds without significant failure, handles minor obstacles gracefully; 4=Minor failure, resolved: one pattern appears but agent recovers quickly, no significant impact on outcome; 3=Significant failure, partially managed: one clear pattern materially affects trajectory, agent shows awareness and partial attempts; 2=Dominant failure, severely impacts outcome: one pattern severely degrades trajectory consuming large fraction of steps, or two distinct patterns both materially impact; 1=Catastrophic or compound: multiple patterns compound each other, OR INSTANT_CRASH with no recovery, OR single pattern so pervasive agent makes no useful progress',
+     detail:'Classifies the dominant failure pattern in a trajectory into 7 categories. Strongest eval correlation (ρ=0.769) — a model\'s failure pattern is the best predictor of its final score. Assesses both the pattern itself and recovery attempts.'},
+    {rank:4, id:'J06', url:'j06_error_recovery.html', en:'Error Recovery', zh:'错误恢复', n:591, mean:2.22, std:0.68, rho:0.759, h:233.3, quality:177, rating:'S', range:'1-5',
+     dim:'Robustness', detect:'JUDGE', source:'v3',
+     formula:'Successful recovery requires ALL three: (1) Detection, (2) Strategy Change (not identical retry), (3) Forward Progress',
+     scoring:'5=Excellent Recovery: All errors recovered, agent diagnoses root cause, recovery swift (<3 steps); 4=Good Recovery: Most errors (>75%) recovered, recovery may take 3-5 steps but succeeds; 3=Mixed Recovery: ~50% of errors recovered, some good recoveries mixed with blind retries; 2=Poor Recovery: <25% recovered, mostly blind retries or ignoring errors, slow to adapt; 1=No Recovery: Agent ignores all errors, retries identically, or gets stuck in error loops',
+     detail:'Counts successful recoveries from errors. Partial recovery = detection + strategy change but no progress. Failed recovery = ignores error, blindly retries, or changes strategy but still fails. N/A if no errors occur. Core resilience metric with second-highest eval correlation (ρ=0.759).'},
+    {rank:5, id:'J68', url:'j68_feedback_utilization.html', en:'Feedback Utilization', zh:'反馈利用率', n:655, mean:2.40, std:0.76, rho:0.748, h:235.3, quality:176, rating:'S', range:'1-5',
+     dim:'Behavioral', detect:'JUDGE', source:'SUPP',
+     formula:'Utilization_Rate = UTILIZED / (UTILIZED + PARTIALLY_UTILIZED + IGNORED); feedback types: EVAL_FEEDBACK, ERROR_MESSAGES, HUMAN_FEEDBACK, SELF_FEEDBACK',
+     scoring:'5=Every feedback specifically addressed in next action, clear evidence of learning (quotes/references feedback, targeted changes, no repeated mistakes), utilization ~100%; 4=Most feedback incorporated (75-90%), 1-2 points missed but not critical, generally demonstrates learning; 3=Some feedback used but also blind retries without incorporating feedback (50-75%), inconsistent; 2=Mostly ignores feedback (25-50%), retries with minimal/wrong changes, may acknowledge errors verbally but fails to make corrections; 1=Completely ignores all feedback (<25%), repeats same approach despite clear error messages, random unrelated changes, or gives up',
+     detail:'Evaluates whether the agent incorporates specific elements of feedback into subsequent actions, or ignores feedback and retries blindly. Covers four feedback types: EVAL_FEEDBACK, ERROR_MESSAGES, HUMAN_FEEDBACK, SELF_FEEDBACK. Each classified as UTILIZED, PARTIALLY_UTILIZED, or IGNORED.'},
+    {rank:6, id:'J95', url:'j95_subtask_propagation.html', en:'Subtask Propagation', zh:'子任务传播', n:655, mean:2.32, std:0.87, rho:0.700, h:213.6, quality:150, rating:'A', range:'1-5',
+     dim:'Efficiency', detect:'JUDGE', source:'v3-M',
+     formula:'Propagation_boundaries = max subtask boundaries crossed by any single error before detection',
+     scoring:'5=Errors contained within originating subtask, agent validates outputs at every stage boundary, never propagates; 4=Errors occasionally propagate 1 boundary but caught quickly, agent validates most stage outputs; 3=Errors propagate across 2 boundaries before detection, some inter-stage validation but has gaps, moderate wasted effort; 2=Errors propagate across 3+ boundaries, agent does not validate between stages, significant wasted computation; 1=Errors from first subtask propagate all the way to end without any inter-stage validation, only discovers root cause after complete pipeline failure',
+     detail:'Measures how far errors propagate across subtask boundaries before being caught or corrected. Identifies subtask structure, finds errors originating in one subtask, checks whether agent validates output before moving to next subtask.'},
+    {rank:7, id:'J50', url:'j50_evidence_action_gap.html', en:'Evidence-Action Gap', zh:'证据行动鸿沟', n:655, mean:2.49, std:0.66, rho:0.715, h:207.3, quality:148, rating:'A', range:'1-5',
+     dim:'Reasoning', detect:'JUDGE', source:'CT',
+     formula:'Catalog evidence-gathering steps → trace utilization → identify gap instances by severity (critical/peripheral) and type (forgetting/reasoning/integration)',
+     scoring:'5=No gap: every piece of relevant evidence acted upon appropriately, tight coupling between information gathering and decision-making; 4=Minor gap: 1-2 pieces not utilized but non-critical, unused evidence would not have changed outcome; 3=Moderate gap: 3-4 instances where useful info gathered then ignored, at least one involves meaningfully helpful evidence; 2=Significant gap: repeatedly discovers relevant info but does not use it, multiple critical pieces wasted; 1=Severe gap: systematically ignores evidence it collects, information gathering decoupled from decision-making',
+     detail:'Measures the degree to which an agent collects correct or useful information but then fails to act on it. Classifies gap types as forgetting (info lost from context), reasoning (info available but not connected), or integration (connected but not acted on). From CodeTracer diagnostic framework.'},
+    {rank:8, id:'J32', url:'j32_traj_satisfy.html', en:'Traj-Satisfy', zh:'轨迹满意度', n:654, mean:3.27, std:1.93, rho:0.862, h:171.9, quality:148, rating:'A', range:'0-10',
+     dim:'Overall Quality', detect:'JUDGE', source:'TRAJ',
+     formula:'Holistic assessment of Strategy Quality + Execution Quality + Outcome + Meta-Cognition',
+     scoring:'9-10=Excellent: strong strategy, efficient execution, high score relative to task difficulty, good self-awareness; 7-8=Good: solid approach with minor inefficiencies, achieves reasonable score, adaptive behavior; 5-6=Adequate: partial results with notable issues (excessive time on one subtask, missed optimization); 3-4=Poor: significant strategic errors, low score, gets stuck for extended periods, poor time management; 1-2=Very Poor: fundamental failures, no output, pathological loops, declares success incorrectly; 0=Catastrophic: agent causes damage or produces anti-correlated output',
+     detail:'Holistic trajectory quality on 0-10 scale. Assesses four dimensions: Strategy Quality (plan, prioritization, adaptation), Execution Quality (actions, debugging), Outcome (output produced, eval score), Meta-Cognition (budget awareness, stuck-state recognition). Strongest single-metric eval correlation (ρ=0.862). Wide dynamic range (std=1.93).'},
+    {rank:9, id:'J70', url:'j70_hypothesis_verify.html', en:'Hypothesis-Verify', zh:'假设验证', n:655, mean:2.08, std:0.75, rho:0.732, h:190.1, quality:139, rating:'A', range:'1-5',
+     dim:'Reasoning', detect:'JUDGE', source:'SUPP',
+     formula:'Loop_Rate = (hypotheses with verification) / (total hypothesis points); verification must target hypothesis, occur BEFORE committing resources, could falsify',
+     scoring:'5=Systematic Verification: >80% of hypothesis points verified, agent actively seeks disconfirming evidence; 4=Mostly Verified: 60-80% verified, tests most assumptions before committing; 3=Partial Verification: 40-60% verified, some good habits mixed with leaps of faith; 2=Rare Verification: 20-40% verified, mostly proceeds on assumptions without checking; 1=No Verification: <20% verified, never tests assumptions, commits blindly',
+     detail:'Measures scientific reasoning discipline — whether the agent forms hypotheses and takes deliberate verification actions before committing. Verification must be explicitly targeted at testing the hypothesis, occur BEFORE committing significant resources, and produce information that could falsify the hypothesis.'},
+    {rank:10, id:'J37', url:'j37_propagation_length.html', en:'Propagation Length', zh:'传播长度', n:642, mean:1.66, std:0.91, rho:0.757, h:163.6, quality:124, rating:'A', range:'1-5',
+     dim:'Efficiency', detect:'JUDGE', source:'v3-M',
+     formula:'Propagation_length = detection_step - root_cause_step (in trajectory steps); use WORST case for scoring',
+     scoring:'5=Immediate Detection: 0-2 steps (or no errors), errors caught within 1-2 steps, agent tests frequently and validates assumptions immediately; 4=Quick Detection: 3-5 steps, reasonable validation cadence; 3=Moderate Delay: 6-10 steps, agent does some validation but has gaps; 2=Long Propagation: 11-20 steps, builds significantly on faulty foundation, substantial rework required; 1=Silent Propagation: >20 steps or never detected, essentially no error-detection discipline',
+     detail:'When a root-cause error occurs, measures how many steps pass before it manifests as a visible failure. Short propagation = good engineering practice; long propagation = poor observability and testing discipline. Low mean (1.66) indicates most agents let errors propagate long distances.'},
+    {rank:11, id:'J49', url:'j49_step_f1.html', en:'Step F1', zh:'步骤F1', n:655, mean:2.38, std:0.79, rho:0.535, h:190.4, quality:102, rating:'A', range:'1-5',
+     dim:'Robustness', detect:'JUDGE', source:'CT',
+     formula:'F1 = 2 × (Precision × Recall) / (Precision + Recall); Precision from J47, Recall from J48',
+     scoring:'5=Both precision AND recall excellent, agent knows exactly what failed, reports only genuine failures, misses nothing; 4=Good balance, slight weakness in one dimension but both above adequate; 3=Moderate F1: either precision or recall good but other poor, one-sided detection profile; 2=Poor F1: both have significant issues, OR one dimension near-zero; 1=Terrible F1: either never notices failures (recall~0), or claims everything failed (precision~0), or both broken',
+     detail:'Harmonic mean of step-level failure precision (J47) and recall (J48). Balances completeness (all failure steps identified) with accuracy (no false failure claims). Considers practical impact of precision/recall imbalance on trajectory quality.'},
+    {rank:12, id:'J41', url:'j41_error_type_solidification.html', en:'Error-Type Solidification', zh:'按类型错误固化', n:653, mean:2.64, std:0.72, rho:0.696, h:145.9, quality:102, rating:'A', range:'1-5',
+     dim:'Robustness', detect:'JUDGE', source:'v3-M',
+     formula:'Classify errors into SYNTAX_ERROR / LOGIC_ERROR / DESIGN_DECISION / ENVIRONMENT_ERROR → track lifecycle per type',
+     scoring:'5=All error types caught and corrected regardless of type (syntax fixed immediately, logic detected through testing, design decisions reconsidered when evidence suggests wrong, environment errors resolved); 4=Syntax and environment errors reliably fixed, but 1 logic error or design decision persists uncorrected with limited downstream impact; 3=Surface errors (syntax, environment) mostly fixed, but deeper errors (logic, design decisions) solidify — clear depth-dependent solidification; 2=Even syntax errors sometimes persist uncorrected, design decisions never reconsidered despite evidence, multiple types solidify; 1=All error types solidify — agent never corrects anything, syntax repeated, logic compounds, wrong designs doubled down on',
+     detail:'Evaluates how different error types are handled — whether errors of various categories get corrected or become "solidified." Distinguishes SYNTAX_ERROR, LOGIC_ERROR, DESIGN_DECISION, and ENVIRONMENT_ERROR. Tracks each error\'s lifecycle (flagged → acknowledged → fix attempted → fix successful or persisted/built upon).'},
+    {rank:13, id:'J48', url:'j48_step_recall.html', en:'Step Recall', zh:'步骤召回率', n:655, mean:2.56, std:0.80, rho:0.539, h:162.8, quality:88, rating:'A', range:'1-5',
+     dim:'Robustness', detect:'JUDGE', source:'CT',
+     formula:'Step_Recall = (Detected Failures) / (Total Actual Failures)',
+     scoring:'5=All actual failures detected and acknowledged, every error message noticed, every wrong output caught, every silent failure identified through verification; 4=Most failures detected, 1-2 minor failures slip by with limited downstream impact, major failures all caught; 3=About half of actual failures detected, catches obvious failures but misses silent/partial failures or those with delayed symptoms; 2=Most failures go unnoticed, only catches most obvious crashes or explicit error messages, wrong outputs accepted without verification; 1=Agent blind to failures — continues as if fine despite clear errors, even explicit error messages ignored or misread',
+     detail:'Measures the RECALL of failure detection — of all steps that actually failed, what fraction did the agent detect and acknowledge? Higher recall means fewer "silent" failures that go unnoticed. From CodeTracer hierarchical diagnosis.'},
+    {rank:14, id:'J30', url:'j30_parameter_accuracy.html', en:'Parameter Accuracy', zh:'参数准确率', n:655, mean:3.63, std:0.57, rho:0.569, h:150.2, quality:85, rating:'A', range:'1-5',
+     dim:'Efficiency', detect:'JUDGE', source:'TRAJ',
+     formula:'Assess all tool/command parameters → classify errors by severity (Critical/Moderate/Minor) → self-corrected errors count at half weight',
+     scoring:'5=All tool calls have correct parameters, every path exists, every function name spelled correctly, every flag valid, zero parameter issues; 4=1-2 minor issues (suboptimal but functional values, non-canonical path form), no failures caused; 3=Several parameter errors, some causing failures requiring correction, agent recovers but wastes steps, ~10-20% of calls have issues; 2=Frequent parameter errors causing cascading issues (wrong paths → wrong reads → wrong edits), significant trajectory time on parameter failures; 1=Pervasive wrong parameters throughout (wrong paths, misspelled functions, invalid flags, unreasonable values), majority of calls have incorrect parameters',
+     detail:'Evaluates how accurately the agent supplies parameter values when calling tools/commands. Classifies errors by severity (Critical/Moderate/Minor). Self-correction counted at half weight. High mean (3.63) shows most agents get parameters mostly right — failures here strongly predict overall failure.'},
+    {rank:15, id:'J25', url:'j25_effective_action_ratio.html', en:'Effective Action Ratio', zh:'有效动作比', n:655, mean:2.25, std:0.71, rho:0.550, h:153.1, quality:84, rating:'A', range:'1-5',
+     dim:'Efficiency', detect:'JUDGE', source:'CT',
+     formula:'Effective = PRODUCTIVE + EXPLORATORY_USEFUL + OVERHEAD_NECESSARY; Ratio = Effective / Total; also assess pathological patterns (5+ consecutive identical monitoring, same file edited 3+ times)',
+     scoring:'5=Highly Efficient: >80% effective actions, no pathological patterns, minimal steps to achieve results; 4=Mostly Efficient: 65-80% effective, minor redundancy (1-2 re-reads, occasional extra monitoring); 3=Moderate: 50-65% effective, some wasted loops but generally progresses; 2=Inefficient: 35-50% effective, significant circular patterns, excessive monitoring, redundant exploration; 1=Severely Wasteful: <35% effective, pathological loops, dozens of edits to same file, extensive blind retrying',
+     detail:'Determines what fraction of actions genuinely advance the task versus wasted/circular/redundant. Classifies each action as PRODUCTIVE, EXPLORATORY_USEFUL, OVERHEAD_NECESSARY, REDUNDANT, CIRCULAR, or FAILED_WASTED. Also checks for pathological patterns (5+ consecutive identical calls, same file edited 3+ times).'},
+    {rank:16, id:'J61', url:'j61_interaction_f1.html', en:'Interaction F1', zh:'交互F1', n:655, mean:3.82, std:0.96, rho:0.631, h:118.7, quality:75, rating:'B', range:'1-5',
+     dim:'Interaction', detect:'JUDGE', source:'v3',
+     formula:'F1 = harmonic mean of Interaction Precision and Checkpoint Recall; separate scoring for interactive vs autonomous trajectories',
+     scoring:'5=Perfect balance: asked exactly when needed, never unnecessarily, never missed critical checkpoint; 4=Good: slightly too many questions (1-2 unnecessary) OR missed 1 non-critical checkpoint; 3=Moderate: either asks several unnecessary questions OR misses important checkpoints; 2=Poor: severely unbalanced — floods with trivial questions (low precision) OR never asks despite critical ambiguity (low recall); 1=Terrible: both precision and recall bad — asks wrong questions AND misses critical ones',
+     detail:'Harmonic mean of interaction precision (were questions necessary?) and checkpoint recall (did agent ask at all critical decision points?). Applies differently for interactive vs autonomous trajectories. For autonomous: scores based on missed opportunities where asking would have helped.'},
+    {rank:17, id:'J40', url:'j40_error_solidification.html', en:'Error Solidification', zh:'错误固化', n:655, mean:2.57, std:0.83, rho:0.499, h:139.9, quality:70, rating:'B', range:'1-5',
+     dim:'Robustness', detect:'JUDGE', source:'v3-M',
+     formula:'Track error lifecycle: Corrected / Solidified / Abandoned / Indeterminate; assess solidification depth: Surface / Structural / Foundational',
+     scoring:'5=No solidification: either no errors, or every error caught and corrected before influencing subsequent reasoning; 4=Minimal: one instance where old error persists into later steps but eventually corrected or only surface-level impact; 3=Moderate: 2-3 errors survive into later reasoning affecting subsequent decisions, at least one reaches structural depth; 2=Significant: multiple errors solidify, agent builds incorrect assumptions on top, solidified errors demonstrably degrade final outcome; 1=Severe: foundational errors made early become fully embedded, agent treats incorrect premises as established facts throughout, all subsequent work built on wrong foundation',
+     detail:'Measures the degree to which errors persist, survive context compression or forgetting, and become treated as correct facts in subsequent reasoning. Tracks error lifecycle (Corrected/Solidified/Abandoned/Indeterminate) and solidification depth (Surface/Structural/Foundational). Also checks for compounding solidification.'},
+    {rank:18, id:'J73', url:'j73_dual_channel_divergence.html', en:'Dual-Channel', zh:'双通道一致性', n:655, mean:3.38, std:0.60, rho:0.522, h:105.2, quality:55, rating:'B', range:'1-5',
+     dim:'Reasoning', detect:'JUDGE', source:'SUPP',
+     formula:'Extract reasoning-action pairs (STATED INTENT vs ACTUAL ACTION) → classify: ALIGNED / MINOR_DRIFT / CONTENT_DIVERGE / DIRECTION_DIVERGE / CONTRADICTION / EMPTY_THOUGHT',
+     scoring:'5=Perfectly Aligned: >90% ALIGNED, thoughts clearly explain and predict actions, no contradictions; 4=Mostly Aligned: 70-90% ALIGNED + MINOR_DRIFT, rare content divergence, no contradictions; 3=Moderate Divergence: 50-70% aligned, some content/direction divergences, possible 1 near-contradiction; 2=Significant Divergence: 30-50% aligned, frequent direction divergences, agent says one thing does another; 1=Severe Divergence: <30% aligned, multiple contradictions, reasoning disconnected from behavior',
+     detail:'Assesses alignment between stated reasoning and actual actions. Detects cases where agent "says one thing but does another." Classifies divergence types and assesses severity patterns (isolated vs progressive degradation). Critical trust and reliability signal.'},
+    {rank:19, id:'J13', url:'j13_cross_stage_violations.html', en:'Cross-Stage Violations', zh:'跨阶段违反', n:585, mean:3.45, std:0.75, rho:0.579, h:69.4, quality:40, rating:'B', range:'1-5',
+     dim:'Behavioral', detect:'JUDGE', source:'v3-M',
+     formula:'Identify Constraint-Setting Steps → Trace Adherence → Classify violations by severity (Critical/Major/Minor) + detection + impact',
+     scoring:'5=Perfect Consistency: all late decisions respect early constraints, no violations, coherent plan start to finish; 4=Minor Inconsistency: one violation detected but non-critical, does not meaningfully affect outcome; 3=Moderate Violations: 2-3 violations with some impact, at least one causes visible error or rework, agent partially recovers; 2=Significant Violations: repeated violations (4+) causing errors/rework/wasted steps, frequently contradicts own earlier decisions; 1=Severe Incoherence: fundamental early decisions contradicted, trajectory internally incoherent, agent has no memory of own prior choices',
+     detail:'Detects decisions made later in trajectory that violate or contradict constraints, choices, or requirements established earlier. Measures whether agent maintains coherent plan throughout execution. Classifies violations by severity (Critical/Major/Minor), detection method, and downstream impact.'},
+    {rank:20, id:'J63', url:'j63_hedging_frequency.html', en:'Hedging Frequency', zh:'不确定性表达', n:148, mean:3.09, std:0.54, rho:0.501, h:59.9, quality:30, rating:'C', range:'1-5',
+     dim:'Reasoning', detect:'JUDGE', source:'v3-M',
+     formula:'Catalogue THOUGHT entries as hedge/confident/neutral → track outcomes (2×2: hedge/confident vs succeed/fail) → assess calibration pattern',
+     scoring:'5=Well-Calibrated Hedging: uncertainty expressed when genuinely appropriate, confidence when warranted, hedging leads to useful contingency plans, adjusts confidence based on feedback; 4=Slightly Miscalibrated: mostly appropriate, one direction slightly off, overall strong metacognitive awareness; 3=Moderate Miscalibration: hedges on obvious/routine things but not genuinely uncertain decisions (or vice versa), ~50% appropriate; 2=Poor Calibration: systematic overconfidence (charges into repeated failures) OR systematic indecision (hedges on everything, cannot commit); 1=Extreme Miscalibration: maximally confident precisely when wrong OR completely paralyzed (every thought hedged, analysis paralysis)',
+     detail:'Measures metacognitive calibration — how often the agent expresses uncertainty in THOUGHT/reasoning stream and whether appropriately calibrated. Calibration: Agent Hedged + Failed = Well-calibrated; Confident + Succeeded = Well-calibrated; Confident + Failed = Overconfident (bad); Hedged + Succeeded = Underconfident (mild). Only for models with explicit reasoning (n=148).'},
+    {rank:21, id:'J47', url:'j47_step_precision.html', en:'Step Precision', zh:'步骤精确率', n:655, mean:4.13, std:0.73, rho:0.182, h:154.9, quality:28, rating:'C', range:'1-5',
+     dim:'Robustness', detect:'JUDGE', source:'CT',
+     formula:'Step_Precision = (True Failure Claims) / (Total Failure Claims)',
+     scoring:'5=Perfect precision: every step identified as failed truly failed, zero false failure claims; 4=High precision: 1-2 instances where agent misidentifies working step as failed, minimal impact; 3=Moderate precision: sometimes declares failure when things working, perhaps 20-40% of failure claims false; 2=Low precision: frequently misidentifies source of problems, more than half of failure claims may be incorrect; 1=Very low precision: failure detection essentially random or systematically wrong, claims everything failing or consistently misdiagnoses',
+     detail:'Evaluates PRECISION of failure detection — when agent claims a step has failed, how often is that claim actually correct? High mean (4.13) with low ρ (0.182) suggests ceiling effect — most models score well, limiting discrimination. Still useful as a guardrail.'},
+    {rank:22, id:'J64', url:'j64_uncertainty_calibration.html', en:'Uncertainty Calibration', zh:'不确定性校准', n:183, mean:2.65, std:0.55, rho:0.474, h:54.3, quality:26, rating:'C', range:'1-5',
+     dim:'Reasoning', detect:'JUDGE', source:'v3-M',
+     formula:'Calibration_ratio = well_calibrated_count / total_assessed; overconfidence penalized more than underconfidence',
+     scoring:'5=Excellent Calibration (>85% well-calibrated): confidence matches outcomes consistently, high-confidence actions almost always succeed, updates based on feedback; 4=Good Calibration (70-85%): mostly calibrated, 1-2 minor miscalibrations, overall sound; 3=Moderate (50-70%): mix of calibrated and miscalibrated, no strong systematic bias but inconsistent; 2=Poor (30-50%): systematic bias detected, repeatedly overconfident or systematically underconfident; 1=Terrible (<30%): extreme inverse calibration, MOST confident when MOST wrong, or correct approach but refuses to commit',
+     detail:'Measures calibration gap between expressed confidence and actual outcomes. Classifies confidence levels (high/medium/low), tracks outcomes (success/failure), computes calibration ratio. Overconfidence penalized more heavily than underconfidence. Only for trajectories with uncertainty expressions (n=183).'},
+    {rank:23, id:'J42', url:'j42_cat_failure.html', en:'CAT Failure', zh:'CAT反模式', n:631, mean:3.48, std:0.81, rho:0.155, h:146.3, quality:23, rating:'C', range:'1-5',
+     dim:'Behavioral', detect:'JUDGE', source:'v3-M',
+     formula:'Scan for three anti-patterns: BLIND_RETRY (repeating exact failed action) + EVAL_ABUSE (eval without substantive changes) + RESOURCE_LEAK (processes without cleanup)',
+     scoring:'5=No anti-patterns: none detected, retries only when meaningful changes made, evaluates only when justified, manages resources responsibly; 4=Minimal: one minor instance of one anti-pattern, does not materially impact efficiency or outcome; 3=Moderate: clear instances of 1 category (2-3 occurrences) OR minor instances of 2 different categories; 2=Significant: significant instances of 2+ categories, consumes substantial trajectory steps or causes concrete negative consequences; 1=Pervasive: anti-patterns dominate trajectory, agent spends more time on wasteful retries/redundant evaluations/leaked resources than productive work',
+     detail:'Measures prevalence of three Common Anti-pattern Triad (CAT) behaviors: (1) Blind Retry — repeating exact same failed action without meaningful change, (2) Eval Abuse — running evaluation without substantive changes between runs, (3) Resource Leak — starting processes without cleanup. Low ρ (0.155) means common across all performance levels.'},
+    {rank:24, id:'J35', url:'j35_root_cause.html', en:'Root Cause', zh:'根因归因', n:611, mean:3.37, std:0.91, rho:-0.008, h:115.6, quality:1, rating:'D', range:'1-5',
+     dim:'Reasoning', detect:'JUDGE', source:'v3-M',
+     formula:'Identify outcome gap → generate root cause hypothesis from categories (PLANNING_FAILURE, TIME_MANAGEMENT, LOOP_TRAP, COMPREHENSION_FAILURE, RESOURCE_FAILURE, CASCADING_ERROR, EXECUTION_BUG, SCOPE_CREEP) → trace causal chain → assess diagnostic confidence',
+     scoring:'5=Clear Single Root Cause: one unambiguous root cause with clear causal chain, evidence overwhelming; 4=Primary Root Cause + Contributing Factors: main cause identified with high confidence, minor contributing factors exist; 3=Multiple Interacting Causes: 2-3 causes of similar weight, difficult to isolate single root; 2=Unclear Root Cause: evidence ambiguous, multiple conflicting hypotheses, poor observability; 1=Undiagnosable: cannot determine root cause from available evidence',
+     detail:'Determines whether root cause of failure can be accurately identified from trajectory evidence. This metric assesses diagnostic clarity: given the trajectory, how clearly can the fundamental problem be identified? Negative ρ (-0.008) means completely independent of eval outcome — measures pure diagnostic clarity regardless of task success.'}
 ];
 
 const leaderboardData = [
@@ -1714,10 +2017,22 @@ const autoMetrics = [
 
 // ======== RENDER FUNCTIONS ========
 
-function renderCatalog(filter) {
+function renderCatalog(filter, dimFilter) {
     const tbody = document.getElementById('catalogBody');
     tbody.innerHTML = '';
-    const filtered = filter === 'all' ? metricData : metricData.filter(m => m.rating === filter);
+    let filtered = filter === 'all' ? metricData : metricData.filter(m => m.rating === filter);
+    if (dimFilter && dimFilter !== 'all') {
+        filtered = filtered.filter(m => m.dim === dimFilter);
+    }
+
+    const dimColors = {
+        'Overall Quality': '#d97706',
+        'Robustness': '#dc2626',
+        'Reasoning': '#7c3aed',
+        'Efficiency': '#059669',
+        'Behavioral': '#2563eb',
+        'Interaction': '#0d9488'
+    };
 
     filtered.forEach(m => {
         const row = document.createElement('tr');
@@ -1739,9 +2054,37 @@ function renderCatalog(filter) {
         `;
         tbody.appendChild(row);
 
+        const dimColor = dimColors[m.dim] || '#6b7280';
         const detailRow = document.createElement('tr');
         detailRow.className = 'metric-detail';
-        detailRow.innerHTML = `<td colspan="11"><strong>Range:</strong> ${m.range || 'N/A'} &nbsp;|&nbsp; ${m.detail}</td>`;
+        detailRow.innerHTML = `<td colspan="11">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; padding:0.5rem 0;">
+                <div>
+                    <div style="margin-bottom:0.75rem;">
+                        <span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:0.7rem;font-weight:600;background:${dimColor}15;color:${dimColor};margin-right:6px;">${m.dim}</span>
+                        <span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:0.7rem;font-weight:600;background:#fef3c7;color:#b45309;margin-right:6px;">${m.detect}</span>
+                        <span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:0.7rem;font-weight:600;background:#e0f2fe;color:#0369a1;">${m.source}</span>
+                        <span style="margin-left:8px;font-size:0.8rem;color:var(--text-light);">Range: ${m.range}</span>
+                    </div>
+                    <p style="margin-bottom:0.5rem;line-height:1.6;">${m.detail}</p>
+                    <div style="background:rgba(37,99,235,0.04);border:1px solid rgba(37,99,235,0.1);border-radius:6px;padding:0.5rem 0.75rem;margin-top:0.5rem;">
+                        <code style="font-size:0.78rem;color:var(--accent);font-family:'JetBrains Mono',monospace;">${m.formula}</code>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-light);margin-bottom:0.5rem;">Scoring Criteria</div>
+                    <div style="font-size:0.8rem;line-height:1.8;color:var(--text);">
+                        ${m.scoring.split('; ').map(s => {
+                            const parts = s.split('=');
+                            const score = parts[0];
+                            const desc = parts.slice(1).join('=');
+                            const scoreColor = score.includes('5') || score.includes('10') ? 'var(--green)' : score.includes('4') || score.includes('7') ? '#65a30d' : score.includes('3') ? 'var(--gold)' : score.includes('2') ? '#ea580c' : 'var(--red)';
+                            return '<div style="display:flex;gap:0.5rem;align-items:baseline;"><span style="font-family:JetBrains Mono,monospace;font-weight:700;color:'+scoreColor+';min-width:1.5rem;">'+score+'</span><span>'+desc+'</span></div>';
+                        }).join('')}
+                    </div>
+                </div>
+            </div>
+        </td>`;
         tbody.appendChild(detailRow);
     });
 }
@@ -1754,9 +2097,20 @@ function toggleMetricDetail(row) {
 }
 
 function filterMetrics(rating) {
-    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.catalog-filter:first-child .filter-btn').forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
-    renderCatalog(rating);
+    currentRatingFilter = rating;
+    renderCatalog(rating, currentDimFilter);
+}
+
+let currentRatingFilter = 'all';
+let currentDimFilter = 'all';
+
+function filterByDim(dim) {
+    document.querySelectorAll('.dim-filter').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    currentDimFilter = dim;
+    renderCatalog(currentRatingFilter, dim);
 }
 
 function renderLeaderboard() {
@@ -1914,7 +2268,13 @@ window.addEventListener('scroll', () => {
 
 // Close mobile nav on link click
 document.querySelectorAll('.navbar-links a').forEach(link => {
-    link.addEventListener('click', () => {
+    link.addEventListener('click', (e) => {
+        if (link.classList.contains('nav-dropdown-toggle')) {
+            e.preventDefault();
+            const dropdown = link.closest('.nav-dropdown');
+            dropdown.classList.toggle('mobile-open');
+            return;
+        }
         document.getElementById('navLinks').classList.remove('show');
     });
 });
