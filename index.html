@@ -1158,6 +1158,22 @@
             z-index: 999;
             transition: width 0.1s linear;
         }
+
+        /* Long Chain Tabs */
+        .lc-tab {
+            padding: 10px 18px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            margin-bottom: -2px;
+        }
+        .lc-tab:hover { color: var(--accent); }
+        .lc-tab-active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
     </style>
 </head>
 <body>
@@ -1177,6 +1193,7 @@
             <li><a href="#catalog">指标目录</a></li>
             <li><a href="#leaderboard">排行榜</a></li>
             <li><a href="#automated">自动指标</a></li>
+            <li><a href="#longchain">长链路分析</a></li>
             <li class="nav-dropdown">
                 <a href="#" class="nav-dropdown-toggle">报告 &#9662;</a>
                 <div class="nav-dropdown-menu">
@@ -1766,6 +1783,195 @@
             </thead>
             <tbody id="taskLeaderboardBody"></tbody>
         </table>
+    </div>
+</section>
+
+<!-- Long Decision Chain Regression Analysis Section -->
+<section class="section" id="longchain" style="background: #fff; max-width: none; padding-left: 2rem; padding-right: 2rem;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div class="section-header">
+            <h2>长决策链路深度回归分析</h2>
+            <div class="separator"></div>
+            <p>655条轨迹 · 104,734个节点 · 5维度回归分析 · 统计显著性检验</p>
+        </div>
+
+        <!-- Key Findings Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 24px 0;">
+            <div style="background: linear-gradient(135deg, #1e3a5f, #0f2440); color: #fff; padding: 20px; border-radius: 12px;">
+                <div style="font-size: 0.8rem; opacity: 0.7;">轨迹长度效应</div>
+                <div style="font-size: 2rem; font-weight: 800; color: #f87171;">OR = 0.26</div>
+                <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px;">长度翻倍 → 成功率降至26%（p≈0）</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #1e3a5f, #0f2440); color: #fff; padding: 20px; border-radius: 12px;">
+                <div style="font-size: 0.8rem; opacity: 0.7;">衰减形态</div>
+                <div style="font-size: 2rem; font-weight: 800; color: #fbbf24;">U形非线性</div>
+                <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px;">quadratic p=2e-12，中段最差</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #1e3a5f, #0f2440); color: #fff; padding: 20px; border-radius: 12px;">
+                <div style="font-size: 0.8rem; opacity: 0.7;">最敏感指标 J42</div>
+                <div style="font-size: 2rem; font-weight: 800; color: #f87171;">-0.61/log步</div>
+                <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px;">长轨迹该指标严重低分（R²=0.43）</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #1e3a5f, #0f2440); color: #fff; padding: 20px; border-radius: 12px;">
+                <div style="font-size: 0.8rem; opacity: 0.7;">饱和交互效应</div>
+                <div style="font-size: 2rem; font-weight: 800; color: #4ade80;">p=4.6e-8</div>
+                <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px;">长轨迹后半段重复增加更多</div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation for 5 analyses -->
+        <div id="lcTabs" style="display: flex; gap: 4px; margin: 30px 0 20px; border-bottom: 2px solid var(--border); padding-bottom: 0;">
+            <button onclick="showLcTab(0)" class="lc-tab lc-tab-active" id="lcTab0">决策衰减</button>
+            <button onclick="showLcTab(1)" class="lc-tab" id="lcTab1">信息遗忘</button>
+            <button onclick="showLcTab(2)" class="lc-tab" id="lcTab2">策略转换</button>
+            <button onclick="showLcTab(3)" class="lc-tab" id="lcTab3">Context饱和</button>
+            <button onclick="showLcTab(4)" class="lc-tab" id="lcTab4">指标×长度</button>
+        </div>
+
+        <!-- Tab 0: Decision Quality Decay -->
+        <div class="lc-panel" id="lcPanel0">
+            <div style="background: #eff6ff; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 20px; font-size: 0.9rem;">
+                <strong>方法：</strong>Logistic回归，因变量=observation.success，自变量=rel_position（0-1），控制模型和log(轨迹长度)。N=103,027。
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div style="background:#f8fafc; border-radius:10px; padding:16px;"><canvas id="lcChart1a" height="220"></canvas></div>
+                <div style="background:#f8fafc; border-radius:10px; padding:16px;"><canvas id="lcChart1b" height="220"></canvas></div>
+            </div>
+            <h3 style="font-size:1rem; margin: 16px 0 10px; color: var(--navy);">Per-Model衰减系数（Logistic回归）</h3>
+            <div class="metric-table-wrap">
+            <table>
+                <thead><tr><th>模型</th><th>位置系数</th><th>Odds Ratio</th><th>p值</th><th>N</th><th>解读</th></tr></thead>
+                <tbody>
+                <tr><td>glm-4-5-wo-interact</td><td style="color:var(--red);font-weight:700">-2.142</td><td>0.12</td><td style="color:var(--green)">1.6e-21***</td><td>4,069</td><td>后段暴跌</td></tr>
+                <tr><td>kimi-k2-instruct-0905-gzy</td><td style="color:var(--red);font-weight:700">-10.674</td><td>≈0</td><td style="color:var(--green)">1.1e-14***</td><td>2,850</td><td>近乎完全失败</td></tr>
+                <tr><td>grok-4</td><td style="color:var(--red)">-1.080</td><td>0.34</td><td style="color:var(--green)">4.2e-4***</td><td>1,062</td><td>明显衰减</td></tr>
+                <tr><td>glm-4-5-w-interact-filter</td><td style="color:var(--red)">-0.593</td><td>0.55</td><td style="color:var(--green)">9.8e-6***</td><td>14,180</td><td>中度衰减</td></tr>
+                <tr><td>claude-4-sonnet</td><td style="color:var(--gold)">-0.152</td><td>0.86</td><td>0.019*</td><td>23,951</td><td>轻微衰减</td></tr>
+                <tr><td>gpt-5</td><td>-0.056</td><td>0.95</td><td style="color:var(--text-light)">0.825</td><td>6,591</td><td style="color:var(--text-light)">无显著衰减</td></tr>
+                <tr><td>kimi-k2.5</td><td style="color:var(--green)">+0.980</td><td>2.66</td><td style="color:var(--green)">0.004**</td><td>5,114</td><td style="color:var(--green)">后段反而更好</td></tr>
+                <tr><td>glm47-codeact-rebench</td><td style="color:var(--green);font-weight:700">+2.904</td><td>18.24</td><td style="color:var(--green)">1.9e-80***</td><td>5,971</td><td style="color:var(--green)">后段大幅改善</td></tr>
+                </tbody>
+            </table>
+            </div>
+            <div style="background: #fef3c7; border-left: 4px solid var(--gold); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 16px; font-size: 0.85rem;">
+                <strong>非线性检验：</strong>quadratic系数=+1.008（p=2e-12）。衰减呈U形——中段最差、首尾较好。可能原因：中段为"摸索"阶段，后段已锁定方案。
+            </div>
+        </div>
+
+        <!-- Tab 1: Information Forgetting -->
+        <div class="lc-panel" id="lcPanel1" style="display:none;">
+            <div style="background: #eff6ff; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 20px; font-size: 0.9rem;">
+                <strong>方法：</strong>OLS回归，因变量=文件重访步数间隔，自变量=首次访问位置+log(长度)+模型。N=5,060个文件重访事件。R²=0.079。
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div style="background:#f8fafc; border-radius:10px; padding:16px;"><canvas id="lcChart2a" height="220"></canvas></div>
+                <div style="background:#f8fafc; border-radius:10px; padding:16px;"><canvas id="lcChart2b" height="220"></canvas></div>
+            </div>
+            <h3 style="font-size:1rem; margin: 16px 0 10px; color: var(--navy);">Per-Model遗忘系数</h3>
+            <div class="metric-table-wrap">
+            <table>
+                <thead><tr><th>模型</th><th>位置系数</th><th>p值</th><th>R²</th><th>平均重访间隔</th><th>解读</th></tr></thead>
+                <tbody>
+                <tr><td>gpt-5</td><td style="color:var(--red);font-weight:700">-114.2</td><td style="color:var(--green)">3.4e-5***</td><td>0.251</td><td>60.7步</td><td>最长遗忘、早期信息最易丢</td></tr>
+                <tr><td>glm47-codeact-rebench</td><td style="color:var(--red)">-109.0</td><td style="color:var(--green)">2.6e-13***</td><td>0.151</td><td>24.6步</td><td>高遗忘率</td></tr>
+                <tr><td>glm47</td><td style="color:var(--red)">-96.2</td><td style="color:var(--green)">1.7e-6***</td><td>0.088</td><td>39.3步</td><td>高遗忘</td></tr>
+                <tr><td>kimi-k2.5</td><td style="color:var(--red)">-93.6</td><td style="color:var(--green)">2.8e-7***</td><td>0.130</td><td>40.9步</td><td>高遗忘</td></tr>
+                <tr><td>claude-4-sonnet</td><td style="color:var(--gold)">-68.5</td><td style="color:var(--green)">8.0e-26***</td><td>0.210</td><td>28.8步</td><td>中等遗忘（R²最高）</td></tr>
+                <tr><td>grok-4</td><td style="color:var(--green)">-13.2</td><td>1.6e-3**</td><td>0.162</td><td>8.6步</td><td>遗忘少（轨迹短）</td></tr>
+                </tbody>
+            </table>
+            </div>
+            <div style="background: #fef3c7; border-left: 4px solid var(--gold); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 16px; font-size: 0.85rem;">
+                <strong>非线性遗忘：</strong>二次项显著（p=8e-23）。position=0.1的信息平均69步后被重访，position=0.7的仅21步。早期信息遗忘曲线更陡。
+            </div>
+        </div>
+
+        <!-- Tab 2: Strategy Switch -->
+        <div class="lc-panel" id="lcPanel2" style="display:none;">
+            <div style="background: #eff6ff; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 20px; font-size: 0.9rem;">
+                <strong>方法：</strong>OLS回归，因变量=切换前后success差值，自变量=切换位置+log(长度)+模型。N=66,665个策略切换事件。
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div style="background:#f8fafc; border-radius:10px; padding:16px;"><canvas id="lcChart3a" height="220"></canvas></div>
+                <div style="background:#f8fafc; border-radius:10px; padding:16px;"><canvas id="lcChart3b" height="220"></canvas></div>
+            </div>
+            <div style="background: #fef3c7; border-left: 4px solid var(--gold); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 16px; font-size: 0.85rem;">
+                <strong>核心结论：</strong>R²=0.0008——位置对转换效果几乎无解释力。策略切换好坏主要取决于<strong>切换类型</strong>（null→action好，action→null差），而非时机。
+            </div>
+            <h3 style="font-size:1rem; margin: 16px 0 10px; color: var(--navy);">切换类型效果排名</h3>
+            <div class="metric-table-wrap">
+            <table>
+                <thead><tr><th>方向</th><th>From</th><th>To</th><th>Mean Improvement</th><th>N</th></tr></thead>
+                <tbody>
+                <tr style="background:#ecfdf5"><td style="color:var(--green);font-weight:700">最佳</td><td>null</td><td>create_file</td><td style="color:var(--green)">+0.575</td><td>24</td></tr>
+                <tr style="background:#ecfdf5"><td style="color:var(--green)">佳</td><td>null</td><td>sleep</td><td style="color:var(--green)">+0.491</td><td>51</td></tr>
+                <tr style="background:#ecfdf5"><td style="color:var(--green)">佳</td><td>null</td><td>edit_file</td><td style="color:var(--green)">+0.388</td><td>32</td></tr>
+                <tr style="background:#ecfdf5"><td style="color:var(--green)">佳</td><td>null</td><td>run_command</td><td style="color:var(--green)">+0.343</td><td>86</td></tr>
+                <tr style="background:#fef2f2"><td style="color:var(--red);font-weight:700">最差</td><td>run_command</td><td>null</td><td style="color:var(--red)">-0.500</td><td>146</td></tr>
+                <tr style="background:#fef2f2"><td style="color:var(--red)">差</td><td>open_file</td><td>null</td><td style="color:var(--red)">-0.515</td><td>71</td></tr>
+                <tr style="background:#fef2f2"><td style="color:var(--red)">差</td><td>sleep</td><td>null</td><td style="color:var(--red)">-0.491</td><td>27</td></tr>
+                </tbody>
+            </table>
+            </div>
+            <div style="background: #f0f9ff; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 16px; font-size: 0.85rem;">
+                <strong>模式：</strong>"行动化"转换（null→具体执行）有益；"犹豫化"转换（具体执行→null/停滞）有害。ANOVA F=11.78, p=1.4e-9。
+            </div>
+        </div>
+
+        <!-- Tab 3: Context Saturation -->
+        <div class="lc-panel" id="lcPanel3" style="display:none;">
+            <div style="background: #eff6ff; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 20px; font-size: 0.9rem;">
+                <strong>方法：</strong>面板回归，每条轨迹切10个decile，因变量=diversity/repetition/think_ratio，自变量=position+log(length)+model。N=6,240。
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div style="background:#f8fafc; border-radius:10px; padding:16px;"><canvas id="lcChart4a" height="220"></canvas></div>
+                <div style="background:#f8fafc; border-radius:10px; padding:16px;"><canvas id="lcChart4b" height="220"></canvas></div>
+            </div>
+            <h3 style="font-size:1rem; margin: 16px 0 10px; color: var(--navy);">全局面板回归系数</h3>
+            <div class="metric-table-wrap">
+            <table>
+                <thead><tr><th>因变量</th><th>position系数</th><th>p值</th><th>length系数</th><th>p值</th><th>R²</th><th>方向</th></tr></thead>
+                <tbody>
+                <tr><td>action_diversity</td><td style="color:var(--green)">+0.086</td><td style="color:var(--green)">1.0e-44***</td><td style="color:var(--red)">-0.205</td><td style="color:var(--green)">≈0***</td><td>0.550</td><td>后段多样性↑ 但长轨迹整体↓</td></tr>
+                <tr><td>repetition_rate</td><td style="color:var(--green)">-0.089</td><td style="color:var(--green)">1.5e-43***</td><td style="color:var(--red)">+0.180</td><td style="color:var(--green)">≈0***</td><td>0.482</td><td>后段重复↓ 但长轨迹整体↑</td></tr>
+                <tr><td>think_ratio</td><td style="color:var(--red)">-0.032</td><td style="color:var(--green)">6.5e-38***</td><td style="color:var(--red)">-0.012</td><td style="color:var(--green)">6.7e-24***</td><td>0.154</td><td>后段思考↓ 长轨迹也更少思考</td></tr>
+                </tbody>
+            </table>
+            </div>
+            <div style="background: #fef3c7; border-left: 4px solid var(--gold); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 16px; font-size: 0.85rem;">
+                <strong>交互效应：</strong>position × length 系数=+0.053, p=4.6e-8。<strong>越长的轨迹，后半段重复增加越多</strong>（短轨迹后段反而更灵活）。<br>
+                <strong>特殊模型：</strong>gpt-5是唯一后段退化模型（diversity↓ rep↑）；kimi-k2-instruct是唯一think ratio上升的模型。
+            </div>
+        </div>
+
+        <!-- Tab 4: Metric × Length -->
+        <div class="lc-panel" id="lcPanel4" style="display:none;">
+            <div style="background: #eff6ff; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 20px; font-size: 0.9rem;">
+                <strong>方法：</strong>对24个Judge指标分别做 score ~ log_traj_length + C(model) 的OLS回归。N=14,523个有效评分。
+            </div>
+            <div style="background:#f8fafc; border-radius:10px; padding:16px; margin-bottom: 20px;"><canvas id="lcChart5a" height="260"></canvas></div>
+            <h3 style="font-size:1rem; margin: 16px 0 10px; color: var(--navy);">指标长度敏感度排名</h3>
+            <div class="metric-table-wrap">
+            <table>
+                <thead><tr><th>指标</th><th>长度系数</th><th>p值</th><th>方向</th><th>R²(simple)</th><th>R²(+model)</th></tr></thead>
+                <tbody>
+                <tr><td><strong>J42</strong> 计划连贯性</td><td style="color:var(--red);font-weight:700">-0.609</td><td style="color:var(--green)">1.1e-51***</td><td style="color:var(--red)">负↓↓↓</td><td>0.272</td><td>0.430</td></tr>
+                <tr><td><strong>J48</strong> 步骤召回率</td><td style="color:var(--red);font-weight:700">-0.413</td><td style="color:var(--green)">1.1e-22***</td><td style="color:var(--red)">负↓↓</td><td>0.056</td><td>0.253</td></tr>
+                <tr><td><strong>J47</strong> 步骤精确率</td><td style="color:var(--red);font-weight:700">-0.364</td><td style="color:var(--green)">3.6e-22***</td><td style="color:var(--red)">负↓↓</td><td>0.204</td><td>0.295</td></tr>
+                <tr><td><strong>J40</strong> 工具选择</td><td style="color:var(--red)">-0.360</td><td style="color:var(--green)">1.6e-18***</td><td style="color:var(--red)">负↓↓</td><td>0.054</td><td>0.331</td></tr>
+                <tr><td>J25 操作效率</td><td style="color:var(--red)">-0.283</td><td style="color:var(--green)">7.2e-14***</td><td style="color:var(--red)">负↓</td><td>0.023</td><td>0.228</td></tr>
+                <tr><td>J35 死循环检测</td><td style="color:var(--red)">-0.278</td><td style="color:var(--green)">1.8e-8***</td><td style="color:var(--red)">负↓</td><td>0.080</td><td>0.202</td></tr>
+                <tr style="border-top: 2px solid var(--border)"><td>J70 假设验证</td><td style="color:var(--green)">+0.186</td><td style="color:var(--green)">2.2e-6***</td><td style="color:var(--green)">正↑</td><td>0.095</td><td>0.232</td></tr>
+                <tr><td><strong>J32</strong> 轨迹满意度</td><td style="color:var(--green);font-weight:700">+0.485</td><td style="color:var(--green)">1.7e-6***</td><td style="color:var(--green)">正↑↑</td><td>0.095</td><td>0.225</td></tr>
+                </tbody>
+            </table>
+            </div>
+            <div style="background: #f0f9ff; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 16px; font-size: 0.85rem;">
+                <strong>启示：</strong>11/24指标受长度显著负影响 — 这些指标在评估长轨迹时需要按长度校准（deconfound），否则长轨迹天然低分。J42（计划连贯性）受影响最大，R²=0.43说明43%的得分方差由长度+模型解释。
+            </div>
+        </div>
+
+        <a href="deep_regression_report.html" style="display: inline-block; margin-top: 24px; padding: 10px 20px; background: var(--accent); color: #fff; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600;">查看完整独立报告 →</a>
     </div>
 </section>
 
@@ -2361,7 +2567,107 @@ document.addEventListener('DOMContentLoaded', () => {
     renderRadarChart();
     renderTaskGrid();
     renderTaskLeaderboard();
+    renderLongChainCharts();
 });
+
+// ======== Long Chain Analysis Tabs & Charts ========
+function showLcTab(idx) {
+    for (let i = 0; i < 5; i++) {
+        document.getElementById('lcPanel' + i).style.display = i === idx ? 'block' : 'none';
+        document.getElementById('lcTab' + i).classList.toggle('lc-tab-active', i === idx);
+    }
+}
+
+function renderLongChainCharts() {
+    const chartOpts = (title) => ({
+        responsive: true,
+        plugins: { title: { display: true, text: title, font: { size: 13 } }, legend: { display: false }},
+        scales: { y: { grid: { color: '#e5e7eb' }}, x: { ticks: { maxRotation: 45, font: { size: 10 }}}}
+    });
+
+    // Chart 1a: Per-model decay
+    new Chart(document.getElementById('lcChart1a'), {
+        type: 'bar',
+        data: { labels: ['glm-wo-int','kimi-gzy','grok-4','glm-w-int','claude','gpt-5','kimi-k2.5','glm47-codeact'],
+            datasets: [{ label: '位置系数', data: [-2.142,-10.674,-1.080,-0.593,-0.152,-0.056,0.980,2.904],
+                backgroundColor: [-2.142,-10.674,-1.080,-0.593,-0.152,-0.056,0.980,2.904].map(v => v < -0.5 ? '#dc2626' : v < 0 ? '#d97706' : '#059669') }]},
+        options: chartOpts('Per-Model 位置衰减系数')
+    });
+
+    // Chart 1b: U-shape
+    new Chart(document.getElementById('lcChart1b'), {
+        type: 'line',
+        data: { labels: ['0','0.1','0.2','0.3','0.4','0.5','0.6','0.7','0.8','0.9','1.0'],
+            datasets: [{ label: '预测成功率', data: [0.90,0.88,0.86,0.85,0.84,0.84,0.84,0.85,0.86,0.87,0.89],
+                borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.08)', fill: true, tension: 0.4, pointRadius: 3 }]},
+        options: {...chartOpts('决策质量U形曲线'), scales: { y: { min: 0.82, max: 0.91, grid: { color: '#e5e7eb' }}, x: { title: { display: true, text: '相对位置' }}}}
+    });
+
+    // Chart 2a: Forgetting coefficients
+    new Chart(document.getElementById('lcChart2a'), {
+        type: 'bar',
+        data: { labels: ['gpt-5','glm47-codeact','glm47','kimi-k2.5','claude','glm-4-5','grok-4'],
+            datasets: [{ label: '遗忘系数', data: [-114.2,-109.0,-96.2,-93.6,-68.5,-63.1,-13.2],
+                backgroundColor: '#dc2626' }]},
+        options: {...chartOpts('Per-Model 遗忘系数（越负=越易忘）'), indexAxis: 'y'}
+    });
+
+    // Chart 2b: Mean reopen gap
+    new Chart(document.getElementById('lcChart2b'), {
+        type: 'bar',
+        data: { labels: ['gpt-5','glm47-codeact','glm47','kimi-k2.5','claude','glm-4-5','grok-4'],
+            datasets: [{ label: '平均重访步数', data: [60.7,24.6,39.3,40.9,28.8,22.9,8.6],
+                backgroundColor: '#7c3aed' }]},
+        options: {...chartOpts('平均文件重访间隔（步）'), indexAxis: 'y'}
+    });
+
+    // Chart 3a: Switch quality by bin
+    new Chart(document.getElementById('lcChart3a'), {
+        type: 'bar',
+        data: { labels: ['Early','EarlyMid','Mid','LateMid','Late'],
+            datasets: [{ label: 'Improvement', data: [-0.0077,0.0018,-0.0015,0.0008,-0.0021],
+                backgroundColor: [-0.0077,0.0018,-0.0015,0.0008,-0.0021].map(v => v > 0 ? '#059669' : '#dc2626') }]},
+        options: chartOpts('策略转换效果 × 位置')
+    });
+
+    // Chart 3b: Best/worst types
+    new Chart(document.getElementById('lcChart3b'), {
+        type: 'bar',
+        data: { labels: ['null→create','null→sleep','null→edit','null→run','run→null','open→null','sleep→null'],
+            datasets: [{ label: 'Improvement', data: [0.575,0.491,0.388,0.343,-0.500,-0.515,-0.491],
+                backgroundColor: [0.575,0.491,0.388,0.343,-0.500,-0.515,-0.491].map(v => v > 0 ? '#059669' : '#dc2626') }]},
+        options: chartOpts('策略转换类型效果')
+    });
+
+    // Chart 4a: Saturation slopes
+    new Chart(document.getElementById('lcChart4a'), {
+        type: 'bar',
+        data: { labels: ['gpt-5','claude','glm-4-5','glm47','kimi-k2.5','grok-4'],
+            datasets: [
+                { label: '多样性斜率', data: [-0.084,0.078,0.166,0.094,0.072,0.084], backgroundColor: '#2563eb' },
+                { label: '重复率斜率', data: [0.090,-0.077,-0.171,-0.110,-0.077,-0.084], backgroundColor: '#dc2626' }
+            ]},
+        options: {...chartOpts('Per-Model 饱和斜率'), plugins: { title: { display: true, text: '多样性 vs 重复率斜率', font: { size: 13 }}, legend: { display: true }}}
+    });
+
+    // Chart 4b: Think ratio
+    new Chart(document.getElementById('lcChart4b'), {
+        type: 'bar',
+        data: { labels: ['gpt-5','claude','glm-4-5','glm47','kimi-k2.5','grok-4'],
+            datasets: [{ label: '思考率斜率', data: [-0.071,-0.032,-0.028,-0.042,-0.015,-0.070],
+                backgroundColor: '#d97706' }]},
+        options: chartOpts('Per-Model 思考率衰减斜率')
+    });
+
+    // Chart 5a: Metric sensitivity waterfall
+    new Chart(document.getElementById('lcChart5a'), {
+        type: 'bar',
+        data: { labels: ['J42','J48','J47','J40','J25','J35','J41','J30','J49','J13','J73','J37','J60','J50','J61','J65','J06','J68','J95','J39','J70','J32'],
+            datasets: [{ label: '长度系数', data: [-0.609,-0.413,-0.364,-0.360,-0.283,-0.278,-0.216,-0.189,-0.193,-0.175,-0.126,-0.047,-0.003,-0.013,0.072,0.058,0.102,0.106,0.001,0.165,0.186,0.485],
+                backgroundColor: [-0.609,-0.413,-0.364,-0.360,-0.283,-0.278,-0.216,-0.189,-0.193,-0.175,-0.126,-0.047,-0.003,-0.013,0.072,0.058,0.102,0.106,0.001,0.165,0.186,0.485].map(c => c < -0.2 ? '#dc2626' : c < 0 ? '#f59e0b' : c < 0.1 ? '#9ca3af' : '#059669') }]},
+        options: {...chartOpts('24个Judge指标对轨迹长度的敏感度（控制模型后）'), scales: { y: { grid: { color: '#e5e7eb' }, title: { display: true, text: 'log_length系数' }}, x: { ticks: { font: { size: 11 }}}}}
+    });
+}
 </script>
 </body>
 </html>
