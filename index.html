@@ -654,6 +654,84 @@
             color: var(--primary);
         }
 
+        /* Metric Trajectory Examples */
+        .metric-value-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 48px;
+            height: 32px;
+            padding: 0 0.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(99,102,241,0.12);
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .metric-value-badge.badge-warn {
+            background: rgba(245,158,11,0.12);
+            color: var(--amber);
+        }
+
+        .metric-value-badge.badge-good {
+            background: rgba(5,150,105,0.12);
+            color: var(--green);
+        }
+
+        .metric-value-badge.badge-bad {
+            background: rgba(220,38,38,0.12);
+            color: var(--red);
+        }
+
+        .traj-formula {
+            margin-top: 0.75rem;
+            padding: 0.6rem 1rem;
+            background: var(--bg);
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .traj-formula code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--navy);
+            line-height: 1.6;
+        }
+
+        .traj-source-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            background: var(--bg);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.25rem;
+        }
+
+        .traj-example-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .traj-category-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--primary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.25rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .traj-category-label:first-child {
+            margin-top: 0;
+        }
+
         /* Case Studies */
         .case-cards {
             display: grid;
@@ -1230,6 +1308,7 @@
             <li><a href="#catalog">指标目录</a></li>
             <li><a href="#leaderboard">排行榜</a></li>
             <li><a href="#automated">自动指标</a></li>
+            <li><a href="#auto-examples">轨迹示例</a></li>
             <li><a href="#longchain">长链路分析</a></li>
             <li class="nav-dropdown">
                 <a href="#" class="nav-dropdown-toggle">报告 &#9662;</a>
@@ -1524,6 +1603,548 @@
                 </div>
             </div>
         </div>
+    </div>
+</section>
+
+<!-- Automated Metric Trajectory Examples Section -->
+<section class="section" id="auto-examples">
+    <div class="section-header">
+        <h2>自动化指标轨迹示例</h2>
+        <div class="separator"></div>
+        <p>每个自动化指标配一条真实 Agent 轨迹片段，展示指标的计算方式。点击卡片展开详情。</p>
+    </div>
+
+    <div class="traj-example-grid">
+
+        <!-- Category: Complexity & Structure -->
+        <div class="traj-category-label">Complexity &amp; Structure</div>
+
+        <!-- M02 tool_chain_depth -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="metric-value-badge">225</span>
+                    <div>
+                        <h3>M02 工具链深度 Tool Chain Depth</h3>
+                        <div class="case-task">Source: workspace_task_17 / claude-4-sonnet</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    整条轨迹中 ReAct 节点（工具调用）的总数。值越大说明 Agent 任务路径越长、链路越深。
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-think">plan (node 0)</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-action">bash: pip install</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-action">create_file</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-action">edit_file</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-action">bash: python run</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-loop">... x220 nodes</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">bash: final test (node 225)</span>
+                </div>
+                <div class="traj-formula">
+                    <code>M02 = count(react_nodes) = 225<br>Duration: 9.13 hours | Total tokens: 13.2M</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- M05 tool_reuse_rate -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="metric-value-badge badge-good">0.71</span>
+                    <div>
+                        <h3>M05 工具复用率 Tool Reuse Rate</h3>
+                        <div class="case-task">Source: workspace_task_17 / claude-4-sonnet</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    edit_file 次数占 (create_file + edit_file) 总数的比例。高复用率意味着 Agent 更倾向于修改已有文件而非重新创建。
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-action">create_file r1gui.py</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-action">create_file custom.py</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">edit_file __init__.py</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">edit_file custom.py</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">edit_file config.yaml</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">edit_file r1gui.py</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">edit_file views.py</span>
+                </div>
+                <div class="traj-formula">
+                    <code>M05 = edit_file / (create_file + edit_file) = 5 / (2 + 5) = 0.71</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- M07 read_before_edit -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="metric-value-badge badge-good">0.80</span>
+                    <div>
+                        <h3>M07 先读后改率 Read Before Edit</h3>
+                        <div class="case-task">Source: workspace_task_17 / claude-4-sonnet</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    编辑某文件前，Agent 先用 open_file 查看该文件内容的比例。高值表示 Agent 先理解代码再修改——一种谨慎的工作模式。
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-think">open_file config.yaml</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">edit_file config.yaml</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-think">open_file __init__.py</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">edit_file __init__.py</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-error">edit_file views.py (no prior read)</span>
+                </div>
+                <div class="traj-formula">
+                    <code>M07 = files_read_before_edit / total_edited_files = 4 / 5 = 0.80</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category: Error & Retry Patterns -->
+        <div class="traj-category-label">Error &amp; Retry Patterns</div>
+
+        <!-- M10 max_blind_retry -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="metric-value-badge badge-bad">3</span>
+                    <div>
+                        <h3>M10 最大盲重试 Max Blind Retry</h3>
+                        <div class="case-task">Source: tornado-1782 / SWE-bench</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    连续执行完全相同命令的最大次数。Agent 没有从失败中学习，不断重复同一操作。
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-action">bash: python -m pytest test_web.py</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-error">FAILED (3 errors)</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-loop">bash: python -m pytest test_web.py</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-error">FAILED (3 errors)</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-loop">bash: python -m pytest test_web.py</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-error">FAILED (3 errors)</span>
+                </div>
+                <div class="traj-formula">
+                    <code>M10 = max consecutive identical failed commands = 3</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- M14 deadlock_step_ratio -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="metric-value-badge badge-warn">0.062</span>
+                    <div>
+                        <h3>M14 死锁步骤比率 Deadlock Step Ratio</h3>
+                        <div class="case-task">Source: workspace_task_17 / claude-4-sonnet</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    处于循环等待模式的步骤占总步骤的比例。这些步骤在 sleep &rarr; check &rarr; get 循环中往复，无实质进展。
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-loop">bash: sleep 5</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-loop">bash: curl status</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-loop">bash: cat output.log</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-loop">bash: sleep 5</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-loop">bash: curl status</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-loop">...</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-error">&times;14 cycles</span>
+                </div>
+                <div class="traj-formula">
+                    <code>M14 = deadlock_steps / total_steps = 14 / 225 = 0.062</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- M15 repeated_view_rate -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="metric-value-badge badge-warn">0.50</span>
+                    <div>
+                        <h3>M15 重复查看率 Repeated View Rate</h3>
+                        <div class="case-task">Source: en_fullstack_debug / Qwen (ClawBench)</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    被重复查看（&ge;2次）的文件占所有被查看文件的比例。高重复率可能表示 Agent 记忆不足或规划不佳。
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-think">read App.jsx</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-action">edit App.jsx</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-think">read index.js</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-loop">read App.jsx (2nd time)</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-think">read utils.js</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-loop">read index.js (2nd time)</span>
+                </div>
+                <div class="traj-formula">
+                    <code>M15 = files_viewed_2plus / total_viewed_files = 2 / 4 = 0.50</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category: Format & Quality -->
+        <div class="traj-category-label">Format &amp; Quality</div>
+
+        <!-- M21 format_fail_rate -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="metric-value-badge badge-bad">0.045</span>
+                    <div>
+                        <h3>M21 格式失败率 Format Fail Rate</h3>
+                        <div class="case-task">Source: workspace_task_10 / grok-4</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    输出中 action 字段为 null 或格式不合法的节点比例。说明模型偶尔输出了不符合工具调用规范的内容。
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-success">node 1: action=edit_file</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">node 2: action=bash</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-error">node 3: action=null</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">node 4: action=bash</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">... (89 total nodes)</span>
+                </div>
+                <div class="traj-formula">
+                    <code>M21 = null_action_nodes / total_nodes = 4 / 89 = 0.045</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- M24 token_per_point -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="metric-value-badge">1.56M</span>
+                    <div>
+                        <h3>M24 每分 Token 消耗 Token Per Point</h3>
+                        <div class="case-task">Source: workspace_task_50 / claude-4-sonnet</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    获得一个评分点所需消耗的 token 数。衡量 Agent 的效率——每单位成果的资源代价。
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-action">Phase 1: 2.1M tokens</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-think">eval score: 5.0</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-action">Phase 2: 4.8M tokens</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">eval score: 8.45</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-action">Phase 3: 6.3M tokens</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-think">eval score: 8.42</span>
+                </div>
+                <div class="traj-formula">
+                    <code>M24 = total_tokens / final_score = 13.2M / 8.45 = 1.56M tokens/point</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category: Efficiency & Planning -->
+        <div class="traj-category-label">Efficiency &amp; Planning</div>
+
+        <!-- M53 code_locate_efficiency -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="metric-value-badge badge-warn">0.151</span>
+                    <div>
+                        <h3>M53 代码定位效率 Code Locate Efficiency</h3>
+                        <div class="case-task">Source: workspace_task_17 / claude-4-sonnet</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    从轨迹起点到第一次创建/修改代码文件所用步骤的比例。值越小说明定位越快。
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-think">node 0: plan</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-action">node 1-10: bash explore</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-action">node 11-33: install &amp; config</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">node 34: create_file r1gui.py</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-action">... (191 more nodes)</span>
+                </div>
+                <div class="traj-formula">
+                    <code>M53 = first_code_step / total_steps = 34 / 225 = 0.151</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- M57 post_fix_verify -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="metric-value-badge badge-good">1</span>
+                    <div>
+                        <h3>M57 修复后验证 Post-Fix Verify</h3>
+                        <div class="case-task">Source: Pillow-4088 / SWE-bench</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    Agent 在编辑代码后是否运行了测试或验证命令（bool）。良好的 Agent 会在修复后自动验证结果。
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-think">read Image.py</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-action">str_replace_editor: fix crop()</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">bash: python -m pytest Tests/test_image_crop.py</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">PASSED (4/4)</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">bash: python -m pytest Tests/</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">PASSED (all)</span>
+                </div>
+                <div class="traj-formula">
+                    <code>M57 = has_test_after_edit = 1 (True)<br>Pattern: edit &rarr; pytest &rarr; confirm pass</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- M76 has_planning -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="metric-value-badge badge-good">14</span>
+                    <div>
+                        <h3>M76 规划能力 Has Planning</h3>
+                        <div class="case-task">Source: workspace_task_10 / gpt-5</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    轨迹中 planning 节点所包含的子目标数量。值 &gt; 0 表示 Agent 在行动前有显式规划阶段。
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-think">planning node:</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-think">1. Analyze requirements</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-think">2. Setup environment</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-think">3. Implement core logic</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-think">... 14 subgoals</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-action">begin execution</span>
+                </div>
+                <div class="traj-formula">
+                    <code>M76 = count(subgoals_in_planning_node) = 14</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- M96 budget_utilization -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="metric-value-badge badge-good">0.938</span>
+                    <div>
+                        <h3>M96 预算利用率 Budget Utilization</h3>
+                        <div class="case-task">Source: workspace_task_17 / claude-4-sonnet</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    有效步骤（非死锁）占总步骤的比例。高值表示 Agent 大部分时间都在做有意义的工作。
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-success">211 productive steps</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-loop">14 deadlock steps</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-action">225 total</span>
+                </div>
+                <div class="traj-formula">
+                    <code>M96 = (total - deadlock) / total = (225 - 14) / 225 = 0.938</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category: Output & Reasoning -->
+        <div class="traj-category-label">Output &amp; Reasoning</div>
+
+        <!-- M71 reasoning_degradation -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="metric-value-badge badge-bad">0.849</span>
+                    <div>
+                        <h3>M71 推理退化 Reasoning Degradation</h3>
+                        <div class="case-task">Source: workspace_task_17 / claude-4-sonnet</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    后半段平均输出长度相比前半段的下降比例。高值说明 Agent 在长轨迹后期输出质量严重退化。
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-success">First half avg: 312 chars/node</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-action">nodes 1-112: detailed reasoning</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-error">Second half avg: 47 chars/node</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-error">nodes 113-225: terse commands</span>
+                </div>
+                <div class="traj-formula">
+                    <code>M71 = 1 - (avg_second_half / avg_first_half) = 1 - (47 / 312) = 0.849</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- M74 action_entropy -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="metric-value-badge">1.85</span>
+                    <div>
+                        <h3>M74 动作熵 Action Entropy</h3>
+                        <div class="case-task">Source: en_fullstack_debug / GPT vs Gemini (ClawBench)</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    Agent 动作类型分布的信息熵（bits）。高熵表示工具使用多样化，低熵表示单一行为模式。
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-success">GPT: read&times;5 edit&times;4 bash&times;6 think&times;3</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">entropy = 1.85 bits</span>
+                    <span class="traj-arrow">&nbsp;&nbsp;vs&nbsp;&nbsp;</span>
+                    <span class="traj-step traj-error">Gemini: bash&times;18 read&times;1</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-error">entropy = 0.50 bits</span>
+                </div>
+                <div class="traj-formula">
+                    <code>M74 = -&sum; p(a) log2 p(a)<br>GPT: 1.85 bits (diverse) vs Gemini: 0.50 bits (bash-dominated)</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category: Score & Outcome -->
+        <div class="traj-category-label">Score &amp; Outcome</div>
+
+        <!-- M93 retry_improved -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="metric-value-badge badge-good">+3.42</span>
+                    <div>
+                        <h3>M93 重试改善度 Retry Improved (Score Delta)</h3>
+                        <div class="case-task">Source: workspace_task_50 / claude-4-sonnet</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    最终评分与首次评分之差。正值表示 Agent 在迭代过程中成功改善了输出质量。
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-think">Round 1: implement v1</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-action">eval: 5.03</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-think">Round 2: refactor &amp; fix</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">eval: 8.45</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-think">Round 3: polish</span>
+                    <span class="traj-arrow">&#8594;</span>
+                    <span class="traj-step traj-success">eval: 8.42</span>
+                </div>
+                <div class="traj-formula">
+                    <code>M93 = final_score - first_score = 8.45 - 5.03 = +3.42</code>
+                </div>
+            </div>
+        </div>
+
     </div>
 </section>
 
