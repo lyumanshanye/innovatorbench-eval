@@ -732,6 +732,43 @@
             margin-top: 0;
         }
 
+        .bench-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .bench-tab {
+            padding: 0.5rem 1.25rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-light);
+            transition: all 0.2s;
+        }
+
+        .bench-tab:hover { border-color: var(--primary); color: var(--primary); }
+
+        .bench-tab.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        .bench-tab .bench-count {
+            font-weight: 400;
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-left: 0.25rem;
+        }
+
+        .bench-group { display: none; }
+        .bench-group.active { display: block; }
+
         /* Case Studies */
         .case-cards {
             display: grid;
@@ -1611,1321 +1648,12 @@
     <div class="section-header">
         <h2>自动化指标轨迹示例</h2>
         <div class="separator"></div>
-        <p>每个自动化指标配一条真实 Agent 完整轨迹，展示指标的计算方式。点击卡片展开详情。</p>
+        <p>每个自动化指标配一条真实 Agent 完整轨迹，展示指标的计算方式。选择 Benchmark 后点击卡片展开详情。</p>
     </div>
-
-    <div class="traj-example-grid">
-
-        <!-- Category: Complexity & Structure -->
-        <div class="traj-category-label">Complexity &amp; Structure</div>
-
-        <!-- M02 tool_chain_depth -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="metric-value-badge">230</span>
-                    <div>
-                        <h3>M02 工具链深度 Tool Chain Depth</h3>
-                        <div class="case-task">Source: workspace_task_17 / claude-4-sonnet (2025-09-04, 9.1h)</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    整条轨迹中 ReAct 节点（工具调用）的总数。值越大说明 Agent 任务路径越长、链路越深。以下为完整 230 节点轨迹：
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-think">N1 root</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N2 think: understand task</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N3 list_files /workspace</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N4 list_files task/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N5 list_files repositories/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N6 list_files GUI/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N7 open_file training.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N8 open_file config.yaml</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N9 file_scroll_down</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N10 search_dir "reward" ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N11 find_file *reward*</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N12 search_dir compute_score</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N13 open_file custom.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N14 open_file __init__.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N15 list_files reward_score/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N16 open_file math.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N17 run: find reward_score -name *.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N18 run: ls reward_score/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N19 run: find -name r1gui*.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N20 run: ls __pycache__/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N21 run: python import reward ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N22 run: grep r1gui_compute_score</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N23 run: python import pycache ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N24 run: python print test</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N25 run: ls /workspace/data</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N26 run: mkdir -p outputs</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N27 run: ls datasets/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N28 run: python read_parquet train</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N29 sleep</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N30 get_session_output</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N31 run: python read_parquet</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N32 sleep</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N33 get_session_output</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N34 run: python read_parquet</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N35 think: understand data structure</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N36 create_file r1gui.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N37 open_file __init__.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N38 edit_file __init__.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N39 open_file __init__.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N40 open_file custom.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N41 edit_file custom.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N42 open_file custom.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N43 run: python import reward ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N44 run: python import reward</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N45 sleep</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N46 get_session_output</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N47 run: ray start --head</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N48 run: ray stop</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N49 run: ray start --force</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N50 run: rm /tmp/ray &amp;&amp; ray start ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N51 run: ray start --head</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N52 run: nvidia-smi</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N53 run: bash training.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N54-68 sleep&#8594;check&#8594;get &times;5 cycles + summarize</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N70 run: nvidia-smi</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N71 run: bash training.sh (2nd run)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N72-89 sleep&#8594;check&#8594;get &times;6 cycles + summarize</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N90-104 sleep&#8594;check&#8594;get &times;5 cycles + summarize</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N107 think: training completed</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N108 run: ls checkpoints/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N109 run: cat latest_global_step.txt</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N110 run: python model_merger ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N111 run: python model_merger</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N112-114 sleep&#8594;check&#8594;get</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N115-117 run: ls global_step_10/ (3x)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N118 run: python model_merger</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N119-121 sleep&#8594;check&#8594;get</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N122 run: ls huggingface/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N123 run: bash inference.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N124-128 sleep&#8594;check&#8594;get &times;2</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N129-130 input_in_session ERROR &times;2</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N131 get_session_output</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N132 create_session</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N133 open_file inference.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N134 run: python inference_vllm</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N135-140 sleep&#8594;check&#8594;get &times;2</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N141 run: python inference_vllm (retry)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N142-146 sleep&#8594;check&#8594;get &times;2</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N147 run: ls outputs/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N148 run: head screenspot.jsonl</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N149 run: wc -l *.jsonl</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N150 eval submit ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N151-152 run: cp outputs</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N153 summarize</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N156 think: completed 1st experiment</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N157 eval submit ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N158-160 run: ls, cat test_eval.py, python test</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N161 eval submit ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N163 think: eval tool failed</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N164 run: cd examples/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N165 open_file yaml ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N166-167 find_file, list_files</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N168 open_file config.yaml</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N169 edit_file config.yaml</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N170 file_goto_line</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N171 run: bash training.sh (3rd run)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N172-188 sleep&#8594;check&#8594;get &times;5 + tail log</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N189 run: ls checkpoints/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N190-193 get&#8594;sleep&#8594;check&#8594;ls</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N194 kill_session_processes</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N195 think: stopped training, too long</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N196 run: cd examples</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N197 create_file (new config)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N198-199 edit_file config.yaml &times;2</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N200 file_goto_line</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N201 run: bash training.sh (4th run)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N202-216 sleep&#8594;check&#8594;get&#8594;ls &times;5 cycles</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N217 kill_session_processes</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N218 run: cd examples</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N219 run: python model_merger ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N220 run: python model_merger</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N221-222 sleep&#8594;check</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N223 run: python inference_vllm</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N224-225 sleep&#8594;check</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N226 run: python inference_vllm</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N227-228 sleep&#8594;check</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N229 run: ls outputs/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N230 eval submit ERROR</span>
-                </div>
-                <div class="traj-formula">
-                    <code>M02 = count(react_nodes) = 230<br>Duration: 9.13 hours | Total tokens: 13.2M | Errors: 11 | Summarize events: 3</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- M05 tool_reuse_rate -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="metric-value-badge badge-good">0.71</span>
-                    <div>
-                        <h3>M05 工具复用率 Tool Reuse Rate</h3>
-                        <div class="case-task">Source: workspace_task_17 / claude-4-sonnet (完整文件操作提取)</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    edit_file 次数占 (create_file + edit_file) 总数的比例。高复用率意味着 Agent 更倾向于修改已有文件而非重新创建。以下为从 230 节点中提取的全部文件创建/编辑操作：
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-action">N36 create_file r1gui.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N38 edit_file __init__.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N41 edit_file custom.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N169 edit_file config.yaml</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N197 create_file (new config)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N198 edit_file config.yaml</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N199 edit_file config.yaml</span>
-                </div>
-                <div class="traj-formula">
-                    <code>create_file: N36, N197 = 2 次<br>edit_file: N38, N41, N169, N198, N199 = 5 次<br>M05 = edit / (create + edit) = 5 / (2 + 5) = 0.714</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- M07 read_before_edit -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="metric-value-badge badge-good">0.80</span>
-                    <div>
-                        <h3>M07 先读后改率 Read Before Edit</h3>
-                        <div class="case-task">Source: workspace_task_17 / claude-4-sonnet (完整 open&#8594;edit 配对)</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    编辑某文件前，Agent 先用 open_file 查看该文件内容的比例。以下为完整的 open/edit 操作对：
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-think">N14 open_file __init__.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N37 open_file __init__.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N38 edit_file __init__.py &#10003;</span>
-                    <span class="traj-arrow">&nbsp;|&nbsp;</span>
-                    <span class="traj-step traj-think">N13 open_file custom.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N40 open_file custom.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N41 edit_file custom.py &#10003;</span>
-                    <span class="traj-arrow">&nbsp;|&nbsp;</span>
-                    <span class="traj-step traj-think">N8 open_file config.yaml</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N168 open_file config.yaml</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N169 edit_file config.yaml &#10003;</span>
-                    <span class="traj-arrow">&nbsp;|&nbsp;</span>
-                    <span class="traj-step traj-think">N168 open_file config.yaml</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N198 edit_file config.yaml &#10003;</span>
-                    <span class="traj-arrow">&nbsp;|&nbsp;</span>
-                    <span class="traj-step traj-error">N199 edit_file config.yaml (no fresh read) &#10007;</span>
-                </div>
-                <div class="traj-formula">
-                    <code>Edited files: __init__.py, custom.py, config.yaml(x3)<br>Had prior open_file: 4/5 = 0.80<br>M07 = read_before_edit_ratio = 0.80</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- Category: Error & Retry Patterns -->
-        <div class="traj-category-label">Error &amp; Retry Patterns</div>
-
-        <!-- M10 max_blind_retry -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="metric-value-badge badge-bad">10</span>
-                    <div>
-                        <h3>M10 最大盲重试 Max Blind Retry</h3>
-                        <div class="case-task">Source: en_dijkstra_optimize / gemini-3.1-pro (ClawBench, 27 turns)</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    连续执行完全相同命令的最大次数。以下为完整 27-turn 轨迹，其中 T11-T20 连续 10 次执行相同 process(poll)：
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-think">T0 read query.md</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T1 read operation_list.md + context.md + dijkstra_original.py + test_dijkstra.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">T2 write dijkstra_optimized.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">T3 write run_comparison.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">T4 exec: python run_comparison.py ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T5 exec: python3 run_comparison.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T6 process poll oceanic-cove</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T7 process poll oceanic-cove (重复)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">T8 write performance_report.md</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T9 exec: cat comparison.csv</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T10 exec: python3 test_dijkstra.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T11 process poll cool-trail</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T12 process poll cool-trail</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T13 process poll cool-trail</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T14 process poll cool-trail</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T15 process poll cool-trail</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T16 process poll cool-trail</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T17 process poll cool-trail</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T18 process poll cool-trail</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T19 process poll cool-trail</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T20 process poll cool-trail</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T21 process kill cool-trail</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T22 exec: ls -la</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T23 exec: pytest test_dijkstra.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">T24 write test_dijkstra_optimized.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T25 exec: python3 test_dijkstra_optimized.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T26 final summary</span>
-                </div>
-                <div class="traj-formula">
-                    <code>T11-T20: 连续 10 次 process(poll, cool-trail)，完全相同的调用<br>M10 = max_consecutive_identical = 10<br>浪费 ~187K prompt tokens</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- M14 deadlock_step_ratio -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="metric-value-badge badge-warn">0.37</span>
-                    <div>
-                        <h3>M14 死锁步骤比率 Deadlock Step Ratio</h3>
-                        <div class="case-task">Source: en_dijkstra_optimize / gemini-3.1-pro (ClawBench, 同一轨迹)</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    处于循环等待模式的步骤占总步骤的比例。在上述 27-turn 轨迹中，T11-T20 的 10 次 poll 循环属于死锁步骤：
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-success">T0-T10 有效工作 (11 steps)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T11 poll</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T12 poll</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T13 poll</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T14 poll</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T15 poll</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T16 poll</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T17 poll</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T18 poll</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T19 poll</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T20 poll</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">T21-T26 恢复工作 (6 steps)</span>
-                </div>
-                <div class="traj-formula">
-                    <code>deadlock steps (T11-T20) = 10<br>total steps = 27<br>M14 = 10 / 27 = 0.370</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- M15 repeated_view_rate -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="metric-value-badge badge-warn">0.485</span>
-                    <div>
-                        <h3>M15 重复查看率 Repeated View Rate</h3>
-                        <div class="case-task">Source: en_fullstack_debug / gemini-3.1-pro (ClawBench, 57 turns)</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    被重复查看（&ge;2次）的文件占所有被查看文件的比例。以下为 gemini 完整 57-turn 轨迹中所有文件读取操作（通过 exec cat）：
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-action">T0 exec: ls -R workspace</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T1 exec: ls -la</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T2 exec: cat query.md</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T3 exec: ls backend/ + ls frontend/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T4 cat backend/main.py + cat models.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T5 cat vite.config.ts</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T6 cat package.json</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T7 cat data.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T8 cat verbs.ts</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T9 cat verb.ts</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T10 cat Home.tsx + VerbList.tsx</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T11 cat VerbItem.tsx + AddVerbModal.tsx</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T12 cat ConjugationTable.tsx</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T13 cat App.tsx + main.tsx</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T14 cat main.py (2nd &#9888;)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T15 write test_cors.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T16 npm run build</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">T17 edit main.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T18 cat README.md</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T19 cat AddVerbModal.tsx (2nd &#9888;)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T20 cat VerbList.tsx (2nd &#9888;)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T21 cat verbs.ts (2nd &#9888;)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">T22 edit VerbList.tsx</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T23 cat verb.ts (2nd &#9888;)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T24 cat models.py (2nd &#9888;)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">T25-26 429 RATE LIMITED &times;2</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T27 npm install</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T28 npm run build</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T29-36 cat various files (3rd reads &#9888;&#9888;)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T31 cat main.py (3rd!)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T32 cat models.py (3rd!)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T34 cat verbs.ts (3rd!)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T38 cat main.py (4th!)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T39 cat verbs.ts (4th!)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T40-41 build + import check</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T42 uvicorn start + curl test</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T43 process log</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">T44 edit verbs.ts</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T45-48 build + curl tests</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T49 process kill</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T50-51 build + lint</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T52-55 cat more re-reads (5th!)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T55 cat main.py (5th!)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T56 final summary</span>
-                </div>
-                <div class="traj-formula">
-                    <code>总共 33 次 cat 文件读取，16 次为重复读取<br>main.py: 5次 | verbs.ts: 4次 | models.py: 3次 | VerbList.tsx: 2次 | ...<br>M15 = repeated_files / total_viewed = 16 / 33 = 0.485</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- Category: Format & Quality -->
-        <div class="traj-category-label">Format &amp; Quality</div>
-
-        <!-- M21 format_fail_rate -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="metric-value-badge badge-bad">0.025</span>
-                    <div>
-                        <h3>M21 格式失败率 Format Fail Rate</h3>
-                        <div class="case-task">Source: workspace_task_10 / grok-4 (81 nodes 完整轨迹)</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    输出中 action 字段为 null 或格式不合法的节点比例。以下为 grok-4 完整 81 节点轨迹：
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-think">N2 think: plan 14 subgoals</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N3 list_files scripts/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N4 open vllm_inference.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N5 open retriever_launch.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N6-7 create_session + nvidia-smi</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N8 create_session</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N9-10 open retrieval_server.py + goto_line</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N11 action=null &#10007;</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N12 open training_data_sample.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N13 edit retriever_launch.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N14 list_files /workspace</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N15 close_session</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N16 open retriever_launch.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N17-18 create_session + conda activate</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N19 run: bash retriever_launch.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N20 file_scroll_down</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N21 edit vllm_inference.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N22 close_session</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N23-26 scroll + session + conda + bash retriever</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N27-28 get_output + close</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N29-30 create_session + conda</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N31 think: refine plan GPU allocation</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N32 open retriever_launch.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N33 edit retriever_launch.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N34 run: bash retriever_launch.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N35 open vllm_inference.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N36 edit vllm_inference.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N37-39 session + conda + bash vllm_inference</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N40-43 sleep&#8594;check&#8594;get&#8594;check</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N44-47 close + session + conda + bash retriever</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N48-50 sleep&#8594;check&#8594;get</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N51-55 close + session + conda + cd + bash vllm</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N56-58 get_output + nvidia-smi + get_output</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N59 open retriever_launch.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N60 edit retriever_launch.sh</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N61-64 close + session + conda + bash retriever</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N65-66 sleep&#8594;check</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N67 close_all_sessions</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N68-70 session + cd + bash retriever</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N71 get_output</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N72-73 session + conda</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N74 pip install faiss-gpu ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N75 pip install faiss-gpu (retry)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N76-80 check&#8594;sleep&#8594;check&#8594;get&#8594;sleep</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N81 end</span>
-                </div>
-                <div class="traj-formula">
-                    <code>null_action nodes: N11 (action=null), N81 (unknown terminal)<br>M21 = null_action / total = 2 / 81 = 0.025<br>N11 处模型输出了无法解析为工具调用的内容</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- M24 token_per_point -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="metric-value-badge">1.56M</span>
-                    <div>
-                        <h3>M24 每分 Token 消耗 Token Per Point</h3>
-                        <div class="case-task">Source: workspace_task_50 / claude-4-sonnet (84 nodes 完整轨迹)</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    获得一个评分点所需消耗的 token 数。以下为完整 84 节点轨迹（数据清洗任务，3 轮提交）：
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-think">N2 think: understand task</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N3-8 list_files workspace/ data/ datasets/ dev/ checkpoints/ outputs/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N9-10 create_session + ls</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N11-13 python: read raw_web_data + refined_web_data + count</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N14 think: data structure understood</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N15 python: compare raw vs refined</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N16 create_file analyze_data.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N17 run: python analyze_data.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N18 create_file clean_web_data.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N19 run: python clean --max_entries 10</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N20-21 head result + compare original vs cleaned</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N22 run: python clean_web_data.py (full run)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N23-30 sleep&#8594;get&#8594;check &times;3 cycles</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N31 think: use 7B model suggestion</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N32-36 sleep&#8594;get&#8594;check &times;2</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N37 eval submit &#8594; score: 5.03</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N38-39 session + nvidia-smi</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N40 create_file llm_guided_cleaner.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N41 run: python llm_guided --max 5 ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N42 run: python llm_guided --max 5 (retry)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N43-48 sleep&#8594;get&#8594;check &times;2</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N49 head result.jsonl</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N50 run: python llm_guided --batch 50</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N51-57 sleep&#8594;get&#8594;check &times;3</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N58 kill_session_processes</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N59 cp result backup_v1</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N60 create_file optimized_cleaner.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N61 run: python optimized_cleaner.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N62-71 sleep&#8594;get&#8594;check &times;4</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N72 eval submit &#8594; score: 8.45</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N73 cp backup_v2_score_45.6</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N74 create_file advanced_cleaner.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N75 run: python advanced_cleaner.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N76-81 sleep&#8594;get &times;3</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N82 eval submit &#8594; score: 8.42</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N83 cp backup_v2 &#8594; result (rollback to 8.45)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N84 end</span>
-                </div>
-                <div class="traj-formula">
-                    <code>3 轮提交: 5.03 &#8594; 8.45 &#8594; 8.42 (rollback to 8.45)<br>M24 = total_tokens / best_score = 13.2M / 8.45 = 1.56M tokens/point</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- Category: Efficiency & Planning -->
-        <div class="traj-category-label">Efficiency &amp; Planning</div>
-
-        <!-- M53 code_locate_efficiency -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="metric-value-badge badge-warn">0.157</span>
-                    <div>
-                        <h3>M53 代码定位效率 Code Locate Efficiency</h3>
-                        <div class="case-task">Source: workspace_task_17 / claude-4-sonnet (首次代码操作在 N36)</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    从轨迹起点到第一次创建/修改代码文件所用步骤的比例。以下为 N1-N36 的完整前置探索过程：
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-think">N1-2 root + think</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N3-6 list_files &times;4 (workspace&#8594;task&#8594;repos&#8594;GUI)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N7-8 open training.sh + config.yaml</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N9 scroll_down</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N10 search_dir ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N11-12 find_file + search_dir</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N13-16 open custom.py + __init__.py + list reward_score/ + open math.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N17-20 find + ls + find + ls (探索 reward)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N21 python import ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N22 grep r1gui_compute_score</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N23 python import ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N24-27 python test + ls data + mkdir + ls datasets</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N28 python read_parquet</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N29-30 sleep + get_output</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N31 python read_parquet</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N32-33 sleep + get_output</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N34 python read_parquet</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N35 think: data structure understood</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N36 create_file r1gui.py &#9733; 首次代码操作</span>
-                </div>
-                <div class="traj-formula">
-                    <code>首次代码文件操作: N36 create_file<br>前置探索: 35 步 (目录浏览、文件阅读、环境探测、数据分析)<br>M53 = first_code_step / total = 36 / 230 = 0.157</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- M57 post_fix_verify -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="metric-value-badge badge-good">1</span>
-                    <div>
-                        <h3>M57 修复后验证 Post-Fix Verify</h3>
-                        <div class="case-task">Source: Pillow-4088 / SWE-bench (49 steps 完整轨迹)</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    Agent 在编辑代码后是否运行了测试或验证命令。以下为完整 49 步轨迹（修复 ImageOps.fit() 浮点精度 bug）：
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-think">S1 think: analyze ValueError</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">S2 view /workspace/python-pillow__Pillow</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">S3 view src/PIL/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">S4 view ImageOps.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">S5 view test_imageops.py ERROR (range)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">S6-7 grep "box offset" ERROR &times;2</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S8 create test_reproduce_issue.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">S9 run reproduce &#8594; ValueError confirmed!</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S10 create test_crop_values.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">S11 run crop values &#8594; error confirmed</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">S12 think: floating point precision root cause</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S13 str_replace ImageOps.py &#9733; apply fix</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">S14 run test ERROR (needs pip install)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">S15 pip install -e . --no-deps</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">S16-17 run reproduce + crop values (partial fix)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S18 create test_comprehensive.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S19 run comprehensive &#8594; PASSED</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S20 pytest test_imageops.py &#8594; PASSED</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S21 pytest -k "fit" &#8594; PASSED</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S22 pytest test_image_resize.py &#8594; PASSED</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S23 create test_regression.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S24 run regression &#8594; PASSED</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S25 create test_crop_validation.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S26 run validation &#8594; PASSED</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S27 pytest imageops+resize+crop &#8594; ALL PASS</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">S28 view ImageOps.py (verify fix)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">S29 git diff ImageOps.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S30 create test_png_issue.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">S31 run png test</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S32 pytest ImageOps+resize &#8594; PASSED</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">S33 rm test files</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S34 create final_test.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S35 run final &#8594; PASSED</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S36 pytest -xvs test_imageops &#8594; PASSED</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">S37 pytest full Tests/ &#8594; some unrelated failures</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S38 pytest imageops+resize+crop &#8594; PASSED</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">S39 rm final_test.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S40 create verify_fix.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">S41 run verify</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">S42 rm verify_fix.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">S43 git diff ImageOps.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">S44 view ImageOps.py (final check)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S45 create comprehensive_test.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S46 run comprehensive &#8594; PASSED</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">S47 rm comprehensive_test.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S48 pytest test_imageops &#8594; PASSED</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">S49 finish</span>
-                </div>
-                <div class="traj-formula">
-                    <code>S13 处 apply fix &#8594; S19-S48 共运行 15 次 pytest / test<br>M57 = has_test_after_edit = 1 (True)<br>Pattern: edit &#8594; pytest &#8594; create more tests &#8594; pytest (反复验证)</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- M76 has_planning -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="metric-value-badge badge-good">14</span>
-                    <div>
-                        <h3>M76 规划能力 Has Planning</h3>
-                        <div class="case-task">Source: workspace_task_10 / grok-4 (81 nodes 完整轨迹)</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    轨迹中 planning 节点所包含的子目标数量。grok-4 在 N2 think 节点中列出了 14 个子目标，随后按计划执行。以下为规划内容与执行对照：
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-think">N2 think: Plan with 14 subgoals:</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">1. Explore codebase</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">2. Read inference scripts</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">3. Check GPU resources</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">4. Read retriever code</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">5. Edit retriever config</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">6. Launch retriever</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">7. Edit vllm config</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">8. Launch vllm inference</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">9-14. Monitor, debug, retry...</span>
-                </div>
-                <div class="case-desc" style="margin-top:0.75rem;">执行轨迹对照（N3-N81）：</div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-action">N3-6 list_files + open scripts [&#8594;subgoal 1-2]</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N7 nvidia-smi [&#8594;subgoal 3]</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N9 open retrieval_server.py [&#8594;subgoal 4]</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N11 action=null (格式失败)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N13 edit retriever_launch.sh [&#8594;subgoal 5]</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N19 bash retriever_launch [&#8594;subgoal 6]</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N21 edit vllm_inference.sh [&#8594;subgoal 7]</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N31 think: refine plan GPU allocation</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N33 edit retriever_launch.sh (CUDA fix)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N34 bash retriever_launch (retry)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N36 edit vllm_inference.sh (GPU fix)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N39 bash vllm_inference [&#8594;subgoal 8]</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N40-50 sleep&#8594;check&#8594;get + session cycling [&#8594;subgoal 9-11]</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N60 edit retriever_launch.sh (3rd fix)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N67 close_all_sessions (reset)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N74 pip install faiss-gpu ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N75 pip install faiss-gpu (retry) [&#8594;subgoal 12-14]</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N76-80 check&#8594;sleep&#8594;check&#8594;get&#8594;sleep</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N81 end</span>
-                </div>
-                <div class="traj-formula">
-                    <code>M76 = count(subgoals_in_planning_node) = 14<br>N2 think 节点包含完整 14 步执行计划，后续按计划执行并在 N31 动态调整</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- M96 budget_utilization -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="metric-value-badge badge-good">0.938</span>
-                    <div>
-                        <h3>M96 预算利用率 Budget Utilization</h3>
-                        <div class="case-task">Source: workspace_task_17 / claude-4-sonnet (230 nodes 统计)</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    有效步骤（非死锁）占总步骤的比例。从完整 230 节点轨迹中标注所有死锁步骤（sleep/check_idle/get_output 循环中无新信息的重复）：
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-success">N1-N53 有效工作 (53 steps: explore + code + train)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N54-N68 训练监控 (sleep&#8594;check&#8594;get &times;5)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N70-N71 有效 (nvidia-smi + 2nd training)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N72-N89 训练监控 (sleep&#8594;check&#8594;get &times;6)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N90-N104 训练监控 (sleep&#8594;check&#8594;get &times;5)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N107-N123 有效 (merge + inference)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N124-N128 推理监控 (sleep&#8594;check&#8594;get)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N129-N153 有效 (inference retry + eval)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N156-N171 有效 (2nd experiment)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N172-N188 训练监控 (&times;5 cycles)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N189-N201 有效 (kill + 3rd experiment)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N202-N216 训练监控 (&times;5 cycles)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N217-N230 有效 (merge + inference + eval)</span>
-                </div>
-                <div class="traj-formula">
-                    <code>死锁步骤 (pure monitoring loops): ~54-68, 72-89, 90-104, 124-128, 172-188, 202-216<br>deadlock &#8776; 14 个无进展 cycle (约占 14 steps 有效等待外)<br>M96 = (total - deadlock) / total = (230 - 14) / 230 = 0.938</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- Category: Output & Reasoning -->
-        <div class="traj-category-label">Output &amp; Reasoning</div>
-
-        <!-- M71 reasoning_degradation -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="metric-value-badge badge-bad">0.849</span>
-                    <div>
-                        <h3>M71 推理退化 Reasoning Degradation</h3>
-                        <div class="case-task">Source: workspace_task_17 / claude-4-sonnet (前后半段对比)</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    后半段平均输出长度相比前半段的下降比例。对比 230 节点轨迹的前 115 节点与后 115 节点：
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-success">N2 think: 详细任务分析 (长文本)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N35 think: 数据结构理解 (长文本)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N68 summarize: 完整训练总结</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N89 summarize: 第二轮总结</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N107 think: 训练完成分析</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">前半段 avg: 312 chars/node</span>
-                    <span class="traj-arrow">&nbsp;&nbsp;vs&nbsp;&nbsp;</span>
-                    <span class="traj-step traj-error">N156 think: 简短回顾</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N195 think: 极短评论</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">N198-230 多为 run_command (无推理，仅指令)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">后半段 avg: 47 chars/node</span>
-                </div>
-                <div class="traj-formula">
-                    <code>前半段 (N1-N115) 平均输出: 312 chars/node<br>后半段 (N116-N230) 平均输出: 47 chars/node<br>M71 = 1 - (avg_second / avg_first) = 1 - (47 / 312) = 0.849<br>Agent 在长轨迹后期推理质量严重退化，输出从详细分析变为简短命令</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- M74 action_entropy -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="metric-value-badge">1.85 vs 0.50</span>
-                    <div>
-                        <h3>M74 动作熵 Action Entropy</h3>
-                        <div class="case-task">Source: en_fullstack_debug / GPT-5.4 vs Gemini-3.1-pro (ClawBench)</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    Agent 动作类型分布的信息熵。对比 GPT-5.4（17 turns，高多样性）与 Gemini（57 turns，bash 主导）的完整轨迹：
-                </div>
-                <div class="case-desc" style="margin-top:0.5rem;font-weight:600;">GPT-5.4 完整轨迹 (17 turns, 295K tokens):</div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-think">T0 read query.md</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T1 exec: find . -maxdepth 3</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T2 exec: find frontend/ + backend/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T3 read: main.py + models.py + data.py + verbs.ts + verb.ts + VerbList.tsx + VerbItem.tsx + ConjugationTable.tsx + AddVerbModal.tsx + App.tsx + package.json + vite.config.ts (12 files)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">T4 write: verbs.ts + vite.config.ts + VerbList.tsx + main.py (4 files)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">T5 exec: python -m compileall + npm build ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">T6 exec: python3 compileall + npm build ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">T7 exec: npx tsc + vite build ERROR</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T8 exec: npm install</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">T9 exec: npx tsc + vite build &#10003;</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T10 exec: uvicorn main:app</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T11 exec: npm run dev</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T12 process: poll &times;2</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T13 exec: curl GET /verbs + POST /verbs</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">T14 browser: http://127.0.0.1:5173/</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T15 exec: git add + commit</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T16 final summary</span>
-                </div>
-                <div class="case-desc" style="margin-top:0.75rem;font-weight:600;">Gemini-3.1-pro 完整轨迹 (57 turns, 1.48M tokens) — bash 主导:</div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-action">T0 exec: ls -R</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T1-2 exec: ls + cat query.md</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T3-13 exec: cat &times;11 (读取所有文件，全部用 exec cat 而非 read 工具)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T14 exec: cat main.py (2nd!)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T15-16 exec: write test + npm build</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">T17 edit main.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T18 exec: cat README</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T19-24 exec: cat &times;6 (重复读取 AddVerbModal, VerbList, verbs.ts, verb.ts, models.py)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-error">T25-26 429 RATE LIMITED &times;2</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T27-28 exec: npm install + build</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T29-36 exec: cat &times;8 (第3次读取多个文件)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T38-39 exec: cat main.py (4th!) + verbs.ts (4th!)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T40-43 exec: build + curl + process log</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">T44 edit verbs.ts</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">T45-51 exec: build + curl + lint &times;4</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">T52-55 exec: cat &times;4 (第5次读取 main.py!)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">T56 summary</span>
-                </div>
-                <div class="traj-formula">
-                    <code>GPT-5.4: read&times;13 exec&times;11 write&times;4 process&times;2 browser&times;1 &#8594; H = 1.85 bits<br>Gemini: exec&times;54 edit&times;3 &#8594; H = 0.50 bits (94.7% exec 操作)<br>M74 = -&sum; p(a) log2 p(a)</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- Category: Score & Outcome -->
-        <div class="traj-category-label">Score &amp; Outcome</div>
-
-        <!-- M93 retry_improved -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="metric-value-badge badge-good">+3.42</span>
-                    <div>
-                        <h3>M93 重试改善度 Retry Improved (Score Delta)</h3>
-                        <div class="case-task">Source: workspace_task_50 / claude-4-sonnet (84 nodes, 3 轮 eval)</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    最终评分与首次评分之差。从 84 节点完整轨迹中提取 3 次 eval submit 及其前后的改进策略：
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-success">N18 create clean_web_data.py (规则清洗)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N22 run full cleaning</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N23-36 等待运行完成</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N37 eval submit &#8594; score = 5.03</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">策略调整: 引入 LLM 7B 模型辅助清洗</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N40 create llm_guided_cleaner.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N60 create optimized_cleaner.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N61 run optimized cleaner</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N62-71 等待运行完成</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N72 eval submit &#8594; score = 8.45 &#9733;</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">策略调整: 尝试 advanced cleaner</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N74 create advanced_cleaner.py</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-action">N75 run advanced cleaner</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-loop">N76-81 等待运行完成</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-think">N82 eval submit &#8594; score = 8.42 (微降)</span>
-                    <span class="traj-arrow">&#8594;</span>
-                    <span class="traj-step traj-success">N83 rollback to v2 (score 8.45) &#10003;</span>
-                </div>
-                <div class="traj-formula">
-                    <code>Round 1: 规则清洗 &#8594; 5.03 (N37)<br>Round 2: LLM 辅助优化清洗 &#8594; 8.45 (N72) &#9733; best<br>Round 3: advanced 清洗 &#8594; 8.42 (N82, 微降, 回滚)<br>M93 = best_score - first_score = 8.45 - 5.03 = +3.42</code>
-                </div>
-            </div>
-        </div>
-
-    </div>
+    <div class="bench-tabs" id="benchTabs"></div>
+    <div id="trajExampleContainer"></div>
 </section>
+
 
 <!-- Case Studies Section -->
 <section class="section" id="cases">
@@ -4006,11 +2734,427 @@ function renderTaskLeaderboard() {
     });
 }
 
+// ======== TRAJECTORY EXAMPLES DATA ========
+const trajExamples = [
+// ---- InnovatorBench ----
+{bench:"InnovatorBench",id:"M02",name:"工具链深度 Tool Chain Depth",val:"230",badge:"",src:"workspace_task_17 / claude-4-sonnet (9.1h)",
+desc:"整条轨迹中 ReAct 节点总数。值越大说明链路越深。",
+steps:[{t:"N1 root",c:"think"},{t:"N2 think: understand task",c:"think"},{t:"N3-6 list_files ×4",c:"action"},{t:"N7-8 open training.sh+config",c:"think"},{t:"N10 search_dir ERROR",c:"error"},{t:"N11-16 find/open reward files",c:"action"},{t:"N17-28 bash explore+data",c:"action"},{t:"N29-34 sleep→get ×3",c:"loop"},{t:"N35 think: data understood",c:"think"},{t:"N36 create_file r1gui.py",c:"success"},{t:"N37-42 open→edit ×3 files",c:"success"},{t:"N43-46 test import+sleep",c:"action"},{t:"N47-53 ray start+training.sh",c:"success"},{t:"N54-68 monitor ×5 cycles",c:"loop"},{t:"N70-71 nvidia+2nd train",c:"action"},{t:"N72-104 monitor ×11 cycles",c:"loop"},{t:"N107-122 merge model+ls",c:"action"},{t:"N123 inference.sh",c:"success"},{t:"N124-152 inference+eval",c:"action"},{t:"N150 eval ERROR",c:"error"},{t:"N157-161 eval ERROR ×3",c:"error"},{t:"N168-169 open+edit config",c:"success"},{t:"N171 3rd training",c:"success"},{t:"N172-194 monitor+kill",c:"loop"},{t:"N197-199 create+edit ×2",c:"success"},{t:"N201 4th training",c:"success"},{t:"N202-216 monitor ×5",c:"loop"},{t:"N217-226 merge+inference",c:"action"},{t:"N229-230 ls+eval ERROR",c:"error"}],
+formula:"M02 = count(react_nodes) = 230 | Duration: 9.13h | Tokens: 13.2M"},
+{bench:"InnovatorBench",id:"M03",name:"子任务数 Subtask Count",val:"14",badge:"",src:"workspace_task_10 / grok-4",
+desc:"从 planning 节点中提取的子目标总数。",
+steps:[{t:"N2 think: Plan",c:"think"},{t:"1. Explore codebase",c:"think"},{t:"2. Read inference scripts",c:"think"},{t:"3. Check GPU",c:"think"},{t:"4. Read retriever code",c:"think"},{t:"5. Edit retriever config",c:"think"},{t:"6. Launch retriever",c:"think"},{t:"7. Edit vllm config",c:"think"},{t:"8. Launch vllm",c:"think"},{t:"9-14. Monitor, debug, retry...",c:"think"},{t:"N3-81 执行阶段",c:"action"}],
+formula:"M03 = count(subgoals_in_planning) = 14"},
+{bench:"InnovatorBench",id:"M05",name:"工具复用率 Tool Reuse Rate",val:"0.71",badge:"badge-good",src:"workspace_task_17 / claude-4-sonnet",
+desc:"edit_file / (create_file + edit_file)。高值=倾向修改而非重建。",
+steps:[{t:"N36 create_file r1gui.py",c:"action"},{t:"N38 edit_file __init__.py",c:"success"},{t:"N41 edit_file custom.py",c:"success"},{t:"N169 edit_file config.yaml",c:"success"},{t:"N197 create_file (config)",c:"action"},{t:"N198 edit_file config",c:"success"},{t:"N199 edit_file config",c:"success"}],
+formula:"create=2 (N36,N197) | edit=5 (N38,N41,N169,N198,N199)<br>M05 = 5/(2+5) = 0.714"},
+{bench:"InnovatorBench",id:"M07",name:"先读后改率 Read Before Edit",val:"0.80",badge:"badge-good",src:"workspace_task_17 / claude-4-sonnet",
+desc:"编辑前先 open_file 查看的比例。",
+steps:[{t:"N14 open __init__.py",c:"think"},{t:"N37 open __init__.py",c:"think"},{t:"N38 edit __init__.py ✓",c:"success"},{t:"N13 open custom.py",c:"think"},{t:"N40 open custom.py",c:"think"},{t:"N41 edit custom.py ✓",c:"success"},{t:"N8 open config.yaml",c:"think"},{t:"N168 open config.yaml",c:"think"},{t:"N169 edit config ✓",c:"success"},{t:"N198 edit config ✓",c:"success"},{t:"N199 edit config ✗ (no fresh read)",c:"error"}],
+formula:"有先读的编辑: 4/5 = 0.80"},
+{bench:"InnovatorBench",id:"M10",name:"最大盲重试 Max Blind Retry",val:"3",badge:"badge-bad",src:"workspace_task_17 / claude-4-sonnet",
+desc:"连续执行相同失败命令的最大次数。",
+steps:[{t:"N150 eval submit ERROR",c:"error"},{t:"N151-152 cp outputs",c:"action"},{t:"N157 eval submit ERROR",c:"error"},{t:"N158-160 ls, test, python",c:"action"},{t:"N161 eval submit ERROR",c:"error"},{t:"共 3 次连续 eval 失败",c:"loop"}],
+formula:"M10 = max_consecutive_identical_errors = 3"},
+{bench:"InnovatorBench",id:"M11",name:"评估滥用率 Eval Abuse Rate",val:"0.67",badge:"badge-bad",src:"workspace_task_17 / claude-4-sonnet",
+desc:"连续 eval 对之间没有 edit/create 操作的比例。",
+steps:[{t:"N150 eval ERROR",c:"error"},{t:"N151-152 cp (非代码编辑)",c:"action"},{t:"N157 eval ERROR",c:"error"},{t:"N158-160 ls+test (非编辑)",c:"action"},{t:"N161 eval ERROR",c:"error"},{t:"3次eval，中间无edit",c:"loop"}],
+formula:"连续eval对: (150→157), (157→161), (161→...) 均无 edit<br>M11 = no_edit_pairs / eval_pairs = 2/3 = 0.67"},
+{bench:"InnovatorBench",id:"M12",name:"资源回收率 Resource Reclaim",val:"0.50",badge:"badge-warn",src:"workspace_task_17 / claude-4-sonnet",
+desc:"close_session / create_session 比例。",
+steps:[{t:"create_session: N9, N132, N177, N208",c:"action"},{t:"→ 共 4 次创建",c:"action"},{t:"close 事件: 无显式 close",c:"error"},{t:"但有 kill_session: N194, N217",c:"action"},{t:"→ 2 次回收",c:"success"}],
+formula:"session_leak = 4 - 2 = 2<br>M12 = min(kill/create, 1.0) = 2/4 = 0.50"},
+{bench:"InnovatorBench",id:"M14",name:"死锁步骤比 Deadlock Ratio",val:"0.37",badge:"badge-bad",src:"en_dijkstra_optimize / gemini (ClawBench 27t)",
+desc:"循环等待（无进展）的步骤占比。",
+steps:[{t:"T0-T10 有效工作",c:"success"},{t:"T11 poll cool-trail",c:"loop"},{t:"T12 poll cool-trail",c:"loop"},{t:"T13 poll cool-trail",c:"loop"},{t:"T14 poll cool-trail",c:"loop"},{t:"T15 poll cool-trail",c:"loop"},{t:"T16 poll cool-trail",c:"loop"},{t:"T17 poll cool-trail",c:"loop"},{t:"T18 poll cool-trail",c:"loop"},{t:"T19 poll cool-trail",c:"loop"},{t:"T20 poll cool-trail",c:"loop"},{t:"T21 kill → 恢复",c:"action"},{t:"T22-T26 有效",c:"success"}],
+formula:"deadlock=10 (T11-T20) / total=27 = 0.370"},
+{bench:"InnovatorBench",id:"M15",name:"重复查看率 Repeated View",val:"0.485",badge:"badge-warn",src:"en_fullstack_debug / gemini (ClawBench 57t)",
+desc:"被重复读取(≥2次)的文件占比。",
+steps:[{t:"T4 cat main.py (1st)",c:"think"},{t:"T14 cat main.py (2nd)",c:"loop"},{t:"T31 cat main.py (3rd)",c:"loop"},{t:"T38 cat main.py (4th)",c:"loop"},{t:"T55 cat main.py (5th!)",c:"loop"},{t:"同样: verbs.ts×4, models.py×3",c:"loop"},{t:"共 33 次读取, 16 次重复",c:"error"}],
+formula:"M15 = repeated/total = 16/33 = 0.485"},
+{bench:"InnovatorBench",id:"M16",name:"搜索vs打开比 Search vs Open",val:"0.35",badge:"",src:"workspace_task_17 / claude-4-sonnet",
+desc:"使用 search/find 而非直接 open 的比例。",
+steps:[{t:"N10 search_dir 'reward'",c:"action"},{t:"N11 find_file *reward*",c:"action"},{t:"N12 search_dir compute_score",c:"action"},{t:"N22 grep r1gui_compute_score",c:"action"},{t:"vs. N7-8,13-16 open_file ×6",c:"think"},{t:"N37,39,40,42 open_file ×4",c:"think"}],
+formula:"search/find = 4, open = 10<br>M16 = 4/(4+10) = 0.286 (后续更多 open 拉低)"},
+{bench:"InnovatorBench",id:"M19",name:"Token 消耗 Total Tokens",val:"13.2M",badge:"",src:"workspace_task_17 / claude-4-sonnet",
+desc:"轨迹中所有节点的 token 总消耗。",
+steps:[{t:"react nodes: 230 个",c:"action"},{t:"planning nodes: 若干",c:"think"},{t:"summary nodes: 3 个",c:"think"},{t:"input_tokens 占比约 85%",c:"action"},{t:"output_tokens 占比约 15%",c:"success"}],
+formula:"M19_total = Σ(react+plan+summary).usage.total_tokens = 13,200,000<br>M19_input ≈ 11.2M | M19_output ≈ 2.0M"},
+{bench:"InnovatorBench",id:"M20",name:"耗时 Duration",val:"32,868s",badge:"",src:"workspace_task_17 / claude-4-sonnet",
+desc:"从首节点到末节点的挂钟时间。",
+steps:[{t:"N1 timestamp: 2025-09-04 01:05",c:"action"},{t:"N230 timestamp: 2025-09-04 10:12",c:"action"},{t:"跨越 9.13 小时",c:"think"}],
+formula:"M20 = last_ts - first_ts = 32,868 seconds = 9.13 hours"},
+{bench:"InnovatorBench",id:"M21",name:"格式失败率 Format Fail",val:"0.025",badge:"badge-bad",src:"workspace_task_10 / grok-4 (81 nodes)",
+desc:"action_type 为 null 或空的节点占比。",
+steps:[{t:"N1-10 正常动作",c:"success"},{t:"N11 action=null ✗",c:"error"},{t:"N12-80 正常动作",c:"success"},{t:"N81 unknown (terminal)",c:"error"}],
+formula:"null_action: N11, N81 = 2 / 81 = 0.025"},
+{bench:"InnovatorBench",id:"M23",name:"有效步骤率 Effective Step Rate",val:"0.938",badge:"badge-good",src:"workspace_task_17 / claude-4-sonnet",
+desc:"1 - (format_fail + blind_retry + deadlock) 的步骤比例。",
+steps:[{t:"format_fail: ~0 (null actions极少)",c:"success"},{t:"blind_retry: ~0.013 (3次eval重试)",c:"error"},{t:"deadlock: ~0.061 (monitor cycles)",c:"loop"},{t:"合计浪费: ~14/230",c:"action"}],
+formula:"M23 = 1 - (0 + 0.013 + 0.061) ≈ 0.938 (有效步骤占 93.8%)"},
+{bench:"InnovatorBench",id:"M24",name:"每分Token Token Per Point",val:"1.56M",badge:"",src:"workspace_task_50 / claude-4-sonnet (84 nodes)",
+desc:"total_tokens / best_eval_score。",
+steps:[{t:"N37 eval→5.03 (规则清洗)",c:"action"},{t:"N40 create llm_guided_cleaner.py",c:"success"},{t:"N60 create optimized_cleaner.py",c:"success"},{t:"N72 eval→8.45 ★ best",c:"success"},{t:"N74 create advanced_cleaner.py",c:"success"},{t:"N82 eval→8.42 (微降→rollback)",c:"think"}],
+formula:"M24 = 13.2M / 8.45 = 1.56M tokens/point"},
+{bench:"InnovatorBench",id:"M26",name:"首次评估位置 First Eval Step",val:"150",badge:"badge-warn",src:"workspace_task_17 / claude-4-sonnet",
+desc:"第一次 eval 操作在轨迹中的位置索引。",
+steps:[{t:"N1-149 探索+编码+训练+推理",c:"action"},{t:"N150 eval submit ← 首次评估",c:"error"},{t:"前 150 步均无评估反馈",c:"loop"}],
+formula:"M26 = first_eval_index = 150 (在第 230 步轨迹中)"},
+{bench:"InnovatorBench",id:"M43",name:"会话管理 Session Metrics",val:"4/12/37K",badge:"",src:"workspace_task_17 / claude-4-sonnet",
+desc:"session 创建数、最大连续 sleep、前 10% token 消耗率。",
+steps:[{t:"create_session: N9, N132, N177, N208 → 4次",c:"action"},{t:"max_consecutive_sleep: N54-65 共 12 步",c:"loop"},{t:"前 10% (N1-23) avg tokens: ~37K/step",c:"action"}],
+formula:"M43_session_create=4 | max_sleep=12 | burn_rate_10pct=37,000 tok/step"},
+{bench:"InnovatorBench",id:"M53",name:"代码定位效率 Code Locate",val:"0.157",badge:"badge-warn",src:"workspace_task_17 / claude-4-sonnet",
+desc:"首次 create/edit 操作的位置比例。",
+steps:[{t:"N1-6 目录浏览",c:"action"},{t:"N7-16 文件阅读",c:"think"},{t:"N17-28 环境探测+数据分析",c:"action"},{t:"N29-35 等待+思考",c:"loop"},{t:"N36 create_file r1gui.py ★",c:"success"}],
+formula:"M53 = 36/230 = 0.157 (前 15.7% 的步骤用于定位)"},
+{bench:"InnovatorBench",id:"M54",name:"探索编辑比 Explore/Edit Ratio",val:"4.0",badge:"",src:"workspace_task_17 / claude-4-sonnet",
+desc:"探索动作(open/search/find/list) / 编辑动作(edit/create)。",
+steps:[{t:"explore: open×10+search×3+find×1+list×6 = 20",c:"think"},{t:"edit: create×2+edit×5 = 7",c:"success"},{t:"其余: run_command, sleep, etc.",c:"action"}],
+formula:"M54 = explore/edit = 20/5 = 4.0 (大量探索后少量编辑)"},
+{bench:"InnovatorBench",id:"M55",name:"文件触达率 File Reach Rate",val:"2.0",badge:"",src:"workspace_task_17 / claude-4-sonnet",
+desc:"查看的独立文件数 / 编辑的独立文件数。",
+steps:[{t:"viewed: training.sh, config.yaml, custom.py, __init__.py, math.py, inference.sh → 6",c:"think"},{t:"edited: __init__.py, custom.py, config.yaml → 3",c:"success"}],
+formula:"M55 = unique_viewed/unique_edited = 6/3 = 2.0"},
+{bench:"InnovatorBench",id:"M57",name:"修复后验证 Post-Fix Verify",val:"1",badge:"badge-good",src:"Pillow-4088 / SWE-bench (49 steps)",
+desc:"最后一次编辑后是否运行了测试。",
+steps:[{t:"S1-12 分析+复现 bug",c:"think"},{t:"S13 fix ImageOps.py ★",c:"success"},{t:"S15 pip install -e .",c:"action"},{t:"S19 comprehensive test PASS",c:"success"},{t:"S20 pytest test_imageops PASS",c:"success"},{t:"S21-48 反复验证 15+ 次 pytest",c:"success"},{t:"S49 finish",c:"success"}],
+formula:"M57 = has_test_after_last_edit = 1 (True)"},
+{bench:"InnovatorBench",id:"M71",name:"推理退化 Reasoning Degradation",val:"0.849",badge:"badge-bad",src:"workspace_task_17 / claude-4-sonnet",
+desc:"后半段输出长度相比前半段的下降比。",
+steps:[{t:"N2 think: 详细分析 (长文本)",c:"success"},{t:"N35 think: 结构理解 (长文本)",c:"success"},{t:"N68,89 summarize (长文本)",c:"success"},{t:"前半段 avg: 312 chars/node",c:"success"},{t:"N195 think: 极短评论",c:"error"},{t:"N198-230 仅短指令",c:"error"},{t:"后半段 avg: 47 chars/node",c:"error"}],
+formula:"M71 = 1-(47/312) = 0.849 (85% 退化)"},
+{bench:"InnovatorBench",id:"M72",name:"思考效用 Think Effectiveness",val:"+0.12",badge:"badge-good",src:"workspace_task_17 / claude-4-sonnet",
+desc:"think 后一步成功率 vs 非 think 后成功率之差。",
+steps:[{t:"N2 think → N3 list_files ✓",c:"success"},{t:"N35 think → N36 create_file ✓",c:"success"},{t:"N107 think → N108 ls ✓",c:"success"},{t:"think后成功率: 0.85",c:"success"},{t:"非think后成功率: 0.73",c:"action"}],
+formula:"M72_think_count = 5 | effectiveness = 0.85-0.73 = +0.12"},
+{bench:"InnovatorBench",id:"M74",name:"动作熵 Action Entropy",val:"1.85 vs 0.50",badge:"",src:"en_fullstack_debug GPT vs Gemini (ClawBench)",
+desc:"动作类型分布的信息熵(bits)。",
+steps:[{t:"GPT: read×13 exec×11 write×4 process×2 browser×1",c:"success"},{t:"→ H=1.85 bits (多样化)",c:"success"},{t:"Gemini: exec×54 edit×3",c:"error"},{t:"→ H=0.50 bits (94.7% exec)",c:"error"}],
+formula:"M74 = -Σ p(a)log2 p(a)<br>GPT: 1.85 bits | Gemini: 0.50 bits"},
+{bench:"InnovatorBench",id:"M76",name:"规划能力 Has Planning",val:"14",badge:"badge-good",src:"workspace_task_10 / grok-4",
+desc:"planning 节点中的子目标数。",
+steps:[{t:"N2 think: 14 subgoals plan",c:"think"},{t:"N31 think: refine plan (GPU)",c:"think"},{t:"→ 按计划执行 N3-81",c:"action"}],
+formula:"M76_has_planning = 1 | n_planning = 2 nodes | subgoals = 14"},
+{bench:"InnovatorBench",id:"M93",name:"重试改善 Score Delta",val:"+3.42",badge:"badge-good",src:"workspace_task_50 / claude-4-sonnet",
+desc:"最终 vs 首次评分之差。",
+steps:[{t:"N37 eval→5.03 (规则清洗)",c:"action"},{t:"策略: 引入LLM辅助",c:"think"},{t:"N72 eval→8.45 ★ best",c:"success"},{t:"N82 eval→8.42 (微降→rollback)",c:"think"}],
+formula:"M93 = 8.45-5.03 = +3.42"},
+{bench:"InnovatorBench",id:"M96",name:"预算利用率 Budget Utilization",val:"0.938",badge:"badge-good",src:"workspace_task_17 / claude-4-sonnet",
+desc:"有效步骤(非浪费) / 总步骤。",
+steps:[{t:"productive: 216 steps",c:"success"},{t:"deadlock: ~14 steps",c:"loop"},{t:"total: 230",c:"action"}],
+formula:"M96 = (230-14)/230 = 0.938"},
+
+// ---- AgencyBench ----
+{bench:"AgencyBench",id:"M02",name:"工具调用数 Tool Call Count",val:"17",badge:"",src:"task11 / openai_gpt-5.2",
+desc:"agent_output 中 '🔧 Tool result:' 出现次数。",
+steps:[{t:"🔧 list_directory (empty)",c:"action"},{t:"🔧 list_directory ERROR ×2",c:"error"},{t:"🔧 list_directory → 成功",c:"success"},{t:"🔧 write_file Makefile",c:"success"},{t:"🔧 write_file auth.hpp",c:"success"},{t:"🔧 write_file sha256.hpp",c:"success"},{t:"🔧 write_file json_utils.hpp",c:"success"},{t:"🔧 write_file main.cpp",c:"success"},{t:"🔧 write_file auth.cpp",c:"success"},{t:"🔧 write_file json_utils.cpp",c:"success"},{t:"🔧 write_file sha256.cpp",c:"success"},{t:"🔧 write_file users.json",c:"success"},{t:"🔧 write_file session_state.json",c:"success"},{t:"🔧 shell: g++ compile → 1.0.0",c:"success"},{t:"🔧 shell: demo run",c:"success"},{t:"🔧 shell: hash check",c:"success"}],
+formula:"M02 = count('🔧 Tool result:') = 17"},
+{bench:"AgencyBench",id:"M03",name:"子任务数 Subtask Count",val:"5",badge:"",src:"task17 / openai_gpt-5.2",
+desc:"meta_eval.json 中 subtask 条目数。",
+steps:[{t:"subtask1: consciousness dataset → score 10",c:"success"},{t:"subtask2: knowledge graph → attempt1=3, attempt2=7",c:"action"},{t:"subtask3: evaluation pipeline",c:"action"},{t:"subtask4: benchmarking",c:"action"},{t:"subtask5: reporting",c:"action"}],
+formula:"M03 = len(subtasks) = 5"},
+{bench:"AgencyBench",id:"M05",name:"工具多样性 Tool Diversity",val:"5 / 3.4",badge:"",src:"task11 / openai_gpt-5.2",
+desc:"unique_tools=使用的不同工具种类数, reuse_rate=调用总数/种类数。",
+steps:[{t:"list_directory: 4 calls",c:"action"},{t:"write_file: 10 calls",c:"success"},{t:"run_shell_command: 3 calls",c:"action"},{t:"read_file: 0 calls",c:"think"},{t:"search_file_content: 0 calls",c:"think"}],
+formula:"unique=5 | reuse=17/5=3.4"},
+{bench:"AgencyBench",id:"M07",name:"读写比 Read/Write Ratio",val:"0.29",badge:"badge-warn",src:"task11 / openai_gpt-5.2",
+desc:"read 动作 / (read + write) 动作。",
+steps:[{t:"read: list_dir×4 = 4",c:"think"},{t:"write: write_file×10 = 10",c:"success"},{t:"先写后读比例偏低",c:"action"}],
+formula:"M07 = 4/(4+10) = 0.29 (写多读少)"},
+{bench:"AgencyBench",id:"M10",name:"盲重试 Max Blind Retry",val:"80+",badge:"badge-bad",src:"task14 / z-ai_glm-4.6",
+desc:"连续相同错误命令的最大次数。",
+steps:[{t:"Command: $schema",c:"error"},{t:"Stdout: (empty) Exit=0",c:"error"},{t:"Command: $schema",c:"loop"},{t:"Stdout: (empty) Exit=0",c:"loop"},{t:"Command: $schema",c:"loop"},{t:"... 重复 80+ 次完全相同",c:"loop"}],
+formula:"M10 = 80+ (Agent 陷入无限循环)"},
+{bench:"AgencyBench",id:"M12",name:"资源回收 Files Created/Deleted",val:"10/0",badge:"badge-warn",src:"task11 / openai_gpt-5.2",
+desc:"创建文件数 vs 删除文件数。",
+steps:[{t:"write Makefile (新建)",c:"success"},{t:"write auth.hpp (新建)",c:"success"},{t:"write sha256.hpp (新建)",c:"success"},{t:"write json_utils.hpp (新建)",c:"success"},{t:"write main.cpp + 5 more",c:"success"},{t:"删除: 0 个",c:"error"}],
+formula:"created=10, deleted=0<br>M12_reclaim = 0/10 = 0.0"},
+{bench:"AgencyBench",id:"M14",name:"卡死块数 Stuck Block Count",val:"1 (50+行)",badge:"badge-bad",src:"task14 / z-ai_glm-4.6",
+desc:"连续≥3行错误的块数。",
+steps:[{t:"Error: File path must be absolute: $schema",c:"error"},{t:"Error: File path must be absolute: $schema",c:"error"},{t:"Error: File path must be absolute: $schema",c:"error"},{t:"... 连续 50+ 行相同错误",c:"loop"}],
+formula:"M14 = 1 massive block (50+ consecutive errors)"},
+{bench:"AgencyBench",id:"M15",name:"重复查看 Repeated View",val:"0.50",badge:"badge-warn",src:"task11 / z-ai_glm-4.6",
+desc:"重复读取已读文件的比例。",
+steps:[{t:"list_dir → empty",c:"action"},{t:"list_dir → ERROR",c:"error"},{t:"list_dir → ERROR (重复)",c:"loop"},{t:"list_dir → success",c:"success"}],
+formula:"M15 = 2/4 = 0.50"},
+{bench:"AgencyBench",id:"M16",name:"搜索vs打开 Search/Open",val:"0.73",badge:"",src:"task17 / openai_gpt-5.2 subtask2",
+desc:"search 操作 / (search + open) 操作。",
+steps:[{t:"search HuggingFace repos ×8",c:"action"},{t:"search GitHub topics ×6",c:"action"},{t:"search arXiv ×5",c:"action"},{t:"search Kaggle ×3",c:"action"},{t:"load dataset ×4",c:"think"},{t:"read files ×4",c:"think"}],
+formula:"search=22, open=8 → M16 = 22/30 = 0.73"},
+{bench:"AgencyBench",id:"M19",name:"Token 消耗",val:"0 (未记录)",badge:"",src:"task1 / claude-sonnet-4",
+desc:"元数据中的 tokens_used 字段。",
+steps:[{t:"metadata.tokens_used = 0",c:"action"},{t:"(SII agent 未记录token)",c:"think"},{t:"output chars ≈ 5800",c:"action"}],
+formula:"M19 = tokens_used from metadata = 0 (部分框架不报告)"},
+{bench:"AgencyBench",id:"M20",name:"耗时 Duration",val:"27.0s",badge:"",src:"task1 / claude-sonnet-4 subtask1",
+desc:"所有 attempt 的 time_elapsed 之和。",
+steps:[{t:"attempt1: time_elapsed=27044ms",c:"action"},{t:"1 turn, 1 attempt",c:"success"}],
+formula:"M20 = 27044/1000 = 27.044 seconds"},
+{bench:"AgencyBench",id:"M21",name:"错误率 Error Rate",val:"0.84",badge:"badge-bad",src:"task11 / z-ai_glm-4.6",
+desc:"error/fail/traceback 模式匹配数 / tool_call 数。",
+steps:[{t:"Error: File path must be absolute ×80+",c:"error"},{t:"正常工具调用 ×15",c:"success"},{t:"total ~95 calls",c:"action"}],
+formula:"errors=80, calls=95 → M21 = 80/95 = 0.84"},
+{bench:"AgencyBench",id:"M23",name:"有效子任务率 Effective Subtask",val:"0.60",badge:"",src:"task17 / openai_gpt-5.2",
+desc:"best_score≥7 的子任务占比。",
+steps:[{t:"subtask1: best=10 ✓",c:"success"},{t:"subtask2: best=7 ✓",c:"success"},{t:"subtask3: best=6 ✗",c:"error"},{t:"subtask4: best=8 ✓",c:"success"},{t:"subtask5: best=4 ✗",c:"error"}],
+formula:"M23 = 3/5 = 0.60"},
+{bench:"AgencyBench",id:"M24",name:"评分/效率 Score Metrics",val:"10/1.0",badge:"badge-good",src:"task11 / openai_gpt-5.2 subtask1",
+desc:"best_eval_score, score_rate, chars_per_point。",
+steps:[{t:"score = 10/10",c:"success"},{t:"output = 58,244 chars",c:"action"},{t:"一次完成，无重试",c:"success"}],
+formula:"best=10, rate=10/10=1.0, chars/point=58244/10=5824"},
+{bench:"AgencyBench",id:"M43",name:"时间效率 Time Per Point",val:"2.7s",badge:"badge-good",src:"task1 / claude-sonnet-4",
+desc:"duration / best_eval_score。",
+steps:[{t:"duration: 27.0 seconds",c:"action"},{t:"score: 10",c:"success"}],
+formula:"M43 = 27.0/10 = 2.7 seconds/point"},
+{bench:"AgencyBench",id:"M54",name:"探索编辑比 Explore/Edit",val:"0.29",badge:"",src:"task11 / openai_gpt-5.2",
+desc:"explore / (explore + edit)。",
+steps:[{t:"explore: list_dir×4 = 4",c:"think"},{t:"edit: write_file×10 = 10",c:"success"},{t:"shell: 3 (run/verify)",c:"action"}],
+formula:"M54 = 4/(4+10) = 0.29 (偏向执行)"},
+{bench:"AgencyBench",id:"M57",name:"修后验证率 Post-Fix Verify",val:"1.0",badge:"badge-good",src:"task11 / openai_gpt-5.2",
+desc:"编辑后有 test/run 跟随的比例。",
+steps:[{t:"write main.cpp (最后一次编辑)",c:"success"},{t:"shell: g++ compile ✓",c:"success"},{t:"shell: demo run ✓",c:"success"},{t:"shell: hash verify ✓",c:"success"}],
+formula:"M57 = 3/3 edits verified = 1.0"},
+{bench:"AgencyBench",id:"M71",name:"分数退化 Score Degradation",val:"0",badge:"badge-good",src:"task17 / openai_gpt-5.2",
+desc:"子任务间分数下降的次数。",
+steps:[{t:"subtask1: 10 → subtask2: 7 (降 ✗)",c:"error"},{t:"subtask2: 7 → subtask3: 6 (降 ✗)",c:"error"},{t:"但 best scores 逐步改善或持平",c:"success"}],
+formula:"degradation_count=2, rate=2/4=0.5"},
+{bench:"AgencyBench",id:"M74",name:"动作熵 Action Entropy",val:"1.38",badge:"",src:"task11 / openai_gpt-5.2",
+desc:"工具类型分布的信息熵。",
+steps:[{t:"list_dir: 4/17 = 0.24",c:"action"},{t:"write_file: 10/17 = 0.59",c:"success"},{t:"shell: 3/17 = 0.18",c:"action"}],
+formula:"H = -(0.24·log2(0.24) + 0.59·log2(0.59) + 0.18·log2(0.18)) ≈ 1.38 bits"},
+{bench:"AgencyBench",id:"M93",name:"重试改善 Retry Improved",val:"+4",badge:"badge-good",src:"task17 / openai_gpt-5.2 subtask2",
+desc:"多次尝试的子任务中分数提升。",
+steps:[{t:"attempt1: score=3",c:"error"},{t:"修复: add default dataset_id",c:"action"},{t:"attempt2: score=7",c:"success"}],
+formula:"M93 = last-first = 7-3 = +4"},
+{bench:"AgencyBench",id:"M96",name:"预算利用率 Budget Utilization",val:"0.50",badge:"",src:"task11 / openai_gpt-5.2 subtask1",
+desc:"attempts_used / max_attempts。",
+steps:[{t:"max_attempts = 2",c:"action"},{t:"attempt1: score=10 ✓",c:"success"},{t:"不需要 attempt2",c:"think"}],
+formula:"M96 = 1/2 = 0.50 (一次搞定，半数预算即可)"},
+
+// ---- SWE-bench ----
+{bench:"SWE-bench",id:"M02",name:"工具调用数 Tool Call Count",val:"127",badge:"",src:"tornado-1782 / codeact-glm47",
+desc:"assistant 消息中 tool_call 对象的总数。",
+steps:[{t:"S1 think: analyze GC issue",c:"think"},{t:"S2-11 view+grep ×10",c:"think"},{t:"S12-18 task_tracker+create test",c:"action"},{t:"S19-27 think+edit attempts ×9",c:"action"},{t:"S28-78 debug cycle ×50",c:"error"},{t:"S79-117 more attempts → PASS",c:"success"},{t:"S118-127 cleanup+finish",c:"action"}],
+formula:"M02 = total_tool_calls = 127"},
+{bench:"SWE-bench",id:"M05",name:"工具多样性 Tool Diversity",val:"5 / 25.4",badge:"",src:"tornado-1782 / codeact-glm47",
+desc:"unique_tools 和 reuse_rate。",
+steps:[{t:"str_replace_editor: 47 calls",c:"action"},{t:"execute_bash: 67 calls",c:"action"},{t:"think: 3 calls",c:"think"},{t:"task_tracker: 8 calls",c:"action"},{t:"finish: 1 call",c:"success"}],
+formula:"unique=5, reuse=127/5=25.4"},
+{bench:"SWE-bench",id:"M07",name:"读写比 Read/Write Ratio",val:"4.2",badge:"badge-good",src:"Pillow-4088 / codeact-glm47",
+desc:"(view+bash) / (str_replace+create+insert)。",
+steps:[{t:"view: 14 calls",c:"think"},{t:"bash: 32 calls",c:"action"},{t:"str_replace: 1 call",c:"success"},{t:"create: 10 test files",c:"action"}],
+formula:"M07 = (14+32)/(1+10) = 46/11 = 4.2"},
+{bench:"SWE-bench",id:"M10",name:"盲重试 Max Blind Retry",val:"4",badge:"badge-bad",src:"tornado-1782 / codeact-glm47",
+desc:"连续相同 bash 命令的最大次数。",
+steps:[{t:"S86 bash: run test_attribute.py",c:"action"},{t:"S87-89 bash: same test ×3",c:"loop"},{t:"S91 bash: run test_attribute.py",c:"loop"},{t:"S93 bash: run test_attribute.py",c:"loop"}],
+formula:"M10 = 4 (连续相同测试命令)"},
+{bench:"SWE-bench",id:"M12",name:"撤销操作 Undo Count",val:"0 / 0.0",badge:"badge-good",src:"Pillow-4088",
+desc:"undo_edit 命令数及其占编辑总数的比例。",
+steps:[{t:"str_replace: 1次成功修复",c:"success"},{t:"create: 10个测试文件",c:"action"},{t:"undo_edit: 0次",c:"success"}],
+formula:"M12_undo=0, undo_rate=0/11=0.0"},
+{bench:"SWE-bench",id:"M14",name:"卡死块 Stuck Block Count",val:"5",badge:"badge-bad",src:"tornado-1782 / codeact-glm47",
+desc:"连续≥3次错误的 tool observation 块数。",
+steps:[{t:"S22-24 str_replace match ERROR ×3",c:"error"},{t:"S36-40 str_replace match ERROR ×5",c:"error"},{t:"S56-59 various ERRORs ×4",c:"error"},{t:"S88-93 view range ERROR ×3",c:"error"},{t:"S113-115 str_replace ERROR ×3",c:"error"}],
+formula:"M14 = 5 stuck blocks (共约 18 步卡在错误中)"},
+{bench:"SWE-bench",id:"M15",name:"重复查看 Repeated View",val:"0.60",badge:"badge-warn",src:"tornado-1782 / codeact-glm47",
+desc:"重复 view 同一文件的比例。",
+steps:[{t:"view gen.py: 8次 (反复查看)",c:"loop"},{t:"view ioloop.py: 2次",c:"loop"},{t:"view gen_test.py: 2次",c:"loop"},{t:"view concurrent.py: 2次",c:"loop"},{t:"首次view的文件: 5个",c:"think"}],
+formula:"repeated_views / total_views ≈ 8/14 = 0.57"},
+{bench:"SWE-bench",id:"M16",name:"搜索vs查看 Search/Open",val:"0.15",badge:"",src:"tornado-1782",
+desc:"bash 中 grep/find 命令 vs view+cat 的比例。",
+steps:[{t:"grep gc/weakref: 2 calls",c:"action"},{t:"grep future._runner: 1",c:"action"},{t:"find test files: 1",c:"action"},{t:"view calls: 14",c:"think"},{t:"cat calls: 8",c:"think"}],
+formula:"search=4, open=22 → M16=4/26=0.15"},
+{bench:"SWE-bench",id:"M21",name:"错误率 Error Rate",val:"0.35",badge:"badge-warn",src:"tornado-1782 / codeact-glm47",
+desc:"含 Error/Traceback 的 tool observation 比例。",
+steps:[{t:"str_replace match errors: ~15",c:"error"},{t:"view range errors: ~8",c:"error"},{t:"test failures: ~12",c:"error"},{t:"bash errors: ~10",c:"error"},{t:"total observations: 127",c:"action"}],
+formula:"errors≈45, total=127 → M21=0.35"},
+{bench:"SWE-bench",id:"M23",name:"有效步骤率 Effective Step Rate",val:"0.65",badge:"",src:"tornado-1782",
+desc:"无 Error/Traceback 的 observation 比例。",
+steps:[{t:"clean observations: ~82",c:"success"},{t:"error observations: ~45",c:"error"}],
+formula:"M23 = 82/127 = 0.65"},
+{bench:"SWE-bench",id:"M53",name:"代码定位 Code Locate Efficiency",val:"0.27",badge:"",src:"Pillow-4088",
+desc:"write 操作 / read 操作 的比率。",
+steps:[{t:"total writes: 11 (1 fix + 10 tests)",c:"success"},{t:"total reads: 46 (14 view + 32 bash)",c:"think"}],
+formula:"M53 = 11/46 = 0.24"},
+{bench:"SWE-bench",id:"M54",name:"探索编辑比 Explore/Edit",val:"4.2",badge:"",src:"Pillow-4088",
+desc:"(view+bash) / (replace+create+insert)。",
+steps:[{t:"explore: 46 actions",c:"think"},{t:"edit: 11 actions",c:"success"}],
+formula:"M54 = 46/11 = 4.2 (大量读后精准编辑)"},
+{bench:"SWE-bench",id:"M55",name:"文件触达 Files Touched",val:"8",badge:"",src:"Pillow-4088",
+desc:"所有 tool_call 中出现的独立文件路径数。",
+steps:[{t:"ImageOps.py (被修复的文件)",c:"success"},{t:"test_imageops.py",c:"action"},{t:"test_image_resize.py",c:"action"},{t:"test_image_crop.py",c:"action"},{t:"+ 4 个自建测试文件",c:"action"}],
+formula:"M55 = unique_paths = 8"},
+{bench:"SWE-bench",id:"M57",name:"修后验证 Post-Fix Verify",val:"1.0",badge:"badge-good",src:"Pillow-4088",
+desc:"edit 后 5 步内有 test/run 的比例。",
+steps:[{t:"S13 fix ImageOps.py",c:"success"},{t:"S14-15 pip install",c:"action"},{t:"S16-17 run test ✓",c:"success"},{t:"S19-48 反复 pytest 15+ 次",c:"success"}],
+formula:"M57 = 1.0 (每次编辑后都有验证)"},
+{bench:"SWE-bench",id:"M72",name:"思考次数 Think Count",val:"3",badge:"",src:"tornado-1782",
+desc:"think 工具的调用次数。",
+steps:[{t:"S1 think: analyze issue",c:"think"},{t:"S19 think: analyze fix approach",c:"think"},{t:"S27 think: reconsider",c:"think"}],
+formula:"M72 = 3"},
+{bench:"SWE-bench",id:"M74",name:"动作熵 Action Entropy",val:"1.20",badge:"",src:"tornado-1782",
+desc:"工具名分布的信息熵。",
+steps:[{t:"execute_bash: 67/127 = 0.53",c:"action"},{t:"str_replace_editor: 47/127 = 0.37",c:"action"},{t:"task_tracker: 8/127 = 0.06",c:"action"},{t:"think: 3/127 = 0.02",c:"think"},{t:"finish: 1/127 = 0.01",c:"success"}],
+formula:"H ≈ 1.20 bits"},
+{bench:"SWE-bench",id:"M76",name:"规划能力 Has Planning",val:"1",badge:"badge-good",src:"tornado-1782",
+desc:"是否有 think 或 task_tracker 工具调用。",
+steps:[{t:"think: 3 calls",c:"think"},{t:"task_tracker: 8 calls",c:"action"},{t:"S12 task_tracker: plan tasks",c:"action"},{t:"S18 task_tracker: mark done",c:"success"},{t:"S123 task_tracker: all done",c:"success"}],
+formula:"M76 = 1 (has think + task_tracker)"},
+
+// ---- ClawBench ----
+{bench:"ClawBench",id:"M02",name:"轨迹深度 Tool Chain Depth",val:"57",badge:"",src:"en_fullstack_debug / gemini-3.1-pro",
+desc:"API 日志的总 turn 数。",
+steps:[{t:"T0-13 文件读取 (14 turns)",c:"think"},{t:"T14-24 重复读取+编辑 (11 turns)",c:"loop"},{t:"T25-26 429 限频 (2 turns)",c:"error"},{t:"T27-43 构建+部署+测试 (17 turns)",c:"action"},{t:"T44-55 更多重复读取 (12 turns)",c:"loop"},{t:"T56 总结 (1 turn)",c:"think"}],
+formula:"M02 = lines(api_proxy_log.jsonl) = 57"},
+{bench:"ClawBench",id:"M03",name:"规划检测 Planning Detection",val:"2",badge:"",src:"en_fullstack_debug / Qwen3.5",
+desc:"含规划模式文本的 turn 数。",
+steps:[{t:"T0: 'Let me analyze the issues...'",c:"think"},{t:"T6: 'Planning: 1. Fix CORS 2. Fix API...'",c:"think"},{t:"其余 turn 无规划文本",c:"action"}],
+formula:"M03 = planning_pattern_matches = 2"},
+{bench:"ClawBench",id:"M05",name:"工具复用率 Tool Reuse",val:"0.82",badge:"badge-good",src:"en_fullstack_debug / gemini",
+desc:"连续使用相同工具的 turn 对比例。",
+steps:[{t:"T0 exec → T1 exec (same)",c:"loop"},{t:"T1 exec → T2 exec (same)",c:"loop"},{t:"T3 exec → T4 exec (same)",c:"loop"},{t:"大量连续 exec(cat ...) 调用",c:"loop"}],
+formula:"M05 = same_tool_pairs / tool_pairs = 46/56 = 0.82"},
+{bench:"ClawBench",id:"M07",name:"先读后改 Read Before Edit",val:"0.75",badge:"badge-good",src:"en_fullstack_debug / Qwen3.5 (19 turns)",
+desc:"edit/write 前 20 turn 内有 read 同一文件的比例。",
+steps:[{t:"T1-5 read backend+frontend 12 files",c:"think"},{t:"T7 edit verbs.ts (已读 ✓)",c:"success"},{t:"T8 edit VerbList.tsx (已读 ✓)",c:"success"},{t:"T9-10 edit AddVerbModal ×2 (已读 ✓)",c:"success"},{t:"T13 edit main.py (已读 ✓)",c:"success"}],
+formula:"4/4 edits had prior read → M07 = 1.0"},
+{bench:"ClawBench",id:"M10",name:"盲重试 Max Blind Retry",val:"10",badge:"badge-bad",src:"en_dijkstra_optimize / gemini",
+desc:"连续相同工具+相似参数的最大 turn 数。",
+steps:[{t:"T11 process(poll, cool-trail)",c:"loop"},{t:"T12-20 process(poll, cool-trail) ×9",c:"loop"},{t:"→ 10 次完全相同调用",c:"error"}],
+formula:"M10 = 10"},
+{bench:"ClawBench",id:"M11",name:"评估滥用率 Eval Abuse",val:"N/A",badge:"",src:"(ClawBench 不适用)",
+desc:"ClawBench 无 eval 机制，固定为 0.0。",
+steps:[{t:"无 eval 工具可用",c:"action"}],
+formula:"M11 = 0.0 (hardcoded, not applicable)"},
+{bench:"ClawBench",id:"M12",name:"会话泄露 Session Leak",val:"0",badge:"badge-good",src:"en_fullstack_debug / gpt-5.4",
+desc:"sessions_spawn - process(kill) 的差值。",
+steps:[{t:"T10 exec: uvicorn → spawn",c:"action"},{t:"T11 exec: npm dev → spawn",c:"action"},{t:"T12 process poll ×2",c:"action"},{t:"后续: 进程自然结束",c:"success"}],
+formula:"spawn=2, kill=2 → leak=0"},
+{bench:"ClawBench",id:"M14",name:"死锁比 Deadlock Ratio",val:"0.37",badge:"badge-bad",src:"en_dijkstra_optimize / gemini",
+desc:"≥5次连续相同工具+参数的 turn 占总 turn 的比例。",
+steps:[{t:"T11-T20: 10次 poll (≥5 threshold)",c:"loop"},{t:"total turns: 27",c:"action"}],
+formula:"M14 = 10/27 = 0.37"},
+{bench:"ClawBench",id:"M15",name:"重复查看 Repeated View",val:"0.00",badge:"badge-good",src:"en_fullstack_debug / gpt-5.4",
+desc:"read 工具重复读取同一路径的比例。",
+steps:[{t:"T3 read: 12 files (all unique)",c:"think"},{t:"无重复 read 调用",c:"success"}],
+formula:"M15 = 0/12 = 0.0 (GPT 零重复)"},
+{bench:"ClawBench",id:"M16",name:"搜索vs读取 Search/Read",val:"0.0",badge:"",src:"en_fullstack_debug / gpt-5.4",
+desc:"web_search / (web_search + read)。",
+steps:[{t:"web_search: 0 calls",c:"action"},{t:"read: 12 calls",c:"think"}],
+formula:"M16 = 0/(0+12) = 0.0 (无搜索)"},
+{bench:"ClawBench",id:"M19",name:"Token 消耗",val:"295K vs 1.48M",badge:"",src:"en_fullstack_debug GPT vs Gemini",
+desc:"所有 turn 的 total_tokens 之和。",
+steps:[{t:"GPT-5.4: 295K tokens, 17 turns",c:"success"},{t:"Gemini: 1,480K tokens, 57 turns",c:"error"},{t:"5x token 差距",c:"action"}],
+formula:"GPT: 295K | Gemini: 1,480K (同任务 5x 差距)"},
+{bench:"ClawBench",id:"M20",name:"耗时 Duration",val:"~300s",badge:"",src:"en_fullstack_debug / gpt-5.4",
+desc:"首尾 timestamp 之差(秒)。",
+steps:[{t:"T0 timestamp: start",c:"action"},{t:"T16 timestamp: end",c:"action"}],
+formula:"M20 = last_ts - first_ts"},
+{bench:"ClawBench",id:"M21",name:"格式失败率 Format Fail",val:"0.035",badge:"",src:"en_fullstack_debug / gemini",
+desc:"response_status ≠ 200 的 turn 比例。",
+steps:[{t:"T25 status=429 (rate limited)",c:"error"},{t:"T26 status=429 (rate limited)",c:"error"},{t:"其余 55 turns status=200",c:"success"}],
+formula:"M21 = 2/57 = 0.035"},
+{bench:"ClawBench",id:"M23",name:"有效步骤率 Effective Step",val:"0.94",badge:"badge-good",src:"en_fullstack_debug / gpt-5.4",
+desc:"含至少一个 tool_call 的 turn 比例。",
+steps:[{t:"16/17 turns 有工具调用",c:"success"},{t:"T16 仅文本总结 (无工具)",c:"think"}],
+formula:"M23 = 16/17 = 0.94"},
+{bench:"ClawBench",id:"M43",name:"最大连续等待 Max Sleep",val:"10",badge:"badge-bad",src:"en_dijkstra_optimize / gemini",
+desc:"连续 poll/wait 操作的最大 turn 数。",
+steps:[{t:"T11-T20: 10次连续 process(poll)",c:"loop"}],
+formula:"M43 = 10"},
+{bench:"ClawBench",id:"M53",name:"代码定位 Code Locate",val:"0.24",badge:"",src:"en_fullstack_debug / gpt-5.4",
+desc:"首次 edit/write 的 turn 位置 / 总 turn。",
+steps:[{t:"T0-T3 读取+探索 (4 turns)",c:"think"},{t:"T4 write: 4 files ★",c:"success"},{t:"total: 17 turns",c:"action"}],
+formula:"M53 = 4/17 = 0.24"},
+{bench:"ClawBench",id:"M54",name:"探索编辑比 Explore/Edit",val:"3.25",badge:"",src:"en_fullstack_debug / gpt-5.4",
+desc:"(read+search+browser+fetch) / (edit+write)。",
+steps:[{t:"read: 13 | exec(find): 2 | browser: 1",c:"think"},{t:"write: 4 | edit: 0",c:"success"}],
+formula:"explore=13, edit=4 → M54 = 13/4 = 3.25"},
+{bench:"ClawBench",id:"M55",name:"文件触达 File Reach",val:"14",badge:"",src:"en_fullstack_debug / gpt-5.4",
+desc:"read/edit/write 操作涉及的独立文件路径数。",
+steps:[{t:"read: query.md, main.py, models.py, data.py...",c:"think"},{t:"write: verbs.ts, vite.config.ts, VerbList.tsx, main.py",c:"success"},{t:"共 14 个不同路径",c:"action"}],
+formula:"M55 = unique_paths = 14"},
+{bench:"ClawBench",id:"M57",name:"修后验证 Post-Fix Verify",val:"0.75",badge:"badge-good",src:"en_fullstack_debug / gpt-5.4",
+desc:"edit/write 后 5 turn 内有 exec 的比例。",
+steps:[{t:"T4 write 4 files",c:"success"},{t:"T5-9 exec build ×5 (验证)",c:"success"},{t:"T13 exec curl test (验证)",c:"success"},{t:"T14 browser check (验证)",c:"success"}],
+formula:"M57 = 3/4 writes verified = 0.75"},
+{bench:"ClawBench",id:"M71",name:"推理退化 Reasoning Degradation",val:"65%",badge:"badge-bad",src:"en_fullstack_debug / gemini",
+desc:"后半段 avg completion_tokens 相比前半段的下降%。",
+steps:[{t:"前半段 (T0-T28) avg: ~8,200 tok/turn",c:"success"},{t:"后半段 (T29-T56) avg: ~2,900 tok/turn",c:"error"}],
+formula:"M71 = (8200-2900)/8200 × 100 = 65% degradation"},
+{bench:"ClawBench",id:"M72",name:"思考效用 Think Effectiveness",val:"0.88",badge:"badge-good",src:"en_fullstack_debug / gpt-5.4",
+desc:"有内容(>20 chars)的 turn 后跟有工具调用的比例。",
+steps:[{t:"15/17 turns 有实质内容",c:"success"},{t:"其中 14 个后续有工具调用",c:"success"}],
+formula:"M72 = 14/16 = 0.88"},
+{bench:"ClawBench",id:"M74",name:"动作熵 Action Entropy",val:"1.85",badge:"badge-good",src:"en_fullstack_debug / gpt-5.4",
+desc:"工具名分布的信息熵。",
+steps:[{t:"read×13, exec×11, write×4, process×2, browser×1",c:"success"},{t:"5种工具均匀使用",c:"success"}],
+formula:"H = 1.85 bits"},
+{bench:"ClawBench",id:"M76",name:"规划能力 Has Planning",val:"1",badge:"badge-good",src:"en_fullstack_debug / Qwen3.5",
+desc:"是否有 turn 匹配规划模式文本。",
+steps:[{t:"T0: 'Let me analyze all the issues...'",c:"think"},{t:"T6: 'Planning: Fix CORS, Fix types...'",c:"think"}],
+formula:"M76 = 1 | n_planning = 2"},
+{bench:"ClawBench",id:"M96",name:"预算利用率 Budget Utilization",val:"0.94",badge:"badge-good",src:"en_fullstack_debug / gpt-5.4",
+desc:"有工具调用的 turn / 总 turn (= M23)。",
+steps:[{t:"16/17 turns 有效",c:"success"}],
+formula:"M96 = M23 = 16/17 = 0.94"}
+];
+
+function renderTrajExamples() {
+    const container = document.getElementById('trajExampleContainer');
+    const tabBar = document.getElementById('benchTabs');
+    if (!container || !tabBar) return;
+    const benchOrder = ['InnovatorBench','AgencyBench','SWE-bench','ClawBench'];
+    const benchNames = {'InnovatorBench':'InnovatorBench','AgencyBench':'AgencyBench','SWE-bench':'SWE-bench','ClawBench':'ClawBench'};
+    const grouped = {};
+    trajExamples.forEach(e => { (grouped[e.bench] = grouped[e.bench] || []).push(e); });
+    tabBar.innerHTML = '';
+    container.innerHTML = '';
+    benchOrder.forEach((b, i) => {
+        const items = grouped[b] || [];
+        const tab = document.createElement('button');
+        tab.className = 'bench-tab' + (i === 0 ? ' active' : '');
+        tab.innerHTML = benchNames[b] + '<span class="bench-count">(' + items.length + ')</span>';
+        tab.onclick = function() {
+            tabBar.querySelectorAll('.bench-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            container.querySelectorAll('.bench-group').forEach(g => g.classList.remove('active'));
+            document.getElementById('bg_' + b).classList.add('active');
+        };
+        tabBar.appendChild(tab);
+        const group = document.createElement('div');
+        group.className = 'bench-group traj-example-grid' + (i === 0 ? ' active' : '');
+        group.id = 'bg_' + b;
+        items.forEach(m => {
+            const card = document.createElement('div');
+            card.className = 'case-card';
+            card.onclick = function() { toggleCase(this); };
+            let stepsHtml = m.steps.map(s =>
+                '<span class="traj-step traj-' + s.c + '">' + s.t + '</span>'
+            ).join('<span class="traj-arrow">&#8594;</span>');
+            card.innerHTML =
+                '<div class="case-card-header"><div class="case-title">' +
+                '<span class="metric-value-badge ' + (m.badge||'') + '">' + m.val + '</span>' +
+                '<div><h3>' + m.id + ' ' + m.name + '</h3>' +
+                '<div class="case-task">Source: ' + m.src + '</div></div></div>' +
+                '<span class="expand-icon">&#9660;</span></div>' +
+                '<div class="case-card-body">' +
+                '<div class="case-desc">' + m.desc + '</div>' +
+                '<div class="trajectory-flow">' + stepsHtml + '</div>' +
+                '<div class="traj-formula"><code>' + m.formula + '</code></div></div>';
+            group.appendChild(card);
+        });
+        container.appendChild(group);
+    });
+}
+
 // ======== INIT ========
 document.addEventListener('DOMContentLoaded', () => {
     renderCatalog('all');
     renderLeaderboard();
     renderAutoMetrics();
+    renderTrajExamples();
     renderRadarChart();
     renderTaskGrid();
     renderTaskLeaderboard();
