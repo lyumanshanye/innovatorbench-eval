@@ -1573,11 +1573,13 @@
         <span class="sep">·</span>
         <div class="ov-stat"><span class="v">17</span><span class="l">sub-families</span></div>
         <span class="sep">·</span>
-        <div class="ov-stat"><span class="v">35</span><span class="l">LLM-Judge</span></div>
+        <div class="ov-stat"><span class="v">47</span><span class="l">RULE</span></div>
         <span class="sep">·</span>
-        <div class="ov-stat"><span class="v">41</span><span class="l">Rule-based</span></div>
+        <div class="ov-stat"><span class="v">30</span><span class="l">JUDGE</span></div>
         <span class="sep">·</span>
-        <div class="ov-stat"><span class="v">20</span><span class="l">Hybrid / EXP / STAT</span></div>
+        <div class="ov-stat"><span class="v">11</span><span class="l">STAT</span></div>
+        <span class="sep">·</span>
+        <div class="ov-stat"><span class="v">8</span><span class="l">EXP</span></div>
     </div>
 
     <div class="taxonomy-grid">
@@ -1673,15 +1675,15 @@
         <div class="section-header">
             <h2>指标目录</h2>
             <div class="separator"></div>
-            <p>53 个评估指标（24 个 Judge/专家 + 29 个规则自动化），按统计质量排序。相似指标已合并为子项。支持按方法类型和维度筛选。点击行展开详情及子指标。</p>
+            <p>已实装 53 / 96 个指标在此可交互查看（24 个 LLM Judge + 29 个规则自动化），按统计质量排序。剩余 43 个指标仍在校准与对接中，详见 <a href="metrics_all.html" style="color:var(--accent); text-decoration:none; font-weight:600;">metrics_all.html →</a>。支持按方法类型和维度筛选，点击行展开详情。</p>
         </div>
 
         <div class="catalog-controls">
             <div class="catalog-filter">
-                <button class="filter-btn active" onclick="filterMetrics('all')">全部 (46)</button>
+                <button class="filter-btn active" onclick="filterMetrics('all')">全部 (53)</button>
                 <button class="filter-btn" onclick="filterMetrics('Auto')">⚡ 自动化 (29)</button>
-                <button class="filter-btn" onclick="filterMetrics('Judge')">🤖 LLM Judge (15)</button>
-                <button class="filter-btn" onclick="filterMetrics('Human')">👤 专家标注 (2)</button>
+                <button class="filter-btn" onclick="filterMetrics('Judge')">🤖 LLM Judge (24)</button>
+                <span class="filter-btn" style="cursor: default; opacity: 0.7; background: #fff7ed; border-color: #fed7aa; color: #9a3412;">🚧 校准中 43 (见 metrics_all.html)</span>
             </div>
             <div class="catalog-filter" style="margin-top:0.5rem;">
                 <button class="filter-btn dim-filter" onclick="filterByDim('all')">全部维度</button>
