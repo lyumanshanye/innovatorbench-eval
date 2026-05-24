@@ -1337,6 +1337,38 @@
         }
         .lc-tab:hover { color: var(--primary); }
         .lc-tab-active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+<style>
+.dim-banner { padding: 3.2rem 2rem 1.4rem; max-width: none; }
+.dim-banner-inner { max-width: 1200px; margin: 0 auto; }
+.dim-banner h2 { margin: 0 0 .35rem; font-size: 2rem; font-weight: 800; color: var(--navy); letter-spacing: -0.5px; }
+.dim-banner h2 .dim-en { color: var(--text-light); font-weight: 500; font-size: 1.1rem; margin-left: .5rem; }
+.dim-banner .dim-icon-big { font-size: 2.6rem; line-height: 1; }
+.dim-banner .dim-row { display: flex; align-items: center; gap: 1rem; }
+.dim-banner .dim-desc { color: var(--text-light); margin: .4rem 0 0; max-width: 820px; line-height: 1.55; }
+.dim-banner .dim-pills { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .8rem; }
+.dim-banner .dim-pill { background: rgba(255,255,255,.6); border: 1px solid var(--border); padding: .25rem .7rem; border-radius: 999px; font-size: .78rem; color: var(--text); }
+.dim-banner-metric  { background: linear-gradient(135deg, #fff8e1, #fffdf5); border-bottom: 1px solid #f3e8c7; }
+.dim-banner-model   { background: linear-gradient(135deg, #eef2ff, #f8fafc); border-bottom: 1px solid #e0e7ff; }
+.dim-banner-harness { background: linear-gradient(135deg, #ecfdf5, #f7fef9); border-bottom: 1px solid #d1fae5; }
+.dim-banner-task    { background: linear-gradient(135deg, #fdf2f8, #fff7fb); border-bottom: 1px solid #fbcfe8; }
+
+.harness-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.1rem; margin-top: 1.4rem; }
+.harness-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem 1.3rem; transition: all .2s; position: relative; overflow: hidden; }
+.harness-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.07); border-color: var(--accent); }
+.harness-card::before { content: ""; position: absolute; left: 0; top: 0; height: 4px; width: 100%; background: var(--accent); opacity: .85; }
+.harness-card .h-name { font-size: 1.05rem; font-weight: 700; color: var(--navy); margin: 0; display:flex; align-items:center; gap:.5rem; }
+.harness-card .h-tag { font-size: .7rem; padding: 2px 8px; border-radius: 6px; font-weight: 600; letter-spacing: .3px; }
+.harness-card .h-tag-done { background: #dcfce7; color: #15803d; }
+.harness-card .h-tag-progress { background: #fef3c7; color: #b45309; }
+.harness-card .h-tag-pending { background: #e2e8f0; color: #475569; }
+.harness-card .h-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .5rem; margin: .8rem 0 .6rem; }
+.harness-card .h-stat .v { font-size: 1.15rem; font-weight: 800; color: var(--primary); }
+.harness-card .h-stat .l { font-size: .68rem; color: var(--text-light); text-transform: uppercase; letter-spacing: .5px; }
+.harness-card .h-desc { font-size: .82rem; color: var(--text-light); line-height: 1.5; margin: 0; }
+.harness-card .h-bar { margin-top: .8rem; height: 6px; background: #f1f5f9; border-radius: 999px; overflow: hidden; }
+.harness-card .h-bar > div { height: 100%; background: linear-gradient(90deg, var(--accent), var(--primary)); border-radius: 999px; }
+.harness-card .h-meta { display:flex; justify-content: space-between; font-size: .72rem; color: var(--text-light); margin-top: .3rem; }
+</style>
     </style>
 </head>
 <body>
@@ -1353,10 +1385,10 @@
         </button>
         <ul class="navbar-links" id="navLinks">
             <li><a href="#overview">框架总览</a></li>
-            <li><a href="#catalog">指标目录</a></li>
-            <li><a href="#leaderboard">排行榜</a></li>
-            <li><a href="#automated">自动指标</a></li>
-            <li><a href="#longchain">长链路分析</a></li>
+            <li><a href="#metric">📐 Metric</a></li>
+            <li><a href="#model">🤖 Model</a></li>
+            <li><a href="#harness">🧪 Harness</a></li>
+            <li><a href="#task">🎯 Task</a></li>
             <li class="nav-dropdown">
                 <a href="#" class="nav-dropdown-toggle">报告 &#9662;</a>
                 <div class="nav-dropdown-menu">
@@ -1538,6 +1570,23 @@
     </div>
 </section>
 
+<!-- ============== METRIC DIMENSION ============== -->
+<section class="dim-banner dim-banner-metric" id="metric">
+    <div class="dim-banner-inner">
+        <div class="dim-row">
+            <span class="dim-icon-big">📐</span>
+            <h2>Metric<span class="dim-en">指标维度</span></h2>
+        </div>
+        <p class="dim-desc">96 项细粒度指标的设计、实现与统计校准：24 个 LLM-Judge × 41 个规则自动化 × 31 个混合指标。下方依次是指标目录、Judge 评分卡（Rubric Showcase）与 Case Studies。</p>
+        <div class="dim-pills">
+            <span class="dim-pill">96 metrics</span>
+            <span class="dim-pill">6 dimensions</span>
+            <span class="dim-pill">24 Judge implemented</span>
+            <span class="dim-pill">41 Auto rules</span>
+        </div>
+    </div>
+</section>
+
 <!-- Metric Catalog Section -->
 <section class="section" id="catalog" style="background: #fff; max-width: none; padding-left: 2rem; padding-right: 2rem;">
     <div style="max-width: 1200px; margin: 0 auto;">
@@ -1584,185 +1633,6 @@
                 <tbody id="catalogBody">
                 </tbody>
             </table>
-        </div>
-    </div>
-</section>
-
-<!-- Leaderboard Section -->
-<section class="section" id="leaderboard">
-    <div class="section-header">
-        <h2>模型排行榜</h2>
-        <div class="separator"></div>
-        <p>顶级 Judge 指标的模型性能对比。点击列标题排序。</p>
-    </div>
-
-    <div class="leaderboard-wrap">
-        <table id="leaderboardTable">
-            <thead>
-                <tr>
-                    <th onclick="sortLeaderboard(0)"># <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(1)">模型 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(2)">综合分 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(3)">J32 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(4)">J06 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(5)">J39 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(6)">J50 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(7)">J70 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(8)">J68 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(9)">J95 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(10)">J37 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(11)">J25 <span class="sort-arrow">&#9650;</span></th>
-                </tr>
-            </thead>
-            <tbody id="leaderboardBody">
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Radar Chart -->
-    <div class="chart-container">
-        <canvas id="radarChart"></canvas>
-    </div>
-</section>
-
-<!-- Automated Metrics Section -->
-<section class="section" id="automated" style="background: #fff; max-width: none; padding-left: 2rem; padding-right: 2rem;">
-    <div style="max-width: 1200px; margin: 0 auto;">
-        <div class="section-header">
-            <h2>自动化指标区分度</h2>
-            <div class="separator"></div>
-            <p>按统计区分力（Kruskal-Wallis 检验 η² 效应量）排序的自动化指标</p>
-        </div>
-
-        <div class="auto-metrics-grid">
-            <div class="auto-metric-list" id="autoMetricList">
-            </div>
-            <div class="rf-box">
-                <h3>Random Forest Ensemble</h3>
-                <div class="rf-score">0.8755</div>
-                <div class="rf-label">R&sup2; Score (Cross-Validated)</div>
-                <div class="rf-feature">
-                    Top Feature: <code>M93_score_delta</code><br>
-                    <span style="color:var(--text-light); font-size:0.82rem;">Feature Importance = 0.38</span>
-                </div>
-                <div class="rf-feature">
-                    <span style="font-size:0.82rem; color:var(--text-light);">34 automated metrics predict composite judge scores with high accuracy, validating the framework's structural coherence.</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<!-- Case Studies Section -->
-<section class="section" id="cases">
-    <div class="section-header">
-        <h2>Case Studies</h2>
-        <div class="separator"></div>
-        <p>Concrete examples from evaluated trajectories. Click to expand.</p>
-    </div>
-
-    <div class="case-cards">
-        <!-- Case 1 -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="case-score case-score-good">4</span>
-                    <div>
-                        <h3>Error Recovery - Good Recovery</h3>
-                        <div class="case-task">Task: NL2SQL Reward Function Design</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    Agent encountered network failure downloading HuggingFace dataset and pivoted to synthetic data generation (1-step recovery). Then <code>ray start</code> failed, so the agent ran <code>ray stop</code> + restart (2-step recovery). Demonstrates resilient problem-solving.
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-think">think</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-action">list_files</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-action">open_file</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-error">download_fail</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-think">think (pivot)</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-success">create_file (synthetic)</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-error">ray_start_fail</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-action">ray stop</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-success">ray start OK</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Case 2 -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="case-score case-score-bad">1</span>
-                    <div>
-                        <h3>Loop Trap - No Recovery</h3>
-                        <div class="case-task">Task: Search-Augmented RL (Task 16)</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    Agent edited the same 12 lines of <code>qa.py</code> 58 times without testing. Budget exhausted. Final score = 0. This demonstrates the "Error Solidification" anti-pattern where the agent loops without meaningful progress.
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-loop">edit qa.py:12</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-loop">edit qa.py:12</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-loop">edit qa.py:12</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-loop">... x58</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-error">BUDGET EXHAUSTED</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Case 3 -->
-        <div class="case-card" onclick="toggleCase(this)">
-            <div class="case-card-header">
-                <div class="case-title">
-                    <span class="case-score case-score-good">4</span>
-                    <div>
-                        <h3>Good Hypothesis-Verify</h3>
-                        <div class="case-task">Task: Data Cleaning Pipeline</div>
-                    </div>
-                </div>
-                <span class="expand-icon">&#9660;</span>
-            </div>
-            <div class="case-card-body">
-                <div class="case-desc">
-                    Agent demonstrates systematic scientific method: backup data, apply cleaning transformation, validate format, evaluate results, analyze metrics, and adjust strategy based on evidence. Shows strong hypothesis-verify reasoning loop.
-                </div>
-                <div class="trajectory-flow">
-                    <span class="traj-step traj-action">backup_data</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-action">clean_transform</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-think">validate_format</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-action">evaluate</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-think">analyze_results</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-success">adjust_strategy</span>
-                    <span class="traj-arrow">&rarr;</span>
-                    <span class="traj-step traj-success">final_output</span>
-                </div>
-            </div>
         </div>
     </div>
 </section>
@@ -1894,7 +1764,306 @@
     </div>
 </section>
 
-<!-- Task Behavioral Analysis Section -->
+<!-- Case Studies Section -->
+<section class="section" id="cases">
+    <div class="section-header">
+        <h2>Case Studies</h2>
+        <div class="separator"></div>
+        <p>Concrete examples from evaluated trajectories. Click to expand.</p>
+    </div>
+
+    <div class="case-cards">
+        <!-- Case 1 -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="case-score case-score-good">4</span>
+                    <div>
+                        <h3>Error Recovery - Good Recovery</h3>
+                        <div class="case-task">Task: NL2SQL Reward Function Design</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    Agent encountered network failure downloading HuggingFace dataset and pivoted to synthetic data generation (1-step recovery). Then <code>ray start</code> failed, so the agent ran <code>ray stop</code> + restart (2-step recovery). Demonstrates resilient problem-solving.
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-think">think</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-action">list_files</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-action">open_file</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-error">download_fail</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-think">think (pivot)</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-success">create_file (synthetic)</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-error">ray_start_fail</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-action">ray stop</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-success">ray start OK</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 2 -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="case-score case-score-bad">1</span>
+                    <div>
+                        <h3>Loop Trap - No Recovery</h3>
+                        <div class="case-task">Task: Search-Augmented RL (Task 16)</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    Agent edited the same 12 lines of <code>qa.py</code> 58 times without testing. Budget exhausted. Final score = 0. This demonstrates the "Error Solidification" anti-pattern where the agent loops without meaningful progress.
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-loop">edit qa.py:12</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-loop">edit qa.py:12</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-loop">edit qa.py:12</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-loop">... x58</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-error">BUDGET EXHAUSTED</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 3 -->
+        <div class="case-card" onclick="toggleCase(this)">
+            <div class="case-card-header">
+                <div class="case-title">
+                    <span class="case-score case-score-good">4</span>
+                    <div>
+                        <h3>Good Hypothesis-Verify</h3>
+                        <div class="case-task">Task: Data Cleaning Pipeline</div>
+                    </div>
+                </div>
+                <span class="expand-icon">&#9660;</span>
+            </div>
+            <div class="case-card-body">
+                <div class="case-desc">
+                    Agent demonstrates systematic scientific method: backup data, apply cleaning transformation, validate format, evaluate results, analyze metrics, and adjust strategy based on evidence. Shows strong hypothesis-verify reasoning loop.
+                </div>
+                <div class="trajectory-flow">
+                    <span class="traj-step traj-action">backup_data</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-action">clean_transform</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-think">validate_format</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-action">evaluate</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-think">analyze_results</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-success">adjust_strategy</span>
+                    <span class="traj-arrow">&rarr;</span>
+                    <span class="traj-step traj-success">final_output</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============== MODEL DIMENSION ============== -->
+<section class="dim-banner dim-banner-model" id="model">
+    <div class="dim-banner-inner">
+        <div class="dim-row">
+            <span class="dim-icon-big">🤖</span>
+            <h2>Model<span class="dim-en">模型维度</span></h2>
+        </div>
+        <p class="dim-desc">15 个参评模型在 9 个核心 Judge 指标上的横向对比：综合分、雷达图与可排序排行榜。涵盖 Claude / GLM / GPT / Kimi / Grok 等主流系列。</p>
+        <div class="dim-pills">
+            <span class="dim-pill">15 models</span>
+            <span class="dim-pill">9 judge metrics</span>
+            <span class="dim-pill">15,720 evaluations</span>
+        </div>
+    </div>
+</section>
+
+<!-- Leaderboard Section -->
+<section class="section" id="leaderboard">
+    <div class="section-header">
+        <h2>模型排行榜</h2>
+        <div class="separator"></div>
+        <p>顶级 Judge 指标的模型性能对比。点击列标题排序。</p>
+    </div>
+
+    <div class="leaderboard-wrap">
+        <table id="leaderboardTable">
+            <thead>
+                <tr>
+                    <th onclick="sortLeaderboard(0)"># <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(1)">模型 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(2)">综合分 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(3)">J32 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(4)">J06 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(5)">J39 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(6)">J50 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(7)">J70 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(8)">J68 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(9)">J95 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(10)">J37 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(11)">J25 <span class="sort-arrow">&#9650;</span></th>
+                </tr>
+            </thead>
+            <tbody id="leaderboardBody">
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Radar Chart -->
+    <div class="chart-container">
+        <canvas id="radarChart"></canvas>
+    </div>
+</section>
+
+<!-- ============== HARNESS DIMENSION ============== -->
+<section class="dim-banner dim-banner-harness" id="harness">
+    <div class="dim-banner-inner">
+        <div class="dim-row">
+            <span class="dim-icon-big">🧪</span>
+            <h2>Harness<span class="dim-en">评测框架维度</span></h2>
+        </div>
+        <p class="dim-desc">指标体系跨 6 个 Agent 评测 Harness 落地：研究型长任务、交互协作、SWE 代码修复、CTF 攻防、RL 训练监控、研究助手循环。每个 Harness 给出当前进度与样本规模。</p>
+        <div class="dim-pills">
+            <span class="dim-pill">6 benchmarks</span>
+            <span class="dim-pill">~28K trajectories</span>
+            <span class="dim-pill">96 metrics × 6 harness</span>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="harness-grid-sec" style="background:#fff; max-width:none; padding-left:2rem; padding-right:2rem;">
+    <div style="max-width:1200px; margin:0 auto;">
+        <div class="harness-grid">
+            <!-- InnovatorBench -->
+            <div class="harness-card">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <h3 class="h-name">🔬 InnovatorBench</h3>
+                    <span class="h-tag h-tag-done">主战场</span>
+                </div>
+                <p class="h-desc">研究型长决策链：开放式 ML 任务，660 条轨迹 × 15 模型 × 20 Task。覆盖 96 指标全集，是论文核心数据来源。</p>
+                <div class="h-stats">
+                    <div class="h-stat"><div class="v">660</div><div class="l">Traj</div></div>
+                    <div class="h-stat"><div class="v">15</div><div class="l">Models</div></div>
+                    <div class="h-stat"><div class="v">20</div><div class="l">Tasks</div></div>
+                </div>
+                <div class="h-bar"><div style="width: 100%;"></div></div>
+                <div class="h-meta"><span>96/96 metrics</span><span>✓ 完成</span></div>
+            </div>
+
+            <!-- AgencyBench -->
+            <div class="harness-card">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <h3 class="h-name">🤝 AgencyBench</h3>
+                    <span class="h-tag h-tag-done">已完成</span>
+                </div>
+                <p class="h-desc">多轮交互/协作场景：22 模型 × 37 任务 = 165 轨迹。Tier-2 交互指标（J60/J66）的主要数据源。</p>
+                <div class="h-stats">
+                    <div class="h-stat"><div class="v">165</div><div class="l">Traj</div></div>
+                    <div class="h-stat"><div class="v">22</div><div class="l">Models</div></div>
+                    <div class="h-stat"><div class="v">37</div><div class="l">Tasks</div></div>
+                </div>
+                <div class="h-bar"><div style="width: 100%;"></div></div>
+                <div class="h-meta"><span>交互指标全量</span><span>✓ 完成</span></div>
+            </div>
+
+            <!-- SWE-bench -->
+            <div class="harness-card">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <h3 class="h-name">🛠️ SWE-bench</h3>
+                    <span class="h-tag h-tag-done">已完成</span>
+                </div>
+                <p class="h-desc">代码修复仓库级任务：26,665 条轨迹跨 3 个 Agent 框架。聚焦于失败级联与代码搜索类指标。</p>
+                <div class="h-stats">
+                    <div class="h-stat"><div class="v">26.7K</div><div class="l">Traj</div></div>
+                    <div class="h-stat"><div class="v">3</div><div class="l">Frameworks</div></div>
+                    <div class="h-stat"><div class="v">M+J</div><div class="l">Hybrid</div></div>
+                </div>
+                <div class="h-bar"><div style="width: 100%;"></div></div>
+                <div class="h-meta"><span>规则指标已覆盖</span><span>✓ 完成</span></div>
+            </div>
+
+            <!-- ClawBench-Lite -->
+            <div class="harness-card">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <h3 class="h-name">⚔️ ClawBench-Lite</h3>
+                    <span class="h-tag h-tag-done">已完成</span>
+                </div>
+                <p class="h-desc">CTF 攻防 / 工具调用：8 模型 × 77 任务 = 541 轨迹。聚焦工具熟练度与失败模式指标。</p>
+                <div class="h-stats">
+                    <div class="h-stat"><div class="v">541</div><div class="l">Traj</div></div>
+                    <div class="h-stat"><div class="v">8</div><div class="l">Models</div></div>
+                    <div class="h-stat"><div class="v">77</div><div class="l">Tasks</div></div>
+                </div>
+                <div class="h-bar"><div style="width: 100%;"></div></div>
+                <div class="h-meta"><span>34 自动化指标</span><span>✓ 完成</span></div>
+            </div>
+
+            <!-- RL-Math -->
+            <div class="harness-card">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <h3 class="h-name">📈 RL-Math</h3>
+                    <span class="h-tag h-tag-progress">进行中</span>
+                </div>
+                <p class="h-desc">强化学习训练监控：69 个 checkpoint × 1920 条 rollout，跟踪 M01–M26 训练阶段指标演化。</p>
+                <div class="h-stats">
+                    <div class="h-stat"><div class="v">69</div><div class="l">Ckpts</div></div>
+                    <div class="h-stat"><div class="v">1920</div><div class="l">Rollouts</div></div>
+                    <div class="h-stat"><div class="v">26</div><div class="l">Metrics</div></div>
+                </div>
+                <div class="h-bar"><div style="width: 75%;"></div></div>
+                <div class="h-meta"><span>26 / 26 训练指标</span><span>区分度复核中</span></div>
+            </div>
+
+            <!-- Archon -->
+            <div class="harness-card">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <h3 class="h-name">🏛️ Archon</h3>
+                    <span class="h-tag h-tag-progress">进行中</span>
+                </div>
+                <p class="h-desc">研究助手长循环 workspace：4 个 workspace × 94 个 iteration。验证长链路指标在持续工作流上的表现。</p>
+                <div class="h-stats">
+                    <div class="h-stat"><div class="v">4</div><div class="l">Workspaces</div></div>
+                    <div class="h-stat"><div class="v">94</div><div class="l">Iterations</div></div>
+                    <div class="h-stat"><div class="v">J+M</div><div class="l">Metrics</div></div>
+                </div>
+                <div class="h-bar"><div style="width: 60%;"></div></div>
+                <div class="h-meta"><span>长链路验证</span><span>数据收集中</span></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============== TASK DIMENSION ============== -->
+<section class="dim-banner dim-banner-task" id="task">
+    <div class="dim-banner-inner">
+        <div class="dim-row">
+            <span class="dim-icon-big">🎯</span>
+            <h2>Task<span class="dim-en">任务维度</span></h2>
+        </div>
+        <p class="dim-desc">逐任务行为画像：20 个 InnovatorBench Task 的通过率、最佳模型、零分率、行为特征。每个 Task 有独立的行为分析报告。</p>
+        <div class="dim-pills">
+            <span class="dim-pill">20 tasks</span>
+            <span class="dim-pill">200 total runs</span>
+            <span class="dim-pill">160 scored &gt; 0</span>
+        </div>
+    </div>
+</section>
+
 <section class="section" id="tasks">
     <div class="section-header">
         <h2>Task Behavioral Analysis</h2>
@@ -1945,195 +2114,6 @@
             </thead>
             <tbody id="taskLeaderboardBody"></tbody>
         </table>
-    </div>
-</section>
-
-<!-- Long Decision Chain Regression Analysis Section -->
-<section class="section" id="longchain" style="background: #fff; max-width: none; padding-left: 2rem; padding-right: 2rem;">
-    <div style="max-width: 1200px; margin: 0 auto;">
-        <div class="section-header">
-            <h2>长决策链路深度回归分析</h2>
-            <div class="separator"></div>
-            <p>655条轨迹 · 104,734个节点 · 5维度回归分析 · 统计显著性检验</p>
-        </div>
-
-        <!-- Key Findings Cards -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 24px 0;">
-            <div style="background: linear-gradient(135deg, #1e1b4b, #312e81); color: #fff; padding: 20px; border-radius: 12px;">
-                <div style="font-size: 0.8rem; opacity: 0.7;">轨迹长度效应</div>
-                <div style="font-size: 2rem; font-weight: 800; color: #f87171;">OR = 0.26</div>
-                <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px;">长度翻倍 → 成功率降至26%（p≈0）</div>
-            </div>
-            <div style="background: linear-gradient(135deg, #1e1b4b, #312e81); color: #fff; padding: 20px; border-radius: 12px;">
-                <div style="font-size: 0.8rem; opacity: 0.7;">衰减形态</div>
-                <div style="font-size: 2rem; font-weight: 800; color: #fbbf24;">U形非线性</div>
-                <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px;">quadratic p=2e-12，中段最差</div>
-            </div>
-            <div style="background: linear-gradient(135deg, #1e1b4b, #312e81); color: #fff; padding: 20px; border-radius: 12px;">
-                <div style="font-size: 0.8rem; opacity: 0.7;">最敏感指标 J42</div>
-                <div style="font-size: 2rem; font-weight: 800; color: #f87171;">-0.61/log步</div>
-                <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px;">长轨迹该指标严重低分（R²=0.43）</div>
-            </div>
-            <div style="background: linear-gradient(135deg, #1e1b4b, #312e81); color: #fff; padding: 20px; border-radius: 12px;">
-                <div style="font-size: 0.8rem; opacity: 0.7;">饱和交互效应</div>
-                <div style="font-size: 2rem; font-weight: 800; color: #4ade80;">p=4.6e-8</div>
-                <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px;">长轨迹后半段重复增加更多</div>
-            </div>
-        </div>
-
-        <!-- Tab Navigation for 5 analyses -->
-        <div id="lcTabs" style="display: flex; gap: 4px; margin: 30px 0 20px; border-bottom: 2px solid var(--border); padding-bottom: 0;">
-            <button onclick="showLcTab(0)" class="lc-tab lc-tab-active" id="lcTab0">决策衰减</button>
-            <button onclick="showLcTab(1)" class="lc-tab" id="lcTab1">信息遗忘</button>
-            <button onclick="showLcTab(2)" class="lc-tab" id="lcTab2">策略转换</button>
-            <button onclick="showLcTab(3)" class="lc-tab" id="lcTab3">Context饱和</button>
-            <button onclick="showLcTab(4)" class="lc-tab" id="lcTab4">指标×长度</button>
-        </div>
-
-        <!-- Tab 0: Decision Quality Decay -->
-        <div class="lc-panel" id="lcPanel0">
-            <div style="background: #eff6ff; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 20px; font-size: 0.9rem;">
-                <strong>方法：</strong>Logistic回归，因变量=observation.success，自变量=rel_position（0-1），控制模型和log(轨迹长度)。N=103,027。
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                <div style="background:#f8fafc; border-radius:10px; padding:16px;"><canvas id="lcChart1a" height="220"></canvas></div>
-                <div style="background:#f8fafc; border-radius:10px; padding:16px;"><canvas id="lcChart1b" height="220"></canvas></div>
-            </div>
-            <h3 style="font-size:1rem; margin: 16px 0 10px; color: var(--navy);">Per-Model衰减系数（Logistic回归）</h3>
-            <div class="metric-table-wrap">
-            <table>
-                <thead><tr><th>模型</th><th>位置系数</th><th>Odds Ratio</th><th>p值</th><th>N</th><th>解读</th></tr></thead>
-                <tbody>
-                <tr><td>glm-4-5-wo-interact</td><td style="color:var(--red);font-weight:700">-2.142</td><td>0.12</td><td style="color:var(--green)">1.6e-21***</td><td>4,069</td><td>后段暴跌</td></tr>
-                <tr><td>kimi-k2-instruct-0905-gzy</td><td style="color:var(--red);font-weight:700">-10.674</td><td>≈0</td><td style="color:var(--green)">1.1e-14***</td><td>2,850</td><td>近乎完全失败</td></tr>
-                <tr><td>grok-4</td><td style="color:var(--red)">-1.080</td><td>0.34</td><td style="color:var(--green)">4.2e-4***</td><td>1,062</td><td>明显衰减</td></tr>
-                <tr><td>glm-4-5-w-interact-filter</td><td style="color:var(--red)">-0.593</td><td>0.55</td><td style="color:var(--green)">9.8e-6***</td><td>14,180</td><td>中度衰减</td></tr>
-                <tr><td>claude-4-sonnet</td><td style="color:var(--gold)">-0.152</td><td>0.86</td><td>0.019*</td><td>23,951</td><td>轻微衰减</td></tr>
-                <tr><td>gpt-5</td><td>-0.056</td><td>0.95</td><td style="color:var(--text-light)">0.825</td><td>6,591</td><td style="color:var(--text-light)">无显著衰减</td></tr>
-                <tr><td>kimi-k2.5</td><td style="color:var(--green)">+0.980</td><td>2.66</td><td style="color:var(--green)">0.004**</td><td>5,114</td><td style="color:var(--green)">后段反而更好</td></tr>
-                <tr><td>glm47-codeact-rebench</td><td style="color:var(--green);font-weight:700">+2.904</td><td>18.24</td><td style="color:var(--green)">1.9e-80***</td><td>5,971</td><td style="color:var(--green)">后段大幅改善</td></tr>
-                </tbody>
-            </table>
-            </div>
-            <div style="background: #fef3c7; border-left: 4px solid var(--gold); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 16px; font-size: 0.85rem;">
-                <strong>非线性检验：</strong>quadratic系数=+1.008（p=2e-12）。衰减呈U形——中段最差、首尾较好。可能原因：中段为"摸索"阶段，后段已锁定方案。
-            </div>
-        </div>
-
-        <!-- Tab 1: Information Forgetting -->
-        <div class="lc-panel" id="lcPanel1" style="display:none;">
-            <div style="background: #eff6ff; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 20px; font-size: 0.9rem;">
-                <strong>方法：</strong>OLS回归，因变量=文件重访步数间隔，自变量=首次访问位置+log(长度)+模型。N=5,060个文件重访事件。R²=0.079。
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                <div style="background:#f8fafc; border-radius:10px; padding:16px;"><canvas id="lcChart2a" height="220"></canvas></div>
-                <div style="background:#f8fafc; border-radius:10px; padding:16px;"><canvas id="lcChart2b" height="220"></canvas></div>
-            </div>
-            <h3 style="font-size:1rem; margin: 16px 0 10px; color: var(--navy);">Per-Model遗忘系数</h3>
-            <div class="metric-table-wrap">
-            <table>
-                <thead><tr><th>模型</th><th>位置系数</th><th>p值</th><th>R²</th><th>平均重访间隔</th><th>解读</th></tr></thead>
-                <tbody>
-                <tr><td>gpt-5</td><td style="color:var(--red);font-weight:700">-114.2</td><td style="color:var(--green)">3.4e-5***</td><td>0.251</td><td>60.7步</td><td>最长遗忘、早期信息最易丢</td></tr>
-                <tr><td>glm47-codeact-rebench</td><td style="color:var(--red)">-109.0</td><td style="color:var(--green)">2.6e-13***</td><td>0.151</td><td>24.6步</td><td>高遗忘率</td></tr>
-                <tr><td>glm47</td><td style="color:var(--red)">-96.2</td><td style="color:var(--green)">1.7e-6***</td><td>0.088</td><td>39.3步</td><td>高遗忘</td></tr>
-                <tr><td>kimi-k2.5</td><td style="color:var(--red)">-93.6</td><td style="color:var(--green)">2.8e-7***</td><td>0.130</td><td>40.9步</td><td>高遗忘</td></tr>
-                <tr><td>claude-4-sonnet</td><td style="color:var(--gold)">-68.5</td><td style="color:var(--green)">8.0e-26***</td><td>0.210</td><td>28.8步</td><td>中等遗忘（R²最高）</td></tr>
-                <tr><td>grok-4</td><td style="color:var(--green)">-13.2</td><td>1.6e-3**</td><td>0.162</td><td>8.6步</td><td>遗忘少（轨迹短）</td></tr>
-                </tbody>
-            </table>
-            </div>
-            <div style="background: #fef3c7; border-left: 4px solid var(--gold); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 16px; font-size: 0.85rem;">
-                <strong>非线性遗忘：</strong>二次项显著（p=8e-23）。position=0.1的信息平均69步后被重访，position=0.7的仅21步。早期信息遗忘曲线更陡。
-            </div>
-        </div>
-
-        <!-- Tab 2: Strategy Switch -->
-        <div class="lc-panel" id="lcPanel2" style="display:none;">
-            <div style="background: #eff6ff; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 20px; font-size: 0.9rem;">
-                <strong>方法：</strong>OLS回归，因变量=切换前后success差值，自变量=切换位置+log(长度)+模型。N=66,665个策略切换事件。
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                <div style="background:#f8fafc; border-radius:10px; padding:16px;"><canvas id="lcChart3a" height="220"></canvas></div>
-                <div style="background:#f8fafc; border-radius:10px; padding:16px;"><canvas id="lcChart3b" height="220"></canvas></div>
-            </div>
-            <div style="background: #fef3c7; border-left: 4px solid var(--gold); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 16px; font-size: 0.85rem;">
-                <strong>核心结论：</strong>R²=0.0008——位置对转换效果几乎无解释力。策略切换好坏主要取决于<strong>切换类型</strong>（null→action好，action→null差），而非时机。
-            </div>
-            <h3 style="font-size:1rem; margin: 16px 0 10px; color: var(--navy);">切换类型效果排名</h3>
-            <div class="metric-table-wrap">
-            <table>
-                <thead><tr><th>方向</th><th>From</th><th>To</th><th>Mean Improvement</th><th>N</th></tr></thead>
-                <tbody>
-                <tr style="background:#ecfdf5"><td style="color:var(--green);font-weight:700">最佳</td><td>null</td><td>create_file</td><td style="color:var(--green)">+0.575</td><td>24</td></tr>
-                <tr style="background:#ecfdf5"><td style="color:var(--green)">佳</td><td>null</td><td>sleep</td><td style="color:var(--green)">+0.491</td><td>51</td></tr>
-                <tr style="background:#ecfdf5"><td style="color:var(--green)">佳</td><td>null</td><td>edit_file</td><td style="color:var(--green)">+0.388</td><td>32</td></tr>
-                <tr style="background:#ecfdf5"><td style="color:var(--green)">佳</td><td>null</td><td>run_command</td><td style="color:var(--green)">+0.343</td><td>86</td></tr>
-                <tr style="background:#fef2f2"><td style="color:var(--red);font-weight:700">最差</td><td>run_command</td><td>null</td><td style="color:var(--red)">-0.500</td><td>146</td></tr>
-                <tr style="background:#fef2f2"><td style="color:var(--red)">差</td><td>open_file</td><td>null</td><td style="color:var(--red)">-0.515</td><td>71</td></tr>
-                <tr style="background:#fef2f2"><td style="color:var(--red)">差</td><td>sleep</td><td>null</td><td style="color:var(--red)">-0.491</td><td>27</td></tr>
-                </tbody>
-            </table>
-            </div>
-            <div style="background: #f0f9ff; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 16px; font-size: 0.85rem;">
-                <strong>模式：</strong>"行动化"转换（null→具体执行）有益；"犹豫化"转换（具体执行→null/停滞）有害。ANOVA F=11.78, p=1.4e-9。
-            </div>
-        </div>
-
-        <!-- Tab 3: Context Saturation -->
-        <div class="lc-panel" id="lcPanel3" style="display:none;">
-            <div style="background: #eff6ff; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 20px; font-size: 0.9rem;">
-                <strong>方法：</strong>面板回归，每条轨迹切10个decile，因变量=diversity/repetition/think_ratio，自变量=position+log(length)+model。N=6,240。
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                <div style="background:#f8fafc; border-radius:10px; padding:16px;"><canvas id="lcChart4a" height="220"></canvas></div>
-                <div style="background:#f8fafc; border-radius:10px; padding:16px;"><canvas id="lcChart4b" height="220"></canvas></div>
-            </div>
-            <h3 style="font-size:1rem; margin: 16px 0 10px; color: var(--navy);">全局面板回归系数</h3>
-            <div class="metric-table-wrap">
-            <table>
-                <thead><tr><th>因变量</th><th>position系数</th><th>p值</th><th>length系数</th><th>p值</th><th>R²</th><th>方向</th></tr></thead>
-                <tbody>
-                <tr><td>action_diversity</td><td style="color:var(--green)">+0.086</td><td style="color:var(--green)">1.0e-44***</td><td style="color:var(--red)">-0.205</td><td style="color:var(--green)">≈0***</td><td>0.550</td><td>后段多样性↑ 但长轨迹整体↓</td></tr>
-                <tr><td>repetition_rate</td><td style="color:var(--green)">-0.089</td><td style="color:var(--green)">1.5e-43***</td><td style="color:var(--red)">+0.180</td><td style="color:var(--green)">≈0***</td><td>0.482</td><td>后段重复↓ 但长轨迹整体↑</td></tr>
-                <tr><td>think_ratio</td><td style="color:var(--red)">-0.032</td><td style="color:var(--green)">6.5e-38***</td><td style="color:var(--red)">-0.012</td><td style="color:var(--green)">6.7e-24***</td><td>0.154</td><td>后段思考↓ 长轨迹也更少思考</td></tr>
-                </tbody>
-            </table>
-            </div>
-            <div style="background: #fef3c7; border-left: 4px solid var(--gold); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 16px; font-size: 0.85rem;">
-                <strong>交互效应：</strong>position × length 系数=+0.053, p=4.6e-8。<strong>越长的轨迹，后半段重复增加越多</strong>（短轨迹后段反而更灵活）。<br>
-                <strong>特殊模型：</strong>gpt-5是唯一后段退化模型（diversity↓ rep↑）；kimi-k2-instruct是唯一think ratio上升的模型。
-            </div>
-        </div>
-
-        <!-- Tab 4: Metric × Length -->
-        <div class="lc-panel" id="lcPanel4" style="display:none;">
-            <div style="background: #eff6ff; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 20px; font-size: 0.9rem;">
-                <strong>方法：</strong>对24个Judge指标分别做 score ~ log_traj_length + C(model) 的OLS回归。N=14,523个有效评分。
-            </div>
-            <div style="background:#f8fafc; border-radius:10px; padding:16px; margin-bottom: 20px;"><canvas id="lcChart5a" height="260"></canvas></div>
-            <h3 style="font-size:1rem; margin: 16px 0 10px; color: var(--navy);">指标长度敏感度排名</h3>
-            <div class="metric-table-wrap">
-            <table>
-                <thead><tr><th>指标</th><th>长度系数</th><th>p值</th><th>方向</th><th>R²(simple)</th><th>R²(+model)</th></tr></thead>
-                <tbody>
-                <tr><td><strong>J42</strong> 计划连贯性</td><td style="color:var(--red);font-weight:700">-0.609</td><td style="color:var(--green)">1.1e-51***</td><td style="color:var(--red)">负↓↓↓</td><td>0.272</td><td>0.430</td></tr>
-                <tr><td><strong>J48</strong> 步骤召回率</td><td style="color:var(--red);font-weight:700">-0.413</td><td style="color:var(--green)">1.1e-22***</td><td style="color:var(--red)">负↓↓</td><td>0.056</td><td>0.253</td></tr>
-                <tr><td><strong>J47</strong> 步骤精确率</td><td style="color:var(--red);font-weight:700">-0.364</td><td style="color:var(--green)">3.6e-22***</td><td style="color:var(--red)">负↓↓</td><td>0.204</td><td>0.295</td></tr>
-                <tr><td><strong>J40</strong> 工具选择</td><td style="color:var(--red)">-0.360</td><td style="color:var(--green)">1.6e-18***</td><td style="color:var(--red)">负↓↓</td><td>0.054</td><td>0.331</td></tr>
-                <tr><td>J25 操作效率</td><td style="color:var(--red)">-0.283</td><td style="color:var(--green)">7.2e-14***</td><td style="color:var(--red)">负↓</td><td>0.023</td><td>0.228</td></tr>
-                <tr><td>J35 死循环检测</td><td style="color:var(--red)">-0.278</td><td style="color:var(--green)">1.8e-8***</td><td style="color:var(--red)">负↓</td><td>0.080</td><td>0.202</td></tr>
-                <tr style="border-top: 2px solid var(--border)"><td>J70 假设验证</td><td style="color:var(--green)">+0.186</td><td style="color:var(--green)">2.2e-6***</td><td style="color:var(--green)">正↑</td><td>0.095</td><td>0.232</td></tr>
-                <tr><td><strong>J32</strong> 轨迹满意度</td><td style="color:var(--green);font-weight:700">+0.485</td><td style="color:var(--green)">1.7e-6***</td><td style="color:var(--green)">正↑↑</td><td>0.095</td><td>0.225</td></tr>
-                </tbody>
-            </table>
-            </div>
-            <div style="background: #f0f9ff; border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 16px; font-size: 0.85rem;">
-                <strong>启示：</strong>11/24指标受长度显著负影响 — 这些指标在评估长轨迹时需要按长度校准（deconfound），否则长轨迹天然低分。J42（计划连贯性）受影响最大，R²=0.43说明43%的得分方差由长度+模型解释。
-            </div>
-        </div>
-
-        <a href="deep_regression_report.html" style="display: inline-block; margin-top: 24px; padding: 10px 20px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600;">查看完整独立报告 →</a>
     </div>
 </section>
 
@@ -3393,11 +3373,9 @@ function renderTrajExamples() {
 document.addEventListener('DOMContentLoaded', () => {
     renderCatalog('all');
     renderLeaderboard();
-    renderAutoMetrics();
     renderRadarChart();
     renderTaskGrid();
     renderTaskLeaderboard();
-    renderLongChainCharts();
 });
 
 // ======== Long Chain Analysis Tabs & Charts ========
