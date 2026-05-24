@@ -1513,59 +1513,139 @@
 </section>
 
 <!-- Overview Section -->
+<style>
+.taxonomy-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.4rem; margin-top: 1.5rem; }
+@media (max-width: 900px) { .taxonomy-grid { grid-template-columns: 1fr; } }
+.tax-chapter { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 1.4rem 1.5rem; position: relative; transition: all .2s; }
+.tax-chapter:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.06); border-color: var(--accent); }
+.tax-chapter::before { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 5px; border-radius: 14px 0 0 14px; }
+.tax-chapter.t-cap::before     { background: linear-gradient(180deg, #d97706, #f59e0b); }
+.tax-chapter.t-failure::before { background: linear-gradient(180deg, #dc2626, #ef4444); }
+.tax-chapter.t-inter::before   { background: linear-gradient(180deg, #0d9488, #10b981); }
+.tax-chapter.t-eval::before    { background: linear-gradient(180deg, #7c3aed, #a78bfa); }
+.tax-head { display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; }
+.tax-head h3 { margin: 0; font-size: 1.05rem; color: var(--navy); font-weight: 700; line-height: 1.3; }
+.tax-head h3 .tax-num { display:inline-block; padding:1px 8px; border-radius:6px; font-size:0.72rem; font-weight:700; margin-right:.45rem; vertical-align: middle; }
+.tax-head h3 .tax-en { color: var(--text-light); font-weight: 500; font-size: .85rem; margin-left: .35rem; }
+.tax-head .tax-count { font-size: 1.6rem; font-weight: 800; color: var(--primary); line-height: 1; white-space: nowrap; }
+.tax-head .tax-count small { display:block; font-size:.65rem; color: var(--text-light); font-weight:500; letter-spacing:.5px; text-align:right; margin-top:2px; }
+.tax-desc { font-size: .82rem; color: var(--text-light); margin: .5rem 0 .9rem; line-height: 1.5; }
+.tax-subs { display: flex; flex-direction: column; gap: .35rem; }
+.tax-sub { display: grid; grid-template-columns: 26px 1fr auto; align-items: center; gap: .55rem; padding: .35rem .5rem; background: #f8fafc; border-radius: 6px; font-size: .82rem; transition: background .15s; }
+.tax-sub:hover { background: #eef2ff; }
+.tax-sub .ts-id   { font-family: ui-monospace, SFMono-Regular, monospace; color: var(--primary); font-weight: 700; font-size: .78rem; }
+.tax-sub .ts-name { color: var(--text); }
+.tax-sub .ts-name .ts-mids { color: var(--text-light); font-size: .72rem; margin-left:.35rem; font-family: ui-monospace, SFMono-Regular, monospace; }
+.tax-sub .ts-num  { font-weight: 700; color: var(--primary); font-size: .78rem; padding: 1px 7px; background: rgba(37,99,235,.08); border-radius: 999px; }
+.tax-foot { margin-top: .9rem; padding-top: .8rem; border-top: 1px dashed var(--border); display:flex; justify-content:space-between; gap:.5rem; font-size: .72rem; color: var(--text-light); }
+.tax-foot a { color: var(--accent); text-decoration: none; font-weight: 600; }
+.tax-foot a:hover { text-decoration: underline; }
+.tax-tag-cap     { background: rgba(217,119,6,.12);  color: #b45309; }
+.tax-tag-failure { background: rgba(220,38,38,.12);  color: #b91c1c; }
+.tax-tag-inter   { background: rgba(13,148,136,.12); color: #0f766e; }
+.tax-tag-eval    { background: rgba(124,58,237,.12); color: #6d28d9; }
+
+.overview-stats { display: flex; gap: 1.5rem; flex-wrap: wrap; padding: 1rem 1.2rem; background: linear-gradient(135deg, #f8fafc, #fff); border: 1px solid var(--border); border-radius: 12px; margin: 1.2rem 0; }
+.overview-stats .ov-stat { display:flex; align-items:baseline; gap:.4rem; }
+.overview-stats .ov-stat .v { font-size: 1.4rem; font-weight: 800; color: var(--primary); }
+.overview-stats .ov-stat .l { font-size: .8rem; color: var(--text-light); }
+.overview-stats .ov-stat .sep { color: var(--border); margin: 0 .3rem; }
+</style>
 <section class="section" id="overview">
     <div class="section-header">
         <h2>评估框架</h2>
         <div class="separator"></div>
-        <p>面向复杂研究任务的 AI Agent 多维度行为评估</p>
+        <p>4 大章节 · 17 个指标族 · 96 个细粒度指标</p>
     </div>
 
     <p class="overview-desc">
-        本框架超越简单的通过/失败判定，提供面向复杂研究任务的 AI Agent 多维度行为评估。我们从 6 个正交维度出发，使用 24 个精心校准的 LLM-as-Judge 指标和 34 个自动化指标对 Agent 进行全面评估。
+        本框架围绕《Agent-Eval Proposal v4》的 4 个核心章节构建：
+        <strong>§3.2 能力剖面图</strong>（任务/行为/效率/工具维度的 34 个指标）、
+        <strong>§3.3 失败传播链</strong>（根因/距离/模式/CodeTracer/SWE-bench 六大子族 24 个指标）、
+        <strong>§3.4 交互判断力</strong>（10 个交互专项指标）、
+        <strong>§3.5/§3.6 难度分级 + 评估器</strong>（推理/对比/去偏/分桶/元指标 28 个）。
     </p>
 
-    <div class="dim-grid">
-        <div class="dim-card">
-            <div class="dim-card-header">
-                <div class="dim-icon" style="background:rgba(217,119,6,0.1);">&#9733;</div>
-                <h3>总体质量 <span>Overall Quality</span></h3>
+    <div class="overview-stats">
+        <div class="ov-stat"><span class="v">96</span><span class="l">total metrics</span></div>
+        <span class="sep">·</span>
+        <div class="ov-stat"><span class="v">4</span><span class="l">chapters</span></div>
+        <span class="sep">·</span>
+        <div class="ov-stat"><span class="v">17</span><span class="l">sub-families</span></div>
+        <span class="sep">·</span>
+        <div class="ov-stat"><span class="v">35</span><span class="l">LLM-Judge</span></div>
+        <span class="sep">·</span>
+        <div class="ov-stat"><span class="v">41</span><span class="l">Rule-based</span></div>
+        <span class="sep">·</span>
+        <div class="ov-stat"><span class="v">20</span><span class="l">Hybrid / EXP / STAT</span></div>
+    </div>
+
+    <div class="taxonomy-grid">
+        <!-- ========== §3.2 Capability Profile ========== -->
+        <div class="tax-chapter t-cap">
+            <div class="tax-head">
+                <h3><span class="tax-num tax-tag-cap">§3.2</span>Agent 能力剖面图<span class="tax-en">Capability Profile</span></h3>
+                <div class="tax-count">34<small>METRICS</small></div>
             </div>
-            <div class="metrics-list">J32 轨迹满意度</div>
+            <p class="tax-desc">从任务属性、行为模式、效率开销、工具使用四个角度刻画 Agent 的能力画像。</p>
+            <div class="tax-subs">
+                <div class="tax-sub"><span class="ts-id">I-A</span><span class="ts-name">任务属性 Task Attributes <span class="ts-mids">#1–4</span></span><span class="ts-num">4</span></div>
+                <div class="tax-sub"><span class="ts-id">I-B</span><span class="ts-name">行为属性 Behavioral Attributes <span class="ts-mids">#5–18</span></span><span class="ts-num">14</span></div>
+                <div class="tax-sub"><span class="ts-id">I-C</span><span class="ts-name">效率属性 Efficiency Attributes <span class="ts-mids">#19–26</span></span><span class="ts-num">8</span></div>
+                <div class="tax-sub"><span class="ts-id">I-D</span><span class="ts-name">工具使用 Tool Usage (TRAJECT-Bench) <span class="ts-mids">#27–34</span></span><span class="ts-num">8</span></div>
+            </div>
+            <div class="tax-foot"><span>Sources: v3 / v3-M / TRAJ / SUPP / CT</span><a href="metrics_all.html#part-i">查看完整定义 →</a></div>
         </div>
-        <div class="dim-card">
-            <div class="dim-card-header">
-                <div class="dim-icon" style="background:rgba(220,38,38,0.1);">&#9881;</div>
-                <h3>鲁棒性 <span>Robustness</span></h3>
+
+        <!-- ========== §3.3 Failure Propagation ========== -->
+        <div class="tax-chapter t-failure">
+            <div class="tax-head">
+                <h3><span class="tax-num tax-tag-failure">§3.3</span>失败传播链分析<span class="tax-en">Failure Propagation</span></h3>
+                <div class="tax-count">24<small>METRICS</small></div>
             </div>
-            <div class="metrics-list">J06, J39, J40, J41, J48, J49</div>
+            <p class="tax-desc">追踪错误从根因到暴露的完整链路：定位、距离、模式、预警、层级诊断与代码修复专项。</p>
+            <div class="tax-subs">
+                <div class="tax-sub"><span class="ts-id">II-A</span><span class="ts-name">根因定位 Root Cause <span class="ts-mids">#35–36</span></span><span class="ts-num">2</span></div>
+                <div class="tax-sub"><span class="ts-id">II-B</span><span class="ts-name">传播距离 Propagation Length <span class="ts-mids">#37–38</span></span><span class="ts-num">2</span></div>
+                <div class="tax-sub"><span class="ts-id">II-C</span><span class="ts-name">传播模式 Propagation Patterns <span class="ts-mids">#39–42</span></span><span class="ts-num">4</span></div>
+                <div class="tax-sub"><span class="ts-id">II-D</span><span class="ts-name">实时预警 + 干预评估 <span class="ts-mids">#43–46</span></span><span class="ts-num">4</span></div>
+                <div class="tax-sub"><span class="ts-id">II-E</span><span class="ts-name">CodeTracer 层级诊断 <span class="ts-mids">#47–52</span></span><span class="ts-num">6</span></div>
+                <div class="tax-sub"><span class="ts-id">II-F</span><span class="ts-name">SWE-bench 代码修复 <span class="ts-mids">#53–58</span></span><span class="ts-num">6</span></div>
+            </div>
+            <div class="tax-foot"><span>Sources: v3 / v3-M / SUPP / CT</span><a href="metrics_all.html#part-ii">查看完整定义 →</a></div>
         </div>
-        <div class="dim-card">
-            <div class="dim-card-header">
-                <div class="dim-icon" style="background:rgba(124,58,237,0.1);">&#9889;</div>
-                <h3>推理能力 <span>Reasoning</span></h3>
+
+        <!-- ========== §3.4 Interaction Judgment ========== -->
+        <div class="tax-chapter t-inter">
+            <div class="tax-head">
+                <h3><span class="tax-num tax-tag-inter">§3.4</span>交互判断力<span class="tax-en">Interaction Judgment</span></h3>
+                <div class="tax-count">10<small>METRICS</small></div>
             </div>
-            <div class="metrics-list">J35, J50, J63, J64, J70, J73</div>
+            <p class="tax-desc">评估 Agent 与人类协作时的提问/确认/反馈处理：精确率、召回率、问题质量、不确定性校准。</p>
+            <div class="tax-subs">
+                <div class="tax-sub"><span class="ts-id">III</span><span class="ts-name">检查点召回 / 交互精确率 <span class="ts-mids">#59–61</span></span><span class="ts-num">3</span></div>
+                <div class="tax-sub"><span class="ts-id">III</span><span class="ts-name">触发模式 + Hedging 频率 <span class="ts-mids">#62–63</span></span><span class="ts-num">2</span></div>
+                <div class="tax-sub"><span class="ts-id">III</span><span class="ts-name">不确定性校准 ECE / 问题质量 <span class="ts-mids">#64–65</span></span><span class="ts-num">2</span></div>
+                <div class="tax-sub"><span class="ts-id">III</span><span class="ts-name">反馈执行率 + 自评校准 + 利用率 <span class="ts-mids">#66–68</span></span><span class="ts-num">3</span></div>
+            </div>
+            <div class="tax-foot"><span>Sources: v3 / v3-M / SUPP &nbsp;·&nbsp; J60/J61/J65/J66/J67/J68</span><a href="metrics_all.html#part-iii">查看完整定义 →</a></div>
         </div>
-        <div class="dim-card">
-            <div class="dim-card-header">
-                <div class="dim-icon" style="background:rgba(5,150,105,0.1);">&#9203;</div>
-                <h3>效率 <span>Efficiency</span></h3>
+
+        <!-- ========== §3.5/§3.6 Difficulty + Evaluator ========== -->
+        <div class="tax-chapter t-eval">
+            <div class="tax-head">
+                <h3><span class="tax-num tax-tag-eval">§3.5/3.6</span>难度分级 + 评估器<span class="tax-en">Difficulty &amp; Evaluator</span></h3>
+                <div class="tax-count">28<small>METRICS</small></div>
             </div>
-            <div class="metrics-list">J25, J30, J37, J95</div>
-        </div>
-        <div class="dim-card">
-            <div class="dim-card-header">
-                <div class="dim-icon" style="background:rgba(37,99,235,0.1);">&#9878;</div>
-                <h3>行为质量 <span>Behavioral</span></h3>
+            <p class="tax-desc">推理质量 + 框架对比 + 评估去偏 + 形式化分桶 + 元指标 — 把"如何评估"本身作为研究对象。</p>
+            <div class="tax-subs">
+                <div class="tax-sub"><span class="ts-id">IV-A</span><span class="ts-name">推理质量 Reasoning Quality (SUPP) <span class="ts-mids">#69–73</span></span><span class="ts-num">5</span></div>
+                <div class="tax-sub"><span class="ts-id">IV-B</span><span class="ts-name">框架/模型对比 Cross-model (SUPP) <span class="ts-mids">#74–77</span></span><span class="ts-num">4</span></div>
+                <div class="tax-sub"><span class="ts-id">IV-C</span><span class="ts-name">评估去偏 Length-Controlled (AlpacaEval-LC) <span class="ts-mids">#78–84</span></span><span class="ts-num">7</span></div>
+                <div class="tax-sub"><span class="ts-id">IV-D</span><span class="ts-name">形式化分桶 Bucket Analysis (InterpretEval) <span class="ts-mids">#85–90</span></span><span class="ts-num">6</span></div>
+                <div class="tax-sub"><span class="ts-id">IV-E</span><span class="ts-name">评估器元指标 Meta-Evaluator <span class="ts-mids">#91–96</span></span><span class="ts-num">6</span></div>
             </div>
-            <div class="metrics-list">J13, J42, J68</div>
-        </div>
-        <div class="dim-card">
-            <div class="dim-card-header">
-                <div class="dim-icon" style="background:rgba(16,185,129,0.1);">&#9993;</div>
-                <h3>交互能力 <span>Interaction</span></h3>
-            </div>
-            <div class="metrics-list">J60, J61, J65, J66</div>
+            <div class="tax-foot"><span>Sources: SUPP / LC / IE / v3-M</span><a href="metrics_all.html#part-iv">查看完整定义 →</a></div>
         </div>
     </div>
 </section>
