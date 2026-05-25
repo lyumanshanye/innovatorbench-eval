@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent·Eval — 30 个待跑 LLM-Judge 指标</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f2440;
+    --accent: #2563eb;
+    --accent-light: #3b82f6;
+    --sky: #e0f2fe;
+    --ice: #f0f9ff;
+    --slate: #475569;
+    --muted: #94a3b8;
+    --bg: #fafbfc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --gold: #d97706;
+    --green: #059669;
+    --green-bg: #d1fae5;
+    --orange: #ea580c;
+    --orange-bg: #fff7ed;
+    --purple: #7c3aed;
+    --purple-bg: #ede9fe;
+    --rose: #be185d;
+    --rose-bg: #fce7f3;
+    --teal: #0d9488;
+    --teal-bg: #ccfbf1;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans SC',sans-serif; background:var(--bg); color:var(--navy); line-height:1.8; font-size:14px; -webkit-font-smoothing:antialiased; }
+
+  .cover { padding:80px 24px 60px; background:linear-gradient(160deg,#0f2440 0%,#1e3a5f 60%,#2563eb 100%); color:#fff; text-align:center; }
+  .cover-label { font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:4px; text-transform:uppercase; color:rgba(255,255,255,0.55); margin-bottom:24px; }
+  .cover-title { font-family:'Playfair Display',serif; font-size:clamp(34px,5vw,54px); font-weight:900; letter-spacing:-1px; line-height:1.15; }
+  .cover-subtitle { font-size:17px; font-weight:400; color:rgba(255,255,255,0.85); max-width:760px; margin:18px auto 0; }
+  .cover-back { display:inline-block; margin-top:30px; padding:8px 18px; border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:rgba(255,255,255,0.85); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:1px; }
+  .cover-back:hover { background:rgba(255,255,255,0.08); }
+
+  .main { max-width:1200px; margin:0 auto; padding:60px 24px 100px; }
+  h1 { font-family:'Playfair Display',serif; font-size:26px; font-weight:900; color:var(--navy); margin:56px 0 22px; padding-bottom:12px; border-bottom:3px solid var(--accent); display:flex; align-items:baseline; gap:12px; }
+  h1:first-of-type { margin-top:0; }
+  h1 .num { font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:500; color:var(--accent); background:var(--sky); padding:3px 9px; border-radius:4px; letter-spacing:1px; }
+  h2 { font-size:17px; font-weight:700; color:var(--accent); margin:30px 0 12px; }
+  h3 { font-size:15px; font-weight:700; color:var(--navy); margin:22px 0 10px; }
+  p { color:var(--slate); margin-bottom:14px; }
+  p strong { color:var(--navy); font-weight:700; }
+  code { font-family:'JetBrains Mono',monospace; font-size:12.5px; background:var(--ice); color:var(--navy); padding:1px 6px; border-radius:3px; }
+
+  .callout { background:var(--ice); border-left:3px solid var(--accent); padding:18px 22px; border-radius:0 6px 6px 0; margin:18px 0; }
+  .callout-warn { background:var(--orange-bg); border-left-color:var(--orange); }
+  .callout-warn strong { color:var(--orange); }
+
+  .compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:22px 0; }
+  @media (max-width:760px) { .compare-grid { grid-template-columns:1fr; } }
+  .compare-card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:22px; }
+  .compare-card.rule { border-top:3px solid var(--green); }
+  .compare-card.judge { border-top:3px solid var(--orange); }
+  .compare-card h3 { margin:0 0 12px; font-size:15px; }
+  .compare-card .tag { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; padding:2px 8px; border-radius:4px; letter-spacing:1px; }
+  .compare-card.rule .tag { background:var(--green-bg); color:var(--green); }
+  .compare-card.judge .tag { background:var(--orange-bg); color:var(--orange); }
+  .compare-card pre { background:var(--ice); padding:10px 12px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.6; color:var(--navy); overflow-x:auto; margin:8px 0; white-space:pre-wrap; }
+  .compare-card ul { margin:6px 0 0 18px; color:var(--slate); font-size:13px; }
+  .compare-card li { margin-bottom:4px; }
+
+  .group-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:24px 26px; margin:18px 0; }
+  .group-card-head { display:flex; align-items:baseline; gap:14px; margin-bottom:6px; padding-bottom:12px; border-bottom:1px solid var(--border); }
+  .group-card-head h2 { margin:0; font-size:18px; color:var(--navy); }
+  .group-card-head .count { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; padding:2px 8px; border-radius:4px; background:var(--sky); color:var(--accent); }
+  .group-card-head .why { color:var(--slate); font-size:12.5px; margin-left:auto; }
+
+  table { width:100%; border-collapse:collapse; margin:0; font-size:13px; }
+  table thead { background:var(--ice); }
+  table th { padding:10px 12px; text-align:left; font-weight:700; color:var(--navy); border-bottom:2px solid var(--border); font-size:12px; letter-spacing:0.3px; }
+  table td { padding:12px; border-bottom:1px solid var(--border); vertical-align:top; color:var(--slate); }
+  table tr:last-child td { border-bottom:none; }
+  table td.idx { font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--accent); width:40px; }
+  table td.name { font-weight:700; color:var(--navy); white-space:nowrap; }
+  table td.def { color:var(--slate); font-size:12.5px; }
+  table td.note { font-size:12px; color:var(--muted); font-style:italic; }
+
+  .stat-strip { display:flex; gap:14px; margin:22px 0 0; flex-wrap:wrap; }
+  .stat-pill { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:14px 18px; flex:1; min-width:180px; }
+  .stat-pill .v { font-family:'Playfair Display',serif; font-size:32px; font-weight:900; color:var(--accent); line-height:1; }
+  .stat-pill .l { font-size:12px; color:var(--slate); margin-top:6px; }
+
+  .footer { padding:30px 24px; text-align:center; color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:1px; border-top:1px solid var(--border); margin-top:60px; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-label">Agent·Eval v4 · LLM-Judge Pending</div>
+  <div class="cover-title">30 个待跑 LLM-Judge 指标</div>
+  <div class="cover-subtitle">v4 目录共 96 条指标 · 已实算 47 条（规则+统计） · 7 条因缺标注暂不可算 · <strong style="color:#fff">30 条需 LLM-as-Judge 流水线</strong> · 12 条其它（设计阶段 / N/A）</div>
+  <a class="cover-back" href="index.html">← 返回主目录</a>
+</div>
+
+<div class="main">
+
+<h1><span class="num">§1</span>为什么需要 LLM-Judge</h1>
+
+<p>v4 目录里 96 条指标按检测方式分三类：<strong>AUTO-RULE</strong>（确定性规则）、<strong>AUTO-STAT</strong>（统计聚合）、<strong>AUTO-JUDGE</strong>（语义判断）。前两类已经全部跑完，第三类 30 条都没跑。下面这张对比能直接说明区别——</p>
+
+<div class="compare-grid">
+  <div class="compare-card rule">
+    <h3><span class="tag">AUTO-RULE</span> &nbsp; 已跑完，不需要 LLM</h3>
+    <p style="font-size:13px;">举例 <strong>M07 先读后改率</strong>：edit_file 前是否对同一文件 open_file 过？</p>
+    <pre>for step in trajectory:
+    if step.action == "edit_file":
+        path = step.params["path"]
+        prev_opens = {s.params["path"]
+            for s in trajectory[:step.idx]
+            if s.action == "open_file"}
+        if path in prev_opens:
+            hit += 1
+        total += 1
+return hit / total</pre>
+    <ul>
+      <li>输入是结构化字段：<code>action_type</code>、<code>params</code>、<code>observation.success</code></li>
+      <li>判断规则可以写成代码——是否相等、是否包含、计数、比值</li>
+      <li>660 条轨迹 30 秒跑完，确定性输出</li>
+    </ul>
+  </div>
+
+  <div class="compare-card judge">
+    <h3><span class="tag">AUTO-JUDGE</span> &nbsp; 需要语义理解，没跑</h3>
+    <p style="font-size:13px;">举例 <strong>#69 推理-行动一致性</strong>：reasoning 里说的计划，跟实际调的工具是不是同一回事？</p>
+    <pre># 规则代码写不出来，因为：
+reasoning = """先看一下数据格式，
+  如果是 jsonl 的话再决定后面怎么处理"""
+
+action = open_file("data/train.csv")
+
+# 一致吗？文件不是 jsonl 但他确实在"看格式"。
+# 必须有人/LLM 读自然语言才能判断。</pre>
+    <ul>
+      <li>输入是<strong>自然语言文本</strong>：reasoning、observation message、人类反馈、judge 评语</li>
+      <li>判断需要语义对齐、因果推理、意图理解——规则代码无法表达</li>
+      <li>只能让另一个强 LLM 当 judge，每步打标签</li>
+    </ul>
+  </div>
+</div>
+
+<div class="callout">
+  <strong>为什么之前的 47 条都能跑完？</strong> 它们要么是规则（开关型 / 计数型 / 比值型，全在结构化字段上），要么是统计（Spearman ρ、Kruskal H、GLM 系数等数值聚合）。轨迹 JSON 里 <code>action_type</code>/<code>params</code>/<code>success</code>/<code>error_message</code> 这些字段是机器写的，规则代码可以稳定提取。但 <code>thinking</code>、<code>content</code>、<code>observation_message</code> 是模型生成的自然语言，里面藏的是<em>意图、假设、不确定性、反思</em>——这些必须语义理解才能量化。
+</div>
+
+<div class="callout callout-warn">
+  <strong>跑这 30 条需要的实际工程量</strong>：660 条轨迹 × 平均 ~80 个 react step ≈ <strong>52,800 次 judge 调用</strong>（每条指标）。粗算用 4o-mini 每次调用 ¥0.005，每条指标约 ¥260；30 条全跑约 <strong>¥8,000 + 6 小时</strong>。其中 9 条还需要先标注因果图 / 参考轨迹 / 子任务依赖图，工程量翻几倍。建议分两批：先跑 6-8 条 judge 提示直接、价值高的，再决定剩下的。
+</div>
+
+<div class="stat-strip">
+  <div class="stat-pill"><div class="v">30</div><div class="l">JUDGE 指标待跑</div></div>
+  <div class="stat-pill"><div class="v">5</div><div class="l">主题分组</div></div>
+  <div class="stat-pill"><div class="v">~52K</div><div class="l">单指标 judge 调用</div></div>
+  <div class="stat-pill"><div class="v">6h</div><div class="l">全跑预计耗时</div></div>
+</div>
+
+<h1><span class="num">§2</span>30 条指标分组清单</h1>
+
+<p>按主题分 5 组。每组里都标了——<em>定义</em>（指标量什么）、<em>需要 judge 干嘛</em>（让 LLM 输出什么类型的标签）、<em>额外标注</em>（除了 judge 之外还需要的人工 / 离线工作）。</p>
+
+<div class="group-card">
+  <div class="group-card-head">
+    <h2>组 A · 错误恢复 / 根因 / 传播分析</h2>
+    <span class="count">10 条</span>
+    <span class="why">judge 任务：在 react step 序列上标注错误—诊断—恢复链条</span>
+  </div>
+  <table>
+    <thead><tr><th>#</th><th>名称</th><th>定义</th><th>额外标注 / 备注</th></tr></thead>
+    <tbody>
+      <tr><td class="idx">6</td><td class="name">错误恢复次数</td><td class="def">错误后成功恢复次数；分桶 0 / 1-2 / 3+</td><td class="note">judge 标注每个错误是否成功恢复</td></tr>
+      <tr><td class="idx">13</td><td class="name">跨阶段约束违反数</td><td class="def">pipeline 后期违反前期已做决策约束的次数</td><td class="note">judge 提取早期决策约束 + 后期违反</td></tr>
+      <tr><td class="idx">35</td><td class="name">根因定位准确率</td><td class="def">Judge 推断的根因与人工标注一致率</td><td class="note">需<strong>人工根因标注</strong>，否则只能用 judge 自洽率代替</td></tr>
+      <tr><td class="idx">36</td><td class="name">因果图跨 judge 一致率</td><td class="def">不同 judge 产出 causal graph 的 Cohen κ</td><td class="note">需起 ≥2 个不同 judge（GPT-4o + Claude）</td></tr>
+      <tr><td class="idx">37</td><td class="name">Propagation length</td><td class="def">根因暴露的步数距离</td><td class="note">先要 judge 标记根因 step + 故障暴露 step</td></tr>
+      <tr><td class="idx">38</td><td class="name">Propagation length 分布</td><td class="def">按模型聚合均值 / 方差 / 分位数</td><td class="note">在 #37 基础上聚合，无需新 judge 调用</td></tr>
+      <tr><td class="idx">39</td><td class="name">传播模式分布</td><td class="def">即时崩溃 / 格式坍塌 / 延迟爆炸 / 摘要固化 / 资源耗竭 / 监控死锁占比</td><td class="note">judge 给每条失败轨迹分类到 6 类模式</td></tr>
+      <tr><td class="idx">40</td><td class="name">错误固化率</td><td class="def">summarization 后错误仍持续影响的比例</td><td class="note">judge 判断 summary 是否消化了错误</td></tr>
+      <tr><td class="idx">41</td><td class="name">按错误类型分层固化率</td><td class="def">语法类 vs 设计决策类分别测固化率</td><td class="note">judge 同时给错误打类型标签</td></tr>
+      <tr><td class="idx">42</td><td class="name">CAT 类失败占比</td><td class="def">盲目重试 / Eval 滥用 / 资源泄漏 / 跨阶段违反合计占比</td><td class="note">部分子项已在 M10/M11/M12 算过，judge 用于"跨阶段"项</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="group-card">
+  <div class="group-card-head">
+    <h2>组 B · 步骤级评判（轨迹质量）</h2>
+    <span class="count">7 条</span>
+    <span class="why">judge 任务：给每个 step 二分类（有效/无效、对/错），再聚合</span>
+  </div>
+  <table>
+    <thead><tr><th>#</th><th>名称</th><th>定义</th><th>额外标注 / 备注</th></tr></thead>
+    <tbody>
+      <tr><td class="idx">25</td><td class="name">Effective Action Ratio</td><td class="def">推进目标的有效动作 / 总动作</td><td class="note">judge 给每步标"是否推进目标"</td></tr>
+      <tr><td class="idx">32</td><td class="name">Traj-Satisfy</td><td class="def">LLM 对整条轨迹的综合满意度（0-10）</td><td class="note">每条轨迹 1 次 judge 调用，最便宜的一条</td></tr>
+      <tr><td class="idx">47</td><td class="name">Step-level Precision</td><td class="def">judge 标记的失败步骤里真实是失败的比例</td><td class="note">需要参考 ground-truth 失败步</td></tr>
+      <tr><td class="idx">48</td><td class="name">Step-level Recall</td><td class="def">实际失败步骤被 judge 识别出的比例</td><td class="note">同上</td></tr>
+      <tr><td class="idx">49</td><td class="name">Step-level F1</td><td class="def">P/R 调和平均</td><td class="note">在 #47/48 基础上聚合，零新调用</td></tr>
+      <tr><td class="idx">50</td><td class="name">Evidence-to-Action Gap</td><td class="def">已收集正确信息但未正确执行的比例</td><td class="note">judge 同时看 observation 内容 + 后续 action</td></tr>
+      <tr><td class="idx">52</td><td class="name">阶段性错误类型分布</td><td class="def">按前 20% / 中 60% / 后 20% 统计错误类型变化</td><td class="note">judge 给错误打类型标签，按位置分桶</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="group-card">
+  <div class="group-card-head">
+    <h2>组 C · 推理 / 元认知</h2>
+    <span class="count">9 条</span>
+    <span class="why">judge 任务：解析 reasoning / thinking 字段的语言学特征 + 与行动对齐</span>
+  </div>
+  <table>
+    <thead><tr><th>#</th><th>名称</th><th>定义</th><th>额外标注 / 备注</th></tr></thead>
+    <tbody>
+      <tr><td class="idx">63</td><td class="name">Thinking hedging 频率</td><td class="def">thinking 中不确定性表达（"也许"、"可能"、"我不确定"）的密度</td><td class="note">仅部分模型有 reasoning 字段（kimi-k2.5、grok-4 等）</td></tr>
+      <tr><td class="idx">64</td><td class="name">不确定性校准误差 ECE</td><td class="def">hedging 强度分桶后比较置信度 vs 实际正确率</td><td class="note">在 #63 基础上 + 任务最终结果</td></tr>
+      <tr><td class="idx">65</td><td class="name">问题质量分</td><td class="def">主动发起问题的具体性 / 可回答性 / 价值（1-5 分）</td><td class="note">InnovatorBench 几乎没有提问，可能 N/A</td></tr>
+      <tr><td class="idx">66</td><td class="name">反馈执行率</td><td class="def">人类反馈后覆盖的反馈点 / 总反馈点</td><td class="note">InnovatorBench 没有人类反馈，N/A</td></tr>
+      <tr><td class="idx">67</td><td class="name">Agent 自评校准误差</td><td class="def">Agent 声称完成的检查点 vs 实际通过的</td><td class="note">judge 节点已有，可对照 finish_session 时的自陈</td></tr>
+      <tr><td class="idx">68</td><td class="name">Feedback 利用率</td><td class="def">eval 失败后的重试是否针对反馈做了对应修改</td><td class="note">judge 比较 eval message 与下一次 edit diff</td></tr>
+      <tr><td class="idx">69</td><td class="name">推理-行动一致性</td><td class="def">reasoning 中计划与实际 tool_calls 匹配度</td><td class="note">仅有 reasoning 的模型可算；judge 提示直白</td></tr>
+      <tr><td class="idx">70</td><td class="name">假设-验证循环率</td><td class="def">reasoning 中假设后有验证动作的比例</td><td class="note">judge 抽取假设句 + 后续验证 action</td></tr>
+      <tr><td class="idx">73</td><td class="name">双通道推理差异</td><td class="def">reasoning vs content 中表达差异</td><td class="note">仅 kimi-k2.5 有双通道，N=有限</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="group-card">
+  <div class="group-card-head">
+    <h2>组 D · 交互判断力</h2>
+    <span class="count">2 条</span>
+    <span class="why">judge 任务：判断"主动求证 / 主动请求决策"是否真正需要</span>
+  </div>
+  <table>
+    <thead><tr><th>#</th><th>名称</th><th>定义</th><th>额外标注 / 备注</th></tr></thead>
+    <tbody>
+      <tr><td class="idx">60</td><td class="name">交互精确率</td><td class="def">主动交互中确实需要人类决策的比例</td><td class="note">InnovatorBench 无 human-in-loop（参考 M62），N/A 概率高</td></tr>
+      <tr><td class="idx">61</td><td class="name">交互 F1</td><td class="def">召回率 + 精确率调和平均</td><td class="note">同上</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="group-card">
+  <div class="group-card-head">
+    <h2>组 E · 子任务依赖</h2>
+    <span class="count">2 条</span>
+    <span class="why">judge 任务：识别子任务边界 + 跨子任务的错误传播</span>
+  </div>
+  <table>
+    <thead><tr><th>#</th><th>名称</th><th>定义</th><th>额外标注 / 备注</th></tr></thead>
+    <tbody>
+      <tr><td class="idx">30</td><td class="name">Parameter Value 精确率</td><td class="def">参数值与预期值匹配度</td><td class="note">需<strong>每任务的预期参数值</strong>标注，InnovatorBench 没有 → 当前标 N/A</td></tr>
+      <tr><td class="idx">95</td><td class="name">子任务依赖传播长度</td><td class="def">subtask_k 的错误首次影响 subtask_{k+n} 的 n</td><td class="note">需<strong>子任务依赖图</strong>，judge 抽边 + 传播追踪</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h1><span class="num">§3</span>建议的执行顺序</h1>
+
+<p>30 条不会一次跑完。按"价值 / 工程量"排序，建议三批走：</p>
+
+<h2>第一批 · 容易跑、价值高（约 ¥1,500 + 90 分钟）</h2>
+<p style="margin-bottom:8px;"><strong>#32 Traj-Satisfy</strong>、<strong>#69 推理-行动一致性</strong>、<strong>#70 假设-验证循环率</strong>、<strong>#25 Effective Action Ratio</strong>、<strong>#67 Agent 自评校准</strong>、<strong>#68 Feedback 利用率</strong>。这 6 条 judge 提示直接、不需要额外标注、跟最终评分有理论关联，先跑能立刻验证 judge pipeline 是否有效。</p>
+
+<h2>第二批 · 错误分析全套（约 ¥2,500 + 180 分钟）</h2>
+<p style="margin-bottom:8px;">组 A 的 #6 / 13 / 39 / 40 / 41 / 42 + 组 B 的 #50 / 52。第一批跑通后，把错误恢复 / 传播 / 固化 / CAT 一次性算齐，能形成 v4 章节 II "失败模式" 的完整证据链。</p>
+
+<h2>第三批 · 需要外部标注的（不建议立即跑）</h2>
+<p>#35 根因定位（要人工根因）、#36 因果图一致（要 ≥2 judge）、#37/38 Propagation length（要 #37 标注先做）、#47/48/49 Step P/R/F1（要 ground-truth 失败步）、#95 依赖传播（要依赖图）、#63/64 hedging（仅部分模型有 reasoning）、#73 双通道（仅 kimi）、#60/61/65/66 在 InnovatorBench 上 N/A。</p>
+
+<div class="callout">
+  <strong>下一步选项</strong> ·
+  (a) 现在就起第一批 6 条 judge → 跑出来后并入主目录；
+  (b) 先把 judge prompt 模板和 pipeline 脚手架写好评审，确认无误再跑；
+  (c) 这页就当 roadmap 用，暂时不动。
+</div>
+
+</div>
+
+<div class="footer">
+  Agent·Eval v4 · LLM-Judge Pending · 30 metrics · 2026-05-25
+</div>
+
+</body>
+</html>
