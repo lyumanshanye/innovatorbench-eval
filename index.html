@@ -2314,7 +2314,8 @@ const metricData = [
      dim:'Robustness', detect:'JUDGE', source:'v3',
      formula:'Successful recovery requires ALL three: (1) Detection, (2) Strategy Change (not identical retry), (3) Forward Progress',
      scoring:'5=Excellent Recovery: All errors recovered, agent diagnoses root cause, recovery swift (<3 steps); 4=Good Recovery: Most errors (>75%) recovered, recovery may take 3-5 steps but succeeds; 3=Mixed Recovery: ~50% of errors recovered, some good recoveries mixed with blind retries; 2=Poor Recovery: <25% recovered, mostly blind retries or ignoring errors, slow to adapt; 1=No Recovery: Agent ignores all errors, retries identically, or gets stuck in error loops',
-     detail:'Counts successful recoveries from errors. Partial recovery = detection + strategy change but no progress. Failed recovery = ignores error, blindly retries, or changes strategy but still fails. N/A if no errors occur. Core resilience metric with second-highest eval correlation (ρ=0.759).'},
+     detail:'Counts successful recoveries from errors. Partial recovery = detection + strategy change but no progress. Failed recovery = ignores error, blindly retries, or changes strategy but still fails. N/A if no errors occur. Core resilience metric with second-highest eval correlation (ρ=0.759).',
+     mVariant:{id:'M6', url:'m6_error_recovery.html', en:'Error Recovery Count', n:646, mean:8.776, std:20.567, rho:-0.013, h:114.06, quality:2, rating:'D', range:'0+', source:'OpenSII Claude-4.7 (BatchA)', formula:'errors_total（被 judge 计数的总错误数；或 errors_recovered/errors_total 的恢复率）', scoring:'低: 错误少 (<3); 高: 错误多 (>15)', detail:'轨迹级错误总数与 eval ρ≈0 — 错误「数量」本身不是判别项，关键看错误「是否被恢复」。建议改用 m6_recovery_rate 作为衍生指标。当前 q=1 [D]。'}},
     {rank:5, id:'J68', url:'j68_feedback_utilization.html', en:'Feedback Utilization', zh:'反馈利用率', n:655, mean:2.40, std:0.76, rho:0.748, h:235.3, quality:176, rating:'S', range:'1-5',
      dim:'Behavioral', detect:'JUDGE', source:'SUPP',
      formula:'Utilization_Rate = UTILIZED / (UTILIZED + PARTIALLY_UTILIZED + IGNORED); feedback types: EVAL_FEEDBACK, ERROR_MESSAGES, HUMAN_FEEDBACK, SELF_FEEDBACK',
@@ -2812,11 +2813,6 @@ const metricData = [
      formula:'logic_persisted / logic_total（设计/方向类错误是否在 summary 后仍影响）',
      scoring:'低: 错误判断被纠正 (<0.3); 高: 错误方向坚持到底 (>0.6)',
      detail:'与语法不同，逻辑/方向类错误持续率高得多（mean=0.47），意味着模型一旦走偏方向，多数情况靠 summary 也救不回来。ρ=−0.551 但 H=28.7（模型间差异不强烈），q=16 [C]。'},
-  {rank:113, id:'M6', url:'m6_error_recovery.html', en:'Error Recovery Count', zh:'错误恢复次数', n:646, mean:8.776, std:20.567, rho:-0.013, h:114.06, quality:2, rating:'D', range:'0+',
-     dim:'Failure', detect:'AUTO-JUDGE', source:'OpenSII Claude-4.7 (BatchA)',
-     formula:'errors_total（被 judge 计数的总错误数；或 errors_recovered/errors_total 的恢复率）',
-     scoring:'低: 错误少 (<3); 高: 错误多 (>15)',
-     detail:'轨迹级错误总数与 eval ρ≈0 — 错误「数量」本身不是判别项，关键看错误「是否被恢复」。建议改用 m6_recovery_rate 作为衍生指标。当前 q=1 [D]。'},
 ];
 
 const leaderboardData = [
