@@ -2890,8 +2890,18 @@ function renderCatalog(filter, dimFilter) {
         row.setAttribute('data-rating', m.rating);
         row.onclick = function() { toggleMetricDetail(this); };
         const hasKids = metricChildren[m.id];
-        const kidsBadge = hasKids ? ' <span style="font-size:0.65rem;background:rgba(99,102,241,0.1);color:var(--primary);padding:1px 5px;border-radius:8px;margin-left:4px;">+' + hasKids.length + '</span>' : '';
-        const variantBadge = m.mVariant ? ' <a href="rubrics/' + m.mVariant.url + '" onclick="event.stopPropagation();" title="点击查看 ' + m.mVariant.id + ' 评分卡（同指标 M-原始比率变体）" style="font-size:0.65rem;background:rgba(14,165,233,0.12);color:#0369a1;padding:1px 5px;border-radius:8px;margin-left:4px;text-decoration:none;font-weight:600;">+' + m.mVariant.id + '</a>' : '';
+        const kidsBadge = hasKids ? hasKids.map(cid => {
+            const cm = metricById[cid];
+            const cUrl = cm && cm.url && cm.url !== '#' ? cm.url : null;
+            return cUrl
+                ? ' <a href="rubrics/' + cUrl + '" onclick="event.stopPropagation();" title="点击查看子指标 ' + cid + '" style="font-size:0.65rem;background:rgba(99,102,241,0.1);color:var(--primary);padding:1px 5px;border-radius:8px;margin-left:4px;text-decoration:none;font-weight:600;">+' + cid + '</a>'
+                : ' <span style="font-size:0.65rem;background:rgba(99,102,241,0.1);color:var(--primary);padding:1px 5px;border-radius:8px;margin-left:4px;font-weight:600;">+' + cid + '</span>';
+        }).join('') : '';
+        const variantBadge = m.mVariant
+            ? (m.mVariant.url && m.mVariant.url !== '#'
+                ? ' <a href="rubrics/' + m.mVariant.url + '" onclick="event.stopPropagation();" title="点击查看 ' + m.mVariant.id + ' 评分卡（同指标 M-原始比率变体）" style="font-size:0.65rem;background:rgba(14,165,233,0.12);color:#0369a1;padding:1px 5px;border-radius:8px;margin-left:4px;text-decoration:none;font-weight:600;">+' + m.mVariant.id + '</a>'
+                : ' <span title="同指标 M-原始比率变体（暂无独立 rubric 页）" style="font-size:0.65rem;background:rgba(14,165,233,0.12);color:#0369a1;padding:1px 5px;border-radius:8px;margin-left:4px;font-weight:600;">+' + m.mVariant.id + '</span>')
+            : '';
         const idCell = (!m.url || m.url === '#')
             ? '<td><span class="mono" style="font-weight:600; color:var(--primary);">' + m.id + kidsBadge + variantBadge + '</span></td>'
             : '<td><a href="rubrics/' + m.url + '" class="mono" style="font-weight:600; color:var(--primary);">' + m.id + '</a>' + kidsBadge + variantBadge + '</td>';
@@ -2962,7 +2972,9 @@ function renderCatalog(filter, dimFilter) {
             ${m.mVariant ? `
             <div style="margin-top:1rem;padding:0.75rem 1rem;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;">
                 <div style="font-size:0.78rem;font-weight:700;color:#475569;margin-bottom:0.4rem;letter-spacing:0.3px;">
-                    🔁 同指标 M-原始比率变体 · <a href="rubrics/${m.mVariant.url}" onclick="event.stopPropagation();" style="color:#0369a1;text-decoration:underline;font-family:JetBrains Mono,monospace;">${m.mVariant.id}</a>
+                    🔁 同指标 M-原始比率变体 · ${m.mVariant.url && m.mVariant.url !== '#'
+                        ? `<a href="rubrics/${m.mVariant.url}" onclick="event.stopPropagation();" style="color:#0369a1;text-decoration:underline;font-family:JetBrains Mono,monospace;">${m.mVariant.id}</a>`
+                        : `<span style="color:#0369a1;font-family:JetBrains Mono,monospace;" title="暂无独立 rubric 页">${m.mVariant.id}</span>`}
                     <span style="font-size:0.7rem;font-weight:500;color:#64748b;margin-left:6px;">${m.mVariant.en} · range ${m.mVariant.range}</span>
                 </div>
                 <div style="display:flex;flex-wrap:wrap;gap:0.4rem 1rem;font-size:0.75rem;color:#475569;margin-bottom:0.4rem;">
@@ -2996,7 +3008,9 @@ function renderCatalog(filter, dimFilter) {
                 cRow.onclick = function() { toggleMetricDetail(this); };
                 cRow.innerHTML = `
                     <td></td>
-                    <td><span class="mono" style="font-weight:500;color:var(--text-light);font-size:0.85em;">↳ ${cm.id}</span></td>
+                    <td>${cm.url && cm.url !== '#'
+                        ? '<a href="rubrics/' + cm.url + '" onclick="event.stopPropagation();" class="mono" style="font-weight:500;color:var(--primary);font-size:0.85em;text-decoration:none;">↳ ' + cm.id + '</a>'
+                        : '<span class="mono" style="font-weight:500;color:var(--text-light);font-size:0.85em;">↳ ' + cm.id + '</span>'}</td>
                     <td><div style="line-height:1.3;padding-left:0.5rem;">${cm.zh}<br><span style="font-size:0.75rem;color:var(--text-light);">${cm.en}</span></div></td>
                     <td><span class="method-tag ${cMethodClass}">${cMethod}</span></td>
                     <td class="mono">${cm.n || ''}</td>
