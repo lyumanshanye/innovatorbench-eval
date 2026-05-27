@@ -1413,7 +1413,6 @@
                 <div class="nav-dropdown-menu nav-dropdown-wide">
                     <div class="dropdown-section">
                         <div class="dropdown-section-title">S 级</div>
-                        <a href="rubrics/j65_question_quality.html">J65 提问质量</a>
                         <a href="rubrics/j39_failure_pattern.html">J39 失败模式</a>
                         <a href="rubrics/j06_error_recovery.html">J06 错误恢复</a>
                         <a href="rubrics/j68_feedback_utilization.html">J68 反馈利用率</a>
@@ -1433,7 +1432,6 @@
                     </div>
                     <div class="dropdown-section">
                         <div class="dropdown-section-title">B/C/D 级</div>
-                        <a href="rubrics/j61_interaction_f1.html">J61 交互F1</a>
                         <a href="rubrics/j40_error_solidification.html">J40 错误固化</a>
                         <a href="rubrics/j73_dual_channel_divergence.html">J73 双通道一致性</a>
                         <a href="rubrics/j13_cross_stage_violations.html">J13 跨阶段违反</a>
@@ -1625,12 +1623,12 @@
             </div>
             <p class="tax-desc">评估 Agent 与人类协作时的提问/确认/反馈处理：精确率、召回率、问题质量、不确定性校准。</p>
             <div class="tax-subs">
-                <div class="tax-sub"><span class="ts-id">III</span><span class="ts-name">检查点召回 / 交互精确率 <span class="ts-mids">#59,61</span></span><span class="ts-num">2</span></div>
-                <div class="tax-sub"><span class="ts-id">III</span><span class="ts-name">触发模式 + Hedging 频率 <span class="ts-mids">#62–63</span></span><span class="ts-num">2</span></div>
-                <div class="tax-sub"><span class="ts-id">III</span><span class="ts-name">不确定性校准 ECE / 问题质量 <span class="ts-mids">#64–65</span></span><span class="ts-num">2</span></div>
+                <div class="tax-sub"><span class="ts-id">III</span><span class="ts-name">检查点召回 <span class="ts-mids">#59</span></span><span class="ts-num">1</span></div>
+                <div class="tax-sub"><span class="ts-id">III</span><span class="ts-name">Hedging 频率 <span class="ts-mids">#63</span></span><span class="ts-num">1</span></div>
+                <div class="tax-sub"><span class="ts-id">III</span><span class="ts-name">不确定性校准 ECE <span class="ts-mids">#64</span></span><span class="ts-num">1</span></div>
                 <div class="tax-sub"><span class="ts-id">III</span><span class="ts-name">反馈执行率 + 自评校准 + 利用率 <span class="ts-mids">#66–68</span></span><span class="ts-num">3</span></div>
             </div>
-            <div class="tax-foot"><span>Sources: v3 / v3-M / SUPP &nbsp;·&nbsp; J61/J65/J66/J67/J68</span><a href="metrics_all.html#part-iii">查看完整定义 →</a></div>
+            <div class="tax-foot"><span>Sources: v3 / v3-M / SUPP &nbsp;·&nbsp; J66/J67/J68</span><a href="metrics_all.html#part-iii">查看完整定义 →</a></div>
         </div>
 
         <!-- ========== §3.5/§3.6 Difficulty + Evaluator ========== -->
@@ -1675,14 +1673,14 @@
         <div class="section-header">
             <h2>指标目录</h2>
             <div class="separator"></div>
-            <p>全部 99 个指标完整呈现：76 个已基于 InnovatorBench 轨迹实算（53 自动化规则/统计 + 20 LLM Judge + 3 人工标注），按统计质量排序；23 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
+            <p>全部 87 个指标完整呈现：64 个已基于 InnovatorBench 轨迹实算（51 自动化规则/统计 + 11 LLM Judge + 2 人工标注），按统计质量排序；23 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
         </div>
 
         <div class="catalog-controls">
             <div class="catalog-filter">
-                <button class="filter-btn active" onclick="filterMetrics('all')">全部 (99)</button>
+                <button class="filter-btn active" onclick="filterMetrics('all')">全部 (87)</button>
                 <button class="filter-btn" onclick="filterMetrics('Auto')">⚡ 自动化 (61)</button>
-                <button class="filter-btn" onclick="filterMetrics('Judge')">🤖 LLM Judge (27)</button>
+                <button class="filter-btn" onclick="filterMetrics('Judge')">🤖 LLM Judge (25)</button>
                 <button class="filter-btn" onclick="filterMetrics('Human')">👤 人工 / EXP (11)</button>
                 <span class="filter-btn" style="cursor: default; opacity: 0.7; background: #fff7ed; border-color: #fed7aa; color: #9a3412;">🔁 已合并 16 组 J/M 同指标</span>
             </div>
@@ -2293,11 +2291,6 @@
 // ======== DATA ========
 
 const metricData = [
-    {rank:2, id:'J65', url:'j65_question_quality.html', en:'Question Quality', zh:'提问质量', n:655, mean:1.96, std:0.44, rho:0.595, h:335.4, quality:200, rating:'S', range:'1-5',
-     dim:'Interaction', detect:'JUDGE', source:'v3-M',
-     formula:'Score = f(SPECIFICITY, ANSWERABILITY, VALUE, TIMING) across explicit + self-directed questions',
-     scoring:'5=All questions specific, answerable, high-value, well-timed; demonstrates deep understanding targeting most important uncertainties; 4=Most questions good, 1-2 slightly too vague or poorly timed, overall effective; 3=Mixed quality, some good questions identifying real uncertainties, some too broad/low-value/poorly timed; 2=Mostly poor: vague, unanswerable, or wrong timing; few demonstrate targeted thinking; 1=No meaningful questions despite clear uncertainty, OR all questions useless (vague, unanswerable, irrelevant)',
-     detail:'Evaluates quality of questions the agent asks on four dimensions: SPECIFICITY (precise vs vague), ANSWERABILITY (can it be answered?), VALUE (would answer significantly help?), TIMING (asked at right moment?). Evaluates both explicit user-directed and self-directed questions in reasoning. Low mean (1.96) indicates most agents ask poor questions.'},
     {rank:3, id:'J39', url:'j39_failure_pattern.html', en:'Failure Pattern', zh:'失败模式', n:655, mean:2.17, std:0.85, rho:0.769, h:249.7, quality:192, rating:'S', range:'1-5',
      dim:'Robustness', detect:'JUDGE', source:'v3',
      formula:'Classify dominant pattern: INSTANT_CRASH / FORMAT_COLLAPSE / DELAYED_EXPLOSION / SUMMARY_LOCK / RESOURCE_EXHAUSTION / MONITOR_DEADLOCK / NO_FAILURE',
@@ -2370,11 +2363,6 @@ const metricData = [
      scoring:'5=Highly Efficient: >80% effective actions, no pathological patterns, minimal steps to achieve results; 4=Mostly Efficient: 65-80% effective, minor redundancy (1-2 re-reads, occasional extra monitoring); 3=Moderate: 50-65% effective, some wasted loops but generally progresses; 2=Inefficient: 35-50% effective, significant circular patterns, excessive monitoring, redundant exploration; 1=Severely Wasteful: <35% effective, pathological loops, dozens of edits to same file, extensive blind retrying',
      detail:'Determines what fraction of actions genuinely advance the task versus wasted/circular/redundant. Classifies each action as PRODUCTIVE, EXPLORATORY_USEFUL, OVERHEAD_NECESSARY, REDUNDANT, CIRCULAR, or FAILED_WASTED. Also checks for pathological patterns (5+ consecutive identical calls, same file edited 3+ times).',
      mVariant:{id:'J25b', url:'m25_effective_action_ratio.html', en:'Effective Action Ratio', n:655, mean:0.711, std:0.166, rho:0.421, h:138.81, quality:58, rating:'B', range:'0+', source:'OpenSII Claude-4.7', formula:'LLM judge 标 14 个采样步是否推进任务目标，productive_steps / judged_steps', scoring:'高: 步步精准 (>0.85); 低: 多数步骤无效或重复 (<0.5)', detail:'让 claude-4.7-opus 看每条轨迹的 14 个采样步（首3+末3+中间均匀8），判断每步是否在推进任务目标。kimi-k2.5 0.80 居首，glm 系列 0.72-0.76，gpt-5/grok 显著偏低 (~0.6)；kimi-k2-instruct-0905-gzy 异常低 (0.13)。Kruskal H=161 跨模型差异显著，与 final score Spearman=0.39 正相关。判 B（quality=64）。'}},
-    {rank:16, id:'J61', url:'j61_interaction_f1.html', en:'Interaction F1', zh:'交互F1', n:655, mean:3.82, std:0.96, rho:0.631, h:118.7, quality:75, rating:'B', range:'1-5',
-     dim:'Interaction', detect:'JUDGE', source:'v3',
-     formula:'F1 = harmonic mean of Interaction Precision and Checkpoint Recall; separate scoring for interactive vs autonomous trajectories',
-     scoring:'5=Perfect balance: asked exactly when needed, never unnecessarily, never missed critical checkpoint; 4=Good: slightly too many questions (1-2 unnecessary) OR missed 1 non-critical checkpoint; 3=Moderate: either asks several unnecessary questions OR misses important checkpoints; 2=Poor: severely unbalanced — floods with trivial questions (low precision) OR never asks despite critical ambiguity (low recall); 1=Terrible: both precision and recall bad — asks wrong questions AND misses critical ones',
-     detail:'Harmonic mean of interaction precision (were questions necessary?) and checkpoint recall (did agent ask at all critical decision points?). Applies differently for interactive vs autonomous trajectories. For autonomous: scores based on missed opportunities where asking would have helped.'},
     {rank:17, id:'J40', url:'j40_error_solidification.html', en:'Error Solidification', zh:'错误固化', n:655, mean:2.57, std:0.83, rho:0.499, h:139.9, quality:70, rating:'B', range:'1-5',
      dim:'Robustness', detect:'JUDGE', source:'v3-M',
      formula:'Track error lifecycle: Corrected / Solidified / Abandoned / Indeterminate; assess solidification depth: Surface / Structural / Foundational',
@@ -2684,12 +2672,7 @@ const metricData = [
      dim:'Interaction', detect:'AUTO-RULE', source:'v3 catalog',
      formula:'count(预设 checkpoint 处主动求证) / count(checkpoints)',
      scoring:'高 (>0.8): 谨慎协作; 中: 选择性求证; 低: 不求证',
-     detail:'预设检查点处主动求证的比例（与 J61 配对）。需 #4 的检查点标注。'},
-    {rank:77, id:'M62', url:'m62_passive_trigger_ratio.html', en:'Passive Trigger Ratio', zh:'被动触发比例', n:0, mean:null, std:null, rho:null, h:null, quality:'N/A', rating:'N/A', range:'0+',
-     dim:'Interaction', detect:'AUTO-RULE', source:'v3-M',
-     formula:'count(human intervention 由 agent 报错触发) / count(all human interventions)',
-     scoring:'高: agent 出错才求助; 低: 主动求证为主',
-     detail:'human intervention 中由 agent 报错触发的比例。InnovatorBench 默认无 human-in-the-loop，故 ADAPT。 <strong>实测结果（661 InnovatorBench 轨迹）</strong>：InnovatorBench has no human-in-loop, M62 is N/A: 0 human-style nodes detected total'},
+     detail:'预设检查点处主动求证的比例。需 #4 的检查点标注。'},
     {rank:78, id:'J66', url:'j66_feedback_execution.html', en:'Feedback Execution Rate', zh:'反馈执行率', n:null, mean:null, std:null, rho:'—', h:'—', quality:'—', rating:'TBD', range:'—',
      dim:'Interaction', detect:'JUDGE', source:'v3-M',
      formula:'count(覆盖反馈点) / count(反馈点)',
@@ -3062,8 +3045,8 @@ let currentDimFilter = 'all';
 const methodMap = {
     'J25':'Auto','J30':'Auto','J37':'Auto','J42':'Auto','J47':'Auto','J48':'Auto','J49':'Auto',
     'J32':'Human','J35':'Human','J64':'Human',
-    'J65':'Judge','J39':'Judge','J06':'Judge','J68':'Judge','J95':'Judge','J50':'Judge',
-    'J70':'Judge','J41':'Judge','J40':'Judge','J73':'Judge','J13':'Judge','J63':'Judge','J61':'Judge',
+    'J39':'Judge','J06':'Judge','J68':'Judge','J95':'Judge','J50':'Judge',
+    'J70':'Judge','J41':'Judge','J40':'Judge','J73':'Judge','J13':'Judge','J63':'Judge',
     'M02':'Auto','M03':'Auto','M05':'Auto','M07':'Auto','M10':'Auto','M11':'Auto',
     'M12':'Auto','M12b':'Auto','M14':'Auto','M15':'Auto','M16':'Auto','M19':'Auto','M20':'Auto',
     'M21':'Auto','M23':'Auto','M24':'Auto','M26':'Auto','M43':'Auto','M43b':'Auto','M53':'Auto',
@@ -3071,7 +3054,7 @@ const methodMap = {
     'M76':'Auto','M93':'Auto','M96':'Auto',
     // 45 pending/design-only metrics (no per-trajectory data yet)
     'M01':'Auto','M04':'Auto','M27':'Auto','M28':'Auto','M29':'Auto','M33':'Auto','M34':'Auto',
-    'M56':'Auto','M58':'Auto','M59':'Auto','M62':'Auto','M75':'Auto','M77':'Auto',
+    'M56':'Auto','M58':'Auto','M59':'Auto','M75':'Auto','M77':'Auto',
     'M78':'Auto','M79':'Auto','M80':'Auto','M83':'Auto','M84':'Auto',
     'M85':'Auto','M86':'Auto','M87':'Auto','M88':'Auto','M89':'Auto','M90':'Auto','M94':'Auto',
     'J08':'Judge','J09':'Judge','J17':'Judge','J18':'Judge','J22':'Judge','J31':'Judge',
@@ -3848,10 +3831,10 @@ function renderLongChainCharts() {
     // Chart 5a: Metric sensitivity waterfall
     new Chart(document.getElementById('lcChart5a'), {
         type: 'bar',
-        data: { labels: ['J42','J48','J47','J40','J25','J35','J41','J30','J49','J13','J73','J37','J50','J61','J65','J06','J68','J95','J39','J70','J32'],
-            datasets: [{ label: '长度系数', data: [-0.609,-0.413,-0.364,-0.360,-0.283,-0.278,-0.216,-0.189,-0.193,-0.175,-0.126,-0.047,-0.013,0.072,0.058,0.102,0.106,0.001,0.165,0.186,0.485],
-                backgroundColor: [-0.609,-0.413,-0.364,-0.360,-0.283,-0.278,-0.216,-0.189,-0.193,-0.175,-0.126,-0.047,-0.013,0.072,0.058,0.102,0.106,0.001,0.165,0.186,0.485].map(c => c < -0.2 ? '#dc2626' : c < 0 ? '#f59e0b' : c < 0.1 ? '#9ca3af' : '#059669') }]},
-        options: {...chartOpts('23个Judge指标对轨迹长度的敏感度（控制模型后）'), scales: { y: { grid: { color: '#e5e7eb' }, title: { display: true, text: 'log_length系数' }}, x: { ticks: { font: { size: 11 }}}}}
+        data: { labels: ['J42','J48','J47','J40','J25','J35','J41','J30','J49','J13','J73','J37','J50','J06','J68','J95','J39','J70','J32'],
+            datasets: [{ label: '长度系数', data: [-0.609,-0.413,-0.364,-0.360,-0.283,-0.278,-0.216,-0.189,-0.193,-0.175,-0.126,-0.047,-0.013,0.102,0.106,0.001,0.165,0.186,0.485],
+                backgroundColor: [-0.609,-0.413,-0.364,-0.360,-0.283,-0.278,-0.216,-0.189,-0.193,-0.175,-0.126,-0.047,-0.013,0.102,0.106,0.001,0.165,0.186,0.485].map(c => c < -0.2 ? '#dc2626' : c < 0 ? '#f59e0b' : c < 0.1 ? '#9ca3af' : '#059669') }]},
+        options: {...chartOpts('21个Judge指标对轨迹长度的敏感度（控制模型后）'), scales: { y: { grid: { color: '#e5e7eb' }, title: { display: true, text: 'log_length系数' }}, x: { ticks: { font: { size: 11 }}}}}
     });
 }
 </script>
