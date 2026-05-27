@@ -1413,7 +1413,6 @@
                 <div class="nav-dropdown-menu nav-dropdown-wide">
                     <div class="dropdown-section">
                         <div class="dropdown-section-title">S 级</div>
-                        <a href="rubrics/j60_interaction_precision.html">J60 交互精确度</a>
                         <a href="rubrics/j65_question_quality.html">J65 提问质量</a>
                         <a href="rubrics/j39_failure_pattern.html">J39 失败模式</a>
                         <a href="rubrics/j06_error_recovery.html">J06 错误恢复</a>
@@ -1626,12 +1625,12 @@
             </div>
             <p class="tax-desc">评估 Agent 与人类协作时的提问/确认/反馈处理：精确率、召回率、问题质量、不确定性校准。</p>
             <div class="tax-subs">
-                <div class="tax-sub"><span class="ts-id">III</span><span class="ts-name">检查点召回 / 交互精确率 <span class="ts-mids">#59–61</span></span><span class="ts-num">3</span></div>
+                <div class="tax-sub"><span class="ts-id">III</span><span class="ts-name">检查点召回 / 交互精确率 <span class="ts-mids">#59,61</span></span><span class="ts-num">2</span></div>
                 <div class="tax-sub"><span class="ts-id">III</span><span class="ts-name">触发模式 + Hedging 频率 <span class="ts-mids">#62–63</span></span><span class="ts-num">2</span></div>
                 <div class="tax-sub"><span class="ts-id">III</span><span class="ts-name">不确定性校准 ECE / 问题质量 <span class="ts-mids">#64–65</span></span><span class="ts-num">2</span></div>
                 <div class="tax-sub"><span class="ts-id">III</span><span class="ts-name">反馈执行率 + 自评校准 + 利用率 <span class="ts-mids">#66–68</span></span><span class="ts-num">3</span></div>
             </div>
-            <div class="tax-foot"><span>Sources: v3 / v3-M / SUPP &nbsp;·&nbsp; J60/J61/J65/J66/J67/J68</span><a href="metrics_all.html#part-iii">查看完整定义 →</a></div>
+            <div class="tax-foot"><span>Sources: v3 / v3-M / SUPP &nbsp;·&nbsp; J61/J65/J66/J67/J68</span><a href="metrics_all.html#part-iii">查看完整定义 →</a></div>
         </div>
 
         <!-- ========== §3.5/§3.6 Difficulty + Evaluator ========== -->
@@ -1676,14 +1675,14 @@
         <div class="section-header">
             <h2>指标目录</h2>
             <div class="separator"></div>
-            <p>全部 100 个指标完整呈现：77 个已基于 InnovatorBench 轨迹实算（53 自动化规则/统计 + 21 LLM Judge + 3 人工标注），按统计质量排序；23 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
+            <p>全部 99 个指标完整呈现：76 个已基于 InnovatorBench 轨迹实算（53 自动化规则/统计 + 20 LLM Judge + 3 人工标注），按统计质量排序；23 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
         </div>
 
         <div class="catalog-controls">
             <div class="catalog-filter">
-                <button class="filter-btn active" onclick="filterMetrics('all')">全部 (100)</button>
+                <button class="filter-btn active" onclick="filterMetrics('all')">全部 (99)</button>
                 <button class="filter-btn" onclick="filterMetrics('Auto')">⚡ 自动化 (61)</button>
-                <button class="filter-btn" onclick="filterMetrics('Judge')">🤖 LLM Judge (28)</button>
+                <button class="filter-btn" onclick="filterMetrics('Judge')">🤖 LLM Judge (27)</button>
                 <button class="filter-btn" onclick="filterMetrics('Human')">👤 人工 / EXP (11)</button>
                 <span class="filter-btn" style="cursor: default; opacity: 0.7; background: #fff7ed; border-color: #fed7aa; color: #9a3412;">🔁 已合并 16 组 J/M 同指标</span>
             </div>
@@ -2055,7 +2054,7 @@
                     <h3 class="h-name">🤝 AgencyBench</h3>
                     <span class="h-tag h-tag-done">已完成</span>
                 </div>
-                <p class="h-desc">多轮交互/协作场景：22 模型 × 37 任务 = 165 轨迹。Tier-2 交互指标（J60/J66）的主要数据源。</p>
+                <p class="h-desc">多轮交互/协作场景：22 模型 × 37 任务 = 165 轨迹。Tier-2 交互指标（J66）的主要数据源。</p>
                 <div class="h-stats">
                     <div class="h-stat"><div class="v">165</div><div class="l">Traj</div></div>
                     <div class="h-stat"><div class="v">22</div><div class="l">Models</div></div>
@@ -2294,11 +2293,6 @@
 // ======== DATA ========
 
 const metricData = [
-    {rank:1, id:'J60', url:'j60_interaction_precision.html', en:'Interaction Precision', zh:'交互精确度', n:655, mean:2.03, std:0.23, rho:0.515, h:598.8, quality:308, rating:'S', range:'1-5',
-     dim:'Interaction', detect:'JUDGE', source:'v3',
-     formula:'Precision = (NECESSARY + HELPFUL_BUT_OPTIONAL) / Total_interactions',
-     scoring:'5=Precise & Valuable: All interactions necessary, questions specific & well-timed, no missed opportunities; 4=Mostly Precise: >75% necessary/helpful, minor unnecessary asks, questions well-formed; 3=Mixed Precision: 50-75% necessary, some unnecessary asks, some missed opportunities; 2=Low Precision: <50% necessary, frequent unnecessary interruptions, or critically missed opportunities; 1=Poor Interaction: Mostly unnecessary/counterproductive asks, OR never interacts when clearly should',
-     detail:'Measures precision of agent interactions with the environment. Among proactive interactions, what fraction truly requires human decision. Classifies each as NECESSARY, HELPFUL_BUT_OPTIONAL, UNNECESSARY, COUNTERPRODUCTIVE, or PREMATURE. Highest H-statistic (598.8) means strongest model discrimination power of all metrics.'},
     {rank:2, id:'J65', url:'j65_question_quality.html', en:'Question Quality', zh:'提问质量', n:655, mean:1.96, std:0.44, rho:0.595, h:335.4, quality:200, rating:'S', range:'1-5',
      dim:'Interaction', detect:'JUDGE', source:'v3-M',
      formula:'Score = f(SPECIFICITY, ANSWERABILITY, VALUE, TIMING) across explicit + self-directed questions',
@@ -2690,7 +2684,7 @@ const metricData = [
      dim:'Interaction', detect:'AUTO-RULE', source:'v3 catalog',
      formula:'count(预设 checkpoint 处主动求证) / count(checkpoints)',
      scoring:'高 (>0.8): 谨慎协作; 中: 选择性求证; 低: 不求证',
-     detail:'预设检查点处主动求证的比例（与 J60/61 配对）。需 #4 的检查点标注。'},
+     detail:'预设检查点处主动求证的比例（与 J61 配对）。需 #4 的检查点标注。'},
     {rank:77, id:'M62', url:'m62_passive_trigger_ratio.html', en:'Passive Trigger Ratio', zh:'被动触发比例', n:0, mean:null, std:null, rho:null, h:null, quality:'N/A', rating:'N/A', range:'0+',
      dim:'Interaction', detect:'AUTO-RULE', source:'v3-M',
      formula:'count(human intervention 由 agent 报错触发) / count(all human interventions)',
@@ -3068,7 +3062,7 @@ let currentDimFilter = 'all';
 const methodMap = {
     'J25':'Auto','J30':'Auto','J37':'Auto','J42':'Auto','J47':'Auto','J48':'Auto','J49':'Auto',
     'J32':'Human','J35':'Human','J64':'Human',
-    'J60':'Judge','J65':'Judge','J39':'Judge','J06':'Judge','J68':'Judge','J95':'Judge','J50':'Judge',
+    'J65':'Judge','J39':'Judge','J06':'Judge','J68':'Judge','J95':'Judge','J50':'Judge',
     'J70':'Judge','J41':'Judge','J40':'Judge','J73':'Judge','J13':'Judge','J63':'Judge','J61':'Judge',
     'M02':'Auto','M03':'Auto','M05':'Auto','M07':'Auto','M10':'Auto','M11':'Auto',
     'M12':'Auto','M12b':'Auto','M14':'Auto','M15':'Auto','M16':'Auto','M19':'Auto','M20':'Auto',
@@ -3854,10 +3848,10 @@ function renderLongChainCharts() {
     // Chart 5a: Metric sensitivity waterfall
     new Chart(document.getElementById('lcChart5a'), {
         type: 'bar',
-        data: { labels: ['J42','J48','J47','J40','J25','J35','J41','J30','J49','J13','J73','J37','J60','J50','J61','J65','J06','J68','J95','J39','J70','J32'],
-            datasets: [{ label: '长度系数', data: [-0.609,-0.413,-0.364,-0.360,-0.283,-0.278,-0.216,-0.189,-0.193,-0.175,-0.126,-0.047,-0.003,-0.013,0.072,0.058,0.102,0.106,0.001,0.165,0.186,0.485],
-                backgroundColor: [-0.609,-0.413,-0.364,-0.360,-0.283,-0.278,-0.216,-0.189,-0.193,-0.175,-0.126,-0.047,-0.003,-0.013,0.072,0.058,0.102,0.106,0.001,0.165,0.186,0.485].map(c => c < -0.2 ? '#dc2626' : c < 0 ? '#f59e0b' : c < 0.1 ? '#9ca3af' : '#059669') }]},
-        options: {...chartOpts('24个Judge指标对轨迹长度的敏感度（控制模型后）'), scales: { y: { grid: { color: '#e5e7eb' }, title: { display: true, text: 'log_length系数' }}, x: { ticks: { font: { size: 11 }}}}}
+        data: { labels: ['J42','J48','J47','J40','J25','J35','J41','J30','J49','J13','J73','J37','J50','J61','J65','J06','J68','J95','J39','J70','J32'],
+            datasets: [{ label: '长度系数', data: [-0.609,-0.413,-0.364,-0.360,-0.283,-0.278,-0.216,-0.189,-0.193,-0.175,-0.126,-0.047,-0.013,0.072,0.058,0.102,0.106,0.001,0.165,0.186,0.485],
+                backgroundColor: [-0.609,-0.413,-0.364,-0.360,-0.283,-0.278,-0.216,-0.189,-0.193,-0.175,-0.126,-0.047,-0.013,0.072,0.058,0.102,0.106,0.001,0.165,0.186,0.485].map(c => c < -0.2 ? '#dc2626' : c < 0 ? '#f59e0b' : c < 0.1 ? '#9ca3af' : '#059669') }]},
+        options: {...chartOpts('23个Judge指标对轨迹长度的敏感度（控制模型后）'), scales: { y: { grid: { color: '#e5e7eb' }, title: { display: true, text: 'log_length系数' }}, x: { ticks: { font: { size: 11 }}}}}
     });
 }
 </script>
