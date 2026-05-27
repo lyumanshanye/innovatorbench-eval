@@ -1676,14 +1676,14 @@
         <div class="section-header">
             <h2>指标目录</h2>
             <div class="separator"></div>
-            <p>全部 117 个指标完整呈现：74 个已基于 InnovatorBench 轨迹实算（35 LLM Judge + 36 自动化规则 + 3 人工标注），按统计质量排序；43 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
+            <p>全部 100 个指标完整呈现：77 个已基于 InnovatorBench 轨迹实算（53 自动化规则/统计 + 21 LLM Judge + 3 人工标注），按统计质量排序；23 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
         </div>
 
         <div class="catalog-controls">
             <div class="catalog-filter">
-                <button class="filter-btn active" onclick="filterMetrics('all')">全部 (94)</button>
-                <button class="filter-btn" onclick="filterMetrics('Auto')">⚡ 自动化 (54)</button>
-                <button class="filter-btn" onclick="filterMetrics('Judge')">🤖 LLM Judge (29)</button>
+                <button class="filter-btn active" onclick="filterMetrics('all')">全部 (100)</button>
+                <button class="filter-btn" onclick="filterMetrics('Auto')">⚡ 自动化 (61)</button>
+                <button class="filter-btn" onclick="filterMetrics('Judge')">🤖 LLM Judge (28)</button>
                 <button class="filter-btn" onclick="filterMetrics('Human')">👤 人工 / EXP (11)</button>
                 <span class="filter-btn" style="cursor: default; opacity: 0.7; background: #fff7ed; border-color: #fed7aa; color: #9a3412;">🔁 已合并 16 组 J/M 同指标</span>
             </div>
@@ -2619,7 +2619,7 @@ const metricData = [
      formula:'count(必需工具至少出现一次) / count(必需工具)',
      scoring:'1.0: 全部包含; <1.0: 遗漏关键工具',
      detail:'必需工具至少出现在轨迹中的比例。需要"必需工具集"标注，InnovatorBench 任务无此标注。'},
-    {rank:63, id:'M29', url:'#', en:'Parameter Schema Compliance', zh:'Schema 合规率', n:637, mean:0.9973, std:0.0347, rho:0.0590, h:41.3802, quality:2, rating:'D', range:'0+',
+    {rank:63, id:'M29', url:'m29_parameter_schema_compliance.html', en:'Parameter Schema Compliance', zh:'Schema 合规率', n:637, mean:0.9973, std:0.0347, rho:0.0590, h:41.3802, quality:2, rating:'D', range:'0+',
      dim:'Behavioral', detect:'AUTO-RULE', source:'TRAJ-Bench',
      formula:'count(args ⊨ schema) / count(tool_calls)',
      scoring:'1.0: 完全合规; >0.95: 良好; <0.9: 频繁违反',
@@ -2629,7 +2629,7 @@ const metricData = [
      formula:'count(选对工具但参数明显不匹配) / total_calls',
      scoring:'低: 参数与意图一致; 高: 盲调参数',
      detail:'选对工具但参数明显不匹配（如 grep 搜了无关字符串）的比例。需 Judge 判断参数与上下文的匹配度。'},
-    {rank:65, id:'M33', url:'#', en:'Scaling Bottleneck', zh:'缩放瓶颈点', n:655, mean:128.64, std:251.50, rho:0.2381, h:'—', quality:24, rating:'C', range:'0+',
+    {rank:65, id:'M33', url:'m33_scaling_bottleneck.html', en:'Scaling Bottleneck', zh:'缩放瓶颈点', n:655, mean:128.64, std:251.50, rho:0.2381, h:'—', quality:24, rating:'C', range:'0+',
      dim:'Reasoning', detect:'AUTO-RULE', source:'TRAJ-Bench',
      formula:'按 step_count 分桶 → bin_avg_score 曲线 → 一阶差分最大负拐点',
      scoring:'早 (<50 步): 低复杂度任务即崩; 晚 (>200): 长程鲁棒',
@@ -2644,7 +2644,7 @@ const metricData = [
      formula:'cohen_kappa(judge_A_causal_graph, judge_B_causal_graph)',
      scoring:'κ>0.8: 高度一致; 0.6-0.8: 一般; <0.6: judge 不可靠',
      detail:'不同 judge 模型产出的 causal graph 的一致性。需多 judge 平行标注，量化 judge 可靠性。'},
-    {rank:68, id:'J38', url:'#', en:'Propagation Length Distribution', zh:'传播长度分布', n:null, mean:null, std:null, rho:'—', h:'—', quality:'—', rating:'TBD', range:'—',
+    {rank:68, id:'J38', url:'j38_propagation_length_distribution.html', en:'Propagation Length Distribution', zh:'传播长度分布', n:null, mean:null, std:null, rho:'—', h:'—', quality:'—', rating:'TBD', range:'—',
      dim:'Robustness', detect:'JUDGE', source:'v3-M',
      formula:'聚合 J37 propagation length per model: mean, std, p25, p50, p75, p95',
      scoring:'低 mean+低 std: 即时崩; 高 mean: 延迟暴露; 高 std: 不稳定',
@@ -2676,12 +2676,12 @@ const metricData = [
      scoring:'前期: 探索类错误集中; 后期: 验证/集成类错误',
      detail:'不同执行阶段的错误类型变化。需 Judge 分类错误。',
      mVariant:{id:'M52', url:'j52_stage_error_type.html', en:'Stage Error Severity', n:595, mean:1.039, std:1.211, rho:-0.155, h:78.76, quality:12, rating:'C', range:'0-3', source:'prior j69_j52 run', formula:'max(severity_early, severity_middle, severity_late)（轨迹三阶段中最严重的错误等级）', scoring:'0=NO_ERROR; 1=轻; 2=中; 3=严重', detail:'M52「阶段性错误类型分布」从已有 j69_j52 judge 数据复用。三阶段中的最严重错误等级。Top: glm47 (0.45); Bottom: kimi-k2-instruct-0905-gzy (3.0 — 多阶段都严重错误)。q=12 [C]。'}},
-    {rank:74, id:'M56', url:'#', en:'Bug Reproduction Rate', zh:'Bug 复现率', n:502, mean:0.8884, std:0.3151, rho:0.2057, h:53.5308, quality:11, rating:'C', range:'0+',
+    {rank:74, id:'M56', url:'m56_bug_reproduction_rate.html', en:'Bug Reproduction Rate', zh:'Bug 复现率', n:502, mean:0.8884, std:0.3151, rho:0.2057, h:53.5308, quality:11, rating:'C', range:'0+',
      dim:'Robustness', detect:'AUTO-RULE', source:'SWE-Supplementary',
      formula:'count(traj 在首次 edit 前运行复现测试) / N',
      scoring:'高: 测试驱动调试; 低: 盲改',
      detail:'首次 edit_file 前是否运行了 reproduction test。InnovatorBench 任务非 bug-fix 类，故 ADAPT。 <strong>实测结果（661 InnovatorBench 轨迹）</strong>：Bug reproduction rate (any run_command/eval before first edit_file). n=502, mean=0.8884, std=0.3151, rho_vs_score=0.2057, kruskalH_across_models=53.5308'},
-    {rank:75, id:'M58', url:'#', en:'Edit Rollback Rate', zh:'编辑回滚率', n:502, mean:0.3561, std:0.2598, rho:-0.0291, h:94.8887, quality:3, rating:'D', range:'0+',
+    {rank:75, id:'M58', url:'m58_edit_rollback_rate.html', en:'Edit Rollback Rate', zh:'编辑回滚率', n:502, mean:0.3561, std:0.2598, rho:-0.0291, h:94.8887, quality:3, rating:'D', range:'0+',
      dim:'Robustness', detect:'AUTO-RULE', source:'SWE-Supplementary',
      formula:'count(同位置恢复之前内容) / total_edits',
      scoring:'低 (<0.1): 单调编辑; 高 (>0.3): 反复推翻',
@@ -2691,7 +2691,7 @@ const metricData = [
      formula:'count(预设 checkpoint 处主动求证) / count(checkpoints)',
      scoring:'高 (>0.8): 谨慎协作; 中: 选择性求证; 低: 不求证',
      detail:'预设检查点处主动求证的比例（与 J60/61 配对）。需 #4 的检查点标注。'},
-    {rank:77, id:'M62', url:'#', en:'Passive Trigger Ratio', zh:'被动触发比例', n:0, mean:null, std:null, rho:null, h:null, quality:'N/A', rating:'N/A', range:'0+',
+    {rank:77, id:'M62', url:'m62_passive_trigger_ratio.html', en:'Passive Trigger Ratio', zh:'被动触发比例', n:0, mean:null, std:null, rho:null, h:null, quality:'N/A', rating:'N/A', range:'0+',
      dim:'Interaction', detect:'AUTO-RULE', source:'v3-M',
      formula:'count(human intervention 由 agent 报错触发) / count(all human interventions)',
      scoring:'高: agent 出错才求助; 低: 主动求证为主',
@@ -2713,7 +2713,7 @@ const metricData = [
      scoring:'高: 言行一致; 低: 推理与执行脱节',
      detail:'reasoning 中描述的计划与实际 tool_calls 的匹配度。需 Judge 抽取计划意图。',
      mVariant:{id:'M69', url:'j69_reasoning_action_consistency.html', en:'Reasoning-Action Consistency', n:394, mean:2.8900, std:0.3000, rho:0.1006, h:190.8900, quality:19, rating:'C', range:'0+', source:'OpenSII Claude-4.7', formula:'judge 在 8 个采样步上评 thought 与 action 一致性 (1-3)，求均值', scoring:'高: 思想匹配动作 (>2.9); 低: 言行不一 (<2.5)', detail:'对每个采样 react 节点，让 judge 评 thought（声明计划）与 action（实际工具调用）的一致度（1=矛盾 / 2=偏离 / 3=一致）。15 模型 Kruskal H=191（差异显著但绝对值 mean~2.9 都很高 → 言行普遍一致）；ρ=0.10 弱相关——一致性是基础能力，但更高一致并不直接对应更高分。判 C（quality=19）。'}},
-    {rank:81, id:'M75', url:'#', en:'Cross-Model Same-Task Efficiency', zh:'跨模型同任务效率差', n:20, mean:104.91, std:67.6048, rho:-0.2707, h:'—', quality:14, rating:'C', range:'0+',
+    {rank:81, id:'M75', url:'m75_cross_model_efficiency.html', en:'Cross-Model Same-Task Efficiency', zh:'跨模型同任务效率差', n:20, mean:104.91, std:67.6048, rho:-0.2707, h:'—', quality:14, rating:'C', range:'0+',
      dim:'Behavioral', detect:'AUTO-RULE', source:'SWE-Supplementary',
      formula:'mean(steps | model=A, task=t) − mean(steps | model=B, task=t)',
      scoring:'小: 模型效率相当; 大: 强模型显著省步',
@@ -2723,17 +2723,17 @@ const metricData = [
      formula:'count(数据流依赖正确维护) / count(依赖对)',
      scoring:'高: 数据流正确; 低: 跳步使用未生成的数据',
      detail:'工具间数据流依赖（A 输出→B 输入）正确维护率。需为每任务定义依赖图。'},
-    {rank:83, id:'M78', url:'#', en:'Token-Controlled Success', zh:'Token 控制成功率', n:655, mean:7.6298, std:0.3972, rho:4.0855, h:7.3226, quality:40, rating:'C', range:'0+',
+    {rank:83, id:'M78', url:'m78_token_controlled_success.html', en:'Token-Controlled Success', zh:'Token 控制成功率', n:655, mean:7.6298, std:0.3972, rho:4.0855, h:7.3226, quality:40, rating:'C', range:'0+',
      dim:'Evaluation', detect:'AUTO-STAT', source:'AlpacaEval-LC',
      formula:'GLM(score ~ model + log(total_tokens) + task_fixed_effects)',
      scoring:'系数 |β_model|>0: 模型本身有差异; ≈0: 差异由 token 解释',
      detail:'广义线性回归控制 token 后的模型成功率。可由 661 轨迹+overall_score 直接拟合。 <strong>实测结果（661 InnovatorBench 轨迹）</strong>：GLM controlling for log(tokens) & task FE: R2=0.397, F=7.3. Model-coef std (true differentiation)=7.630. log(tokens) coef=+4.085477 (helpful). Top3: kimi-k2.5(+19.498), glm47(+8.306), glm47_data_w_codeact_rebench_1_2_sweagent_swefactory_1_Apollo_copr_merged_2epoch(+3.600). Bot3: grok-4(-9.194), kimi-k2-instruct-0905-gzy(-9.903), kimi-k2-instruct-0905(-10.530). Baseline=claude-4-sonnet-gzy.'},
-    {rank:84, id:'M79', url:'#', en:'Step-Controlled Success', zh:'Step 控制成功率', n:655, mean:9.2355, std:0.3741, rho:0.0108, h:6.6423, quality:37, rating:'C', range:'0+',
+    {rank:84, id:'M79', url:'m79_step_controlled_success.html', en:'Step-Controlled Success', zh:'Step 控制成功率', n:655, mean:9.2355, std:0.3741, rho:0.0108, h:6.6423, quality:37, rating:'C', range:'0+',
      dim:'Evaluation', detect:'AUTO-STAT', source:'AlpacaEval-LC',
      formula:'GLM(score ~ model + steps + task_fixed_effects)',
      scoring:'系数显著: 模型有独立贡献; 不显著: 步数主导',
      detail:'控制步数后的模型成功率。可由 661 轨迹直接拟合。 <strong>实测结果（661 InnovatorBench 轨迹）</strong>：GLM controlling for tool_chain_depth & task FE: R2=0.374, F=6.6. Model-coef std (true differentiation)=9.236. tool_chain_depth coef=+0.010826 (helpful). Top3: kimi-k2.5(+20.147), glm47(+8.948), glm47_data_w_codeact_rebench_1_2_sweagent_swefactory_1_Apollo_copr_merged_2epoch(+3.345). Bot3: grok-4(-13.263), grok-code-fast-1(-13.945), kimi-k2-instruct-0905-gzy(-13.985). Baseline=claude-4-sonnet-gzy.'},
-    {rank:85, id:'M80', url:'#', en:'Reasoning-Length Controlled', zh:'推理长度控制评分', n:655, mean:10.1954, std:0.3795, rho:3.1088, h:6.7951, quality:38, rating:'C', range:'0+',
+    {rank:85, id:'M80', url:'m80_reasoning_length_controlled.html', en:'Reasoning-Length Controlled', zh:'推理长度控制评分', n:655, mean:10.1954, std:0.3795, rho:3.1088, h:6.7951, quality:38, rating:'C', range:'0+',
      dim:'Evaluation', detect:'AUTO-STAT', source:'AlpacaEval-LC',
      formula:'GLM(score ~ model + reasoning_length + task)',
      scoring:'控制后差异仍显著: 模型质量真实差异',
@@ -2753,37 +2753,37 @@ const metricData = [
      formula:'spearmanr(auto_ranking, human_ranking)',
      scoring:'ρ>0.8: 高度对齐; <0.5: 自动评估失真',
      detail:'自动排名与人类排名的 Spearman 相关。需人类标注，ADAPT。'},
-    {rank:89, id:'M84', url:'#', en:'Verbosity-Normalized Score', zh:'冗长归一化评分', n:655, mean:0.7313, std:1.3780, rho:0.9998, h:123.88, quality:124, rating:'A', range:'0+',
+    {rank:89, id:'M84', url:'m84_verbosity_normalized_score.html', en:'Verbosity-Normalized Score', zh:'冗长归一化评分', n:655, mean:0.7313, std:1.3780, rho:0.9998, h:123.88, quality:124, rating:'A', range:'0+',
      dim:'Evaluation', detect:'AUTO-STAT', source:'AlpacaEval-LC',
      formula:'score / token_budget — 标准化为单位 token 价值',
      scoring:'高: token 高效; 低: 长 trace 但低分',
      detail:'token/step 预算相同条件下的标准化评分。可由 661 轨迹直接计算。 <strong>实测结果（661 InnovatorBench 轨迹）</strong>：Verbosity-normalized score = M24 / log(total_tokens+1); n=655, mean=0.7313, std=1.3780; Kruskal H=123.88 (p=1.09e-19); Spearman vs raw score rho=1.000.'},
-    {rank:90, id:'M85', url:'#', en:'Sρ(m,a)', zh:'模型×属性 Spearman', n:380, mean:0.2225, std:0.1953, rho:'meta', h:'meta', quality:'—', rating:'C', range:'0+',
+    {rank:90, id:'M85', url:'m85_model_attribute_spearman.html', en:'Sρ(m,a)', zh:'模型×属性 Spearman', n:380, mean:0.2225, std:0.1953, rho:'meta', h:'meta', quality:'—', rating:'C', range:'0+',
      dim:'Evaluation', detect:'AUTO-STAT', source:'InterpretEval',
      formula:'scipy.stats.spearmanr(metric_a_per_bucket, score_per_bucket | model=m)',
      scoring:'|ρ|>0.5: 该属性对该模型有强单调影响',
      detail:'模型 m 在属性 a 上各桶得分的 Spearman 秩相关。可由 661 轨迹直接计算。 <strong>实测结果（661 InnovatorBench 轨迹）</strong>：M85 model×attribute Spearman over n=380 pairs: mean|ρ|=0.223, max|ρ|=0.996, 8.7% exceed 0.5. Top-5 (m,a): (gpt-5-gzy,M24_num_evals):0.996; (gpt-5-gzy,M93_score_delta):0.943; (kimi-k2-instruct-0905,M24_token_per_point):-0.927; (glm-4-5-full-data-wo-interact-gzy,M24_token_per_point):-0.915; (glm-4-5-full-data-wo-interact-w-filter-gzy,M24_token_per_point):-0.912.'},
-    {rank:91, id:'M86', url:'#', en:'Sσ(m,a)', zh:'模型×属性标准差', n:275, mean:15.9959, std:9.9884, rho:'meta', h:'meta', quality:'—', rating:'C', range:'0+',
+    {rank:91, id:'M86', url:'m86_model_attribute_std.html', en:'Sσ(m,a)', zh:'模型×属性标准差', n:275, mean:15.9959, std:9.9884, rho:'meta', h:'meta', quality:'—', rating:'C', range:'0+',
      dim:'Evaluation', detect:'AUTO-STAT', source:'InterpretEval',
      formula:'np.std([bucket_score(m, a, b) for b in buckets])',
      scoring:'高 σ: 模型在属性 a 各桶上表现不均；低 σ: 稳定',
      detail:'模型 m 在属性 a 各桶上的性能标准差。可直接计算。 <strong>实测结果（661 InnovatorBench 轨迹）</strong>：M86 Sσ(m,a) over 275 valid (model,attr) pairs: mean=15.9959, std=9.9884. Most volatile: kimi-k2.5×M07_read_before_edit_rate (Sσ=40.5579); most stable: kimi-k2-instruct-0905-gzy×M02_tool_chain_depth (Sσ=0.0000).'},
-    {rank:92, id:'M87', url:'#', en:'ζ(a) Task-Independent Bias', zh:'属性普遍偏差', n:35, mean:0.1637, std:0.1610, rho:'meta', h:'meta', quality:'—', rating:'C', range:'0+',
+    {rank:92, id:'M87', url:'m87_attribute_universal_bias.html', en:'ζ(a) Task-Independent Bias', zh:'属性普遍偏差', n:35, mean:0.1637, std:0.1610, rho:'meta', h:'meta', quality:'—', rating:'C', range:'0+',
      dim:'Evaluation', detect:'AUTO-STAT', source:'InterpretEval',
      formula:'mean_m(Sρ(m,a)) — 属性的普遍影响力',
      scoring:'|ζ|>0.5: 属性 a 对所有模型都很重要; ≈0: 模型差异化',
      detail:'属性 a 对模型整体的普遍影响力（跨模型平均）。可直接计算。 <strong>实测结果（661 InnovatorBench 轨迹）</strong>：top-5 attributes by |ζ|: M24_token_per_point(-0.798), M93_retry_improved(+0.579), M24_num_evals(+0.414), M93_score_delta(+0.378), M43_max_consecutive_sleep(+0.235)'},
-    {rank:93, id:'M88', url:'#', en:'ρ(a) Task-Dependent Variability', zh:'属性敏感度差异', n:35, mean:0.1592, std:0.0780, rho:'meta', h:'meta', quality:'—', rating:'C', range:'0+',
+    {rank:93, id:'M88', url:'m88_attribute_dependent_variability.html', en:'ρ(a) Task-Dependent Variability', zh:'属性敏感度差异', n:35, mean:0.1592, std:0.0780, rho:'meta', h:'meta', quality:'—', rating:'C', range:'0+',
      dim:'Evaluation', detect:'AUTO-STAT', source:'InterpretEval',
      formula:'std_m(Sρ(m,a)) — 模型间敏感度差异',
      scoring:'高: 不同模型对该属性敏感度差异大; 低: 一致',
      detail:'不同模型对属性 a 的敏感度差异。可直接计算。 <strong>实测结果（661 InnovatorBench 轨迹）</strong>：top-5 attributes by ρ(a): M93_score_delta(0.330), M12_resource_reclaim_rate(0.324), M53_code_locate_efficiency(0.268), M11_eval_abuse_rate(0.231), M24_num_evals(0.228)'},
-    {rank:94, id:'M89', url:'#', en:'Bucket-wise Self-Diagnosis', zh:'自诊断 argmax/argmin', n:275, mean:15.8989, std:12.8048, rho:'meta', h:'meta', quality:'—', rating:'C', range:'0+',
+    {rank:94, id:'M89', url:'m89_bucket_self_diagnosis.html', en:'Bucket-wise Self-Diagnosis', zh:'自诊断 argmax/argmin', n:275, mean:15.8989, std:12.8048, rho:'meta', h:'meta', quality:'—', rating:'C', range:'0+',
      dim:'Evaluation', detect:'AUTO-STAT', source:'InterpretEval',
      formula:'argmax/argmin per (model, attribute) → 强项/弱项桶',
      scoring:'识别每个模型在每个属性上的最强/最弱桶 → 诊断画像',
      detail:'为每个模型生成属性维度的诊断画像（最强桶 vs 最弱桶）。可直接计算。 <strong>实测结果（661 InnovatorBench 轨迹）</strong>：Bucket self-diagnosis: 62/275 (m,a) pairs are monotonic (Q1 vs Q4 extremes). Mean score gap=15.8989, std=12.8048. Top-5 gaps: kimi-k2.5/M24_token_per_point gap=78.524; glm-4-5-full-data-gzy/M24_token_per_point gap=58.056; glm47/M24_token_per_point gap=54.811; glm-4-5-full-data-wo-interact-gzy/M24_token_per_point gap=53.830; claude-4-sonnet-gzy/M24_token_per_point gap=53.299.'},
-    {rank:95, id:'M90', url:'#', en:'Significance Testing Protocol', zh:'显著性检验协议', n:91, mean:0.0000, std:'—', rho:'meta', h:72.5234, quality:36, rating:'C', range:'0+',
+    {rank:95, id:'M90', url:'m90_significance_testing.html', en:'Significance Testing Protocol', zh:'显著性检验协议', n:91, mean:0.0000, std:'—', rho:'meta', h:72.5234, quality:36, rating:'C', range:'0+',
      dim:'Evaluation', detect:'AUTO-STAT', source:'InterpretEval',
      formula:'Friedman χ² + Wilcoxon 配对 + Holm-Bonferroni 校正',
      scoring:'p<0.05 (校正后): 模型差异显著',
@@ -2798,7 +2798,7 @@ const metricData = [
      formula:'1 − (误判数 / 总判定数)',
      scoring:'高: 自动规则准确; 低: 误判多',
      detail:'自动规则的误判率。需 ground-truth 对照。'},
-    {rank:98, id:'M94', url:'#', en:'Compile vs Runtime Error', zh:'编译-运行时错误比', n:655, mean:1.0018, std:0.1802, rho:0.0642, h:77.6967, quality:5, rating:'D', range:'0+',
+    {rank:98, id:'M94', url:'m94_compile_vs_runtime_error.html', en:'Compile vs Runtime Error', zh:'编译-运行时错误比', n:655, mean:1.0018, std:0.1802, rho:0.0642, h:77.6967, quality:5, rating:'D', range:'0+',
      dim:'Robustness', detect:'AUTO-RULE', source:'SWE-Supplementary',
      formula:'count(compile_fail) / count(runtime_fail)',
      scoring:'高: 语法/格式问题; 低: 逻辑/语义问题',
@@ -2891,7 +2891,7 @@ function renderCatalog(filter, dimFilter) {
         row.onclick = function() { toggleMetricDetail(this); };
         const hasKids = metricChildren[m.id];
         const kidsBadge = hasKids ? ' <span style="font-size:0.65rem;background:rgba(99,102,241,0.1);color:var(--primary);padding:1px 5px;border-radius:8px;margin-left:4px;">+' + hasKids.length + '</span>' : '';
-        const variantBadge = m.mVariant ? ' <span title="同指标 M-原始比率变体已合并" style="font-size:0.65rem;background:rgba(14,165,233,0.12);color:#0369a1;padding:1px 5px;border-radius:8px;margin-left:4px;">+' + m.mVariant.id + '</span>' : '';
+        const variantBadge = m.mVariant ? ' <a href="rubrics/' + m.mVariant.url + '" onclick="event.stopPropagation();" title="点击查看 ' + m.mVariant.id + ' 评分卡（同指标 M-原始比率变体）" style="font-size:0.65rem;background:rgba(14,165,233,0.12);color:#0369a1;padding:1px 5px;border-radius:8px;margin-left:4px;text-decoration:none;font-weight:600;">+' + m.mVariant.id + '</a>' : '';
         const idCell = (!m.url || m.url === '#')
             ? '<td><span class="mono" style="font-weight:600; color:var(--primary);">' + m.id + kidsBadge + variantBadge + '</span></td>'
             : '<td><a href="rubrics/' + m.url + '" class="mono" style="font-weight:600; color:var(--primary);">' + m.id + '</a>' + kidsBadge + variantBadge + '</td>';
@@ -2962,7 +2962,7 @@ function renderCatalog(filter, dimFilter) {
             ${m.mVariant ? `
             <div style="margin-top:1rem;padding:0.75rem 1rem;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;">
                 <div style="font-size:0.78rem;font-weight:700;color:#475569;margin-bottom:0.4rem;letter-spacing:0.3px;">
-                    🔁 同指标 M-原始比率变体 · ${m.mVariant.id}
+                    🔁 同指标 M-原始比率变体 · <a href="rubrics/${m.mVariant.url}" onclick="event.stopPropagation();" style="color:#0369a1;text-decoration:underline;font-family:JetBrains Mono,monospace;">${m.mVariant.id}</a>
                     <span style="font-size:0.7rem;font-weight:500;color:#64748b;margin-left:6px;">${m.mVariant.en} · range ${m.mVariant.range}</span>
                 </div>
                 <div style="display:flex;flex-wrap:wrap;gap:0.4rem 1rem;font-size:0.75rem;color:#475569;margin-bottom:0.4rem;">
