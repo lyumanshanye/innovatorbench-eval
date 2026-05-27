@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J52 - Stage-wise Error Type</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f2440;
+            --accent: #2563eb;
+            --gold: #d97706;
+            --green: #059669;
+            --bg: #fafbfc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --card-bg: #ffffff;
+            --code-bg: #1e1e2e;
+            --code-text: #cdd6f4;
+            --score-1: #dc2626;
+            --score-2: #ea580c;
+            --score-3: #d97706;
+            --score-4: #65a30d;
+            --score-5: #059669;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--navy) 0%, #1a365d 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .metric-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.3rem 0.75rem;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .scoring-scale {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 900px;
+        }
+
+        .scoring-scale h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .scale-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .scale-step {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .scale-step:nth-child(1) { background: var(--score-1); }
+        .scale-step:nth-child(2) { background: var(--score-2); }
+        .scale-step:nth-child(3) { background: var(--score-3); }
+        .scale-step:nth-child(4) { background: var(--score-4); }
+        .scale-step:nth-child(5) { background: var(--score-5); }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 0 0.25rem;
+        }
+
+        .scale-labels span {
+            text-align: center;
+        }
+
+        .scale-details {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .scale-detail {
+            text-align: center;
+            padding: 0.5rem 0.25rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            background: var(--bg);
+        }
+
+        .scale-detail .num {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .scale-detail:nth-child(1) .num { color: var(--score-1); }
+        .scale-detail:nth-child(2) .num { color: var(--score-2); }
+        .scale-detail:nth-child(3) .num { color: var(--score-3); }
+        .scale-detail:nth-child(4) .num { color: var(--score-4); }
+        .scale-detail:nth-child(5) .num { color: var(--score-5); }
+
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .content h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 1.75rem 0 0.75rem;
+        }
+
+        .content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 1.25rem 0 0.5rem;
+        }
+
+        .content p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .content ul, .content ol {
+            margin: 0.75rem 0 1rem 1.5rem;
+        }
+
+        .content li {
+            margin-bottom: 0.4rem;
+            padding-left: 0.25rem;
+        }
+
+        .content li::marker {
+            color: var(--accent);
+        }
+
+        .content strong {
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #be185d;
+        }
+
+        .code-block {
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-block pre {
+            background: var(--code-bg);
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--code-text);
+            background: none;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: var(--navy);
+            color: white;
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .scale-details {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 4px;
+            }
+
+            .scale-detail {
+                font-size: 0.6rem;
+                padding: 0.4rem 0.1rem;
+            }
+
+            .table-wrapper {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scale-details {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .scale-detail {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                text-align: left;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .scale-detail .num {
+                margin-bottom: 0;
+                min-width: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div class="header-content">
+            <a href="../index.html#metrics" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Back to Overview
+            </a>
+            <div class="metric-badge">J52</div>
+            <h1>Stage-wise Error Type <span style="font-weight:400;font-size:0.7em;color:rgba(255,255,255,0.7);margin-left:0.5em;">阶段性错误类型分布</span></h1>
+        </div>
+    </header>
+
+    <div class="scoring-scale">
+        <h3>Scoring Scale</h3>
+        <div class="scale-bar">
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+            <div class="scale-step"></div>
+        </div>
+        <div class="scale-labels">
+            <span>0</span>
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span></span>
+        </div>
+        <div class="scale-details">
+            <div class="scale-detail"><span class="num">0</span> NO_ERROR<br><span style="color:var(--text-muted);font-size:0.65rem;">Productive segment</span></div>
+            <div class="scale-detail"><span class="num">1</span> Minor<br><span style="color:var(--text-muted);font-size:0.65rem;">Small slips</span></div>
+            <div class="scale-detail"><span class="num">2</span> Moderate<br><span style="color:var(--text-muted);font-size:0.65rem;">Material issue</span></div>
+            <div class="scale-detail"><span class="num">3</span> Severe<br><span style="color:var(--text-muted);font-size:0.65rem;">Blocking error</span></div>
+            <div class="scale-detail"><span class="num"></span> </div>
+        </div>
+    </div>
+
+    <main class="content">
+        <p>Splits a trajectory into early/middle/late segments and asks an LLM judge to classify the dominant error pattern in each segment. Captures HOW failures evolve along the trajectory: e.g., few errors early, persistence-loops late.</p>
+
+        <h2>At a Glance</h2>
+        <div class="table-wrapper"><table>
+          <thead><tr><th>Field</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Metric ID</strong></td><td><code>J52</code></td></tr>
+            <tr><td><strong>English</strong></td><td>Stage-wise Error Type</td></tr>
+            <tr><td><strong>中文</strong></td><td>阶段性错误类型分布</td></tr>
+            <tr><td><strong>Method</strong></td><td>LLM Judge</td></tr>
+            <tr><td><strong>Judge model</strong></td><td>claude-4.7-opus (temperature=0)</td></tr>
+            <tr><td><strong>Scale</strong></td><td>categorical (7 categories) + severity 0-3</td></tr>
+          </tbody>
+        </table></div>
+
+        <h2>Scoring Rubric (per-instance decision)</h2>
+        <p>The trajectory is split into early/middle/late thirds; each third gets ONE category + a 0–3 severity. Three independent judge calls per trajectory.</p>
+        <div class="table-wrapper"><table>
+          <thead><tr><th>Field</th><th>Criteria</th></tr></thead>
+          <tbody><tr><td><code>category = NO_ERROR</code></td><td>Steps are productive, no clear errors in this segment.</td></tr><tr><td><code>category = SYNTAX_ERROR</code></td><td>Code syntax, command typos, format failures dominate.</td></tr><tr><td><code>category = LOGIC_ERROR</code></td><td>Wrong approach, incorrect algorithm, bad parameters.</td></tr><tr><td><code>category = PLANNING_ERROR</code></td><td>Wrong goal decomposition, missed constraints, scope drift.</td></tr><tr><td><code>category = PERSISTENCE_ERROR</code></td><td>Repeating a failed approach, ignoring feedback, blind retry.</td></tr><tr><td><code>category = RESOURCE_ERROR</code></td><td>Session leaks, GPU conflicts, timeout-related.</td></tr><tr><td><code>category = COMPREHENSION_ERROR</code></td><td>Misunderstood task requirement or observation output.</td></tr><tr><td><code>severity 0</code></td><td>No error in segment.</td></tr><tr><td><code>severity 1</code></td><td>Minor — small slips, easily recoverable.</td></tr><tr><td><code>severity 2</code></td><td>Moderate — material issue but not blocking.</td></tr><tr><td><code>severity 3</code></td><td>Severe — blocking error that drove segment into failure.</td></tr></tbody>
+        </table></div>
+
+        <h2>Aggregation (per-instance → trajectory)</h2>
+        <div class="code-block"><pre><code>Per trajectory the index emits 3 (category, severity) pairs:
+  j52_early.{category, severity}
+  j52_middle.{category, severity}
+  j52_late.{category, severity}
+Cross-trajectory mean reports the share of each (segment, category) cell.</code></pre></div>
+        <h2>Judge System Prompt</h2>
+        <div class="code-block"><pre><code>You are an expert judge categorizing errors in an AI agent&#x27;s trajectory segment.
+
+Given a segment of an agent&#x27;s actions (early/middle/late portion of its trajectory), classify the dominant error pattern:
+
+Categories:
+- NO_ERROR: Steps are productive, no clear errors
+- SYNTAX_ERROR: Code syntax, command typos, format failures
+- LOGIC_ERROR: Wrong approach, incorrect algorithm, bad parameters
+- PLANNING_ERROR: Wrong goal decomposition, missed constraints, scope drift
+- PERSISTENCE_ERROR: Repeating failed approach, ignoring feedback, blind retry
+- RESOURCE_ERROR: Session leaks, GPU conflicts, timeout-related
+- COMPREHENSION_ERROR: Misunderstood task requirements or observation output
+
+Also rate error severity (0=none, 1=minor, 2=moderate, 3=severe/blocking).
+
+Output format (strict JSON):
+{&quot;category&quot;: &quot;&lt;category&gt;&quot;, &quot;severity&quot;: &lt;0-3&gt;, &quot;reason&quot;: &quot;&lt;one sentence&gt;&quot;}</code></pre></div>
+
+        <h2>User Template</h2>
+        <div class="code-block"><pre><code>## Trajectory Segment ({stage} portion, steps {start_idx}-{end_idx} of {total}):
+
+{steps_summary}
+
+## Context:
+- Task: Task {task_id}
+- Current eval score at this point: {score_at_stage}
+- Total trajectory length: {total} steps
+
+Classify the dominant error pattern in this segment.</code></pre></div>
+
+        <h2>Procedure</h2>
+        <ol><li>Sort the trajectory's react nodes by timestamp.</li>
+<li>Split into 3 equal-length segments: early (0-33%), middle (33-66%), late (66-100%).</li>
+<li>For each segment, take up to 8 representative steps and summarise (action_type, success, brief thought, error message if failed).</li>
+<li>Send the segment to the judge LLM with the J52 system prompt.</li>
+<li>Parse strict JSON {category, severity, reason}.</li>
+<li>Emit three fields per trajectory: j52_early, j52_middle, j52_late, each a category dict.</li></ol>
+
+        <h2>Output Fields</h2>
+        <ul><li><code>j52_early.category — one of {NO_ERROR, SYNTAX_ERROR, LOGIC_ERROR, PLANNING_ERROR, PERSISTENCE_ERROR, RESOURCE_ERROR, COMPREHENSION_ERROR}</code></li>
+<li><code>j52_early.severity — integer 0-3</code></li>
+<li><code>j52_middle.* — same shape</code></li>
+<li><code>j52_late.* — same shape</code></li></ul>
+
+        <h2>Observed Distribution</h2>
+        <p>Across 595 trajectories: early segments are 90% NO_ERROR; middle 84%; late 70%. PERSISTENCE_ERROR climbs from 25 (early) → 62 (middle) → 111 (late) — the dominant late-trajectory failure mode.</p>
+
+        <h2>Edge Cases</h2>
+        <ul><li>Empty segment (very short trajectory) ⇒ NO_ERROR with skipped=True.</li>
+<li>Judge parse error ⇒ category=UNKNOWN, severity=1, parse_error=True.</li>
+<li>Use LLM temperature=0 for reproducibility; judge model: claude-4.7-opus.</li></ul>
+
+        <h2>Source</h2>
+        <p>judge_j69_j52_full.py (function judge_j52_segment); results in judge_j69_j52/j69_j52_full_results.json</p>
+
+        <h2>Examples</h2>
+        <h3>Example 1: Task 1 (Fine-tuning, gpt-5) — productive throughout</h3>
+        <p>Trajectory's first react step opens with a clean <code>plan</code> tool call and zero error indicators. Source path: <code>workspace_task_1_2025-09-03.00:10:39_step4000_gpt-5-gzy/nodes/react_c9fb56e9-4746-4755-b669-c071602ea241_2025-09-03T00:10:45.444457.json</code>. Verbatim from that step's <code>response.tool_calls[0]</code>: <em>&quot;name&quot;: &quot;plan&quot;, &quot;arguments&quot;: {}</em>. Subsequent early-segment react nodes (e.g. react_9c2de20e and react_b8397904 in the same nodes/ directory) continue with environment exploration. No error/exception text appears in the early-stage steps inspected.</p>
+        <div class="code-block"><pre><code class="language-json">{&quot;j52_early&quot;: {&quot;category&quot;: &quot;NO_ERROR&quot;, &quot;severity&quot;: 0, &quot;reason&quot;: &quot;Agent opens with a plan tool call and proceeds to explore the codebase; no failures observed in the early third.&quot;}, &quot;j52_middle&quot;: {&quot;category&quot;: &quot;NO_ERROR&quot;, &quot;severity&quot;: 0, &quot;reason&quot;: &quot;Middle segment continues with implementation and training-script edits, productive steps dominate.&quot;}, &quot;j52_late&quot;: {&quot;category&quot;: &quot;NO_ERROR&quot;, &quot;severity&quot;: 0, &quot;reason&quot;: &quot;Late segment performs evaluation and submission cleanly.&quot;}}</code></pre></div>
+
+        <h3>Example 2: Task 16 (RL Reward, claude-4-sonnet) — persistence in late segment</h3>
+        <p>This trajectory has 192 react nodes. Early steps (e.g. react_fd944683 at 17:33:47) are productive thought + exploration. By the late segment the agent enters a context-summary loop in which the summary itself is empty and the agent merely re-polls sessions and sleeps. Source path of the cited late-stage step: <code>workspace_task_16_2025-09-03.17:25:56_step4000_claude-4-sonnet-gzy/nodes/react_4f0b01e0-5d71-4242-8641-b8aca5279483_2025-09-04T02:02:07.226028.json</code>. Verbatim assistant content from that step:</p>
+        <p><em>&quot;After the last action, I have also made 131 actions and get 131 observations. However, the context about the these actions and observations is too long. So I just summarize them. Here is the summary that maybe useful in the future about these actions and observations: The summary content is EMPTY.&quot;</em></p>
+        <div class="code-block"><pre><code class="language-json">{&quot;j52_early&quot;: {&quot;category&quot;: &quot;NO_ERROR&quot;, &quot;severity&quot;: 0, &quot;reason&quot;: &quot;Agent opens with a think action laying out the reward-function plan; subsequent steps explore verl codebase without failure.&quot;}, &quot;j52_middle&quot;: {&quot;category&quot;: &quot;LOGIC_ERROR&quot;, &quot;severity&quot;: 2, &quot;reason&quot;: &quot;Reward design and training launch surface OBSERVATION TOO LONG warnings and many low base scores (0.0); approach is questionable but not blocking.&quot;}, &quot;j52_late&quot;: {&quot;category&quot;: &quot;PERSISTENCE_ERROR&quot;, &quot;severity&quot;: 3, &quot;reason&quot;: &quot;Context-summary returns EMPTY and agent loops on get_session_output / sleep without diagnosing the empty-summary failure or adjusting strategy.&quot;}}</code></pre></div>
+
+        <h3>Example 3: Task 5 (Data Cleaning, claude-4-sonnet) — clean early planning, short trajectory</h3>
+        <p>54 react nodes total. The first react step is a structured <code>think</code> tool call decomposing the cleaning plan. Source path: <code>workspace_task_5_2025-09-03.15:27:31_step4000_claude-4-sonnet-gzy/nodes/react_200298af-e308-4c82-9deb-f46061be9f93_2025-09-03T15:31:46.042882.json</code>. Verbatim from <code>action.thought</code>:</p>
+        <p><em>&quot;Let me analyze this web data cleaning task: 1. **Task**: Clean 100,000 raw web data entries with fields \&quot;id\&quot; and \&quot;text\&quot; ... My plan: 1. First explore the data structure and quality issues 2. Design a comprehensive cleaning pipeline using available tools 3. Implement and test on small samples 4. Run full cleaning within time constraints 5. Validate output format and submit&quot;</em></p>
+        <div class="code-block"><pre><code class="language-json">{&quot;j52_early&quot;: {&quot;category&quot;: &quot;NO_ERROR&quot;, &quot;severity&quot;: 0, &quot;reason&quot;: &quot;Opening think action gives a coherent 5-step cleaning plan; no errors in the first third of the 54-step trajectory.&quot;}, &quot;j52_middle&quot;: {&quot;category&quot;: &quot;SYNTAX_ERROR&quot;, &quot;severity&quot;: 1, &quot;reason&quot;: &quot;Mid-trajectory react nodes contain occasional command failures (matched on 'error'/'failed' substrings) but they are minor slips, recovered within one or two steps.&quot;}, &quot;j52_late&quot;: {&quot;category&quot;: &quot;NO_ERROR&quot;, &quot;severity&quot;: 0, &quot;reason&quot;: &quot;Trajectory wraps up with output validation and save; final steps are productive.&quot;}}</code></pre></div>
+    </main>
+
+    <footer class="footer">
+        <a href="../index.html#metrics">&#8592; Back to Metrics Overview</a>
+    </footer>
+</body>
+</html>
