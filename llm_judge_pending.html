@@ -155,14 +155,14 @@ action = open_file("data/train.csv")
 
 <div class="stat-strip">
   <div class="stat-pill"><div class="v">30</div><div class="l">JUDGE 指标待跑</div></div>
-  <div class="stat-pill"><div class="v">5</div><div class="l">主题分组</div></div>
+  <div class="stat-pill"><div class="v">4</div><div class="l">主题分组</div></div>
   <div class="stat-pill"><div class="v">~52K</div><div class="l">单指标 judge 调用</div></div>
   <div class="stat-pill"><div class="v">6h</div><div class="l">全跑预计耗时</div></div>
 </div>
 
-<h1><span class="num">§2</span>30 条指标分组清单</h1>
+<h1><span class="num">§2</span>28 条指标分组清单</h1>
 
-<p>按主题分 5 组。每组里都标了——<em>定义</em>（指标量什么）、<em>需要 judge 干嘛</em>（让 LLM 输出什么类型的标签）、<em>额外标注</em>（除了 judge 之外还需要的人工 / 离线工作）。</p>
+<p>按主题分 4 组。每组里都标了——<em>定义</em>（指标量什么）、<em>需要 judge 干嘛</em>（让 LLM 输出什么类型的标签）、<em>额外标注</em>（除了 judge 之外还需要的人工 / 离线工作）。</p>
 
 <div class="group-card">
   <div class="group-card-head">
@@ -225,21 +225,6 @@ action = open_file("data/train.csv")
       <tr><td class="idx">69</td><td class="name">推理-行动一致性</td><td class="def">reasoning 中计划与实际 tool_calls 匹配度</td><td class="note">仅有 reasoning 的模型可算；judge 提示直白</td></tr>
       <tr><td class="idx">70</td><td class="name">假设-验证循环率</td><td class="def">reasoning 中假设后有验证动作的比例</td><td class="note">judge 抽取假设句 + 后续验证 action</td></tr>
       <tr><td class="idx">73</td><td class="name">双通道推理差异</td><td class="def">reasoning vs content 中表达差异</td><td class="note">仅 kimi-k2.5 有双通道，N=有限</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<div class="group-card">
-  <div class="group-card-head">
-    <h2>组 D · 交互判断力</h2>
-    <span class="count">2 条</span>
-    <span class="why">judge 任务：判断"主动求证 / 主动请求决策"是否真正需要</span>
-  </div>
-  <table>
-    <thead><tr><th>#</th><th>名称</th><th>定义</th><th>额外标注 / 备注</th></tr></thead>
-    <tbody>
-      <tr><td class="idx">60</td><td class="name">交互精确率</td><td class="def">主动交互中确实需要人类决策的比例</td><td class="note">InnovatorBench 无 human-in-loop（参考 M62），N/A 概率高</td></tr>
-      <tr><td class="idx">61</td><td class="name">交互 F1</td><td class="def">召回率 + 精确率调和平均</td><td class="note">同上</td></tr>
     </tbody>
   </table>
 </div>
