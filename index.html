@@ -1421,7 +1421,6 @@
                         <div class="dropdown-section-title">A 级</div>
                         <a href="rubrics/j95_subtask_propagation.html">J95 子任务传播</a>
                         <a href="rubrics/j50_evidence_action_gap.html">J50 证据行动鸿沟</a>
-                        <a href="rubrics/j32_traj_satisfy.html">J32 轨迹满意度</a>
                         <a href="rubrics/j70_hypothesis_verify.html">J70 假设验证</a>
                         <a href="rubrics/j37_propagation_length.html">J37 传播长度</a>
                         <a href="rubrics/j49_step_f1.html">J49 步骤F1</a>
@@ -1673,12 +1672,12 @@
         <div class="section-header">
             <h2>指标目录</h2>
             <div class="separator"></div>
-            <p>全部 83 个指标完整呈现：60 个已基于 InnovatorBench 轨迹实算（自动化规则/统计 + LLM Judge + 人工标注），按统计质量排序；23 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
+            <p>全部 82 个指标完整呈现：59 个已基于 InnovatorBench 轨迹实算（自动化规则/统计 + LLM Judge + 人工标注），按统计质量排序；23 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
         </div>
 
         <div class="catalog-controls">
             <div class="catalog-filter">
-                <button class="filter-btn active" onclick="filterMetrics('all')">全部 (83)</button>
+                <button class="filter-btn active" onclick="filterMetrics('all')">全部 (82)</button>
                 <button class="filter-btn" onclick="filterMetrics('Auto')">⚡ 自动化 (61)</button>
                 <button class="filter-btn" onclick="filterMetrics('Judge')">🤖 LLM Judge (25)</button>
                 <button class="filter-btn" onclick="filterMetrics('Human')">👤 人工 / EXP (11)</button>
@@ -1989,15 +1988,14 @@
                     <th onclick="sortLeaderboard(0)"># <span class="sort-arrow">&#9650;</span></th>
                     <th onclick="sortLeaderboard(1)">模型 <span class="sort-arrow">&#9650;</span></th>
                     <th onclick="sortLeaderboard(2)">综合分 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(3)">J32 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(4)">J06 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(5)">J39 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(6)">J50 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(7)">J70 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(8)">J68 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(9)">J95 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(10)">J37 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(11)">J25 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(3)">J06 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(4)">J39 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(5)">J50 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(6)">J70 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(7)">J68 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(8)">J95 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(9)">J37 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(10)">J25 <span class="sort-arrow">&#9650;</span></th>
                 </tr>
             </thead>
             <tbody id="leaderboardBody">
@@ -2320,11 +2318,6 @@ const metricData = [
      scoring:'5=No gap: every piece of relevant evidence acted upon appropriately, tight coupling between information gathering and decision-making; 4=Minor gap: 1-2 pieces not utilized but non-critical, unused evidence would not have changed outcome; 3=Moderate gap: 3-4 instances where useful info gathered then ignored, at least one involves meaningfully helpful evidence; 2=Significant gap: repeatedly discovers relevant info but does not use it, multiple critical pieces wasted; 1=Severe gap: systematically ignores evidence it collects, information gathering decoupled from decision-making',
      detail:'Measures the degree to which an agent collects correct or useful information but then fails to act on it. Classifies gap types as forgetting (info lost from context), reasoning (info available but not connected), or integration (connected but not acted on). From CodeTracer diagnostic framework.',
      mVariant:{id:'J50b', url:'m50_evidence_to_action_gap.html', en:'Evidence-to-Action Gap', n:646, mean:0.357, std:0.205, rho:-0.622, h:108.91, quality:68, rating:'B', range:'0-1', source:'OpenSII Claude-4.7 (BatchA)', formula:'1 − evidence_acted_on / evidence_gathered', scoring:'低: 看到的关键信息都被采用 (<0.3); 高: 读了不用 (>0.5)', detail:'与 eval score 的强负相关（ρ=−0.627）说明：模型在 read/diagnostic 后是否真把信息用到下一步动作上，是当前 InnovatorBench 上区分度最高的轨迹级判别项之一。Top: glm47_data_w_codeact (0.25), kimi-k2.5 (0.27); Bottom: kimi-k2-instruct-0905-gzy (1.0 — 收集了证据几乎从不行动)。判 B（q=68）。'}},
-    {rank:8, id:'J32', url:'j32_traj_satisfy.html', en:'Traj-Satisfy', zh:'轨迹满意度', n:654, mean:3.27, std:1.93, rho:0.862, h:171.9, quality:148, rating:'A', range:'0-10',
-     dim:'Overall Quality', detect:'JUDGE', source:'TRAJ',
-     formula:'Holistic assessment of Strategy Quality + Execution Quality + Outcome + Meta-Cognition',
-     scoring:'9-10=Excellent: strong strategy, efficient execution, high score relative to task difficulty, good self-awareness; 7-8=Good: solid approach with minor inefficiencies, achieves reasonable score, adaptive behavior; 5-6=Adequate: partial results with notable issues (excessive time on one subtask, missed optimization); 3-4=Poor: significant strategic errors, low score, gets stuck for extended periods, poor time management; 1-2=Very Poor: fundamental failures, no output, pathological loops, declares success incorrectly; 0=Catastrophic: agent causes damage or produces anti-correlated output',
-     detail:'Holistic trajectory quality on 0-10 scale. Assesses four dimensions: Strategy Quality (plan, prioritization, adaptation), Execution Quality (actions, debugging), Outcome (output produced, eval score), Meta-Cognition (budget awareness, stuck-state recognition). Strongest single-metric eval correlation (ρ=0.862). Wide dynamic range (std=1.93).'},
     {rank:9, id:'J70', url:'j70_hypothesis_verify.html', en:'Hypothesis-Verify', zh:'假设验证', n:655, mean:2.08, std:0.75, rho:0.732, h:190.1, quality:139, rating:'A', range:'1-5',
      dim:'Reasoning', detect:'JUDGE', source:'SUPP',
      formula:'Loop_Rate = (hypotheses with verification) / (total hypothesis points); verification must target hypothesis, occur BEFORE committing resources, could falsify',
@@ -2728,20 +2721,20 @@ const metricData = [
 ];
 
 const leaderboardData = [
-    {model:'kimi-k2.5', composite:3.145, scores:[5.238,2.778,3.0,3.048,2.714,3.048,2.952,2.381,2.476]},
-    {model:'glm47', composite:2.75, scores:[4.35,2.5,2.5,2.7,2.5,2.8,2.65,2.0,2.4]},
-    {model:'glm47_data_w_codeact', composite:2.627, scores:[4.0,2.4,2.345,2.552,2.345,2.655,2.828,1.893,2.414]},
-    {model:'claude-4-sonnet-gzy', composite:2.601, scores:[3.884,2.455,2.425,2.71,2.304,2.623,2.556,1.852,2.44]},
-    {model:'glm-4-5-full-data-gzy', composite:2.592, scores:[3.84,2.5,2.56,2.64,2.36,2.48,2.52,1.84,2.36]},
-    {model:'glm47_data_w_sweagent', composite:2.323, scores:[3.19,2.3,2.143,2.524,2.143,2.476,2.286,1.524,1.952]},
-    {model:'glm-4-5-full-data-w-interact', composite:2.276, scores:[3.14,2.205,2.174,2.512,1.988,2.384,2.337,1.465,2.291]},
-    {model:'kimi-k2-instruct-0905', composite:2.228, scores:[2.857,2.148,2.069,2.345,1.966,2.552,2.138,1.75,2.103]},
-    {model:'glm-4-5-gzy', composite:2.161, scores:[2.735,2.045,2.143,2.388,1.959,2.286,2.184,1.551,2.429]},
-    {model:'glm-4-5-full-data-wo-interact', composite:2.11, scores:[2.828,2.0,1.966,2.483,1.828,2.241,2.069,1.464,2.103]},
-    {model:'gpt-5-gzy', composite:1.834, scores:[2.156,1.822,1.516,2.188,1.844,1.953,1.812,1.383,1.922]},
-    {model:'grok-4', composite:1.866, scores:[2.111,1.875,1.722,2.167,1.667,2.111,1.944,1.333,2.167]},
-    {model:'grok-code-fast-1', composite:1.425, scores:[1.667,1.235,1.389,1.889,1.111,1.611,1.5,1.0,2.056]},
-    {model:'kimi-k2-instruct-0905-gzy', composite:1.046, scores:[1.0,1.0,1.0,1.158,1.0,1.0,1.211,1.0,1.0]}
+    {model:'kimi-k2.5', composite:3.145, scores:[2.778,3.0,3.048,2.714,3.048,2.952,2.381,2.476]},
+    {model:'glm47', composite:2.75, scores:[2.5,2.5,2.7,2.5,2.8,2.65,2.0,2.4]},
+    {model:'glm47_data_w_codeact', composite:2.627, scores:[2.4,2.345,2.552,2.345,2.655,2.828,1.893,2.414]},
+    {model:'claude-4-sonnet-gzy', composite:2.601, scores:[2.455,2.425,2.71,2.304,2.623,2.556,1.852,2.44]},
+    {model:'glm-4-5-full-data-gzy', composite:2.592, scores:[2.5,2.56,2.64,2.36,2.48,2.52,1.84,2.36]},
+    {model:'glm47_data_w_sweagent', composite:2.323, scores:[2.3,2.143,2.524,2.143,2.476,2.286,1.524,1.952]},
+    {model:'glm-4-5-full-data-w-interact', composite:2.276, scores:[2.205,2.174,2.512,1.988,2.384,2.337,1.465,2.291]},
+    {model:'kimi-k2-instruct-0905', composite:2.228, scores:[2.148,2.069,2.345,1.966,2.552,2.138,1.75,2.103]},
+    {model:'glm-4-5-gzy', composite:2.161, scores:[2.045,2.143,2.388,1.959,2.286,2.184,1.551,2.429]},
+    {model:'glm-4-5-full-data-wo-interact', composite:2.11, scores:[2.0,1.966,2.483,1.828,2.241,2.069,1.464,2.103]},
+    {model:'gpt-5-gzy', composite:1.834, scores:[1.822,1.516,2.188,1.844,1.953,1.812,1.383,1.922]},
+    {model:'grok-4', composite:1.866, scores:[1.875,1.722,2.167,1.667,2.111,1.944,1.333,2.167]},
+    {model:'grok-code-fast-1', composite:1.425, scores:[1.235,1.389,1.889,1.111,1.611,1.5,1.0,2.056]},
+    {model:'kimi-k2-instruct-0905-gzy', composite:1.046, scores:[1.0,1.0,1.158,1.0,1.0,1.211,1.0,1.0]}
 ];
 
 const autoMetrics = [
@@ -2970,7 +2963,7 @@ let currentDimFilter = 'all';
 
 const methodMap = {
     'J25':'Auto','J30':'Auto','J37':'Auto','J42':'Auto','J47':'Auto','J48':'Auto','J49':'Auto',
-    'J32':'Human','J35':'Human','J64':'Human',
+    'J35':'Human','J64':'Human',
     'J39':'Judge','J06':'Judge','J68':'Judge','J95':'Judge','J50':'Judge',
     'J70':'Judge','J41':'Judge','J40':'Judge','J73':'Judge','J13':'Judge','J63':'Judge',
     'M02':'Auto','M03':'Auto','M05':'Auto','M07':'Auto','M11':'Auto',
@@ -3066,7 +3059,7 @@ function renderAutoMetrics() {
 
 function renderRadarChart() {
     const ctx = document.getElementById('radarChart').getContext('2d');
-    const labels = ['J32', 'J06', 'J39', 'J50', 'J70', 'J68', 'J95', 'J37', 'J25'];
+    const labels = ['J06', 'J39', 'J50', 'J70', 'J68', 'J95', 'J37', 'J25'];
     const top5 = leaderboardData.slice(0, 5);
     const colors = [
         'rgba(217,119,6,0.8)',
@@ -3758,10 +3751,10 @@ function renderLongChainCharts() {
     // Chart 5a: Metric sensitivity waterfall
     new Chart(document.getElementById('lcChart5a'), {
         type: 'bar',
-        data: { labels: ['J42','J48','J47','J40','J25','J35','J41','J30','J49','J13','J73','J37','J50','J06','J68','J95','J39','J70','J32'],
-            datasets: [{ label: '长度系数', data: [-0.609,-0.413,-0.364,-0.360,-0.283,-0.278,-0.216,-0.189,-0.193,-0.175,-0.126,-0.047,-0.013,0.102,0.106,0.001,0.165,0.186,0.485],
-                backgroundColor: [-0.609,-0.413,-0.364,-0.360,-0.283,-0.278,-0.216,-0.189,-0.193,-0.175,-0.126,-0.047,-0.013,0.102,0.106,0.001,0.165,0.186,0.485].map(c => c < -0.2 ? '#dc2626' : c < 0 ? '#f59e0b' : c < 0.1 ? '#9ca3af' : '#059669') }]},
-        options: {...chartOpts('21个Judge指标对轨迹长度的敏感度（控制模型后）'), scales: { y: { grid: { color: '#e5e7eb' }, title: { display: true, text: 'log_length系数' }}, x: { ticks: { font: { size: 11 }}}}}
+        data: { labels: ['J42','J48','J47','J40','J25','J35','J41','J30','J49','J13','J73','J37','J50','J06','J68','J95','J39','J70'],
+            datasets: [{ label: '长度系数', data: [-0.609,-0.413,-0.364,-0.360,-0.283,-0.278,-0.216,-0.189,-0.193,-0.175,-0.126,-0.047,-0.013,0.102,0.106,0.001,0.165,0.186],
+                backgroundColor: [-0.609,-0.413,-0.364,-0.360,-0.283,-0.278,-0.216,-0.189,-0.193,-0.175,-0.126,-0.047,-0.013,0.102,0.106,0.001,0.165,0.186].map(c => c < -0.2 ? '#dc2626' : c < 0 ? '#f59e0b' : c < 0.1 ? '#9ca3af' : '#059669') }]},
+        options: {...chartOpts('20个Judge指标对轨迹长度的敏感度（控制模型后）'), scales: { y: { grid: { color: '#e5e7eb' }, title: { display: true, text: 'log_length系数' }}, x: { ticks: { font: { size: 11 }}}}}
     });
 }
 </script>
