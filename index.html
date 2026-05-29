@@ -2293,8 +2293,7 @@ const metricData = [
      dim:'Robustness', detect:'JUDGE', source:'v3',
      formula:'Classify dominant pattern: INSTANT_CRASH / FORMAT_COLLAPSE / DELAYED_EXPLOSION / SUMMARY_LOCK / RESOURCE_EXHAUSTION / MONITOR_DEADLOCK / NO_FAILURE',
      scoring:'5=Clean execution (NO_FAILURE): trajectory proceeds without significant failure, handles minor obstacles gracefully; 4=Minor failure, resolved: one pattern appears but agent recovers quickly, no significant impact on outcome; 3=Significant failure, partially managed: one clear pattern materially affects trajectory, agent shows awareness and partial attempts; 2=Dominant failure, severely impacts outcome: one pattern severely degrades trajectory consuming large fraction of steps, or two distinct patterns both materially impact; 1=Catastrophic or compound: multiple patterns compound each other, OR INSTANT_CRASH with no recovery, OR single pattern so pervasive agent makes no useful progress',
-     detail:'Classifies the dominant failure pattern in a trajectory into 7 categories. Strongest eval correlation (ρ=0.769) — a model\'s failure pattern is the best predictor of its final score. Assesses both the pattern itself and recovery attempts.',
-     mVariant:{id:'J39b', url:'m39_failure_propagation_pattern.html', en:'Failure Propagation Pattern', n:654, mean:0.599, std:0.490, rho:-0.485, h:33.94, quality:16, rating:'C', range:'0/1', source:'OpenSII Claude-4.7 (BatchA)', formula:'pattern ∈ {NONE, IMMEDIATE_CRASH, FORMAT_COLLAPSE, DELAYED_EXPLOSION, SUMMARY_CALCIFIED, RESOURCE_EXHAUSTED, MONITOR_DEADLOCK}（编码 NONE=0 其余=1）', scoring:'NONE 占比越高代表轨迹越「健康」', detail:'judge 选择主导失败模式作为类别变量；与 eval 的 ρ=−0.472，但因为是粗二值化，H=33.85 偏低，q=16 [C]。最常见的非健康模式是 DELAYED_EXPLOSION（前期良好后期坍塌）和 MONITOR_DEADLOCK（睡眠监控循环）。'}},
+     detail:'Classifies the dominant failure pattern in a trajectory into 7 categories. Strongest eval correlation (ρ=0.769) — a model\'s failure pattern is the best predictor of its final score. Assesses both the pattern itself and recovery attempts.'},
     {rank:4, id:'J06', url:'j06_error_recovery.html', en:'Error Recovery', zh:'错误恢复', n:591, mean:2.22, std:0.68, rho:0.759, h:233.3, quality:177, rating:'S', range:'1-5',
      dim:'Robustness', detect:'JUDGE', source:'v3',
      formula:'Successful recovery requires ALL three: (1) Detection, (2) Strategy Change (not identical retry), (3) Forward Progress',
@@ -2979,7 +2978,7 @@ const methodMap = {
     'J08':'Judge','J09':'Judge','J17':'Judge','J18':'Judge','J22':'Judge','J31':'Judge',
     'J36':'Judge','J38':'Judge','J52':'Judge','J66':'Judge','J67':'Judge','J69':'Judge',
     // 14 judge variants of paired J metrics (renamed from misleading M-prefix)
-    'J06b':'Judge','J13b':'Judge','J25b':'Judge','J39b':'Judge','J40b':'Judge',
+    'J06b':'Judge','J13b':'Judge','J25b':'Judge','J40b':'Judge',
     'J41lb':'Judge','J41sb':'Judge','J42b':'Judge','J50b':'Judge','J63b':'Judge',
     'J64b':'Judge','J68b':'Judge','J70b':'Judge','J73b':'Judge',
     'J52b':'Judge','J67b':'Judge','J69b':'Judge',
