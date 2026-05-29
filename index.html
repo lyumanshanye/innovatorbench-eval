@@ -1673,12 +1673,12 @@
         <div class="section-header">
             <h2>指标目录</h2>
             <div class="separator"></div>
-            <p>全部 85 个指标完整呈现：62 个已基于 InnovatorBench 轨迹实算（自动化规则/统计 + LLM Judge + 人工标注），按统计质量排序；23 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
+            <p>全部 83 个指标完整呈现：60 个已基于 InnovatorBench 轨迹实算（自动化规则/统计 + LLM Judge + 人工标注），按统计质量排序；23 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
         </div>
 
         <div class="catalog-controls">
             <div class="catalog-filter">
-                <button class="filter-btn active" onclick="filterMetrics('all')">全部 (85)</button>
+                <button class="filter-btn active" onclick="filterMetrics('all')">全部 (83)</button>
                 <button class="filter-btn" onclick="filterMetrics('Auto')">⚡ 自动化 (61)</button>
                 <button class="filter-btn" onclick="filterMetrics('Judge')">🤖 LLM Judge (25)</button>
                 <button class="filter-btn" onclick="filterMetrics('Human')">👤 人工 / EXP (11)</button>
@@ -2461,11 +2461,6 @@ const metricData = [
      formula:'M55 = len(unique_viewed_files) / len(unique_edited_files)',
      scoring:'1.5–4.0: 理想; 1.0–1.5: 探索不足; 4–8: 偏高; >8: 严重盲目探索',
      detail:'计算 agent 查看过的唯一文件数与实际编辑过的唯一文件数之比。过高表明盲目探索了大量不相关文件；过低（接近1.0）则说明跳过了背景理解直接动手修改。'},
-    {rank:36, id:'M43b', url:'m43b_session_create_count.html', en:'Session Create Count', zh:'会话创建数', n:655, mean:2.00, std:2.68, rho:0.027, h:133.4, quality:4, rating:'D', range:'0+',
-     dim:'Overall Quality', detect:'AUTO-RULE', source:'rule-based',
-     formula:'M43_session_create_count = count(create_session)',
-     scoring:'>5 需警惕泄漏; >20 为严重风险; 0 表示未使用多会话功能',
-     detail:'统计 agent 在轨迹中创建的 session 总数。过多 session 创建但未及时回收是资源泄漏的前兆信号。与 M12_session_leak 配合使用可完整评估资源管理能力。'},
     {rank:37, id:'M07', url:'m07_read_before_edit_rate.html', en:'Read-Before-Edit Rate', zh:'先读后改率', n:502, mean:0.671, std:0.311, rho:0.059, h:39.0, quality:2, rating:'D', range:'0-1',
      dim:'Behavioral', detect:'AUTO-RULE', source:'rule-based',
      formula:'对每次 edit_file，回溯 20 步检查是否有同文件的 open_file; M07 = preceded_count / total_edits',
@@ -2516,11 +2511,6 @@ const metricData = [
      formula:'n_search = count(search_dir|search_file|find_file); n_open = count(open_file); M16 = n_search/(n_search+n_open)',
      scoring:'0.3–0.6: 理想平衡; <0.1: view密集型; >0.7: search密集型偏高',
      detail:'衡量 agent 在信息获取时偏向主动搜索定位（search/grep/find）还是直接打开已知路径（open_file）。两种策略各有优劣：低搜索比在大型代码库中风险较高；高搜索比步骤冗余。'},
-    {rank:49, id:'M12b', url:'m12b_resource_reclaim_rate.html', en:'Resource Reclaim Rate', zh:'资源回收率', n:469, mean:0.113, std:0.261, rho:-0.150, h:74.4, quality:-11, rating:'D', range:'0-1',
-     dim:'Robustness', detect:'AUTO-RULE', source:'rule-based',
-     formula:'M12_resource_reclaim_rate = min(n_close_session / n_create_session, 1.0)',
-     scoring:'1.0: 完美; ≥0.8: 良好; 0.5–0.8: 中等; <0.5: 差——超过一半 session 未回收',
-     detail:'衡量 agent 对计算会话资源的回收能力。每个 create_session 调用应有对应的 close_session。极端案例中曾出现 1018 个 session 堆积导致资源耗竭。负 ρ 说明高回收率的模型反而评分偏低。'},
     {rank:51, id:'M03', url:'m03_subtask_count.html', en:'Subtask Count', zh:'子任务数量', n:655, mean:5.824, std:50.129, rho:-0.145, h:180.4, quality:-26, rating:'D', range:'0+',
      dim:'Overall Quality', detect:'AUTO-RULE', source:'rule-based',
      formula:'M03 = Σ len(planning_node.subgoals) for all planning nodes; 无规划节点则为 0',
@@ -2787,7 +2777,6 @@ function renderCatalog(filter, dimFilter) {
     };
 
     const metricChildren = {
-        'M12': ['M12b', 'M43b'],
         'M53': ['M54', 'M55']
     };
     const childIds = new Set(Object.values(metricChildren).flat());
@@ -2985,8 +2974,8 @@ const methodMap = {
     'J39':'Judge','J06':'Judge','J68':'Judge','J95':'Judge','J50':'Judge',
     'J70':'Judge','J41':'Judge','J40':'Judge','J73':'Judge','J13':'Judge','J63':'Judge',
     'M02':'Auto','M03':'Auto','M05':'Auto','M07':'Auto','M11':'Auto',
-    'M12':'Auto','M12b':'Auto','M14':'Auto','M15':'Auto','M16':'Auto','M20':'Auto',
-    'M23':'Auto','M26':'Auto','M43':'Auto','M43b':'Auto','M53':'Auto',
+    'M12':'Auto','M14':'Auto','M15':'Auto','M16':'Auto','M20':'Auto',
+    'M23':'Auto','M26':'Auto','M43':'Auto','M53':'Auto',
     'M54':'Auto','M55':'Auto','M57':'Auto','M71':'Auto','M72':'Auto','M74':'Auto',
     'M93':'Auto',
     // 45 pending/design-only metrics (no per-trajectory data yet)
