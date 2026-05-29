@@ -1673,12 +1673,12 @@
         <div class="section-header">
             <h2>指标目录</h2>
             <div class="separator"></div>
-            <p>全部 86 个指标完整呈现：63 个已基于 InnovatorBench 轨迹实算（自动化规则/统计 + LLM Judge + 人工标注），按统计质量排序；23 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
+            <p>全部 85 个指标完整呈现：62 个已基于 InnovatorBench 轨迹实算（自动化规则/统计 + LLM Judge + 人工标注），按统计质量排序；23 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
         </div>
 
         <div class="catalog-controls">
             <div class="catalog-filter">
-                <button class="filter-btn active" onclick="filterMetrics('all')">全部 (86)</button>
+                <button class="filter-btn active" onclick="filterMetrics('all')">全部 (85)</button>
                 <button class="filter-btn" onclick="filterMetrics('Auto')">⚡ 自动化 (61)</button>
                 <button class="filter-btn" onclick="filterMetrics('Judge')">🤖 LLM Judge (25)</button>
                 <button class="filter-btn" onclick="filterMetrics('Human')">👤 人工 / EXP (11)</button>
@@ -2416,11 +2416,6 @@ const metricData = [
      formula:'M20 = last_timestamp − first_timestamp (seconds)',
      scoring:'按百分位分桶：P25 以下为快速；P25–P75 为正常；P75 以上为慢速。同等复杂度下耗时越短越好',
      detail:'通过轨迹中所有节点的时间戳计算任务从开始到结束的总耗时（秒）。与 token 消耗结合可分析速度/质量 trade-off。示例：33,163 秒（9小时13分）为极长任务。最高 η²=0.289，模型间区分力最强。'},
-    {rank:26, id:'M19', url:'m19_token_consumption.html', en:'Token Consumption', zh:'Token消耗', n:655, mean:9293941.13, std:13238079.46, rho:0.294, h:172.8, quality:51, rating:'B', range:'0+',
-     dim:'Efficiency', detect:'AUTO-RULE', source:'rule-based',
-     formula:'M19 = Σ usage.total_tokens across all react + planning + summary nodes',
-     scoring:'按百分位分桶评估。高 token 消耗需结合得分判断效率；output/total 比值低说明输入上下文很长',
-     detail:'累加轨迹中所有 react、planning、summary 节点的 token 用量。Token 用量是直接的成本代理指标。η²=0.264。'},
     {rank:27, id:'M43', url:'m43_precursor_signals.html', en:'Precursor Signals', zh:'预警信号集', n:655, mean:2.19, std:1.58, rho:0.291, h:124.9, quality:36, rating:'C', range:'0+',
      dim:'Overall Quality', detect:'AUTO-RULE', source:'rule-based',
      formula:'M43_max_consecutive_sleep = max consecutive run of (sleep | check_session_idle); session_create_count = count(create_session); token_burn_rate = tokens_first_10pct / steps_first_10pct',
@@ -2762,11 +2757,8 @@ const leaderboardData = [
 const autoMetrics = [
     {name:'M20_duration_seconds', eta:0.2891},
     {name:'M03_subtask_count', eta:0.2758},
-    {name:'M19_input_tokens', eta:0.2708},
-    {name:'M19_total_tokens', eta:0.2643},
     {name:'M12_session_leak', eta:0.2269},
     {name:'M02_tool_chain_depth', eta:0.2228},
-    {name:'M19_output_tokens', eta:0.2066},
     {name:'M43_max_consecutive_sleep', eta:0.1910}
 ];
 
@@ -2993,7 +2985,7 @@ const methodMap = {
     'J39':'Judge','J06':'Judge','J68':'Judge','J95':'Judge','J50':'Judge',
     'J70':'Judge','J41':'Judge','J40':'Judge','J73':'Judge','J13':'Judge','J63':'Judge',
     'M02':'Auto','M03':'Auto','M05':'Auto','M07':'Auto','M11':'Auto',
-    'M12':'Auto','M12b':'Auto','M14':'Auto','M15':'Auto','M16':'Auto','M19':'Auto','M20':'Auto',
+    'M12':'Auto','M12b':'Auto','M14':'Auto','M15':'Auto','M16':'Auto','M20':'Auto',
     'M23':'Auto','M26':'Auto','M43':'Auto','M43b':'Auto','M53':'Auto',
     'M54':'Auto','M55':'Auto','M57':'Auto','M71':'Auto','M72':'Auto','M74':'Auto',
     'M93':'Auto',
