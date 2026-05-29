@@ -1672,12 +1672,12 @@
         <div class="section-header">
             <h2>指标目录</h2>
             <div class="separator"></div>
-            <p>全部 82 个指标完整呈现：59 个已基于 InnovatorBench 轨迹实算（自动化规则/统计 + LLM Judge + 人工标注），按统计质量排序；23 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
+            <p>全部 77 个指标完整呈现：56 个已基于 InnovatorBench 轨迹实算（自动化规则/统计 + LLM Judge + 人工标注），按统计质量排序；21 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
         </div>
 
         <div class="catalog-controls">
             <div class="catalog-filter">
-                <button class="filter-btn active" onclick="filterMetrics('all')">全部 (82)</button>
+                <button class="filter-btn active" onclick="filterMetrics('all')">全部 (77)</button>
                 <button class="filter-btn" onclick="filterMetrics('Auto')">⚡ 自动化 (61)</button>
                 <button class="filter-btn" onclick="filterMetrics('Judge')">🤖 LLM Judge (25)</button>
                 <button class="filter-btn" onclick="filterMetrics('Human')">👤 人工 / EXP (11)</button>
@@ -2692,31 +2692,6 @@ const metricData = [
      formula:'argmax/argmin per (model, attribute) → 强项/弱项桶',
      scoring:'识别每个模型在每个属性上的最强/最弱桶 → 诊断画像',
      detail:'为每个模型生成属性维度的诊断画像（最强桶 vs 最弱桶）。可直接计算。 <strong>实测结果（661 InnovatorBench 轨迹）</strong>：Bucket self-diagnosis: 62/275 (m,a) pairs are monotonic (Q1 vs Q4 extremes). Mean score gap=15.8989, std=12.8048. Top-5 gaps: kimi-k2.5/M24_token_per_point gap=78.524; glm-4-5-full-data-gzy/M24_token_per_point gap=58.056; glm47/M24_token_per_point gap=54.811; glm-4-5-full-data-wo-interact-gzy/M24_token_per_point gap=53.830; claude-4-sonnet-gzy/M24_token_per_point gap=53.299.'},
-    {rank:96, id:'E91', url:'#', en:'Auto-Mined Rule Coverage', zh:'自动规则覆盖率', n:null, mean:null, std:null, rho:'—', h:'—', quality:'—', rating:'TBD', range:'—',
-     dim:'Evaluation', detect:'EXP', source:'v3-M',
-     formula:'count(auto_rules ⊇ manual_rules) / count(manual_rules)',
-     scoring:'高: 自动挖掘覆盖完整; 低: 漏关键规则',
-     detail:'自动挖掘出的 judge 规则覆盖人工规则的比率。需对照实验。'},
-    {rank:97, id:'E92', url:'#', en:'Auto-Mined Rule Precision', zh:'自动规则精确率', n:null, mean:null, std:null, rho:'—', h:'—', quality:'—', rating:'TBD', range:'—',
-     dim:'Evaluation', detect:'EXP', source:'v3-M',
-     formula:'1 − (误判数 / 总判定数)',
-     scoring:'高: 自动规则准确; 低: 误判多',
-     detail:'自动规则的误判率。需 ground-truth 对照。'},
-    {rank:98, id:'M94', url:'m94_compile_vs_runtime_error.html', en:'Compile vs Runtime Error', zh:'编译-运行时错误比', n:655, mean:1.0018, std:0.1802, rho:0.0642, h:77.6967, quality:5, rating:'D', range:'0+',
-     dim:'Robustness', detect:'AUTO-RULE', source:'SWE-Supplementary',
-     formula:'count(compile_fail) / count(runtime_fail)',
-     scoring:'高: 语法/格式问题; 低: 逻辑/语义问题',
-     detail:'编译失败 vs 运行时逻辑失败的占比。需要错误分类器，SEMI。 <strong>实测结果（661 InnovatorBench 轨迹）</strong>：M94 compile-vs-runtime error ratio (Laplace smoothed). n=655, mean=1.002, std=0.180. rho=0.06416344681664667, H=77.69674948225517, rating=D.'},
-  {rank:105, id:'J41sb', url:'m41s_syntax_persistence.html', en:'J41 Syntax Persistence Rate', zh:'语法错误固化率', n:408, mean:0.147, std:0.265, rho:-0.375, h:83.09, quality:31, rating:'C', range:'0-1',
-     dim:'Failure', detect:'AUTO-JUDGE', source:'OpenSII Claude-4.7 (BatchA)',
-     formula:'syntax_persisted / syntax_total （summary 后语法类错误仍在影响）',
-     scoring:'低: 语法报错被快速修复 (<0.1); 高: 一直报同样语法错 (>0.4)',
-     detail:'J41 stratified persistence 中的语法分项。语法/格式/typo 类的错误本应低成本修复——若仍持续，说明模型陷入「重试一次再说」的盲循环。Top: gpt-5 (0.07), glm-4-5-full-data-wo-interact-w-filter (0.08); Bottom: kimi-k2-instruct-0905-gzy (1.0)。ρ=−0.385，q=29 [C]。'},
-  {rank:107, id:'J41lb', url:'m41l_logic_persistence.html', en:'J41 Logic Persistence Rate', zh:'逻辑错误固化率', n:545, mean:0.469, std:0.367, rho:-0.561, h:28.84, quality:16, rating:'C', range:'0-1',
-     dim:'Failure', detect:'AUTO-JUDGE', source:'OpenSII Claude-4.7 (BatchA)',
-     formula:'logic_persisted / logic_total（设计/方向类错误是否在 summary 后仍影响）',
-     scoring:'低: 错误判断被纠正 (<0.3); 高: 错误方向坚持到底 (>0.6)',
-     detail:'与语法不同，逻辑/方向类错误持续率高得多（mean=0.47），意味着模型一旦走偏方向，多数情况靠 summary 也救不回来。ρ=−0.551 但 H=28.7（模型间差异不强烈），q=16 [C]。'},
 ];
 
 const leaderboardData = [
@@ -2974,15 +2949,15 @@ const methodMap = {
     'M04':'Auto','M27':'Auto','M28':'Auto','M29':'Auto','M33':'Auto','M34':'Auto',
     'M56':'Auto','M58':'Auto','M59':'Auto','M77':'Auto',
     'M78':'Auto','M79':'Auto','M80':'Auto','M83':'Auto','M84':'Auto',
-    'M85':'Auto','M86':'Auto','M89':'Auto','M94':'Auto',
+    'M85':'Auto','M86':'Auto','M89':'Auto',
     'J08':'Judge','J09':'Judge','J17':'Judge','J18':'Judge','J22':'Judge','J31':'Judge',
     'J36':'Judge','J38':'Judge','J52':'Judge','J66':'Judge','J67':'Judge','J69':'Judge',
     // 14 judge variants of paired J metrics (renamed from misleading M-prefix)
     'J06b':'Judge','J13b':'Judge','J25b':'Judge','J40b':'Judge',
-    'J41lb':'Judge','J41sb':'Judge','J42b':'Judge','J50b':'Judge','J63b':'Judge',
+    'J42b':'Judge','J50b':'Judge','J63b':'Judge',
     'J64b':'Judge','J68b':'Judge','J70b':'Judge','J73b':'Judge',
     'J52b':'Judge','J67b':'Judge','J69b':'Judge',
-    'E44':'Human','E45':'Human','E46':'Human','E51':'Human','E81':'Human','E82':'Human','E91':'Human','E92':'Human'
+    'E44':'Human','E45':'Human','E46':'Human','E51':'Human','E81':'Human','E82':'Human'
 };
 
 function filterByDim(dim) {
