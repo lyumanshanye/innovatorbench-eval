@@ -93,11 +93,23 @@
   .sidebar-item .si-status.skipped { background:var(--warm-gray-light); color:var(--parchment-light); }
 
   .main { padding:30px 36px; overflow-y:auto; max-height:calc(100vh - 60px); background:var(--parchment); }
-  .header-row { display:flex; align-items:start; gap:16px; margin-bottom:20px; flex-wrap:wrap;
+  .header-row { display:flex; align-items:center; gap:24px; margin-bottom:20px; flex-wrap:wrap;
                 padding-bottom:16px; border-bottom:1px solid var(--rule-color); }
-  .header-row h2 { font-size:14px; font-weight:600; word-break:break-all;
-                   font-family:var(--font-mono); flex:1; min-width:280px;
-                   color:var(--ink-blue); letter-spacing:0; line-height:1.5; }
+  .score-block { flex:0 0 auto; padding:8px 22px; background:var(--accent-green-bg);
+                 border:1px solid var(--accent-green); border-radius:2px;
+                 display:flex; flex-direction:column; align-items:center; min-width:110px; }
+  .score-block .score-label { font-size:10px; font-weight:700; color:var(--accent-green);
+                              text-transform:uppercase; letter-spacing:0.15em;
+                              font-family:var(--font-en); margin-bottom:2px; }
+  .score-block .score-value { font-size:32px; font-weight:700; color:var(--accent-green);
+                              font-family:var(--font-en); line-height:1.1; letter-spacing:-0.02em; }
+  .score-block.zero { background:var(--accent-red-bg); border-color:var(--accent-red); }
+  .score-block.zero .score-label,
+  .score-block.zero .score-value { color:var(--accent-red); }
+  .header-info { flex:1; min-width:280px; }
+  .header-row h2 { font-size:13px; font-weight:600; word-break:break-all;
+                   font-family:var(--font-mono); color:var(--ink-blue); letter-spacing:0;
+                   line-height:1.5; margin-bottom:8px; }
   .meta-pills { display:flex; flex-wrap:wrap; gap:5px; }
   .pill { padding:3px 10px; background:var(--parchment-light); border:1px solid var(--rule-color);
           border-radius:2px; font-size:11px; color:var(--warm-gray); font-family:var(--font-en);
@@ -487,12 +499,17 @@ function renderMain() {
 
   main.innerHTML = `
     <div class="header-row">
-      <h2>${escapeHTML(s.trajectory_dir)}</h2>
-      <div class="meta-pills">
-        <span class="pill">task <strong>${s.task_id}</strong></span>
-        <span class="pill">model <strong>${escapeHTML(s.model||'?')}</strong></span>
-        <span class="pill score">final <strong>${s.M24_best_eval_score?.toFixed?.(2)||s.M24_best_eval_score||0}</strong></span>
-        <span class="pill">band <strong>${s._band||'-'}</strong></span>
+      <div class="score-block ${(s.M24_best_eval_score||0)<=0?'zero':''}">
+        <div class="score-label">Final Score</div>
+        <div class="score-value">${(s.M24_best_eval_score?.toFixed?.(1)) ?? (s.M24_best_eval_score||0)}</div>
+      </div>
+      <div class="header-info">
+        <h2>${escapeHTML(s.trajectory_dir)}</h2>
+        <div class="meta-pills">
+          <span class="pill">task <strong>${s.task_id}</strong></span>
+          <span class="pill">model <strong>${escapeHTML(s.model||'?')}</strong></span>
+          <span class="pill">band <strong>${s._band||'-'}</strong></span>
+        </div>
       </div>
     </div>
     <div class="question-card">
