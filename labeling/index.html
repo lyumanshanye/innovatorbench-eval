@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>M-Metric 真阳率人工标注</title>
+<style>
+  :root {
+    --bg:#0f172a; --panel:#1e293b; --card:#262f44; --border:#334155;
+    --text:#e2e8f0; --muted:#94a3b8; --accent:#06b6d4;
+    --good:#10b981; --bad:#ef4444; --warn:#f59e0b; --neutral:#6366f1;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+         background:var(--bg); color:var(--text); line-height:1.5; font-size:14px; }
+  /* Top bar */
+  .topbar { background:var(--panel); border-bottom:1px solid var(--border);
+            padding:12px 24px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+            position:sticky; top:0; z-index:100; }
+  .topbar h1 { font-size:16px; font-weight:700; color:var(--accent); }
+  .metric-tabs { display:flex; gap:4px; }
+  .metric-tab { padding:6px 14px; background:var(--card); border:1px solid var(--border);
+                border-radius:6px; cursor:pointer; font-size:13px; font-weight:600;
+                color:var(--muted); }
+  .metric-tab.active { background:var(--accent); color:#0f172a; border-color:var(--accent); }
+  .metric-tab .count { font-size:11px; opacity:0.7; margin-left:4px; }
+  .progress { color:var(--muted); font-size:12px; }
+  .progress strong { color:var(--text); }
+  .actions { margin-left:auto; display:flex; gap:8px; }
+  .btn { padding:6px 12px; background:var(--card); border:1px solid var(--border);
+         border-radius:6px; cursor:pointer; color:var(--text); font-size:12px; font-weight:600; }
+  .btn:hover { background:var(--border); }
+  .btn-primary { background:var(--accent); color:#0f172a; border-color:var(--accent); }
+  .btn-good { background:var(--good); border-color:var(--good); color:#fff; }
+  .btn-bad  { background:var(--bad);  border-color:var(--bad);  color:#fff; }
+  .btn-warn { background:var(--warn); border-color:var(--warn); color:#0f172a; }
+
+  /* Layout */
+  .layout { display:grid; grid-template-columns:280px 1fr; min-height:calc(100vh - 60px); }
+  .sidebar { background:var(--panel); border-right:1px solid var(--border);
+             overflow-y:auto; max-height:calc(100vh - 60px); }
+  .sidebar-item { padding:10px 14px; border-bottom:1px solid var(--border);
+                  cursor:pointer; font-size:12px; }
+  .sidebar-item:hover { background:var(--card); }
+  .sidebar-item.active { background:var(--accent); color:#0f172a; font-weight:600; }
+  .sidebar-item .si-id { font-family:monospace; font-size:11px; opacity:0.7; }
+  .sidebar-item .si-title { font-weight:600; margin:2px 0; word-break:break-all; }
+  .sidebar-item .si-meta { font-size:10px; opacity:0.7; }
+  .sidebar-item .si-status { float:right; padding:1px 6px; border-radius:8px; font-size:9px; font-weight:700;
+                              text-transform:uppercase; }
+  .sidebar-item .si-status.true_pos { background:var(--good); color:#fff; }
+  .sidebar-item .si-status.false_pos { background:var(--bad); color:#fff; }
+  .sidebar-item .si-status.unsure { background:var(--warn); color:#0f172a; }
+  .sidebar-item .si-status.skipped { background:var(--muted); color:#0f172a; }
+
+  .main { padding:24px; overflow-y:auto; max-height:calc(100vh - 60px); }
+  .header-row { display:flex; align-items:start; gap:16px; margin-bottom:16px; flex-wrap:wrap; }
+  .header-row h2 { font-size:15px; font-weight:700; word-break:break-all;
+                   font-family:monospace; flex:1; min-width:300px; }
+  .meta-pills { display:flex; flex-wrap:wrap; gap:6px; }
+  .pill { padding:3px 8px; background:var(--card); border:1px solid var(--border);
+          border-radius:4px; font-size:11px; color:var(--muted); }
+  .pill strong { color:var(--text); }
+  .pill.score { background:rgba(16,185,129,0.15); border-color:var(--good); color:#a7f3d0; }
+  .pill.bad { background:rgba(239,68,68,0.15); border-color:var(--bad); color:#fecaca; }
+
+  .question-card {
+    background: linear-gradient(135deg, #312e81, #1e293b);
+    border: 1px solid var(--neutral);
+    border-radius: 10px; padding: 16px 20px; margin-bottom: 16px;
+  }
+  .question-card .q-label { font-size:10px; font-weight:700; color:#a5b4fc;
+                            text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+  .question-card .q-text { font-size:14px; line-height:1.6; }
+  .question-card .q-text code { background:rgba(255,255,255,0.1); padding:1px 6px;
+                                 border-radius:4px; font-size:12px; }
+
+  .label-buttons { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .label-btn { padding:10px 18px; border-radius:8px; font-size:13px; font-weight:700;
+               border:2px solid transparent; cursor:pointer; min-width:120px; }
+  .label-btn.true_pos { background:rgba(16,185,129,0.15); border-color:var(--good); color:var(--good); }
+  .label-btn.false_pos { background:rgba(239,68,68,0.15); border-color:var(--bad); color:var(--bad); }
+  .label-btn.unsure { background:rgba(245,158,11,0.15); border-color:var(--warn); color:var(--warn); }
+  .label-btn.skip { background:rgba(148,163,184,0.15); border-color:var(--muted); color:var(--muted); }
+  .label-btn.selected { background:var(--good); color:#fff; border-color:var(--good); }
+  .label-btn.false_pos.selected { background:var(--bad); color:#fff; border-color:var(--bad); }
+  .label-btn.unsure.selected { background:var(--warn); color:#0f172a; border-color:var(--warn); }
+  .label-btn.skip.selected { background:var(--muted); color:#0f172a; border-color:var(--muted); }
+  .note-input { width:100%; min-height:60px; padding:8px 12px;
+                background:var(--card); border:1px solid var(--border); color:var(--text);
+                border-radius:6px; font-family:inherit; font-size:13px; resize:vertical;
+                margin-bottom:16px; }
+
+  /* Snippet table */
+  .snippet { background:var(--card); border:1px solid var(--border); border-radius:8px;
+             overflow:hidden; }
+  .snippet-row { display:grid; grid-template-columns:50px 130px 110px 1fr;
+                 gap:0; padding:8px 12px; border-bottom:1px solid var(--border);
+                 font-size:12px; align-items:start; }
+  .snippet-row:last-child { border-bottom:none; }
+  .snippet-row.dl { background:rgba(245,158,11,0.08); border-left:3px solid var(--warn); }
+  .snippet-row.null-row { background:rgba(239,68,68,0.08); border-left:3px solid var(--bad); }
+  .snippet-row.last-edit { background:rgba(16,185,129,0.08); border-left:3px solid var(--good); }
+  .sr-idx { color:var(--muted); font-family:monospace; font-weight:700; }
+  .sr-action { font-family:monospace; font-weight:600; color:var(--accent); font-size:11px; }
+  .sr-time { color:var(--muted); font-family:monospace; font-size:10px; }
+  .sr-body { color:var(--text); word-break:break-word; }
+  .sr-payload { font-family:monospace; font-size:11px; color:#cbd5e1; margin-bottom:2px; }
+  .sr-obs { color:#a5b4fc; font-size:11px; }
+  .sr-obs.err { color:#fca5a5; }
+  .sr-thought { color:#a78bfa; font-size:11px; font-style:italic; margin-top:2px; padding-top:2px;
+                border-top:1px dashed var(--border); }
+  .sr-response { color:#fbbf24; font-size:11px; font-family:monospace; margin-top:4px;
+                 padding:4px; background:rgba(0,0,0,0.3); border-radius:4px;
+                 max-height:100px; overflow-y:auto; }
+
+  /* Eval timeline (M93) */
+  .eval-timeline { background:var(--card); border:1px solid var(--border); border-radius:8px;
+                   padding:12px; margin-bottom:12px; }
+  .eval-timeline-title { font-size:11px; color:var(--muted); text-transform:uppercase;
+                         letter-spacing:1px; margin-bottom:8px; }
+  .eval-points { display:flex; gap:8px; flex-wrap:wrap; }
+  .eval-point { padding:6px 10px; background:var(--bg); border:1px solid var(--border);
+                border-radius:6px; font-size:11px; font-family:monospace; }
+  .eval-point.first { border-color:var(--neutral); }
+  .eval-point.last { border-color:var(--accent); }
+
+  .help { padding:12px 16px; background:rgba(99,102,241,0.1); border:1px dashed var(--neutral);
+          border-radius:8px; margin-bottom:16px; font-size:12px; color:#c7d2fe; }
+  .help strong { color:#fff; }
+
+  .empty { padding:60px; text-align:center; color:var(--muted); }
+  details { background:var(--bg); border:1px solid var(--border); border-radius:6px;
+            padding:6px 10px; margin-top:4px; }
+  details summary { cursor:pointer; color:var(--muted); font-size:11px; }
+  details pre { background:rgba(0,0,0,0.3); padding:6px; margin-top:6px; border-radius:4px;
+                color:#cbd5e1; font-size:10px; overflow-x:auto; max-height:240px; }
+
+  kbd { padding:2px 6px; background:var(--card); border:1px solid var(--border);
+        border-radius:4px; font-family:monospace; font-size:10px; color:var(--muted); }
+  .stats-summary { padding:12px 16px; background:var(--card); border:1px solid var(--border);
+                   border-radius:8px; margin-bottom:16px; font-size:12px; }
+  .stats-summary strong.tp { color:var(--good); }
+  .stats-summary strong.fp { color:var(--bad); }
+  .stats-summary strong.us { color:var(--warn); }
+
+  /* Filters */
+  .filter-row { display:flex; gap:6px; padding:8px 12px; border-bottom:1px solid var(--border);
+                background:var(--card); }
+  .filter-btn { flex:1; padding:4px 8px; background:var(--bg); border:1px solid var(--border);
+                border-radius:4px; cursor:pointer; color:var(--muted); font-size:11px; font-weight:600; }
+  .filter-btn.active { background:var(--accent); color:#0f172a; border-color:var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>M-Metric 真阳率标注</h1>
+  <div class="metric-tabs" id="metric-tabs"></div>
+  <div class="progress" id="progress">—</div>
+  <div class="actions">
+    <button class="btn" onclick="exportCSV()">导出 CSV</button>
+    <button class="btn" onclick="exportJSON()">导出 JSON</button>
+    <button class="btn" onclick="importJSON()">导入</button>
+    <button class="btn" onclick="if(confirm('清空当前 metric 的所有标注？'))resetCurrent()">清空</button>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="filter-row">
+      <button class="filter-btn active" data-filter="all">全部</button>
+      <button class="filter-btn" data-filter="unlabeled">未标</button>
+      <button class="filter-btn" data-filter="labeled">已标</button>
+    </div>
+    <div id="sidebar-list"></div>
+  </div>
+  <div class="main" id="main">
+    <div class="empty">从左侧选择一条轨迹开始标注</div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// Data: snippets are inlined below (one big object keyed by metric)
+// ============================================================
+let DATA = window.SNIPPETS || {};
+const METRICS = ['M14', 'M21', 'M93', 'M57'];
+
+const QUESTIONS = {
+  M14: {
+    title: '【M14 死锁】',
+    label: 'agent 真死锁了吗？',
+    body: `指标判定：连续 ≥10 步全是 <code>sleep</code>/<code>check_session_idle</code>/<code>list_sessions</code>/<code>get_session_output</code>。<br>
+           看高亮窗口内的 polling 序列：<br>
+           <strong>真阳（true_pos）</strong> = agent 已经卡住、无目的地空转，本应介入但没介入。<br>
+           <strong>假阳（false_pos）</strong> = agent 在合法地等待一个长任务（训练 / 数据下载 / 服务器启动）跑完，polling 是合理动作。<br>
+           <strong>不确定（unsure）</strong> = 看不清在等什么，或部分合理部分卡死。`,
+  },
+  M21: {
+    title: '【M21 格式失败】',
+    label: '这些 NullAction 是真的格式坍塌吗？',
+    body: `指标判定：<code>action_type</code> 为空 / null。<br>
+           看高亮的 NullAction 步以及它的 raw response：<br>
+           <strong>真阳（true_pos）</strong> = 模型输出格式坏了（解析失败、JSON 不完整、tool_call 缺字段、整段内容为空）。<br>
+           <strong>假阳（false_pos）</strong> = 实际是正常 think 步、合法 finish、或者上游解析器误判。<br>
+           <strong>不确定（unsure）</strong> = response 模糊，分不清。`,
+  },
+  M93: {
+    title: '【M93 重试改善】',
+    label: '"分数提升" 是真改善吗？',
+    body: `指标判定：<code>eval_scores[-1] > eval_scores[0]</code> → 改善=1，否则=0。<br>
+           看 score_delta 和首末 eval timeline，结合开头/末尾的轨迹片段：<br>
+           <strong>对于 M93=1 (improved):</strong> 真阳 = agent 真的修复了一个具体问题，分数提升来自这次修复。假阳 = 分数提升只是评估随机抖动 / 评估代码自己变了 / 不同子任务分别评估 / 第一次 eval 是预热垃圾分数。<br>
+           <strong>对于 M93=0 (no improvement):</strong> 真阳 = agent 确实在原地踏步或退步。假阳 = agent 已经第一次就拿了满分（无改善空间），或者只 eval 了一次。`,
+  },
+  M57: {
+    title: '【M57 修复后验证】',
+    label: 'M57 的判定是不是事实？',
+    body: `指标判定：最后一次 <code>edit_file</code> 之后，是否有 <code>run_command</code> 或 <code>eval</code> 节点。<br>
+           看高亮的 last_edit 之后的尾部步骤：<br>
+           <strong>对于 M57=0 (盲提交):</strong> 真阳 = 真的改完没跑任何验证就停了。假阳 = 后面其实有验证（指标算错），或者改的是 dummy 文件不需要验证，或者最后一次 edit 后任务被强制截断。<br>
+           <strong>对于 M57=1 (已验证):</strong> 真阳 = 改完真的跑了相关验证。假阳 = 后面跑的 run_command 是无关命令（<code>ls</code>、<code>cat</code> 之类），并不是在测改动。`,
+  },
+};
+
+let CUR_METRIC = 'M14';
+let CUR_IDX = -1;
+let FILTER = 'all';
+
+// ============================================================
+// localStorage
+// ============================================================
+const STORAGE_KEY = 'm-metric-labels-v1';
+function loadLabels() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+  catch(e) { return {}; }
+}
+function saveLabels(L) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(L));
+}
+function getLabel(metric, traj) {
+  const L = loadLabels();
+  return (L[metric] && L[metric][traj]) || null;
+}
+function setLabel(metric, traj, label, note) {
+  const L = loadLabels();
+  if (!L[metric]) L[metric] = {};
+  L[metric][traj] = { label, note: note||'', at: new Date().toISOString() };
+  saveLabels(L);
+}
+
+// ============================================================
+// Render
+// ============================================================
+function renderTabs() {
+  const tabs = document.getElementById('metric-tabs');
+  tabs.innerHTML = METRICS.map(m => {
+    const total = (DATA[m] || []).length;
+    const labeled = countLabeled(m);
+    return `<div class="metric-tab ${m===CUR_METRIC?'active':''}" data-metric="${m}">
+              ${m} <span class="count">${labeled}/${total}</span>
+            </div>`;
+  }).join('');
+  tabs.querySelectorAll('.metric-tab').forEach(el => {
+    el.onclick = () => { CUR_METRIC = el.dataset.metric; CUR_IDX = -1; renderAll(); };
+  });
+}
+function countLabeled(metric) {
+  const L = loadLabels()[metric] || {};
+  return (DATA[metric] || []).filter(s => L[s.trajectory_dir]).length;
+}
+function renderProgress() {
+  const total = (DATA[CUR_METRIC] || []).length;
+  const labeled = countLabeled(CUR_METRIC);
+  const L = loadLabels()[CUR_METRIC] || {};
+  const tp = Object.values(L).filter(x=>x.label==='true_pos').length;
+  const fp = Object.values(L).filter(x=>x.label==='false_pos').length;
+  const us = Object.values(L).filter(x=>x.label==='unsure').length;
+  const sk = Object.values(L).filter(x=>x.label==='skipped').length;
+  document.getElementById('progress').innerHTML =
+    `${CUR_METRIC}: <strong>${labeled}/${total}</strong> · 真阳 <strong style="color:var(--good)">${tp}</strong> · 假阳 <strong style="color:var(--bad)">${fp}</strong> · 不定 <strong style="color:var(--warn)">${us}</strong> · 跳过 ${sk}` +
+    (labeled - sk > 0 ? ` · <strong>真阳率 ${((tp/(tp+fp+us||1))*100).toFixed(1)}%</strong>` : '');
+}
+function renderSidebar() {
+  const list = document.getElementById('sidebar-list');
+  const arr = DATA[CUR_METRIC] || [];
+  const L = loadLabels()[CUR_METRIC] || {};
+  const items = arr.map((s,i) => {
+    const lab = L[s.trajectory_dir];
+    if (FILTER === 'unlabeled' && lab) return '';
+    if (FILTER === 'labeled' && !lab) return '';
+    const status = lab ? `<span class="si-status ${lab.label}">${labelShort(lab.label)}</span>` : '';
+    const trajShort = s.trajectory_dir.replace(/^workspace_task_/, 'T').slice(0, 38);
+    let metaLine = `task ${s.task_id} · ${(s.model||'').slice(0,18)}`;
+    if (CUR_METRIC === 'M14') metaLine += ` · run=${s.deadlock_run?.length||'?'}`;
+    if (CUR_METRIC === 'M21') metaLine += ` · null=${s.n_null_total||0}`;
+    if (CUR_METRIC === 'M93') metaLine += ` · Δ=${(s.M93_score_delta||0).toFixed?.(2)||s.M93_score_delta}`;
+    if (CUR_METRIC === 'M57') metaLine += ` · tail=${s.tail_len||0}`;
+    return `<div class="sidebar-item ${i===CUR_IDX?'active':''}" data-idx="${i}">
+              ${status}
+              <div class="si-id">#${i+1}</div>
+              <div class="si-title">${trajShort}</div>
+              <div class="si-meta">${metaLine}</div>
+            </div>`;
+  }).join('');
+  list.innerHTML = items || '<div class="empty">无符合条件项</div>';
+  list.querySelectorAll('.sidebar-item').forEach(el => {
+    el.onclick = () => { CUR_IDX = parseInt(el.dataset.idx); renderMain(); renderSidebar(); };
+  });
+}
+function labelShort(label) {
+  return {true_pos:'真阳', false_pos:'假阳', unsure:'不定', skipped:'跳'}[label] || label;
+}
+function renderMain() {
+  const main = document.getElementById('main');
+  const arr = DATA[CUR_METRIC] || [];
+  if (CUR_IDX < 0 || CUR_IDX >= arr.length) {
+    main.innerHTML = `<div class="empty">从左侧选择一条轨迹开始标注（共 ${arr.length} 条）</div>`;
+    return;
+  }
+  const s = arr[CUR_IDX];
+  const Q = QUESTIONS[CUR_METRIC];
+  const cur = getLabel(CUR_METRIC, s.trajectory_dir);
+
+  let evalHTML = '';
+  if (CUR_METRIC === 'M93') {
+    const tl = s.eval_timeline || [];
+    evalHTML = `<div class="eval-timeline">
+      <div class="eval-timeline-title">📊 Eval 信号</div>
+      <div class="eval-points">
+        <div class="eval-point first">M93_retry_improved = <strong>${s.M93_retry_improved}</strong></div>
+        <div class="eval-point first">score_delta = <strong>${s.M93_score_delta}</strong></div>
+        <div class="eval-point first">M24_num_evals = <strong>${s.M24_num_evals||'?'}</strong></div>
+        <div class="eval-point last">best_eval_score = <strong>${s.M24_best_eval_score}</strong></div>
+        ${tl.length ? `<div class="eval-point">timeline 提取到 ${tl.length} 个分数点</div>` : '<div class="eval-point" style="color:var(--muted)">timeline 未提取，看 score_delta + 末尾 eval 节点</div>'}
+      </div>
+    </div>`;
+  }
+  if (CUR_METRIC === 'M14') {
+    evalHTML = `<div class="eval-timeline">
+      <div class="eval-timeline-title">⚠️  死锁判定</div>
+      <div class="eval-points">
+        <div class="eval-point">deadlock_run.length = <strong>${s.deadlock_run?.length}</strong></div>
+        <div class="eval-point">M14 = <strong>${(s.M14_deadlock_step_ratio||0).toFixed?.(3)||s.M14_deadlock_step_ratio}</strong></div>
+        <div class="eval-point">n_react = ${s.n_react}</div>
+        <div class="eval-point">起止 idx: ${s.deadlock_run?.start_idx}–${s.deadlock_run?.end_idx}</div>
+      </div>
+    </div>`;
+  }
+  if (CUR_METRIC === 'M21') {
+    evalHTML = `<div class="eval-timeline">
+      <div class="eval-timeline-title">📛 NullAction 判定</div>
+      <div class="eval-points">
+        <div class="eval-point">M21 = <strong>${(s.M21_format_fail_rate*100).toFixed(1)}%</strong></div>
+        <div class="eval-point">n_null = <strong>${s.n_null_total}</strong> / n_react = ${s.n_react}</div>
+      </div>
+    </div>`;
+  }
+  if (CUR_METRIC === 'M57') {
+    evalHTML = `<div class="eval-timeline">
+      <div class="eval-timeline-title">${s.M57_post_fix_verify==1?'✅ 已验证':'❌ 盲提交'}</div>
+      <div class="eval-points">
+        <div class="eval-point">M57 = <strong>${s.M57_post_fix_verify}</strong></div>
+        <div class="eval-point">last_edit_idx = ${s.last_edit_idx}</div>
+        <div class="eval-point">tail_len = ${s.tail_len}</div>
+        <div class="eval-point">n_edit_file = ${s.AUX_n_edit_file||'?'}</div>
+        <div class="eval-point">n_eval = ${s.AUX_n_eval||'?'}</div>
+      </div>
+    </div>`;
+  }
+
+  const snipHTML = (s.snippet || []).map(row => {
+    const cls = [];
+    if (row._in_deadlock) cls.push('dl');
+    if (row._is_null) cls.push('null-row');
+    if (row._is_last_edit) cls.push('last-edit');
+    let body = '';
+    if (row.payload) body += `<div class="sr-payload">${escapeHTML(row.payload)}</div>`;
+    if (row.obs) {
+      const isErr = row.obs.startsWith('ERR') || row.obs === 'FAILED';
+      body += `<div class="sr-obs ${isErr?'err':''}">${escapeHTML(row.obs)}</div>`;
+    }
+    if (row.thought) body += `<div class="sr-thought">💭 ${escapeHTML(row.thought)}</div>`;
+    if (row._response_raw) body += `<div class="sr-response">RAW: ${escapeHTML(row._response_raw)}</div>`;
+    return `<div class="snippet-row ${cls.join(' ')}">
+      <div class="sr-idx">#${row._idx}</div>
+      <div class="sr-action">${escapeHTML(row.action_type||'<null>')}</div>
+      <div class="sr-time">${(row.timestamp||'').slice(11,19)}</div>
+      <div class="sr-body">${body || '<span style="color:var(--muted)">—</span>'}</div>
+    </div>`;
+  }).join('');
+
+  main.innerHTML = `
+    <div class="header-row">
+      <h2>${escapeHTML(s.trajectory_dir)}</h2>
+      <div class="meta-pills">
+        <span class="pill">task <strong>${s.task_id}</strong></span>
+        <span class="pill">model <strong>${escapeHTML(s.model||'?')}</strong></span>
+        <span class="pill score">final <strong>${s.M24_best_eval_score?.toFixed?.(2)||s.M24_best_eval_score||0}</strong></span>
+        <span class="pill">band <strong>${s._band||'-'}</strong></span>
+      </div>
+    </div>
+    <div class="question-card">
+      <div class="q-label">${Q.title} ${Q.label}</div>
+      <div class="q-text">${Q.body}</div>
+    </div>
+    ${evalHTML}
+    <div class="label-buttons">
+      <button class="label-btn true_pos ${cur?.label==='true_pos'?'selected':''}" onclick="setCur('true_pos')">✓ 真阳 (1)</button>
+      <button class="label-btn false_pos ${cur?.label==='false_pos'?'selected':''}" onclick="setCur('false_pos')">✗ 假阳 (2)</button>
+      <button class="label-btn unsure ${cur?.label==='unsure'?'selected':''}" onclick="setCur('unsure')">? 不确定 (3)</button>
+      <button class="label-btn skip ${cur?.label==='skipped'?'selected':''}" onclick="setCur('skipped')">— 跳过 (4)</button>
+      <span style="margin-left:auto;color:var(--muted);font-size:11px;align-self:center;">
+        快捷键 <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> · 上下条 <kbd>↑</kbd> <kbd>↓</kbd> · 标完跳下一条 <kbd>n</kbd>
+      </span>
+    </div>
+    <textarea class="note-input" id="note" placeholder="可选备注：为什么是真/假阳？看到了什么关键证据？">${escapeHTML(cur?.note||'')}</textarea>
+    <div class="snippet">${snipHTML}</div>
+    <details><summary>原始 sample JSON</summary><pre>${escapeHTML(JSON.stringify(s, null, 2))}</pre></details>
+  `;
+  document.getElementById('note').addEventListener('blur', () => {
+    const n = document.getElementById('note').value;
+    if (cur) setLabel(CUR_METRIC, s.trajectory_dir, cur.label, n);
+  });
+}
+function setCur(label) {
+  const arr = DATA[CUR_METRIC] || [];
+  if (CUR_IDX < 0) return;
+  const s = arr[CUR_IDX];
+  const note = document.getElementById('note')?.value || '';
+  setLabel(CUR_METRIC, s.trajectory_dir, label, note);
+  renderAll();
+}
+function nextItem() {
+  const arr = DATA[CUR_METRIC] || [];
+  // Find next unlabeled
+  const L = loadLabels()[CUR_METRIC] || {};
+  for (let i = CUR_IDX+1; i < arr.length; i++) {
+    if (!L[arr[i].trajectory_dir]) { CUR_IDX = i; renderAll(); return; }
+  }
+  // wrap or just go +1
+  if (CUR_IDX+1 < arr.length) { CUR_IDX++; renderAll(); }
+}
+function escapeHTML(s) {
+  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function renderAll() {
+  renderTabs();
+  renderProgress();
+  renderSidebar();
+  renderMain();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+  const arr = DATA[CUR_METRIC] || [];
+  if (e.key === '1') { setCur('true_pos'); }
+  else if (e.key === '2') { setCur('false_pos'); }
+  else if (e.key === '3') { setCur('unsure'); }
+  else if (e.key === '4') { setCur('skipped'); }
+  else if (e.key === 'n') { nextItem(); }
+  else if (e.key === 'ArrowDown') { if (CUR_IDX+1 < arr.length) { CUR_IDX++; renderAll(); }}
+  else if (e.key === 'ArrowUp') { if (CUR_IDX > 0) { CUR_IDX--; renderAll(); }}
+});
+
+document.querySelectorAll('.filter-btn').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); FILTER = b.dataset.filter; renderSidebar();
+  };
+});
+
+function exportCSV() {
+  const L = loadLabels();
+  const rows = [['metric','trajectory_dir','task_id','model','band','metric_value','label','note','at']];
+  for (const m of METRICS) {
+    for (const s of (DATA[m]||[])) {
+      const lab = (L[m]||{})[s.trajectory_dir];
+      if (!lab) continue;
+      const mv = (m==='M14'?s.M14_deadlock_step_ratio:m==='M21'?s.M21_format_fail_rate:m==='M93'?s.M93_score_delta:s.M57_post_fix_verify);
+      rows.push([m, s.trajectory_dir, s.task_id, s.model, s._band, mv, lab.label, lab.note?.replace(/[\r\n]+/g,' ')||'', lab.at]);
+    }
+  }
+  const csv = rows.map(r => r.map(x => `"${String(x||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `m-metric-labels-${new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')}.csv`;
+  a.click();
+}
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(loadLabels(), null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `m-metric-labels-${new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')}.json`;
+  a.click();
+}
+function importJSON() {
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.json';
+  inp.onchange = e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (confirm(`导入 ${Object.keys(data).length} 个 metric 的标注？现有标注会被合并覆盖。`)) {
+          const cur = loadLabels();
+          for (const m of Object.keys(data)) {
+            if (!cur[m]) cur[m] = {};
+            Object.assign(cur[m], data[m]);
+          }
+          saveLabels(cur);
+          renderAll();
+        }
+      } catch (e) { alert('解析失败: ' + e.message); }
+    };
+    reader.readAsText(f);
+  };
+  inp.click();
+}
+function resetCurrent() {
+  const L = loadLabels();
+  delete L[CUR_METRIC];
+  saveLabels(L);
+  renderAll();
+}
+
+// Boot
+if (Object.keys(DATA).length === 0) {
+  document.getElementById('main').innerHTML =
+    `<div class="empty">⚠️ 数据未加载。检查 snippets-data.js 是否在 HTML 旁边并被引用。</div>`;
+} else {
+  renderAll();
+}
+</script>
+<script src="snippets-data.js"></script>
+<script>
+  // re-init after the data script loads
+  if (window.SNIPPETS) { DATA = window.SNIPPETS; renderAll(); }
+</script>
+</body>
+</html>
