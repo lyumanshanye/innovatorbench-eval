@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>M-Metric 真阳率人工标注</title>
+<title>M-Metric 标注 — 指标判得对不对</title>
 <style>
   :root {
     --bg:#0f172a; --panel:#1e293b; --card:#262f44; --border:#334155;
@@ -154,7 +154,7 @@
 <body>
 
 <div class="topbar">
-  <h1>M-Metric 真阳率标注</h1>
+  <h1>M-Metric 标注</h1>
   <div class="metric-tabs" id="metric-tabs"></div>
   <div class="progress" id="progress">—</div>
   <div class="actions">
@@ -165,11 +165,9 @@
   </div>
 </div>
 <div style="background:#1e1b4b;border-bottom:1px solid #6366f1;padding:10px 24px;font-size:12px;color:#c7d2fe;">
-  <strong style="color:#fbbf24;">建议标注顺序：</strong>
-  <strong>M57</strong>（最容易：看最后一次 edit 后跑了什么命令）→
-  <strong>M14</strong>（看死锁前一步在干嘛）→
-  <strong>M93</strong>（看分数提升的幅度和最后几步）→
-  <strong>M21</strong>（看每个 null 行的 🔬 诊断信息）。每个 metric 标完 50 条切下一个。
+  <strong style="color:#fbbf24;">怎么标：</strong>每条轨迹，指标已经做了一个判定。你看完轨迹回答<strong>"指标这次判得对吗"</strong>。判得对按 <kbd>1</kbd>，判得错按 <kbd>2</kbd>，看不清按 <kbd>3</kbd>，数据有问题按 <kbd>4</kbd>。
+  <strong style="color:#fbbf24;margin-left:12px;">建议顺序：</strong>
+  M57（最容易）→ M14 → M93 → M21。
 </div>
 
 <div class="layout">
@@ -196,37 +194,34 @@ const METRICS = ['M14', 'M21', 'M93', 'M57'];
 const QUESTIONS = {
   M14: {
     title: '【M14 死锁】',
-    label: 'agent 真死锁了吗？',
-    body: `指标判定：连续 ≥10 步全是 <code>sleep</code>/<code>check_session_idle</code>/<code>list_sessions</code>/<code>get_session_output</code>。<br>
-           看高亮窗口内的 polling 序列：<br>
-           <strong>真阳（true_pos）</strong> = agent 已经卡住、无目的地空转，本应介入但没介入。<br>
-           <strong>假阳（false_pos）</strong> = agent 在合法地等待一个长任务（训练 / 数据下载 / 服务器启动）跑完，polling 是合理动作。<br>
-           <strong>不确定（unsure）</strong> = 看不清在等什么，或部分合理部分卡死。`,
+    label: '指标说"这条死锁了"——判得对吗？',
+    body: `<strong>看黄色高亮窗口前一步在干嘛。</strong><br>
+           前面启动了训练 / 数据生成 / 长任务 → polling 是合理等待 → <strong style="color:var(--bad)">指标判错了（按 2）</strong><br>
+           前面没启动什么长任务，纯瞎打几个命令就开始 polling → 真死锁 → <strong style="color:var(--good)">指标判对了（按 1）</strong><br>
+           看不出来 → 按 3。`,
   },
   M21: {
     title: '【M21 格式失败】',
-    label: '这些 NullAction 是"模型输出格式坏了"还是"框架不兼容"？',
-    body: `指标判定：<code>action_type</code> 为空 / null。<br>
-           看红色高亮行下方的 🔬 诊断信息——它会告诉你模型当时<strong>实际想调什么工具</strong>，以及<strong>为什么被标成 null</strong>：<br>
-           <strong>真阳（按 1）</strong> = 模型输出真的格式坏了：MODEL_OUTPUT_TEXT 是垃圾文字 / 不完整 JSON / 完全空白；或 finish_reason=length 被截断。<br>
-           <strong>假阳（按 2）</strong> = 模型输出了完全合法的 tool_call，但被框架判 null：例如 FRAMEWORK_ERROR 报参数名不对、或 MODEL_TRIED_TO_CALL 是 finish/某个合法工具但框架不认。这是<strong>框架问题不是模型格式问题</strong>。<br>
-           <strong>不确定（按 3）</strong> = 诊断信息不全，看不出来。`,
+    label: '指标说"这些 NullAction 是模型输出格式坏了"——判得对吗？',
+    body: `<strong>看红色行下面的 🔬 诊断。</strong><br>
+           诊断显示 MODEL_OUTPUT_TEXT 是垃圾文字 / 空白 / 不完整 JSON / 被截断 → 真格式坏 → <strong style="color:var(--good)">指标判对了（按 1）</strong><br>
+           诊断显示 FRAMEWORK_ERROR 报参数名不对 / MODEL_TRIED_TO_CALL 是合法工具但框架不认（如 finish）→ 模型其实输出合法，是框架问题 → <strong style="color:var(--bad)">指标判错了（按 2）</strong><br>
+           诊断不全 → 按 3。`,
   },
   M93: {
     title: '【M93 重试改善】',
-    label: '"分数提升" 是真改善吗？',
-    body: `指标判定：<code>eval_scores[-1] > eval_scores[0]</code> → 改善=1，否则=0。<br>
-           看 score_delta 和首末 eval timeline，结合开头/末尾的轨迹片段：<br>
-           <strong>对于 M93=1 (improved):</strong> 真阳 = agent 真的修复了一个具体问题，分数提升来自这次修复。假阳 = 分数提升只是评估随机抖动 / 评估代码自己变了 / 不同子任务分别评估 / 第一次 eval 是预热垃圾分数。<br>
-           <strong>对于 M93=0 (no improvement):</strong> 真阳 = agent 确实在原地踏步或退步。假阳 = agent 已经第一次就拿了满分（无改善空间），或者只 eval 了一次。`,
+    label: '指标看分数判断"agent 有没有改善" —— 判得对吗？',
+    body: `<strong>看顶部的 score_delta 和首末几步。</strong><br>
+           <strong>M93=1（指标说"有改善"）：</strong>delta 较大 + 末尾有真实修复动作 → <strong style="color:var(--good)">指标判对了（按 1）</strong>。delta 极小（0.几）或只是 eval 抖动 / 不同子任务分别 eval / 第一次 eval 是垃圾分 → <strong style="color:var(--bad)">指标判错了（按 2）</strong>。<br>
+           <strong>M93=0（指标说"没改善"）：</strong>agent 确实在原地踏步或退步 → <strong style="color:var(--good)">指标判对了（按 1）</strong>。第一次就满分（无改善空间）或只 eval 了一次 → <strong style="color:var(--bad)">指标判错了（按 2）</strong>。`,
   },
   M57: {
     title: '【M57 修复后验证】',
-    label: 'M57 的判定是不是事实？',
-    body: `指标判定：最后一次 <code>edit_file</code> 之后，是否有 <code>run_command</code> 或 <code>eval</code> 节点。<br>
-           看高亮的 last_edit 之后的尾部步骤：<br>
-           <strong>对于 M57=0 (盲提交):</strong> 真阳 = 真的改完没跑任何验证就停了。假阳 = 后面其实有验证（指标算错），或者改的是 dummy 文件不需要验证，或者最后一次 edit 后任务被强制截断。<br>
-           <strong>对于 M57=1 (已验证):</strong> 真阳 = 改完真的跑了相关验证。假阳 = 后面跑的 run_command 是无关命令（<code>ls</code>、<code>cat</code> 之类），并不是在测改动。`,
+    label: '指标说"最后 edit 之后有没有验证" —— 判得对吗？',
+    body: `<strong>口诀：看绿色高亮（最后一次 edit）下面那几行的 action_type 列里有没有 <code>run_command</code> 或 <code>eval</code>。</strong><br>
+           <strong>M57=0（指标说"盲提交，没验证"）：</strong>实际下面没 run_command/eval（只有 summarize / finish / null）→ <strong style="color:var(--good)">指标判对了（按 1）</strong>。实际下面有 run_command/eval → <strong style="color:var(--bad)">指标判错了（按 2）</strong>。<br>
+           <strong>M57=1（指标说"已验证"）：</strong>实际下面有 run_command/eval → <strong style="color:var(--good)">指标判对了（按 1）</strong>。实际下面没 run_command/eval → <strong style="color:var(--bad)">指标判错了（按 2）</strong>。<br>
+           不用判断那命令"算不算真验证"，只看 action_type 列有没有出现这俩词。`,
   },
 };
 
@@ -285,8 +280,8 @@ function renderProgress() {
   const us = Object.values(L).filter(x=>x.label==='unsure').length;
   const sk = Object.values(L).filter(x=>x.label==='skipped').length;
   document.getElementById('progress').innerHTML =
-    `${CUR_METRIC}: <strong>${labeled}/${total}</strong> · 真阳 <strong style="color:var(--good)">${tp}</strong> · 假阳 <strong style="color:var(--bad)">${fp}</strong> · 不定 <strong style="color:var(--warn)">${us}</strong> · 跳过 ${sk}` +
-    (labeled - sk > 0 ? ` · <strong>真阳率 ${((tp/(tp+fp+us||1))*100).toFixed(1)}%</strong>` : '');
+    `${CUR_METRIC}: <strong>${labeled}/${total}</strong> · 判对 <strong style="color:var(--good)">${tp}</strong> · 判错 <strong style="color:var(--bad)">${fp}</strong> · 看不清 <strong style="color:var(--warn)">${us}</strong> · 跳过 ${sk}` +
+    (labeled - sk > 0 ? ` · <strong>指标准确率 ${((tp/(tp+fp+us||1))*100).toFixed(1)}%</strong>` : '');
 }
 function renderSidebar() {
   const list = document.getElementById('sidebar-list');
@@ -316,7 +311,7 @@ function renderSidebar() {
   });
 }
 function labelShort(label) {
-  return {true_pos:'真阳', false_pos:'假阳', unsure:'不定', skipped:'跳'}[label] || label;
+  return {true_pos:'对', false_pos:'错', unsure:'?', skipped:'—'}[label] || label;
 }
 function renderMain() {
   const main = document.getElementById('main');
@@ -414,9 +409,9 @@ function renderMain() {
     </div>
     ${evalHTML}
     <div class="label-buttons">
-      <button class="label-btn true_pos ${cur?.label==='true_pos'?'selected':''}" onclick="setCur('true_pos')">✓ 真阳 (1)</button>
-      <button class="label-btn false_pos ${cur?.label==='false_pos'?'selected':''}" onclick="setCur('false_pos')">✗ 假阳 (2)</button>
-      <button class="label-btn unsure ${cur?.label==='unsure'?'selected':''}" onclick="setCur('unsure')">? 不确定 (3)</button>
+      <button class="label-btn true_pos ${cur?.label==='true_pos'?'selected':''}" onclick="setCur('true_pos')">✓ 指标判对了 (1)</button>
+      <button class="label-btn false_pos ${cur?.label==='false_pos'?'selected':''}" onclick="setCur('false_pos')">✗ 指标判错了 (2)</button>
+      <button class="label-btn unsure ${cur?.label==='unsure'?'selected':''}" onclick="setCur('unsure')">? 看不清 (3)</button>
       <button class="label-btn skip ${cur?.label==='skipped'?'selected':''}" onclick="setCur('skipped')">— 跳过 (4)</button>
       <span style="margin-left:auto;color:var(--muted);font-size:11px;align-self:center;">
         快捷键 <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> · 上下条 <kbd>↑</kbd> <kbd>↓</kbd> · 标完跳下一条 <kbd>n</kbd>
