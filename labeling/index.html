@@ -257,33 +257,63 @@ const QUESTIONS = {
   M14: {
     title: '【M14 死锁】',
     label: '指标说"这条死锁了"——判得对吗？',
-    body: `<strong>看黄色高亮窗口前一步在干嘛。</strong><br>
-           前面启动了训练 / 数据生成 / 长任务 → polling 是合理等待 → <strong style="color:var(--bad)">指标判错了（按 2）</strong><br>
-           前面没启动什么长任务，纯瞎打几个命令就开始 polling → 真死锁 → <strong style="color:var(--good)">指标判对了（按 1）</strong><br>
-           看不出来 → 按 3。`,
+    body: `<strong>判定标准：</strong>检查黄色高亮窗口前一步的 <code>action_type</code> 与 <code>command</code>，判断 polling 序列是否对应一个已启动的长任务（训练 / 数据生成 / 服务部署 / 远程脚本）。<br>
+           <table style="margin-top:10px;border-collapse:collapse;font-size:13px;">
+             <tr style="border-bottom:1px solid var(--rule-color);">
+               <th style="text-align:left;padding:6px 14px 6px 0;font-weight:700;">前置动作</th>
+               <th style="text-align:left;padding:6px 0;font-weight:700;">结论</th>
+             </tr>
+             <tr><td style="padding:6px 14px 6px 0;">前一步未启动长任务，polling 无明确等待对象</td><td style="color:var(--good);font-weight:600;">判对（1）— 真死锁</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">前一步启动了训练 / 数据生成 / 长任务，polling 在等待该任务完成</td><td style="color:var(--bad);font-weight:600;">判错（2）— 合法等待</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">前置动作不明，无法判断 polling 是否合理</td><td style="color:var(--warn);font-weight:600;">看不清（3）</td></tr>
+           </table>`,
   },
   M21: {
     title: '【M21 格式失败】',
     label: '指标说"这些 NullAction 是模型输出格式坏了"——判得对吗？',
-    body: `<strong>看红色行下面的 🔬 诊断。</strong><br>
-           诊断显示 MODEL_OUTPUT_TEXT 是垃圾文字 / 空白 / 不完整 JSON / 被截断 → 真格式坏 → <strong style="color:var(--good)">指标判对了（按 1）</strong><br>
-           诊断显示 FRAMEWORK_ERROR 报参数名不对 / MODEL_TRIED_TO_CALL 是合法工具但框架不认（如 finish）→ 模型其实输出合法，是框架问题 → <strong style="color:var(--bad)">指标判错了（按 2）</strong><br>
-           诊断不全 → 按 3。`,
+    body: `<strong>判定标准：</strong>检查红色高亮行下方的 🔬 诊断信息，判断 NullAction 来自模型输出格式问题还是框架兼容问题。<br>
+           <table style="margin-top:10px;border-collapse:collapse;font-size:13px;">
+             <tr style="border-bottom:1px solid var(--rule-color);">
+               <th style="text-align:left;padding:6px 14px 6px 0;font-weight:700;">🔬 诊断显示</th>
+               <th style="text-align:left;padding:6px 0;font-weight:700;">结论</th>
+             </tr>
+             <tr><td style="padding:6px 14px 6px 0;"><code>MODEL_OUTPUT_TEXT</code> 为空白 / 非结构化文字 / 不完整 JSON；或 <code>finish_reason=length</code></td><td style="color:var(--good);font-weight:600;">判对（1）— 真格式问题</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;"><code>FRAMEWORK_ERROR</code> 报参数不合法；或 <code>MODEL_TRIED_TO_CALL</code> 是合法工具（如 <code>finish</code>）但被框架拒绝</td><td style="color:var(--bad);font-weight:600;">判错（2）— 框架问题</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">诊断信息缺失或不足以判断</td><td style="color:var(--warn);font-weight:600;">看不清（3）</td></tr>
+           </table>`,
   },
   M93: {
     title: '【M93 重试改善】',
     label: '指标看分数判断"agent 有没有改善" —— 判得对吗？',
-    body: `<strong>看顶部的 score_delta 和首末几步。</strong><br>
-           <strong>M93=1（指标说"有改善"）：</strong>delta 较大 + 末尾有真实修复动作 → <strong style="color:var(--good)">指标判对了（按 1）</strong>。delta 极小（0.几）或只是 eval 抖动 / 不同子任务分别 eval / 第一次 eval 是垃圾分 → <strong style="color:var(--bad)">指标判错了（按 2）</strong>。<br>
-           <strong>M93=0（指标说"没改善"）：</strong>agent 确实在原地踏步或退步 → <strong style="color:var(--good)">指标判对了（按 1）</strong>。第一次就满分（无改善空间）或只 eval 了一次 → <strong style="color:var(--bad)">指标判错了（按 2）</strong>。`,
+    body: `<strong>判定标准：</strong>结合 <code>score_delta</code>、<code>num_evals</code> 与首末轨迹片段，判断分数变化是否反映真实的修复行为。<br>
+           <table style="margin-top:10px;border-collapse:collapse;font-size:13px;">
+             <tr style="border-bottom:1px solid var(--rule-color);">
+               <th style="text-align:left;padding:6px 14px 6px 0;font-weight:700;">指标判定</th>
+               <th style="text-align:left;padding:6px 14px;font-weight:700;">实际观察</th>
+               <th style="text-align:left;padding:6px 0;font-weight:700;">结论</th>
+             </tr>
+             <tr><td style="padding:6px 14px 6px 0;">M93 = 1</td><td style="padding:6px 14px;">delta 显著（通常 ≥ 1.0）且末尾存在针对性修复动作</td><td style="color:var(--good);font-weight:600;">判对（1）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">M93 = 1</td><td style="padding:6px 14px;">delta 极小（&lt; 1.0）且无对应修复动作；或不同子任务分别 eval；或首次 eval 为初始化垃圾分</td><td style="color:var(--bad);font-weight:600;">判错（2）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">M93 = 0</td><td style="padding:6px 14px;">agent 在原地踏步或退步，存在无效重试</td><td style="color:var(--good);font-weight:600;">判对（1）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">M93 = 0</td><td style="padding:6px 14px;">首次 eval 已达上限（无改善空间）；或 <code>num_evals</code> = 1（无法定义改善）</td><td style="color:var(--bad);font-weight:600;">判错（2）</td></tr>
+           </table>`,
   },
   M57: {
     title: '【M57 修复后验证】',
     label: '指标说"最后 edit 之后有没有验证" —— 判得对吗？',
-    body: `<strong>口诀：看绿色高亮（最后一次 edit）下面那几行的 action_type 列里有没有 <code>run_command</code> 或 <code>eval</code>。</strong><br>
-           <strong>M57=0（指标说"盲提交，没验证"）：</strong>实际下面没 run_command/eval（只有 summarize / finish / null）→ <strong style="color:var(--good)">指标判对了（按 1）</strong>。实际下面有 run_command/eval → <strong style="color:var(--bad)">指标判错了（按 2）</strong>。<br>
-           <strong>M57=1（指标说"已验证"）：</strong>实际下面有 run_command/eval → <strong style="color:var(--good)">指标判对了（按 1）</strong>。实际下面没 run_command/eval → <strong style="color:var(--bad)">指标判错了（按 2）</strong>。<br>
-           不用判断那命令"算不算真验证"，只看 action_type 列有没有出现这俩词。`,
+    body: `<strong>判定标准：</strong>检查最后一次 <code>edit_file</code>（绿色高亮行）之后的步骤中，是否存在 <code>run_command</code> 或 <code>eval</code> 节点。<br>
+           <table style="margin-top:10px;border-collapse:collapse;font-size:13px;">
+             <tr style="border-bottom:1px solid var(--rule-color);">
+               <th style="text-align:left;padding:6px 14px 6px 0;font-weight:700;">指标判定</th>
+               <th style="text-align:left;padding:6px 14px;font-weight:700;">实际观察</th>
+               <th style="text-align:left;padding:6px 0;font-weight:700;">结论</th>
+             </tr>
+             <tr><td style="padding:6px 14px 6px 0;">M57 = 0</td><td style="padding:6px 14px;">不存在 <code>run_command</code> / <code>eval</code></td><td style="color:var(--good);font-weight:600;">判对（1）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">M57 = 0</td><td style="padding:6px 14px;">存在 <code>run_command</code> / <code>eval</code></td><td style="color:var(--bad);font-weight:600;">判错（2）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">M57 = 1</td><td style="padding:6px 14px;">存在 <code>run_command</code> / <code>eval</code></td><td style="color:var(--good);font-weight:600;">判对（1）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">M57 = 1</td><td style="padding:6px 14px;">不存在 <code>run_command</code> / <code>eval</code></td><td style="color:var(--bad);font-weight:600;">判错（2）</td></tr>
+           </table>
+           <strong>注：</strong>仅依据 <code>action_type</code> 字段的存在性判定，不评估命令的语义有效性。`,
   },
 };
 
