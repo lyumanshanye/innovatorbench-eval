@@ -460,6 +460,72 @@
         <h2>Output Keys</h2>
         <ul><li><code>M02_tool_chain_depth</code></li></ul>
 
+        <!-- BEGIN: M Case Studies (auto-injected) -->
+        <style>
+/* Auto-injected: case study cards */
+.case-cards { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
+.case-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.case-card-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 0.75rem; }
+.case-title { display: flex; gap: 1rem; align-items: flex-start; flex: 1; }
+.case-title h3 { font-size: 1rem; font-weight: 600; color: var(--navy); margin: 0; }
+.case-task { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; font-family: 'JetBrains Mono', monospace; }
+.metric-value-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 48px; height: 32px; padding: 0 0.6rem; border-radius: 8px;
+    font-weight: 700; font-size: 0.82rem;
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(37,99,235,0.10); color: var(--accent); flex-shrink: 0;
+}
+.metric-value-badge.badge-good { background: rgba(5,150,105,0.12); color: var(--green); }
+.metric-value-badge.badge-bad  { background: rgba(220,38,38,0.12); color: #dc2626; }
+.metric-value-badge.badge-warn { background: rgba(217,119,6,0.12);  color: var(--gold); }
+.case-desc { font-size: 0.9rem; color: var(--text); line-height: 1.7; margin-bottom: 0.5rem; }
+.trajectory-flow {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+    margin: 0.75rem 0;
+}
+.traj-step {
+    padding: 0.3rem 0.7rem; border-radius: 6px;
+    font-size: 0.76rem; font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    background: rgba(99,102,241,0.10); color: #4f46e5;
+}
+.traj-think   { background: rgba(124,58,237,0.10);  color: #7c3aed; }
+.traj-action  { background: rgba(99,102,241,0.10);  color: #4f46e5; }
+.traj-error   { background: rgba(220,38,38,0.10);   color: #dc2626; }
+.traj-success { background: rgba(5,150,105,0.10);   color: var(--green); }
+.traj-loop    { background: rgba(220,38,38,0.08);   color: #dc2626; border: 1px dashed #dc2626; }
+.traj-arrow   { color: var(--text-muted); font-size: 0.8rem; }
+.traj-formula {
+    margin-top: 0.6rem; padding: 0.55rem 0.9rem;
+    background: var(--bg); border-radius: 6px;
+    border-left: 3px solid var(--accent); font-size: 0.82rem;
+}
+.traj-formula code {
+    font-family: 'JetBrains Mono', monospace;
+    background: none; padding: 0; color: var(--text); font-size: 0.82rem;
+}
+.no-cases-note {
+    padding: 1rem 1.25rem; border: 1px dashed var(--border);
+    border-radius: 8px; color: var(--text-muted); font-size: 0.9rem;
+    background: var(--bg);
+}
+</style>
+        <h2>Case Studies</h2>
+        <p>Curated trajectory examples across 4 harnesses showing how M02 behaves on real runs.</p>
+        <div class="case-cards">
+<div class="case-card expanded"><div class="case-card-header"><div class="case-title"><span class="metric-value-badge">230</span><div><h3>InnovatorBench · 工具链深度 Tool Chain Depth</h3><div class="case-task">Source: workspace_task_17 / claude-4-sonnet (9.1h)</div></div></div></div><div class="case-card-body"><div class="case-desc">整条轨迹中 ReAct 节点总数。值越大说明链路越深。</div><div class="trajectory-flow"><span class="traj-step traj-think">N1 root</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-think">N2 think: understand task</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-action">N3-6 list_files ×4</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-think">N7-8 open training.sh+config</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-error">N10 search_dir ERROR</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-action">N11-16 find/open reward files</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-action">N17-28 bash explore+data</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-loop">N29-34 sleep→get ×3</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-think">N35 think: data understood</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">N36 create_file r1gui.py</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">N37-42 open→edit ×3 files</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-action">N43-46 test import+sleep</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">N47-53 ray start+training.sh</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-loop">N54-68 monitor ×5 cycles</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-action">N70-71 nvidia+2nd train</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-loop">N72-104 monitor ×11 cycles</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-action">N107-122 merge model+ls</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">N123 inference.sh</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-action">N124-152 inference+eval</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-error">N150 eval ERROR</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-error">N157-161 eval ERROR ×3</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">N168-169 open+edit config</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">N171 3rd training</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-loop">N172-194 monitor+kill</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">N197-199 create+edit ×2</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">N201 4th training</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-loop">N202-216 monitor ×5</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-action">N217-226 merge+inference</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-error">N229-230 ls+eval ERROR</span></div><div class="traj-formula"><code>M02 = count(react_nodes) = 230 | Duration: 9.13h | Tokens: 13.2M</code></div></div></div>
+<div class="case-card expanded"><div class="case-card-header"><div class="case-title"><span class="metric-value-badge">17</span><div><h3>AgencyBench · 工具调用数 Tool Call Count</h3><div class="case-task">Source: task11 / openai_gpt-5.2</div></div></div></div><div class="case-card-body"><div class="case-desc">agent_output 中 &#x27;🔧 Tool result:&#x27; 出现次数。</div><div class="trajectory-flow"><span class="traj-step traj-action">🔧 list_directory (empty)</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-error">🔧 list_directory ERROR ×2</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">🔧 list_directory → 成功</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">🔧 write_file Makefile</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">🔧 write_file auth.hpp</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">🔧 write_file sha256.hpp</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">🔧 write_file json_utils.hpp</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">🔧 write_file main.cpp</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">🔧 write_file auth.cpp</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">🔧 write_file json_utils.cpp</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">🔧 write_file sha256.cpp</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">🔧 write_file users.json</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">🔧 write_file session_state.json</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">🔧 shell: g++ compile → 1.0.0</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">🔧 shell: demo run</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">🔧 shell: hash check</span></div><div class="traj-formula"><code>M02 = count('🔧 Tool result:') = 17</code></div></div></div>
+<div class="case-card expanded"><div class="case-card-header"><div class="case-title"><span class="metric-value-badge">127</span><div><h3>SWE-bench · 工具调用数 Tool Call Count</h3><div class="case-task">Source: tornado-1782 / codeact-glm47</div></div></div></div><div class="case-card-body"><div class="case-desc">assistant 消息中 tool_call 对象的总数。</div><div class="trajectory-flow"><span class="traj-step traj-think">S1 think: analyze GC issue</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-think">S2-11 view+grep ×10</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-action">S12-18 task_tracker+create test</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-action">S19-27 think+edit attempts ×9</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-error">S28-78 debug cycle ×50</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">S79-117 more attempts → PASS</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-action">S118-127 cleanup+finish</span></div><div class="traj-formula"><code>M02 = total_tool_calls = 127</code></div></div></div>
+<div class="case-card expanded"><div class="case-card-header"><div class="case-title"><span class="metric-value-badge">57</span><div><h3>ClawBench · 轨迹深度 Tool Chain Depth</h3><div class="case-task">Source: en_fullstack_debug / gemini-3.1-pro</div></div></div></div><div class="case-card-body"><div class="case-desc">API 日志的总 turn 数。</div><div class="trajectory-flow"><span class="traj-step traj-think">T0-13 文件读取 (14 turns)</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-loop">T14-24 重复读取+编辑 (11 turns)</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-error">T25-26 429 限频 (2 turns)</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-action">T27-43 构建+部署+测试 (17 turns)</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-loop">T44-55 更多重复读取 (12 turns)</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-think">T56 总结 (1 turn)</span></div><div class="traj-formula"><code>M02 = lines(api_proxy_log.jsonl) = 57</code></div></div></div>
+</div>
+        <!-- END: M Case Studies -->
         <h2>Source</h2>
         <p>Implementation: <code>compute_metrics.py</code> (see the section labelled <code>Metric #2</code> in the source file). The numeric data shown on the index page comes from <code>metrics_results_424.csv</code> / <code>.json</code>.</p>
     </main>

@@ -461,6 +461,72 @@ M57 = 1.0 if any j &gt; i* with action_type ∈ {run_command, eval} else 0.0</co
         <h2>Output Keys</h2>
         <ul><li><code>M57_post_fix_verify</code></li></ul>
 
+        <!-- BEGIN: M Case Studies (auto-injected) -->
+        <style>
+/* Auto-injected: case study cards */
+.case-cards { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
+.case-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.case-card-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 0.75rem; }
+.case-title { display: flex; gap: 1rem; align-items: flex-start; flex: 1; }
+.case-title h3 { font-size: 1rem; font-weight: 600; color: var(--navy); margin: 0; }
+.case-task { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; font-family: 'JetBrains Mono', monospace; }
+.metric-value-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 48px; height: 32px; padding: 0 0.6rem; border-radius: 8px;
+    font-weight: 700; font-size: 0.82rem;
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(37,99,235,0.10); color: var(--accent); flex-shrink: 0;
+}
+.metric-value-badge.badge-good { background: rgba(5,150,105,0.12); color: var(--green); }
+.metric-value-badge.badge-bad  { background: rgba(220,38,38,0.12); color: #dc2626; }
+.metric-value-badge.badge-warn { background: rgba(217,119,6,0.12);  color: var(--gold); }
+.case-desc { font-size: 0.9rem; color: var(--text); line-height: 1.7; margin-bottom: 0.5rem; }
+.trajectory-flow {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+    margin: 0.75rem 0;
+}
+.traj-step {
+    padding: 0.3rem 0.7rem; border-radius: 6px;
+    font-size: 0.76rem; font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    background: rgba(99,102,241,0.10); color: #4f46e5;
+}
+.traj-think   { background: rgba(124,58,237,0.10);  color: #7c3aed; }
+.traj-action  { background: rgba(99,102,241,0.10);  color: #4f46e5; }
+.traj-error   { background: rgba(220,38,38,0.10);   color: #dc2626; }
+.traj-success { background: rgba(5,150,105,0.10);   color: var(--green); }
+.traj-loop    { background: rgba(220,38,38,0.08);   color: #dc2626; border: 1px dashed #dc2626; }
+.traj-arrow   { color: var(--text-muted); font-size: 0.8rem; }
+.traj-formula {
+    margin-top: 0.6rem; padding: 0.55rem 0.9rem;
+    background: var(--bg); border-radius: 6px;
+    border-left: 3px solid var(--accent); font-size: 0.82rem;
+}
+.traj-formula code {
+    font-family: 'JetBrains Mono', monospace;
+    background: none; padding: 0; color: var(--text); font-size: 0.82rem;
+}
+.no-cases-note {
+    padding: 1rem 1.25rem; border: 1px dashed var(--border);
+    border-radius: 8px; color: var(--text-muted); font-size: 0.9rem;
+    background: var(--bg);
+}
+</style>
+        <h2>Case Studies</h2>
+        <p>Curated trajectory examples across 4 harnesses showing how M57 behaves on real runs.</p>
+        <div class="case-cards">
+<div class="case-card expanded"><div class="case-card-header"><div class="case-title"><span class="metric-value-badge badge-good">1</span><div><h3>InnovatorBench · 修复后验证 Post-Fix Verify</h3><div class="case-task">Source: Pillow-4088 / SWE-bench (49 steps)</div></div></div></div><div class="case-card-body"><div class="case-desc">最后一次编辑后是否运行了测试。</div><div class="trajectory-flow"><span class="traj-step traj-think">S1-12 分析+复现 bug</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">S13 fix ImageOps.py ★</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-action">S15 pip install -e .</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">S19 comprehensive test PASS</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">S20 pytest test_imageops PASS</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">S21-48 反复验证 15+ 次 pytest</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">S49 finish</span></div><div class="traj-formula"><code>M57 = has_test_after_last_edit = 1 (True)</code></div></div></div>
+<div class="case-card expanded"><div class="case-card-header"><div class="case-title"><span class="metric-value-badge badge-good">1.0</span><div><h3>AgencyBench · 修后验证率 Post-Fix Verify</h3><div class="case-task">Source: task11 / openai_gpt-5.2</div></div></div></div><div class="case-card-body"><div class="case-desc">编辑后有 test/run 跟随的比例。</div><div class="trajectory-flow"><span class="traj-step traj-success">write main.cpp (最后一次编辑)</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">shell: g++ compile ✓</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">shell: demo run ✓</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">shell: hash verify ✓</span></div><div class="traj-formula"><code>M57 = 3/3 edits verified = 1.0</code></div></div></div>
+<div class="case-card expanded"><div class="case-card-header"><div class="case-title"><span class="metric-value-badge badge-good">1.0</span><div><h3>SWE-bench · 修后验证 Post-Fix Verify</h3><div class="case-task">Source: Pillow-4088</div></div></div></div><div class="case-card-body"><div class="case-desc">edit 后 5 步内有 test/run 的比例。</div><div class="trajectory-flow"><span class="traj-step traj-success">S13 fix ImageOps.py</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-action">S14-15 pip install</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">S16-17 run test ✓</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">S19-48 反复 pytest 15+ 次</span></div><div class="traj-formula"><code>M57 = 1.0 (每次编辑后都有验证)</code></div></div></div>
+<div class="case-card expanded"><div class="case-card-header"><div class="case-title"><span class="metric-value-badge badge-good">0.75</span><div><h3>ClawBench · 修后验证 Post-Fix Verify</h3><div class="case-task">Source: en_fullstack_debug / gpt-5.4</div></div></div></div><div class="case-card-body"><div class="case-desc">edit/write 后 5 turn 内有 exec 的比例。</div><div class="trajectory-flow"><span class="traj-step traj-success">T4 write 4 files</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">T5-9 exec build ×5 (验证)</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">T13 exec curl test (验证)</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">T14 browser check (验证)</span></div><div class="traj-formula"><code>M57 = 3/4 writes verified = 0.75</code></div></div></div>
+</div>
+        <!-- END: M Case Studies -->
         <h2>Source</h2>
         <p>Implementation: <code>compute_metrics.py</code> (see the section labelled <code>Metric #57</code> in the source file). The numeric data shown on the index page comes from <code>metrics_results_424.csv</code> / <code>.json</code>.</p>
     </main>

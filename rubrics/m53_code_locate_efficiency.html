@@ -460,6 +460,71 @@
         <h2>Output Keys</h2>
         <ul><li><code>M53_code_locate_efficiency</code></li></ul>
 
+        <!-- BEGIN: M Case Studies (auto-injected) -->
+        <style>
+/* Auto-injected: case study cards */
+.case-cards { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
+.case-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.case-card-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 0.75rem; }
+.case-title { display: flex; gap: 1rem; align-items: flex-start; flex: 1; }
+.case-title h3 { font-size: 1rem; font-weight: 600; color: var(--navy); margin: 0; }
+.case-task { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; font-family: 'JetBrains Mono', monospace; }
+.metric-value-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 48px; height: 32px; padding: 0 0.6rem; border-radius: 8px;
+    font-weight: 700; font-size: 0.82rem;
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(37,99,235,0.10); color: var(--accent); flex-shrink: 0;
+}
+.metric-value-badge.badge-good { background: rgba(5,150,105,0.12); color: var(--green); }
+.metric-value-badge.badge-bad  { background: rgba(220,38,38,0.12); color: #dc2626; }
+.metric-value-badge.badge-warn { background: rgba(217,119,6,0.12);  color: var(--gold); }
+.case-desc { font-size: 0.9rem; color: var(--text); line-height: 1.7; margin-bottom: 0.5rem; }
+.trajectory-flow {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+    margin: 0.75rem 0;
+}
+.traj-step {
+    padding: 0.3rem 0.7rem; border-radius: 6px;
+    font-size: 0.76rem; font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    background: rgba(99,102,241,0.10); color: #4f46e5;
+}
+.traj-think   { background: rgba(124,58,237,0.10);  color: #7c3aed; }
+.traj-action  { background: rgba(99,102,241,0.10);  color: #4f46e5; }
+.traj-error   { background: rgba(220,38,38,0.10);   color: #dc2626; }
+.traj-success { background: rgba(5,150,105,0.10);   color: var(--green); }
+.traj-loop    { background: rgba(220,38,38,0.08);   color: #dc2626; border: 1px dashed #dc2626; }
+.traj-arrow   { color: var(--text-muted); font-size: 0.8rem; }
+.traj-formula {
+    margin-top: 0.6rem; padding: 0.55rem 0.9rem;
+    background: var(--bg); border-radius: 6px;
+    border-left: 3px solid var(--accent); font-size: 0.82rem;
+}
+.traj-formula code {
+    font-family: 'JetBrains Mono', monospace;
+    background: none; padding: 0; color: var(--text); font-size: 0.82rem;
+}
+.no-cases-note {
+    padding: 1rem 1.25rem; border: 1px dashed var(--border);
+    border-radius: 8px; color: var(--text-muted); font-size: 0.9rem;
+    background: var(--bg);
+}
+</style>
+        <h2>Case Studies</h2>
+        <p>Curated trajectory examples across 4 harnesses showing how M53 behaves on real runs.</p>
+        <div class="case-cards">
+<div class="case-card expanded"><div class="case-card-header"><div class="case-title"><span class="metric-value-badge badge-warn">0.157</span><div><h3>InnovatorBench · 代码定位效率 Code Locate</h3><div class="case-task">Source: workspace_task_17 / claude-4-sonnet</div></div></div></div><div class="case-card-body"><div class="case-desc">首次 create/edit 操作的位置比例。</div><div class="trajectory-flow"><span class="traj-step traj-action">N1-6 目录浏览</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-think">N7-16 文件阅读</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-action">N17-28 环境探测+数据分析</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-loop">N29-35 等待+思考</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">N36 create_file r1gui.py ★</span></div><div class="traj-formula"><code>M53 = 36/230 = 0.157 (前 15.7% 的步骤用于定位)</code></div></div></div>
+<div class="case-card expanded"><div class="case-card-header"><div class="case-title"><span class="metric-value-badge">0.27</span><div><h3>SWE-bench · 代码定位 Code Locate Efficiency</h3><div class="case-task">Source: Pillow-4088</div></div></div></div><div class="case-card-body"><div class="case-desc">write 操作 / read 操作 的比率。</div><div class="trajectory-flow"><span class="traj-step traj-success">total writes: 11 (1 fix + 10 tests)</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-think">total reads: 46 (14 view + 32 bash)</span></div><div class="traj-formula"><code>M53 = 11/46 = 0.24</code></div></div></div>
+<div class="case-card expanded"><div class="case-card-header"><div class="case-title"><span class="metric-value-badge">0.24</span><div><h3>ClawBench · 代码定位 Code Locate</h3><div class="case-task">Source: en_fullstack_debug / gpt-5.4</div></div></div></div><div class="case-card-body"><div class="case-desc">首次 edit/write 的 turn 位置 / 总 turn。</div><div class="trajectory-flow"><span class="traj-step traj-think">T0-T3 读取+探索 (4 turns)</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-success">T4 write: 4 files ★</span><span class="traj-arrow">&rarr;</span><span class="traj-step traj-action">total: 17 turns</span></div><div class="traj-formula"><code>M53 = 4/17 = 0.24</code></div></div></div>
+</div>
+        <!-- END: M Case Studies -->
         <h2>Source</h2>
         <p>Implementation: <code>compute_metrics.py</code> (see the section labelled <code>Metric #53</code> in the source file). The numeric data shown on the index page comes from <code>metrics_results_424.csv</code> / <code>.json</code>.</p>
     </main>
