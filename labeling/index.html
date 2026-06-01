@@ -164,6 +164,13 @@
     <button class="btn" onclick="if(confirm('清空当前 metric 的所有标注？'))resetCurrent()">清空</button>
   </div>
 </div>
+<div style="background:#1e1b4b;border-bottom:1px solid #6366f1;padding:10px 24px;font-size:12px;color:#c7d2fe;">
+  <strong style="color:#fbbf24;">建议标注顺序：</strong>
+  <strong>M57</strong>（最容易：看最后一次 edit 后跑了什么命令）→
+  <strong>M14</strong>（看死锁前一步在干嘛）→
+  <strong>M93</strong>（看分数提升的幅度和最后几步）→
+  <strong>M21</strong>（看每个 null 行的 🔬 诊断信息）。每个 metric 标完 50 条切下一个。
+</div>
 
 <div class="layout">
   <div class="sidebar">
@@ -198,12 +205,12 @@ const QUESTIONS = {
   },
   M21: {
     title: '【M21 格式失败】',
-    label: '这些 NullAction 是真的格式坍塌吗？',
+    label: '这些 NullAction 是"模型输出格式坏了"还是"框架不兼容"？',
     body: `指标判定：<code>action_type</code> 为空 / null。<br>
-           看高亮的 NullAction 步以及它的 raw response：<br>
-           <strong>真阳（true_pos）</strong> = 模型输出格式坏了（解析失败、JSON 不完整、tool_call 缺字段、整段内容为空）。<br>
-           <strong>假阳（false_pos）</strong> = 实际是正常 think 步、合法 finish、或者上游解析器误判。<br>
-           <strong>不确定（unsure）</strong> = response 模糊，分不清。`,
+           看红色高亮行下方的 🔬 诊断信息——它会告诉你模型当时<strong>实际想调什么工具</strong>，以及<strong>为什么被标成 null</strong>：<br>
+           <strong>真阳（按 1）</strong> = 模型输出真的格式坏了：MODEL_OUTPUT_TEXT 是垃圾文字 / 不完整 JSON / 完全空白；或 finish_reason=length 被截断。<br>
+           <strong>假阳（按 2）</strong> = 模型输出了完全合法的 tool_call，但被框架判 null：例如 FRAMEWORK_ERROR 报参数名不对、或 MODEL_TRIED_TO_CALL 是 finish/某个合法工具但框架不认。这是<strong>框架问题不是模型格式问题</strong>。<br>
+           <strong>不确定（按 3）</strong> = 诊断信息不全，看不出来。`,
   },
   M93: {
     title: '【M93 重试改善】',
@@ -223,7 +230,7 @@ const QUESTIONS = {
   },
 };
 
-let CUR_METRIC = 'M14';
+let CUR_METRIC = 'M57';
 let CUR_IDX = -1;
 let FILTER = 'all';
 
@@ -381,6 +388,7 @@ function renderMain() {
       body += `<div class="sr-obs ${isErr?'err':''}">${escapeHTML(row.obs)}</div>`;
     }
     if (row.thought) body += `<div class="sr-thought">💭 ${escapeHTML(row.thought)}</div>`;
+    if (row.null_diag) body += `<div class="sr-response">🔬 ${escapeHTML(row.null_diag)}</div>`;
     if (row._response_raw) body += `<div class="sr-response">RAW: ${escapeHTML(row._response_raw)}</div>`;
     return `<div class="snippet-row ${cls.join(' ')}">
       <div class="sr-idx">#${row._idx}</div>
