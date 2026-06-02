@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M74",
+  "name": "动作熵 Action Entropy",
+  "val": "1.79 bits · score=0",
+  "badge": "badge-bad",
+  "src": "task_19 · claude-4-sonnet-gzy",
+  "desc": "卡在单一动作循环 — 熵=1.79 bits，(null,null) bigram 占 71.4% 主导。",
+  "steps": [
+    {"t": "Step 36: action_type=null — 'Do nothing. Please check your output format'", "c": "loop"},
+    {"t": "Step 37: action_type=null again — 同一格式错误", "c": "loop"},
+    {"t": "Step 38: action_type=null still — 无法生成有效工具调用", "c": "loop"},
+    {"t": "Step 39-92: 同一动作累计 57 次连续 null（占总轨迹 72.8%）", "c": "error"},
+    {"t": "Top action types: null×67 (72.8%), list_files×12 (13.0%), open_file×6 (6.5%)", "c": "action"},
+    {"t": "Top bigram: (null,null)×65 占 71.4% — 行为完全固化", "c": "error"},
+    {"t": "M74 = 1.79 bits — 单一 bigram 主导，best_eval_score=0", "c": "error"}
+  ],
+  "formula": "M74 = -Σ p(bigram)·log₂ p(bigram) = 1.788 bits over 91 bigrams; (null,null)=65/91=71.4% dominates"
+}

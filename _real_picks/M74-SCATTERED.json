@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M74",
+  "name": "动作熵 Action Entropy",
+  "val": "5.28 bits · score=0",
+  "badge": "badge-bad",
+  "src": "task_13 · claude-4-sonnet-gzy",
+  "desc": "表面多样：bigram 熵 5.28 bits 但 246 步无果 — 工具切换≠策略推进。",
+  "steps": [
+    {"t": "Step 38: run_command 创建 dualalign 训练模块目录", "c": "action"},
+    {"t": "Step 88: train.sh → 'Couldn't find a dataset script' 数据路径错", "c": "error"},
+    {"t": "Step 131-211: 17 次 edit dualalign/trainer.py + 重跑 train.sh", "c": "loop"},
+    {"t": "Step 240: AttributeError: 'CustomDualAlignTrainer' no 'padding_value'", "c": "error"},
+    {"t": "Step 245: KeyError: 'chosen_input_ids' — 数据格式仍未对齐", "c": "error"},
+    {"t": "Top bigrams: check_idle→get_output×20, run_cmd→sleep×17, open→edit×15", "c": "action"},
+    {"t": "246 步、19 种 action_type，但 train.sh 从未成功 → score=0", "c": "error"}
+  ],
+  "formula": "M74 = -Σ p(bigram)·log₂ p(bigram) = 5.284 bits (但 score=0)"
+}

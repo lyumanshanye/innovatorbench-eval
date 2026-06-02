@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M74",
+  "name": "动作熵 Action Entropy",
+  "val": "5.27 bits · score=91.5",
+  "badge": "badge-good",
+  "src": "task_56 · claude-4-sonnet-gzy",
+  "desc": "真·策略多样：高熵 (5.27 bits) 且高分 (91.5) — 多阶段策略而非散乱重复。",
+  "steps": [
+    {"t": "Step 2 think: 规划 Darija→EN/FR 数据集 + Llama-3.1-8B 微调", "c": "think"},
+    {"t": "Step 5 list_files /workspace; Step 9 open_file test.json — 探索阶段", "c": "action"},
+    {"t": "Step 65 create_file /workspace/data/datasets/generation_set.json", "c": "action"},
+    {"t": "Step 72 edit_file scripts/config.yaml: max_samples=45096", "c": "action"},
+    {"t": "Step 157 eval → overall_score=91.538 (首评即高分)", "c": "success"},
+    {"t": "Top bigrams: sleep→get_session_output×28, run_command→sleep×15, run_command→run_command×9, get_session_output→check_session_idle×9, get_session_output→sleep×9", "c": "action"},
+    {"t": "M74 = 5.27 bits · 但同时拿到 91.5 分", "c": "success"}
+  ],
+  "formula": "M74 = -Σ p(bigram)·log₂ p(bigram) = 5.27 bits (over 21 distinct action_types, n_react=196)"
+}
