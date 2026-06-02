@@ -182,6 +182,38 @@
   .snippet-row.dl { background:var(--accent-gold-bg); border-left:3px solid var(--accent-gold); }
   .snippet-row.null-row { background:var(--accent-red-bg); border-left:3px solid var(--accent-red); }
   .snippet-row.last-edit { background:var(--accent-green-bg); border-left:3px solid var(--accent-green); }
+  .snippet-row.first-edit { background:var(--accent-green-bg); border-left:3px solid var(--accent-green); }
+  .snippet-row.prior-window { background:var(--ink-blue-faint); border-left:3px solid var(--ink-blue-light); }
+  .snippet-row.modification { background:var(--accent-gold-bg); border-left:3px solid var(--accent-gold); }
+  .snippet-row.eval-row { background:var(--accent-red-bg); border-left:3px solid var(--accent-red); }
+  .snippet-row.context-row { background:var(--parchment); border-left:3px solid var(--rule-color); }
+  .snippet-row.think-prev { background:var(--ink-blue-faint); border-left:3px solid var(--ink-blue-light); }
+  .snippet-row.think-next-ok { background:var(--accent-green-bg); border-left:3px solid var(--accent-green); }
+  .snippet-row.think-next-fail { background:var(--accent-red-bg); border-left:3px solid var(--accent-red); }
+  .edit-block { background:var(--parchment-light); border:1px solid var(--rule-color); border-radius:2px;
+                margin-bottom:14px; overflow:hidden; }
+  .edit-block-header { padding:9px 14px; background:var(--ink-blue-faint);
+                       border-bottom:1px solid var(--rule-color); font-family:var(--font-mono);
+                       font-size:11.5px; color:var(--ink-blue); font-weight:600; word-break:break-all; }
+  .edit-block-header .verdict-yes { color:var(--accent-green); font-weight:700; margin-left:8px; }
+  .edit-block-header .verdict-no { color:var(--accent-red); font-weight:700; margin-left:8px; }
+  .file-block { background:var(--parchment-light); border:1px solid var(--rule-color); border-radius:2px;
+                margin-bottom:14px; overflow:hidden; }
+  .file-block-header { padding:9px 14px; background:var(--ink-blue-faint);
+                       border-bottom:1px solid var(--rule-color); font-family:var(--font-mono);
+                       font-size:11.5px; color:var(--ink-blue); font-weight:600; word-break:break-all; }
+  .pair-block { background:var(--parchment-light); border:1px solid var(--rule-color); border-radius:2px;
+                margin-bottom:14px; overflow:hidden; }
+  .pair-block-header { padding:9px 14px; background:var(--ink-blue-faint);
+                       border-bottom:1px solid var(--rule-color); font-family:var(--font-mono);
+                       font-size:11.5px; color:var(--ink-blue); font-weight:600; }
+  .planning-card { background:var(--accent-gold-bg); border:1px solid var(--accent-gold);
+                   border-left:3px solid var(--accent-gold); border-radius:2px;
+                   padding:10px 14px; margin-bottom:8px; }
+  .planning-card .pc-head { font-family:var(--font-mono); font-size:11px; color:var(--accent-gold);
+                            font-weight:700; margin-bottom:6px; letter-spacing:0.05em; }
+  .planning-card ol { padding-left:20px; }
+  .planning-card li { font-size:12px; line-height:1.6; color:var(--charcoal); margin-bottom:3px; }
   .sr-idx { color:var(--warm-gray-light); font-family:var(--font-mono); font-weight:600; font-size:11px; }
   .sr-action { font-family:var(--font-mono); font-weight:600; color:var(--ink-blue); font-size:11.5px; }
   .sr-time { color:var(--warm-gray-light); font-family:var(--font-mono); font-size:10.5px; }
@@ -258,7 +290,7 @@
 <div style="background:var(--ink-blue-faint);border-bottom:1px solid var(--rule-color);padding:11px 28px;font-size:13px;color:var(--charcoal);font-family:var(--font-cn);line-height:1.7;">
   <strong style="color:var(--ink-blue);">怎么标：</strong>每条轨迹，指标已经做了一个判定。你看完轨迹回答<strong style="color:var(--ink-blue);">"指标这次判得对吗"</strong>。判得对按 <kbd>1</kbd>，判得错按 <kbd>2</kbd>，看不清按 <kbd>3</kbd>，数据有问题按 <kbd>4</kbd>。
   <strong style="color:var(--ink-blue);margin-left:14px;">建议顺序：</strong>
-  M57（最容易）→ M14 → M93 → M21。
+  M57（最容易）→ M14 → M93 → M21 → M07 → M55 → M11 → M76 → M72。
 </div>
 
 <div class="layout">
@@ -280,7 +312,7 @@
 // Data: snippets are inlined below (one big object keyed by metric)
 // ============================================================
 let DATA = window.SNIPPETS || {};
-const METRICS = ['M14', 'M21', 'M93', 'M57'];
+const METRICS = ['M14', 'M21', 'M93', 'M57', 'M07', 'M11', 'M55', 'M72', 'M76'];
 
 const QUESTIONS = {
   M14: {
@@ -348,6 +380,92 @@ const QUESTIONS = {
              <tr><td style="padding:6px 14px 6px 0;">M57 = 1</td><td style="padding:6px 14px;">不存在 <code>run_command</code> / <code>eval</code></td><td style="color:var(--bad);font-weight:600;">判错（2）</td></tr>
            </table>
            <strong>注：</strong>仅依据 <code>action_type</code> 字段的存在性判定，不评估命令的语义有效性。`,
+  },
+  M07: {
+    title: '【M07 编辑前已读】',
+    label: '指标说"edit 之前 N 步内开过同文件" —— 判得对吗？',
+    body: `<strong>判定标准：</strong>每个 edit 块上方列出的"prior window"动作（高亮的 N 步窗口）里，是否包含针对<strong>同一 path</strong>的 <code>open_file</code> / <code>create_file</code> / <code>edit_file</code>。<br>
+           <table style="margin-top:10px;border-collapse:collapse;font-size:13px;">
+             <tr style="border-bottom:1px solid var(--rule-color);">
+               <th style="text-align:left;padding:6px 14px 6px 0;font-weight:700;">指标判定</th>
+               <th style="text-align:left;padding:6px 14px;font-weight:700;">实际观察</th>
+               <th style="text-align:left;padding:6px 0;font-weight:700;">结论</th>
+             </tr>
+             <tr><td style="padding:6px 14px 6px 0;"><code>prior5_has_same_path = true</code></td><td style="padding:6px 14px;">prior window 中确实存在 open_file / create_file / edit_file 同 path</td><td style="color:var(--good);font-weight:600;">判对（1）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;"><code>prior5_has_same_path = true</code></td><td style="padding:6px 14px;">prior window 内根本没有 open/create/edit；或 path 不一致（前面读 A、edit B）</td><td style="color:var(--bad);font-weight:600;">判错（2）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;"><code>prior5_has_same_path = false</code></td><td style="padding:6px 14px;">prior window 中确实没有 open/create/edit 同 path（盲改）</td><td style="color:var(--good);font-weight:600;">判对（1）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;"><code>prior5_has_same_path = false</code></td><td style="padding:6px 14px;">prior window 中其实有同 path 的 open/create/edit（漏抓）</td><td style="color:var(--bad);font-weight:600;">判错（2）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">edit path 解析失败 / 空</td><td style="padding:6px 14px;">无法判断同 path</td><td style="color:var(--warn);font-weight:600;">看不清（3）</td></tr>
+           </table>
+           <strong>注：</strong>新创建文件的 create_file 通常视为"读过"（自己写的内容自己知）。`,
+  },
+  M11: {
+    title: '【M11 Eval 滥用】',
+    label: '指标说"两次 eval 之间没修改 → 滥用" —— 判得对吗？',
+    body: `<strong>判定标准：</strong>看高亮的 in-between 步（夹在两次 eval 之间）里有没有<strong>实际修改环境</strong>的动作：<code>edit_file</code> / <code>create_file</code> / 非只读 <code>run_command</code>（写入文件、训练、起服务等）。<br>
+           <table style="margin-top:10px;border-collapse:collapse;font-size:13px;">
+             <tr style="border-bottom:1px solid var(--rule-color);">
+               <th style="text-align:left;padding:6px 14px 6px 0;font-weight:700;">指标判定</th>
+               <th style="text-align:left;padding:6px 14px;font-weight:700;">实际观察</th>
+               <th style="text-align:left;padding:6px 0;font-weight:700;">结论</th>
+             </tr>
+             <tr><td style="padding:6px 14px 6px 0;">标为滥用对（pair 计入 abuse）</td><td style="padding:6px 14px;">in-between 全是 think / open_file / list_files / 只读 cat 等，没改任何东西</td><td style="color:var(--good);font-weight:600;">判对（1）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">标为滥用</td><td style="padding:6px 14px;">in-between 实际有 edit_file / create_file 或非只读 run_command（python xx.py / 训练）</td><td style="color:var(--bad);font-weight:600;">判错（2）— 漏判合法重 eval</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">未标滥用</td><td style="padding:6px 14px;">in-between 确实有修改</td><td style="color:var(--good);font-weight:600;">判对（1）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">未标滥用</td><td style="padding:6px 14px;">in-between 完全没改东西</td><td style="color:var(--bad);font-weight:600;">判错（2）— 漏判</td></tr>
+           </table>
+           <strong>注：</strong>顶部 <code>between_has_*</code> 标志是指标的判断；亲自看 in-between 步是否有 <code>_is_modification = true</code> 标识。`,
+  },
+  M55: {
+    title: '【M55 盲改】',
+    label: '指标说"edit 前从未 view 过该文件 = 盲改" —— 判得对吗？',
+    body: `<strong>判定标准：</strong>每个 edited path 在它<strong>第一次被 edit/create</strong>前，是否出现过 <code>open_file</code> / <code>file_scroll_*</code> 同 path。<br>
+           <table style="margin-top:10px;border-collapse:collapse;font-size:13px;">
+             <tr style="border-bottom:1px solid var(--rule-color);">
+               <th style="text-align:left;padding:6px 14px 6px 0;font-weight:700;">指标判定</th>
+               <th style="text-align:left;padding:6px 14px;font-weight:700;">实际观察</th>
+               <th style="text-align:left;padding:6px 0;font-weight:700;">结论</th>
+             </tr>
+             <tr><td style="padding:6px 14px 6px 0;"><code>prior_open_file_same_path = false</code> （盲改）</td><td style="padding:6px 14px;">first_edit 之前确实没 open_file 同 path（且不是 create_file 新文件）</td><td style="color:var(--good);font-weight:600;">判对（1）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">盲改</td><td style="padding:6px 14px;">first_edit 是 <code>create_file</code>（新建文件，不需要先 view）</td><td style="color:var(--bad);font-weight:600;">判错（2）— 不算盲改</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">盲改</td><td style="padding:6px 14px;">前面其实有 open_file 同 path（漏抓）</td><td style="color:var(--bad);font-weight:600;">判错（2）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">非盲改（true）</td><td style="padding:6px 14px;">前面确有 open_file 同 path</td><td style="color:var(--good);font-weight:600;">判对（1）</td></tr>
+           </table>
+           <strong>注：</strong>每个文件块内绿色行是 first_edit，绿色行上方是该 path 的"context_before_first_edit"。`,
+  },
+  M72: {
+    title: '【M72 Think 有效性】',
+    label: '指标说"think 之后的 action 更易成功 = think 有效" —— 判得对吗？',
+    body: `<strong>判定标准：</strong>看 snippet 列出的 think→next 转移：next 是否有真实"成功难度"。如果绝大多数 next 是 <code>list_files</code> / <code>think</code> / <code>open_file</code> 这类几乎必成功的廉价动作，think_sr 高就是<strong>假阳</strong>。<br>
+           <table style="margin-top:10px;border-collapse:collapse;font-size:13px;">
+             <tr style="border-bottom:1px solid var(--rule-color);">
+               <th style="text-align:left;padding:6px 14px 6px 0;font-weight:700;">指标判定</th>
+               <th style="text-align:left;padding:6px 14px;font-weight:700;">实际观察</th>
+               <th style="text-align:left;padding:6px 0;font-weight:700;">结论</th>
+             </tr>
+             <tr><td style="padding:6px 14px 6px 0;"><code>think_effectiveness &gt; 0</code> （think 看似有效）</td><td style="padding:6px 14px;">think 后接的 next 包含真实可能失败的动作（run_command / edit_file / eval）且确实更高成功率</td><td style="color:var(--good);font-weight:600;">判对（1）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">think 看似有效</td><td style="padding:6px 14px;">think 后的 next 几乎全是 list_files / think / open_file 等必成功动作（成功率自然高）</td><td style="color:var(--bad);font-weight:600;">判错（2）— 假阳</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;"><code>think_effectiveness &lt;= 0</code></td><td style="padding:6px 14px;">两组对比合理（next 类型可比）</td><td style="color:var(--good);font-weight:600;">判对（1）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">样本量太小</td><td style="padding:6px 14px;">n_think_pairs 极少（&lt; 5）</td><td style="color:var(--warn);font-weight:600;">看不清（3）</td></tr>
+           </table>
+           <strong>注：</strong>顶部展示了 think_sr / non_think_sr 与各自样本数。`,
+  },
+  M76: {
+    title: '【M76 规划】',
+    label: '指标说"有 planning_node = 会规划" —— 判得对吗？',
+    body: `<strong>判定标准：</strong>看 plan 内容是否真的<strong>非空 / 有意义</strong>，且是否在<strong>第一次 edit 之前</strong>下达。<br>
+           <table style="margin-top:10px;border-collapse:collapse;font-size:13px;">
+             <tr style="border-bottom:1px solid var(--rule-color);">
+               <th style="text-align:left;padding:6px 14px 6px 0;font-weight:700;">指标判定</th>
+               <th style="text-align:left;padding:6px 14px;font-weight:700;">实际观察</th>
+               <th style="text-align:left;padding:6px 0;font-weight:700;">结论</th>
+             </tr>
+             <tr><td style="padding:6px 14px 6px 0;"><code>has_planning = 1</code> / <code>has_meaningful_plan = 1</code></td><td style="padding:6px 14px;">planning_node 内 subgoals 实在（任务相关 / 多条 / 在第一个 edit 前）</td><td style="color:var(--good);font-weight:600;">判对（1）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">有规划</td><td style="padding:6px 14px;">subgoals 全空 / 一句"think about this" / 在所有 edit 之后才出现（事后摆拍）</td><td style="color:var(--bad);font-weight:600;">判错（2）— 假规划</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;"><code>has_planning = 0</code></td><td style="padding:6px 14px;">确实没有 plan / 直接动手</td><td style="color:var(--good);font-weight:600;">判对（1）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;">无规划</td><td style="padding:6px 14px;">实际有有效 planning（漏抓）</td><td style="color:var(--bad);font-weight:600;">判错（2）</td></tr>
+           </table>
+           <strong>注：</strong>看顶部 <code>n_planning_nodes</code> / <code>n_subgoals</code> / <code>plan_to_action_coverage</code> 与 first_react_actions 的相对位置。`,
   },
 };
 
@@ -464,6 +582,11 @@ function renderSidebar() {
     if (CUR_METRIC === 'M21') metaLine += ` · null=${s.n_null_total||0}`;
     if (CUR_METRIC === 'M93') metaLine += ` · Δ=${(s.M93_score_delta||0).toFixed?.(2)||s.M93_score_delta}`;
     if (CUR_METRIC === 'M57') metaLine += ` · tail=${s.tail_len||0}`;
+    if (CUR_METRIC === 'M07') metaLine += ` · read=${(s.M07_read_before_edit_rate||0).toFixed?.(2)} (${s.M07_read_before_edit_count||0}/${s.M07_edit_steps_total||0})`;
+    if (CUR_METRIC === 'M11') metaLine += ` · abuse=${(s.M11_eval_abuse_rate||0).toFixed?.(2)} (${s.M11_n_abuse_pairs||0}/${s.M11_n_eval_pairs||0})`;
+    if (CUR_METRIC === 'M55') metaLine += ` · blind=${(s.M55_blind_edit_rate||0).toFixed?.(2)} (n_edit=${s.M55_n_edited_files||0})`;
+    if (CUR_METRIC === 'M72') metaLine += ` · eff=${(s.M72_think_effectiveness||0).toFixed?.(3)} (think_n=${s.M72_n_think_pairs||0})`;
+    if (CUR_METRIC === 'M76') metaLine += ` · plan_n=${s.M76_n_planning_nodes||0} cov=${(s.M76_plan_to_action_coverage||0).toFixed?.(2)}`;
     return `<div class="sidebar-item ${i===CUR_IDX?'active':''}" data-idx="${i}">
               ${status}
               <div class="si-id">#${i+1}</div>
@@ -479,6 +602,137 @@ function renderSidebar() {
 function labelShort(label) {
   return {true_pos:'对', false_pos:'错', unsure:'?', skipped:'—'}[label] || label;
 }
+
+// =============== Snippet rendering (metric-specific) ===============
+function renderActionRow(row, extraCls) {
+  const cls = [];
+  if (row._in_deadlock) cls.push('dl');
+  if (row._is_null) cls.push('null-row');
+  if (row._is_last_edit) cls.push('last-edit');
+  if (extraCls) cls.push(extraCls);
+  let body = '';
+  if (row.payload) body += `<div class="sr-payload">${escapeHTML(row.payload)}</div>`;
+  if (row.obs) {
+    const isErr = String(row.obs).startsWith('ERR') || row.obs === 'FAILED';
+    body += `<div class="sr-obs ${isErr?'err':''}">${escapeHTML(row.obs)}</div>`;
+  }
+  if (row.thought) body += `<div class="sr-thought">💭 ${escapeHTML(row.thought)}</div>`;
+  if (row.null_diag) body += `<div class="sr-response">🔬 ${escapeHTML(row.null_diag)}</div>`;
+  if (row._response_raw) body += `<div class="sr-response">RAW: ${escapeHTML(row._response_raw)}</div>`;
+  return `<div class="snippet-row ${cls.join(' ')}">
+    <div class="sr-idx">#${row._idx ?? ''}</div>
+    <div class="sr-action">${escapeHTML(row.action_type||'<null>')}</div>
+    <div class="sr-time">${(row.timestamp||'').slice(11,19)}</div>
+    <div class="sr-body">${body || '<span style="color:var(--muted)">—</span>'}</div>
+  </div>`;
+}
+
+function renderSnippet(metric, s) {
+  // M07: snippet is array of edit blocks, each with prior-window actions
+  if (metric === 'M07') {
+    const blocks = (s.snippet || []).map((b, bi) => {
+      const verdict = b.prior5_has_same_path
+        ? `<span class="verdict-yes">指标 → 已读 (true)</span>`
+        : `<span class="verdict-no">指标 → 盲改 (false)</span>`;
+      const matchInfo = b.prior5_match_action_type
+        ? ` · matched=${escapeHTML(b.prior5_match_action_type)}`
+        : '';
+      const head = `<div class="edit-block-header">
+        Edit #${b.edit_idx ?? '?'} · path = ${escapeHTML(b.edit_norm_path||'(empty)')}
+        ${verdict}<br>
+        <span style="color:var(--warm-gray);font-weight:400;">prior window [${b.prior_window_start ?? '?'}–${b.prior_window_end ?? '?'}]${matchInfo}${b.edit_path_empty?' · ⚠️ edit path EMPTY':''}</span>
+      </div>`;
+      const rows = (b.actions || []).map(r => {
+        const isEdit = r._idx === b.edit_idx;
+        return renderActionRow(r, isEdit ? 'first-edit' : 'prior-window');
+      }).join('');
+      return `<div class="edit-block">${head}<div class="snippet">${rows}</div></div>`;
+    }).join('');
+    return blocks || '<div class="empty">无 edit 块</div>';
+  }
+
+  // M11: flat list with _role / _is_modification
+  if (metric === 'M11') {
+    return (s.snippet || []).map(row => {
+      let cls = '';
+      if (row.action_type === 'eval' || row._role === 'prev_eval' || row._role === 'next_eval') cls = 'eval-row';
+      else if (row._is_modification) cls = 'modification';
+      else cls = 'context-row';
+      const tag = (row._role ? ` [${row._role}]` : '') + (row._is_modification ? ' [⚠ MOD]' : '');
+      const decorated = {...row, action_type: (row.action_type || '<null>') + tag};
+      return renderActionRow(decorated, cls);
+    }).join('');
+  }
+
+  // M55: grouped by file (use s.files for the per-file block, falling back to flat snippet)
+  if (metric === 'M55') {
+    const files = s.files || [];
+    if (files.length === 0) {
+      return (s.snippet || []).map(row => {
+        let cls = '';
+        if (row._marker === 'first_edit') cls = 'first-edit';
+        else if (row._marker === 'context_before_first_edit') cls = 'prior-window';
+        return renderActionRow(row, cls);
+      }).join('');
+    }
+    return files.map(fb => {
+      const verdict = fb.prior_open_file_same_path
+        ? `<span class="verdict-yes">已 view (非盲改)</span>`
+        : `<span class="verdict-no">未 view (盲改)</span>`;
+      const head = `<div class="file-block-header">
+        ${escapeHTML(fb.edited_path||'?')}
+        ${verdict}<br>
+        <span style="color:var(--warm-gray);font-weight:400;">first_edit_idx=${fb.first_edit_idx} · prior_open=[${(fb.prior_open_indices||[]).join(',')}]</span>
+      </div>`;
+      const ctx = (fb.context_before_first_edit || []).map(r => renderActionRow(r, 'prior-window')).join('');
+      // first_edit row may not be in context list — synthesize it from snippet by looking up _idx==first_edit_idx
+      const firstEditRow = (s.snippet||[]).find(r => r._idx === fb.first_edit_idx && r._target_path === fb.edited_path && r._marker === 'first_edit');
+      const editHTML = firstEditRow ? renderActionRow(firstEditRow, 'first-edit') : '';
+      return `<div class="file-block">${head}<div class="snippet">${ctx}${editHTML}</div></div>`;
+    }).join('');
+  }
+
+  // M72: array of {prev, next, ...} pairs
+  if (metric === 'M72') {
+    return (s.snippet || []).map(p => {
+      const okBadge = p.next_obs_success
+        ? `<span style="color:var(--accent-green);font-weight:700;">✓ next OK</span>`
+        : `<span style="color:var(--accent-red);font-weight:700;">✗ next FAIL</span>`;
+      const head = `<div class="pair-block-header">
+        ${escapeHTML(p.transition_kind||'?')} · prev #${p.prev_idx} (${escapeHTML(p.prev_action_type||'?')}) → next #${p.next_idx} (${escapeHTML(p.next_action_type||'?')}) · ${okBadge}
+      </div>`;
+      const isThink = (p.transition_kind||'').startsWith('think->');
+      const prevRow = p.prev ? renderActionRow(p.prev, isThink ? 'think-prev' : 'context-row') : '';
+      const nextCls = p.next_obs_success ? 'think-next-ok' : 'think-next-fail';
+      const nextRow = p.next ? renderActionRow(p.next, nextCls) : '';
+      return `<div class="pair-block">${head}<div class="snippet">${prevRow}${nextRow}</div></div>`;
+    }).join('');
+  }
+
+  // M76: planning_node + react_action mix
+  if (metric === 'M76') {
+    const out = [];
+    for (const row of (s.snippet || [])) {
+      if (row.kind === 'planning_node') {
+        const goals = row.subgoals || [];
+        const goalsHTML = goals.length
+          ? `<ol>${goals.map(g => `<li>${escapeHTML(g)}</li>`).join('')}</ol>`
+          : `<div style="color:var(--warm-gray);font-style:italic;">(empty plan)</div>`;
+        out.push(`<div class="planning-card">
+          <div class="pc-head">📋 PLANNING_NODE #${row._idx ?? '?'} · depth=${row.depth ?? '?'} · ${(row.timestamp||'').slice(11,19)} · ${goals.length} subgoals</div>
+          ${goalsHTML}
+        </div>`);
+      } else {
+        out.push(`<div class="snippet">${renderActionRow(row, 'context-row')}</div>`);
+      }
+    }
+    return out.join('');
+  }
+
+  // Default: flat list (M14, M21, M57, M93)
+  return (s.snippet || []).map(row => renderActionRow(row)).join('');
+}
+
 function renderMain() {
   const main = document.getElementById('main');
   const arr = DATA[CUR_METRIC] || [];
@@ -536,34 +790,78 @@ function renderMain() {
       </div>
     </div>`;
   }
-
-  const snipHTML = (s.snippet || []).map(row => {
-    const cls = [];
-    if (row._in_deadlock) cls.push('dl');
-    if (row._is_null) cls.push('null-row');
-    if (row._is_last_edit) cls.push('last-edit');
-    let body = '';
-    if (row.payload) body += `<div class="sr-payload">${escapeHTML(row.payload)}</div>`;
-    if (row.obs) {
-      const isErr = row.obs.startsWith('ERR') || row.obs === 'FAILED';
-      body += `<div class="sr-obs ${isErr?'err':''}">${escapeHTML(row.obs)}</div>`;
-    }
-    if (row.thought) body += `<div class="sr-thought">💭 ${escapeHTML(row.thought)}</div>`;
-    if (row.null_diag) body += `<div class="sr-response">🔬 ${escapeHTML(row.null_diag)}</div>`;
-    if (row._response_raw) body += `<div class="sr-response">RAW: ${escapeHTML(row._response_raw)}</div>`;
-    return `<div class="snippet-row ${cls.join(' ')}">
-      <div class="sr-idx">#${row._idx}</div>
-      <div class="sr-action">${escapeHTML(row.action_type||'<null>')}</div>
-      <div class="sr-time">${(row.timestamp||'').slice(11,19)}</div>
-      <div class="sr-body">${body || '<span style="color:var(--muted)">—</span>'}</div>
+  if (CUR_METRIC === 'M07') {
+    evalHTML = `<div class="eval-timeline">
+      <div class="eval-timeline-title">📖 编辑前已读判定</div>
+      <div class="eval-points">
+        <div class="eval-point">M07_read_before_edit_rate = <strong>${(s.M07_read_before_edit_rate||0).toFixed(3)}</strong></div>
+        <div class="eval-point">read=${s.M07_read_before_edit_count||0} / total=${s.M07_edit_steps_total||0}</div>
+        <div class="eval-point">skipped_empty_path = ${s.M07_edit_steps_skipped_empty_path||0}</div>
+        <div class="eval-point">status = ${s.M07_status||'?'}</div>
+        <div class="eval-point">n_edit_in_traj = ${s.n_edit_file_in_traj||0}</div>
+      </div>
     </div>`;
-  }).join('');
+  }
+  if (CUR_METRIC === 'M11') {
+    evalHTML = `<div class="eval-timeline">
+      <div class="eval-timeline-title">♻️ Eval 滥用判定</div>
+      <div class="eval-points">
+        <div class="eval-point">M11_eval_abuse_rate = <strong>${(s.M11_eval_abuse_rate||0).toFixed(3)}</strong></div>
+        <div class="eval-point">abuse_pairs = <strong>${s.M11_n_abuse_pairs||0}</strong> / eval_pairs = ${s.M11_n_eval_pairs||0}</div>
+        <div class="eval-point">snippet pair = [${(s.snippet_pair_indices||[]).join(', ')}]</div>
+        <div class="eval-point">in_between_n = ${s.snippet_in_between_n||0}</div>
+        <div class="eval-point ${s.between_has_edit_file?'last':''}">edit_file=${!!s.between_has_edit_file}</div>
+        <div class="eval-point ${s.between_has_create_file?'last':''}">create_file=${!!s.between_has_create_file}</div>
+        <div class="eval-point ${s.between_has_nonreadonly_run_command?'last':''}">nonreadonly_run=${!!s.between_has_nonreadonly_run_command}</div>
+        <div class="eval-point ${s.between_has_any_modification?'first':''}">any_modification=<strong>${!!s.between_has_any_modification}</strong></div>
+      </div>
+    </div>`;
+  }
+  if (CUR_METRIC === 'M55') {
+    evalHTML = `<div class="eval-timeline">
+      <div class="eval-timeline-title">🙈 盲改判定</div>
+      <div class="eval-points">
+        <div class="eval-point">M55_blind_edit_rate = <strong>${(s.M55_blind_edit_rate||0).toFixed(3)}</strong></div>
+        <div class="eval-point">file_reach_rate = ${(s.M55_file_reach_rate||0).toFixed(3)}</div>
+        <div class="eval-point">n_edited_files = <strong>${s.M55_n_edited_files||0}</strong></div>
+        <div class="eval-point">n_viewed_files = ${s.M55_n_viewed_files||0}</div>
+        <div class="eval-point">n_reached = ${s.M55_n_reached||0}</div>
+      </div>
+    </div>`;
+  }
+  if (CUR_METRIC === 'M72') {
+    evalHTML = `<div class="eval-timeline">
+      <div class="eval-timeline-title">🤔 Think 有效性判定</div>
+      <div class="eval-points">
+        <div class="eval-point">think_effectiveness = <strong>${(s.M72_think_effectiveness||0).toFixed(3)}</strong></div>
+        <div class="eval-point">think_sr = <strong>${(s.M72_think_sr||0).toFixed(3)}</strong> (n=${s.M72_n_think_pairs||0})</div>
+        <div class="eval-point">non_think_sr = <strong>${(s.M72_non_think_sr||0).toFixed(3)}</strong> (n=${s.M72_n_non_think_pairs||0})</div>
+        <div class="eval-point">think_count = ${s.M72_think_count||0}</div>
+        ${s.M72_skip_reason?`<div class="eval-point" style="color:var(--bad)">skip: ${s.M72_skip_reason}</div>`:''}
+      </div>
+    </div>`;
+  }
+  if (CUR_METRIC === 'M76') {
+    evalHTML = `<div class="eval-timeline">
+      <div class="eval-timeline-title">🗺️ 规划判定</div>
+      <div class="eval-points">
+        <div class="eval-point ${s.M76_has_planning?'first':''}">has_planning = <strong>${s.M76_has_planning}</strong></div>
+        <div class="eval-point ${s.M76_has_meaningful_plan?'first':''}">has_meaningful_plan = <strong>${s.M76_has_meaningful_plan}</strong></div>
+        <div class="eval-point">n_planning_nodes = ${s.M76_n_planning_nodes||0}</div>
+        <div class="eval-point">n_subgoals = ${s.M76_n_subgoals||0} (covered=${s.M76_n_subgoals_covered||0})</div>
+        <div class="eval-point">plan_to_action_coverage = ${(s.M76_plan_to_action_coverage||0).toFixed(3)}</div>
+        <div class="eval-point">step_count = ${s.M02_effective_step_count||s.n_react||'?'}</div>
+      </div>
+    </div>`;
+  }
+
+  const snipHTML = renderSnippet(CUR_METRIC, s);
 
   main.innerHTML = `
     <div class="header-row">
-      <div class="score-block ${(s.M24_best_eval_score||0)<=0?'zero':''}">
+      <div class="score-block ${((s.M24_best_eval_score ?? s.M24_best_overall_score) || 0)<=0?'zero':''}">
         <div class="score-label">Final Score</div>
-        <div class="score-value">${(s.M24_best_eval_score?.toFixed?.(1)) ?? (s.M24_best_eval_score||0)}</div>
+        <div class="score-value">${((s.M24_best_eval_score ?? s.M24_best_overall_score)?.toFixed?.(1)) ?? ((s.M24_best_eval_score ?? s.M24_best_overall_score) ?? '—')}</div>
       </div>
       <div class="header-info">
         <h2>${escapeHTML(s.trajectory_dir)}</h2>
@@ -682,7 +980,19 @@ function exportCSV() {
     for (const s of (DATA[m]||[])) {
       const lab = (L[m]||{})[s.trajectory_dir];
       if (!lab) continue;
-      const mv = (m==='M14'?s.M14_deadlock_step_ratio:m==='M21'?s.M21_format_fail_rate:m==='M93'?s.M93_score_delta:s.M57_post_fix_verify);
+      let mv = '';
+      switch (m) {
+        case 'M14': mv = s.M14_deadlock_step_ratio; break;
+        case 'M21': mv = s.M21_format_fail_rate; break;
+        case 'M93': mv = s.M93_score_delta; break;
+        case 'M57': mv = s.M57_post_fix_verify; break;
+        case 'M07': mv = s.M07_read_before_edit_rate; break;
+        case 'M11': mv = s.M11_eval_abuse_rate; break;
+        case 'M55': mv = s.M55_blind_edit_rate; break;
+        case 'M72': mv = s.M72_think_effectiveness; break;
+        case 'M76': mv = s.M76_has_meaningful_plan; break;
+        default: mv = '';
+      }
       const cats = (lab.categories||[]).join('|');
       rows.push([m, s.trajectory_dir, s.task_id, s.model, s._band, mv, lab.label || '', cats, lab.note?.replace(/[\r\n]+/g,' ')||'', lab.at]);
     }
