@@ -469,11 +469,6 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        .badge-s { background: linear-gradient(135deg,#fbbf24,#f59e0b); color: #78350f; }
-        .badge-a { background: linear-gradient(135deg,#34d399,#10b981); color: #064e3b; }
-        .badge-b { background: linear-gradient(135deg,#60a5fa,#3b82f6); color: #1e3a5f; }
-        .badge-c { background: linear-gradient(135deg,#a78bfa,#7c3aed); color: #fff; }
-        .badge-d { background: linear-gradient(135deg,#f87171,#ef4444); color: #fff; }
         .badge-tbd { background: linear-gradient(135deg,#cbd5e1,#94a3b8); color: #1e293b; }
         .badge-n\/a { background: #e5e7eb; color: #6b7280; }
 
@@ -1412,34 +1407,34 @@
                 <a href="#" class="nav-dropdown-toggle">评分标准 &#9662;</a>
                 <div class="nav-dropdown-menu nav-dropdown-wide">
                     <div class="dropdown-section">
-                        <div class="dropdown-section-title">S 级</div>
-                        <a href="rubrics/j39_failure_pattern.html">J39 失败模式</a>
+                        <div class="dropdown-section-title">能力剖面</div>
                         <a href="rubrics/j06_error_recovery.html">J06 错误恢复</a>
-                        <a href="rubrics/j68_feedback_utilization.html">J68 反馈利用率</a>
-                    </div>
-                    <div class="dropdown-section">
-                        <div class="dropdown-section-title">A 级</div>
-                        <a href="rubrics/j95_subtask_propagation.html">J95 子任务传播</a>
-                        <a href="rubrics/j50_evidence_action_gap.html">J50 证据行动鸿沟</a>
-                        <a href="rubrics/j70_hypothesis_verify.html">J70 假设验证</a>
-                        <a href="rubrics/j37_propagation_length.html">J37 传播长度</a>
-                        <a href="rubrics/j49_step_f1.html">J49 步骤F1</a>
-                        <a href="rubrics/j41_error_type_solidification.html">J41 按类型错误固化</a>
-                        <a href="rubrics/j48_step_recall.html">J48 步骤召回率</a>
-                        <a href="rubrics/j30_parameter_accuracy.html">J30 参数准确率</a>
                         <a href="rubrics/j25_effective_action_ratio.html">J25 有效动作比</a>
+                        <a href="rubrics/j30_parameter_accuracy.html">J30 参数准确率</a>
+                        <a href="rubrics/j35_root_cause.html">J35 根因归因</a>
                     </div>
                     <div class="dropdown-section">
-                        <div class="dropdown-section-title">B/C/D 级</div>
+                        <div class="dropdown-section-title">失败传播</div>
+                        <a href="rubrics/j39_failure_pattern.html">J39 失败模式</a>
+                        <a href="rubrics/j37_propagation_length.html">J37 传播长度</a>
                         <a href="rubrics/j40_error_solidification.html">J40 错误固化</a>
-                        <a href="rubrics/j73_dual_channel_divergence.html">J73 双通道一致性</a>
+                        <a href="rubrics/j41_error_type_solidification.html">J41 按类型错误固化</a>
+                        <a href="rubrics/j42_cat_failure.html">J42 CAT反模式</a>
+                        <a href="rubrics/j47_step_precision.html">J47 步骤精确率</a>
+                        <a href="rubrics/j48_step_recall.html">J48 步骤召回率</a>
+                        <a href="rubrics/j49_step_f1.html">J49 步骤F1</a>
+                        <a href="rubrics/j50_evidence_action_gap.html">J50 证据行动鸿沟</a>
+                        <a href="rubrics/j95_subtask_propagation.html">J95 子任务传播</a>
+                    </div>
+                    <div class="dropdown-section">
+                        <div class="dropdown-section-title">交互 / 推理</div>
                         <a href="rubrics/j13_cross_stage_violations.html">J13 跨阶段违反</a>
                         <a href="rubrics/j63_hedging_frequency.html">J63 不确定性表达</a>
-                        <a href="rubrics/j47_step_precision.html">J47 步骤精确率</a>
                         <a href="rubrics/j64_uncertainty_calibration.html">J64 不确定性校准</a>
-                        <a href="rubrics/j42_cat_failure.html">J42 CAT反模式</a>
-                        <a href="rubrics/j35_root_cause.html">J35 根因归因</a>
                         <a href="rubrics/j66_feedback_execution.html">J66 反馈执行率</a>
+                        <a href="rubrics/j68_feedback_utilization.html">J68 反馈利用率</a>
+                        <a href="rubrics/j70_hypothesis_verify.html">J70 假设验证</a>
+                        <a href="rubrics/j73_dual_channel_divergence.html">J73 双通道一致性</a>
                     </div>
                 </div>
             </li>
@@ -1672,7 +1667,7 @@
         <div class="section-header">
             <h2>指标目录</h2>
             <div class="separator"></div>
-            <p>全部 55 个指标完整呈现：53 个已基于 InnovatorBench 轨迹实算（自动化规则/统计 + LLM Judge + 人工标注），按统计质量排序；2 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
+            <p>全部 55 个指标完整呈现：53 个已基于 InnovatorBench 轨迹实算（自动化规则/统计 + LLM Judge + 人工标注）；2 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
         </div>
 
         <div class="catalog-controls">
@@ -1706,8 +1701,6 @@
                         <th>均值</th>
                         <th>&rho;(评估)</th>
                         <th>H(模型)</th>
-                        <th>质量分</th>
-                        <th>等级</th>
                     </tr>
                 </thead>
                 <tbody id="catalogBody">
@@ -2299,13 +2292,13 @@ const metricData = [
      formula:'Successful recovery requires ALL three: (1) Detection, (2) Strategy Change (not identical retry), (3) Forward Progress',
      scoring:'5=Excellent Recovery: All errors recovered, agent diagnoses root cause, recovery swift (<3 steps); 4=Good Recovery: Most errors (>75%) recovered, recovery may take 3-5 steps but succeeds; 3=Mixed Recovery: ~50% of errors recovered, some good recoveries mixed with blind retries; 2=Poor Recovery: <25% recovered, mostly blind retries or ignoring errors, slow to adapt; 1=No Recovery: Agent ignores all errors, retries identically, or gets stuck in error loops',
      detail:'Counts successful recoveries from errors. Partial recovery = detection + strategy change but no progress. Failed recovery = ignores error, blindly retries, or changes strategy but still fails. N/A if no errors occur. Core resilience metric with second-highest eval correlation (ρ=0.759).',
-     mVariant:{id:'J06b', url:'m6_error_recovery.html', en:'Error Recovery Count', n:646, mean:8.776, std:20.567, rho:-0.013, h:114.06, quality:2, rating:'D', range:'0+', source:'OpenSII Claude-4.7 (BatchA)', formula:'errors_total（被 judge 计数的总错误数；或 errors_recovered/errors_total 的恢复率）', scoring:'低: 错误少 (<3); 高: 错误多 (>15)', detail:'轨迹级错误总数与 eval ρ≈0 — 错误「数量」本身不是判别项，关键看错误「是否被恢复」。建议改用 m6_recovery_rate 作为衍生指标。当前 q=1 [D]。'}},
+     mVariant:{id:'J06b', url:'m6_error_recovery.html', en:'Error Recovery Count', n:646, mean:8.776, std:20.567, rho:-0.013, h:114.06, quality:2, rating:'D', range:'0+', source:'OpenSII Claude-4.7 (BatchA)', formula:'errors_total（被 judge 计数的总错误数；或 errors_recovered/errors_total 的恢复率）', scoring:'低: 错误少 (<3); 高: 错误多 (>15)', detail:'轨迹级错误总数与 eval ρ≈0 — 错误「数量」本身不是判别项，关键看错误「是否被恢复」。建议改用 m6_recovery_rate 作为衍生指标。当前。'}},
     {rank:5, id:'J68', url:'j68_feedback_utilization.html', en:'Feedback Utilization', zh:'反馈利用率', n:655, mean:2.40, std:0.76, rho:0.748, h:235.3, quality:176, rating:'S', range:'1-5',
      dim:'Behavioral', detect:'JUDGE', source:'SUPP',
      formula:'Utilization_Rate = UTILIZED / (UTILIZED + PARTIALLY_UTILIZED + IGNORED); feedback types: EVAL_FEEDBACK, ERROR_MESSAGES, HUMAN_FEEDBACK, SELF_FEEDBACK',
      scoring:'5=Every feedback specifically addressed in next action, clear evidence of learning (quotes/references feedback, targeted changes, no repeated mistakes), utilization ~100%; 4=Most feedback incorporated (75-90%), 1-2 points missed but not critical, generally demonstrates learning; 3=Some feedback used but also blind retries without incorporating feedback (50-75%), inconsistent; 2=Mostly ignores feedback (25-50%), retries with minimal/wrong changes, may acknowledge errors verbally but fails to make corrections; 1=Completely ignores all feedback (<25%), repeats same approach despite clear error messages, random unrelated changes, or gives up',
      detail:'Evaluates whether the agent incorporates specific elements of feedback into subsequent actions, or ignores feedback and retries blindly. Covers four feedback types: EVAL_FEEDBACK, ERROR_MESSAGES, HUMAN_FEEDBACK, SELF_FEEDBACK. Each classified as UTILIZED, PARTIALLY_UTILIZED, or IGNORED.',
-     mVariant:{id:'J68b', url:'m68_feedback_utilization.html', en:'Feedback Utilization Rate', n:169, mean:0.217, std:0.351, rho:-0.069, h:15.58, quality:1, rating:'D', range:'0+', source:'OpenSII Claude-4.7', formula:'对每个 (eval-fail, next-action) 对，judge 标"是否针对反馈做修改"，addressed/total', scoring:'高: 反馈→定向修改 (>0.5); 低: 无视反馈或盲改 (<0.2)', detail:'提取 eval 失败时的 metric_*.eval_results.error 反馈 + 紧接着的下一动作，让 judge 判定该动作是否针对反馈修改。整体 mean=0.22，仅 1/5 的失败被定向回应；ρ=-0.19 意味"反馈处理多"反而对应低分——但这是因为成功 agent eval 失败次数本就少（样本偏差），不是反馈使用真的负相关。glm-4-5-full-data 系列 0.30-0.50 最高。判 D（quality=7）。'}},
+     mVariant:{id:'J68b', url:'m68_feedback_utilization.html', en:'Feedback Utilization Rate', n:169, mean:0.217, std:0.351, rho:-0.069, h:15.58, quality:1, rating:'D', range:'0+', source:'OpenSII Claude-4.7', formula:'对每个 (eval-fail, next-action) 对，judge 标"是否针对反馈做修改"，addressed/total', scoring:'高: 反馈→定向修改 (>0.5); 低: 无视反馈或盲改 (<0.2)', detail:'提取 eval 失败时的 metric_*.eval_results.error 反馈 + 紧接着的下一动作，让 judge 判定该动作是否针对反馈修改。整体 mean=0.22，仅 1/5 的失败被定向回应；ρ=-0.19 意味"反馈处理多"反而对应低分——但这是因为成功 agent eval 失败次数本就少（样本偏差），不是反馈使用真的负相关。glm-4-5-full-data 系列 0.30-0.50 最高。'}},
     {rank:6, id:'J95', url:'j95_subtask_propagation.html', en:'Subtask Propagation', zh:'子任务传播', n:655, mean:2.32, std:0.87, rho:0.700, h:213.6, quality:150, rating:'A', range:'1-5',
      dim:'Efficiency', detect:'JUDGE', source:'v3-M',
      formula:'Propagation_boundaries = max subtask boundaries crossed by any single error before detection',
@@ -2316,13 +2309,13 @@ const metricData = [
      formula:'Catalog evidence-gathering steps → trace utilization → identify gap instances by severity (critical/peripheral) and type (forgetting/reasoning/integration)',
      scoring:'5=No gap: every piece of relevant evidence acted upon appropriately, tight coupling between information gathering and decision-making; 4=Minor gap: 1-2 pieces not utilized but non-critical, unused evidence would not have changed outcome; 3=Moderate gap: 3-4 instances where useful info gathered then ignored, at least one involves meaningfully helpful evidence; 2=Significant gap: repeatedly discovers relevant info but does not use it, multiple critical pieces wasted; 1=Severe gap: systematically ignores evidence it collects, information gathering decoupled from decision-making',
      detail:'Measures the degree to which an agent collects correct or useful information but then fails to act on it. Classifies gap types as forgetting (info lost from context), reasoning (info available but not connected), or integration (connected but not acted on). From CodeTracer diagnostic framework.',
-     mVariant:{id:'J50b', url:'m50_evidence_to_action_gap.html', en:'Evidence-to-Action Gap', n:646, mean:0.357, std:0.205, rho:-0.622, h:108.91, quality:68, rating:'B', range:'0-1', source:'OpenSII Claude-4.7 (BatchA)', formula:'1 − evidence_acted_on / evidence_gathered', scoring:'低: 看到的关键信息都被采用 (<0.3); 高: 读了不用 (>0.5)', detail:'与 eval score 的强负相关（ρ=−0.627）说明：模型在 read/diagnostic 后是否真把信息用到下一步动作上，是当前 InnovatorBench 上区分度最高的轨迹级判别项之一。Top: glm47_data_w_codeact (0.25), kimi-k2.5 (0.27); Bottom: kimi-k2-instruct-0905-gzy (1.0 — 收集了证据几乎从不行动)。判 B（q=68）。'}},
+     mVariant:{id:'J50b', url:'m50_evidence_to_action_gap.html', en:'Evidence-to-Action Gap', n:646, mean:0.357, std:0.205, rho:-0.622, h:108.91, quality:68, rating:'B', range:'0-1', source:'OpenSII Claude-4.7 (BatchA)', formula:'1 − evidence_acted_on / evidence_gathered', scoring:'低: 看到的关键信息都被采用 (<0.3); 高: 读了不用 (>0.5)', detail:'与 eval score 的强负相关（ρ=−0.627）说明：模型在 read/diagnostic 后是否真把信息用到下一步动作上，是当前 InnovatorBench 上区分度最高的轨迹级判别项之一。Top: glm47_data_w_codeact (0.25), kimi-k2.5 (0.27); Bottom: kimi-k2-instruct-0905-gzy (1.0 — 收集了证据几乎从不行动)。'}},
     {rank:9, id:'J70', url:'j70_hypothesis_verify.html', en:'Hypothesis-Verify', zh:'假设验证', n:655, mean:2.08, std:0.75, rho:0.732, h:190.1, quality:139, rating:'A', range:'1-5',
      dim:'Reasoning', detect:'JUDGE', source:'SUPP',
      formula:'Loop_Rate = (hypotheses with verification) / (total hypothesis points); verification must target hypothesis, occur BEFORE committing resources, could falsify',
      scoring:'5=Systematic Verification: >80% of hypothesis points verified, agent actively seeks disconfirming evidence; 4=Mostly Verified: 60-80% verified, tests most assumptions before committing; 3=Partial Verification: 40-60% verified, some good habits mixed with leaps of faith; 2=Rare Verification: 20-40% verified, mostly proceeds on assumptions without checking; 1=No Verification: <20% verified, never tests assumptions, commits blindly',
      detail:'Measures scientific reasoning discipline — whether the agent forms hypotheses and takes deliberate verification actions before committing. Verification must be explicitly targeted at testing the hypothesis, occur BEFORE committing significant resources, and produce information that could falsify the hypothesis.',
-     mVariant:{id:'J70b', url:'m70_hypothesis_verify_loop.html', en:'Hypothesis-Verify Loop Rate', n:52, mean:0.375, std:0.412, rho:-0.021, h:9.02, quality:0, rating:'D', range:'0+', source:'OpenSII Claude-4.7', formula:'judge 找 reasoning 中的假设句 → 后续是否有验证动作；hypotheses_with_verify / total_hypotheses', scoring:'高: 假设后均验证 (>0.7); 低: 假设后不验证 (<0.3)', detail:'只 43 条轨迹被 judge 检出有假设句（多数 thought 不显式表达假设）。其中 36% 后续有验证动作。N 太小、Kruskal H=13、ρ≈0，无统计意义。判 D（quality=0）——这条指标在当前 InnovatorBench 上信息量不足，需要更长 trajectory 或更松判别条件才有用。'}},
+     mVariant:{id:'J70b', url:'m70_hypothesis_verify_loop.html', en:'Hypothesis-Verify Loop Rate', n:52, mean:0.375, std:0.412, rho:-0.021, h:9.02, quality:0, rating:'D', range:'0+', source:'OpenSII Claude-4.7', formula:'judge 找 reasoning 中的假设句 → 后续是否有验证动作；hypotheses_with_verify / total_hypotheses', scoring:'高: 假设后均验证 (>0.7); 低: 假设后不验证 (<0.3)', detail:'只 43 条轨迹被 judge 检出有假设句（多数 thought 不显式表达假设）。其中 36% 后续有验证动作。N 太小、Kruskal H=13、ρ≈0，无统计意义。——这条指标在当前 InnovatorBench 上信息量不足，需要更长 trajectory 或更松判别条件才有用。'}},
     {rank:10, id:'J37', url:'j37_propagation_length.html', en:'Propagation Length', zh:'传播长度', n:642, mean:1.66, std:0.91, rho:0.757, h:163.6, quality:124, rating:'A', range:'1-5',
      dim:'Efficiency', detect:'JUDGE', source:'v3-M',
      formula:'Propagation_length = detection_step - root_cause_step (in trajectory steps); use WORST case for scoring',
@@ -2353,31 +2346,31 @@ const metricData = [
      formula:'Effective = PRODUCTIVE + EXPLORATORY_USEFUL + OVERHEAD_NECESSARY; Ratio = Effective / Total; also assess pathological patterns (5+ consecutive identical monitoring, same file edited 3+ times)',
      scoring:'5=Highly Efficient: >80% effective actions, no pathological patterns, minimal steps to achieve results; 4=Mostly Efficient: 65-80% effective, minor redundancy (1-2 re-reads, occasional extra monitoring); 3=Moderate: 50-65% effective, some wasted loops but generally progresses; 2=Inefficient: 35-50% effective, significant circular patterns, excessive monitoring, redundant exploration; 1=Severely Wasteful: <35% effective, pathological loops, dozens of edits to same file, extensive blind retrying',
      detail:'Determines what fraction of actions genuinely advance the task versus wasted/circular/redundant. Classifies each action as PRODUCTIVE, EXPLORATORY_USEFUL, OVERHEAD_NECESSARY, REDUNDANT, CIRCULAR, or FAILED_WASTED. Also checks for pathological patterns (5+ consecutive identical calls, same file edited 3+ times).',
-     mVariant:{id:'J25b', url:'m25_effective_action_ratio.html', en:'Effective Action Ratio', n:655, mean:0.711, std:0.166, rho:0.421, h:138.81, quality:58, rating:'B', range:'0+', source:'OpenSII Claude-4.7', formula:'LLM judge 标 14 个采样步是否推进任务目标，productive_steps / judged_steps', scoring:'高: 步步精准 (>0.85); 低: 多数步骤无效或重复 (<0.5)', detail:'让 claude-4.7-opus 看每条轨迹的 14 个采样步（首3+末3+中间均匀8），判断每步是否在推进任务目标。kimi-k2.5 0.80 居首，glm 系列 0.72-0.76，gpt-5/grok 显著偏低 (~0.6)；kimi-k2-instruct-0905-gzy 异常低 (0.13)。Kruskal H=161 跨模型差异显著，与 final score Spearman=0.39 正相关。判 B（quality=64）。'}},
+     mVariant:{id:'J25b', url:'m25_effective_action_ratio.html', en:'Effective Action Ratio', n:655, mean:0.711, std:0.166, rho:0.421, h:138.81, quality:58, rating:'B', range:'0+', source:'OpenSII Claude-4.7', formula:'LLM judge 标 14 个采样步是否推进任务目标，productive_steps / judged_steps', scoring:'高: 步步精准 (>0.85); 低: 多数步骤无效或重复 (<0.5)', detail:'让 claude-4.7-opus 看每条轨迹的 14 个采样步（首3+末3+中间均匀8），判断每步是否在推进任务目标。kimi-k2.5 0.80 居首，glm 系列 0.72-0.76，gpt-5/grok 显著偏低 (~0.6)；kimi-k2-instruct-0905-gzy 异常低 (0.13)。Kruskal H=161 跨模型差异显著，与 final score Spearman=0.39 正相关。'}},
     {rank:17, id:'J40', url:'j40_error_solidification.html', en:'Error Solidification', zh:'错误固化', n:655, mean:2.57, std:0.83, rho:0.499, h:139.9, quality:70, rating:'B', range:'1-5',
      dim:'Robustness', detect:'JUDGE', source:'v3-M',
      formula:'Track error lifecycle: Corrected / Solidified / Abandoned / Indeterminate; assess solidification depth: Surface / Structural / Foundational',
      scoring:'5=No solidification: either no errors, or every error caught and corrected before influencing subsequent reasoning; 4=Minimal: one instance where old error persists into later steps but eventually corrected or only surface-level impact; 3=Moderate: 2-3 errors survive into later reasoning affecting subsequent decisions, at least one reaches structural depth; 2=Significant: multiple errors solidify, agent builds incorrect assumptions on top, solidified errors demonstrably degrade final outcome; 1=Severe: foundational errors made early become fully embedded, agent treats incorrect premises as established facts throughout, all subsequent work built on wrong foundation',
      detail:'Measures the degree to which errors persist, survive context compression or forgetting, and become treated as correct facts in subsequent reasoning. Tracks error lifecycle (Corrected/Solidified/Abandoned/Indeterminate) and solidification depth (Surface/Structural/Foundational). Also checks for compounding solidification.',
-     mVariant:{id:'J40b', url:'m40_error_persistence_rate.html', en:'Error Persistence Rate', n:411, mean:0.302, std:0.428, rho:-0.326, h:31.02, quality:10, rating:'C', range:'0-1', source:'OpenSII Claude-4.7 (BatchA)', formula:'errors_persisted_post_summary / errors_pre_summary', scoring:'低: summary 后错误被纠正 (<0.2); 高: 错误穿透 summary (>0.5)', detail:'轨迹级错误固化率。需要轨迹中存在显式 summarization 节点才有意义；661 条 batch 中 411 条满足条件。ρ=−0.326 中等，H=31，q=10 [C]。J41 拆分后语法/逻辑分项更具区分度。'}},
+     mVariant:{id:'J40b', url:'m40_error_persistence_rate.html', en:'Error Persistence Rate', n:411, mean:0.302, std:0.428, rho:-0.326, h:31.02, quality:10, rating:'C', range:'0-1', source:'OpenSII Claude-4.7 (BatchA)', formula:'errors_persisted_post_summary / errors_pre_summary', scoring:'低: summary 后错误被纠正 (<0.2); 高: 错误穿透 summary (>0.5)', detail:'轨迹级错误固化率。需要轨迹中存在显式 summarization 节点才有意义；661 条 batch 中 411 条满足条件。ρ=−0.326 中等，H=31。J41 拆分后语法/逻辑分项更具区分度。'}},
     {rank:18, id:'J73', url:'j73_dual_channel_divergence.html', en:'Dual-Channel', zh:'双通道一致性', n:655, mean:3.38, std:0.60, rho:0.522, h:105.2, quality:55, rating:'B', range:'1-5',
      dim:'Reasoning', detect:'JUDGE', source:'SUPP',
      formula:'Extract reasoning-action pairs (STATED INTENT vs ACTUAL ACTION) → classify: ALIGNED / MINOR_DRIFT / CONTENT_DIVERGE / DIRECTION_DIVERGE / CONTRADICTION / EMPTY_THOUGHT',
      scoring:'5=Perfectly Aligned: >90% ALIGNED, thoughts clearly explain and predict actions, no contradictions; 4=Mostly Aligned: 70-90% ALIGNED + MINOR_DRIFT, rare content divergence, no contradictions; 3=Moderate Divergence: 50-70% aligned, some content/direction divergences, possible 1 near-contradiction; 2=Significant Divergence: 30-50% aligned, frequent direction divergences, agent says one thing does another; 1=Severe Divergence: <30% aligned, multiple contradictions, reasoning disconnected from behavior',
      detail:'Assesses alignment between stated reasoning and actual actions. Detects cases where agent "says one thing but does another." Classifies divergence types and assesses severity patterns (isolated vs progressive degradation). Critical trust and reliability signal.',
-     mVariant:{id:'J73b', url:'m73_dual_channel_divergence.html', en:'Dual-channel Reasoning Divergence', n:55, mean:0.151, std:0.224, rho:-0.495, h:8.88, quality:4, rating:'D', range:'0-1', source:'OpenSII Claude-4.7 (BatchB)', formula:'divergent_steps / total_dual_channel_steps（reasoning vs content 语义不一致比例）', scoring:'低: 双通道一致 (<0.1); 高: 内心戏与外表不符 (>0.3)', detail:'仅在有 reasoning channel 的 64 条轨迹（glm47 / kimi-k2.5 / grok-code-fast-1）上可测，且其中只 55 条同时有 content。ρ=−0.495 提示「言行内外不一」与失败相关，但 N=55、H=8.88 偏弱，q=4 [D]——样本太小做不出统计强度。'}},
+     mVariant:{id:'J73b', url:'m73_dual_channel_divergence.html', en:'Dual-channel Reasoning Divergence', n:55, mean:0.151, std:0.224, rho:-0.495, h:8.88, quality:4, rating:'D', range:'0-1', source:'OpenSII Claude-4.7 (BatchB)', formula:'divergent_steps / total_dual_channel_steps（reasoning vs content 语义不一致比例）', scoring:'低: 双通道一致 (<0.1); 高: 内心戏与外表不符 (>0.3)', detail:'仅在有 reasoning channel 的 64 条轨迹（glm47 / kimi-k2.5 / grok-code-fast-1）上可测，且其中只 55 条同时有 content。ρ=−0.495 提示「言行内外不一」与失败相关，但 N=55、H=8.88 偏弱——样本太小做不出统计强度。'}},
     {rank:19, id:'J13', url:'j13_cross_stage_violations.html', en:'Cross-Stage Violations', zh:'跨阶段违反', n:585, mean:3.45, std:0.75, rho:0.579, h:69.4, quality:40, rating:'B', range:'1-5',
      dim:'Behavioral', detect:'JUDGE', source:'v3-M',
      formula:'Identify Constraint-Setting Steps → Trace Adherence → Classify violations by severity (Critical/Major/Minor) + detection + impact',
      scoring:'5=Perfect Consistency: all late decisions respect early constraints, no violations, coherent plan start to finish; 4=Minor Inconsistency: one violation detected but non-critical, does not meaningfully affect outcome; 3=Moderate Violations: 2-3 violations with some impact, at least one causes visible error or rework, agent partially recovers; 2=Significant Violations: repeated violations (4+) causing errors/rework/wasted steps, frequently contradicts own earlier decisions; 1=Severe Incoherence: fundamental early decisions contradicted, trajectory internally incoherent, agent has no memory of own prior choices',
      detail:'Detects decisions made later in trajectory that violate or contradict constraints, choices, or requirements established earlier. Measures whether agent maintains coherent plan throughout execution. Classifies violations by severity (Critical/Major/Minor), detection method, and downstream impact.',
-     mVariant:{id:'J13b', url:'m13_cross_stage_violations.html', en:'Cross-stage Constraint Violations', n:654, mean:0.240, std:0.451, rho:-0.140, h:34.54, quality:5, rating:'D', range:'0+', source:'OpenSII Claude-4.7 (BatchA)', formula:'judge 数 pipeline 后期与前期决策冲突的次数', scoring:'低: ≤0 次; 高: ≥2 次', detail:'实际观察到的违反非常稀少（mean=0.25，多数轨迹为 0），分布稀疏导致 ρ 弱、q=4 [D]。这条指标需要任务本身有更显式的多阶段决策才会显效。'}},
+     mVariant:{id:'J13b', url:'m13_cross_stage_violations.html', en:'Cross-stage Constraint Violations', n:654, mean:0.240, std:0.451, rho:-0.140, h:34.54, quality:5, rating:'D', range:'0+', source:'OpenSII Claude-4.7 (BatchA)', formula:'judge 数 pipeline 后期与前期决策冲突的次数', scoring:'低: ≤0 次; 高: ≥2 次', detail:'实际观察到的违反非常稀少（mean=0.25，多数轨迹为 0），分布稀疏导致 ρ 弱。这条指标需要任务本身有更显式的多阶段决策才会显效。'}},
     {rank:20, id:'J63', url:'j63_hedging_frequency.html', en:'Hedging Frequency', zh:'不确定性表达', n:148, mean:3.09, std:0.54, rho:0.501, h:59.9, quality:30, rating:'C', range:'1-5',
      dim:'Reasoning', detect:'JUDGE', source:'v3-M',
      formula:'Catalogue THOUGHT entries as hedge/confident/neutral → track outcomes (2×2: hedge/confident vs succeed/fail) → assess calibration pattern',
      scoring:'5=Well-Calibrated Hedging: uncertainty expressed when genuinely appropriate, confidence when warranted, hedging leads to useful contingency plans, adjusts confidence based on feedback; 4=Slightly Miscalibrated: mostly appropriate, one direction slightly off, overall strong metacognitive awareness; 3=Moderate Miscalibration: hedges on obvious/routine things but not genuinely uncertain decisions (or vice versa), ~50% appropriate; 2=Poor Calibration: systematic overconfidence (charges into repeated failures) OR systematic indecision (hedges on everything, cannot commit); 1=Extreme Miscalibration: maximally confident precisely when wrong OR completely paralyzed (every thought hedged, analysis paralysis)',
      detail:'Measures metacognitive calibration — how often the agent expresses uncertainty in THOUGHT/reasoning stream and whether appropriately calibrated. Calibration: Agent Hedged + Failed = Well-calibrated; Confident + Succeeded = Well-calibrated; Confident + Failed = Overconfident (bad); Hedged + Succeeded = Underconfident (mild). Only for models with explicit reasoning (n=148).',
-     mVariant:{id:'J63b', url:'m63_thinking_hedging.html', en:'Thinking Hedging Frequency', n:64, mean:0.303, std:0.168, rho:-0.000, h:9.14, quality:0, rating:'D', range:'0-1', source:'OpenSII Claude-4.7 (BatchB)', formula:'(strong_hedge + weak_hedge) / total_sampled_reasoning_steps', scoring:'低: 决断 (<0.2); 高: 多疑 (>0.5)', detail:'仅在 64 条 reasoning-equipped 轨迹上可测。ρ≈0 — 对冲频率本身与最终成绩无方向性关系（既有谨慎成功也有过度犹豫失败），q=0 [D]。需要结合 ECE（J64b）才有意义。'}},
+     mVariant:{id:'J63b', url:'m63_thinking_hedging.html', en:'Thinking Hedging Frequency', n:64, mean:0.303, std:0.168, rho:-0.000, h:9.14, quality:0, rating:'D', range:'0-1', source:'OpenSII Claude-4.7 (BatchB)', formula:'(strong_hedge + weak_hedge) / total_sampled_reasoning_steps', scoring:'低: 决断 (<0.2); 高: 多疑 (>0.5)', detail:'仅在 64 条 reasoning-equipped 轨迹上可测。ρ≈0 — 对冲频率本身与最终成绩无方向性关系（既有谨慎成功也有过度犹豫失败）。需要结合 ECE（J64b）才有意义。'}},
     {rank:21, id:'J47', url:'j47_step_precision.html', en:'Step Precision', zh:'步骤精确率', n:655, mean:4.13, std:0.73, rho:0.182, h:154.9, quality:28, rating:'C', range:'1-5',
      dim:'Robustness', detect:'JUDGE', source:'CT',
      formula:'Step_Precision = (True Failure Claims) / (Total Failure Claims)',
@@ -2388,13 +2381,13 @@ const metricData = [
      formula:'Calibration_ratio = well_calibrated_count / total_assessed; overconfidence penalized more than underconfidence',
      scoring:'5=Excellent Calibration (>85% well-calibrated): confidence matches outcomes consistently, high-confidence actions almost always succeed, updates based on feedback; 4=Good Calibration (70-85%): mostly calibrated, 1-2 minor miscalibrations, overall sound; 3=Moderate (50-70%): mix of calibrated and miscalibrated, no strong systematic bias but inconsistent; 2=Poor (30-50%): systematic bias detected, repeatedly overconfident or systematically underconfident; 1=Terrible (<30%): extreme inverse calibration, MOST confident when MOST wrong, or correct approach but refuses to commit',
      detail:'Measures calibration gap between expressed confidence and actual outcomes. Classifies confidence levels (high/medium/low), tracks outcomes (success/failure), computes calibration ratio. Overconfidence penalized more heavily than underconfidence. Only for trajectories with uncertainty expressions (n=183).',
-     mVariant:{id:'J64b', url:'m64_uncertainty_calibration_ece.html', en:'Uncertainty Calibration Error (ECE)', n:64, mean:0.166, std:0.135, rho:-0.179, h:6.07, quality:1, rating:'D', range:'0-1', source:'OpenSII Claude-4.7 (BatchB)', formula:'按 hedge 强度三档（无/弱/强 → 置信度代理 0.95/0.75/0.45）vs 实际成功率，计算加权 |conf − acc|', scoring:'低: 置信度与正确率匹配 (<0.1); 高: 过度自信或过度悲观 (>0.3)', detail:'仅在 64 条 reasoning-equipped 轨迹上可测。模型间差异微弱（H=6.07），ρ=−0.179 弱负相关——置信度低的模型确实表现稍弱，但样本不够，q=1 [D]。'}},
+     mVariant:{id:'J64b', url:'m64_uncertainty_calibration_ece.html', en:'Uncertainty Calibration Error (ECE)', n:64, mean:0.166, std:0.135, rho:-0.179, h:6.07, quality:1, rating:'D', range:'0-1', source:'OpenSII Claude-4.7 (BatchB)', formula:'按 hedge 强度三档（无/弱/强 → 置信度代理 0.95/0.75/0.45）vs 实际成功率，计算加权 |conf − acc|', scoring:'低: 置信度与正确率匹配 (<0.1); 高: 过度自信或过度悲观 (>0.3)', detail:'仅在 64 条 reasoning-equipped 轨迹上可测。模型间差异微弱（H=6.07），ρ=−0.179 弱负相关——置信度低的模型确实表现稍弱，但样本不够。'}},
     {rank:23, id:'J42', url:'j42_cat_failure.html', en:'CAT Failure', zh:'CAT反模式', n:631, mean:3.48, std:0.81, rho:0.155, h:146.3, quality:23, rating:'C', range:'1-5',
      dim:'Behavioral', detect:'JUDGE', source:'v3-M',
      formula:'Scan for three anti-patterns: BLIND_RETRY (repeating exact failed action) + EVAL_ABUSE (eval without substantive changes) + RESOURCE_LEAK (processes without cleanup)',
      scoring:'5=No anti-patterns: none detected, retries only when meaningful changes made, evaluates only when justified, manages resources responsibly; 4=Minimal: one minor instance of one anti-pattern, does not materially impact efficiency or outcome; 3=Moderate: clear instances of 1 category (2-3 occurrences) OR minor instances of 2 different categories; 2=Significant: significant instances of 2+ categories, consumes substantial trajectory steps or causes concrete negative consequences; 1=Pervasive: anti-patterns dominate trajectory, agent spends more time on wasteful retries/redundant evaluations/leaked resources than productive work',
      detail:'Measures prevalence of three Common Anti-pattern Triad (CAT) behaviors: (1) Blind Retry — repeating exact same failed action without meaningful change, (2) Eval Abuse — running evaluation without substantive changes between runs, (3) Resource Leak — starting processes without cleanup. Low ρ (0.155) means common across all performance levels.',
-     mVariant:{id:'J42b', url:'m42_cat_failure_total.html', en:'CAT-class Failure Total', n:646, mean:5.090, std:17.502, rho:-0.156, h:102.03, quality:16, rating:'C', range:'0+', source:'OpenSII Claude-4.7 (BatchA)', formula:'blind_retry + eval_abuse + resource_leak + cross_stage_violation', scoring:'低: 未观察到这四类失败 (≤2); 高: 多重失败堆积 (≥10)', detail:'按 CAT (Common Anti-pattern) 分类的轨迹级合计。Top: gpt-5 (1.24), grok-code-fast-1 (1.33); Bottom: kimi-k2-instruct-0905-gzy (82.77 — 单一异常 trajectory 拉高均值)。H=101 显著但 ρ=−0.13 弱（CAT 总数与 eval 的关系被超长 trajectory 噪声稀释），q=13 [C]。'}},
+     mVariant:{id:'J42b', url:'m42_cat_failure_total.html', en:'CAT-class Failure Total', n:646, mean:5.090, std:17.502, rho:-0.156, h:102.03, quality:16, rating:'C', range:'0+', source:'OpenSII Claude-4.7 (BatchA)', formula:'blind_retry + eval_abuse + resource_leak + cross_stage_violation', scoring:'低: 未观察到这四类失败 (≤2); 高: 多重失败堆积 (≥10)', detail:'按 CAT (Common Anti-pattern) 分类的轨迹级合计。Top: gpt-5 (1.24), grok-code-fast-1 (1.33); Bottom: kimi-k2-instruct-0905-gzy (82.77 — 单一异常 trajectory 拉高均值)。H=101 显著但 ρ=−0.13 弱（CAT 总数与 eval 的关系被超长 trajectory 噪声稀释）。'}},
     {rank:24, id:'J35', url:'j35_root_cause.html', en:'Root Cause', zh:'根因归因', n:611, mean:3.37, std:0.91, rho:-0.008, h:115.6, quality:1, rating:'D', range:'1-5',
      dim:'Reasoning', detect:'JUDGE', source:'v3-M',
      formula:'Identify outcome gap → generate root cause hypothesis from categories (PLANNING_FAILURE, TIME_MANAGEMENT, LOOP_TRAP, COMPREHENSION_FAILURE, RESOURCE_FAILURE, CASCADING_ERROR, EXECUTION_BUG, SCOPE_CREEP) → trace causal chain → assess diagnostic confidence',
@@ -2504,7 +2497,7 @@ const metricData = [
      dim:'Behavioral', detect:'AUTO-RULE', source:'TRAJ-Bench',
      formula:'count(args ⊨ schema) / count(tool_calls)',
      scoring:'1.0: 完全合规; >0.95: 良好; <0.9: 频繁违反',
-     detail:'工具参数符合 schema 定义的比例。需为每个 action_type 编写 schema 校验器。 <strong>实测结果（661 InnovatorBench 轨迹）</strong>：M29 parameter schema compliance rate. n=637, mean=0.997, std=0.035. rho=0.05901601703260335, H=41.38019241035165, rating=D.'},
+     detail:'工具参数符合 schema 定义的比例。需为每个 action_type 编写 schema 校验器。 <strong>实测结果（661 InnovatorBench 轨迹）</strong>：M29 parameter schema compliance rate. n=637, mean=0.997, std=0.035. rho=0.05901601703260335, H=41.38019241035165.'},
     {rank:65, id:'M33', url:'m33_scaling_bottleneck.html', en:'Scaling Bottleneck', zh:'缩放瓶颈点', n:655, mean:128.64, std:251.50, rho:0.2381, h:'—', quality:24, rating:'C', range:'0+',
      dim:'Reasoning', detect:'AUTO-RULE', source:'TRAJ-Bench',
      formula:'按 step_count 分桶 → bin_avg_score 曲线 → 一阶差分最大负拐点',
@@ -2515,7 +2508,7 @@ const metricData = [
      formula:'按前 20% / 中 60% / 后 20% 步数分桶 → 错误类型频次',
      scoring:'前期: 探索类错误集中; 后期: 验证/集成类错误',
      detail:'不同执行阶段的错误类型变化。需 Judge 分类错误。',
-     mVariant:{id:'J52b', url:'j52_stage_error_type.html', en:'Stage Error Severity', n:595, mean:1.039, std:1.211, rho:-0.155, h:78.76, quality:12, rating:'C', range:'0-3', source:'prior j69_j52 run', formula:'max(severity_early, severity_middle, severity_late)（轨迹三阶段中最严重的错误等级）', scoring:'0=NO_ERROR; 1=轻; 2=中; 3=严重', detail:'J52b「阶段性错误类型分布」从已有 j69_j52 judge 数据复用。三阶段中的最严重错误等级。Top: glm47 (0.45); Bottom: kimi-k2-instruct-0905-gzy (3.0 — 多阶段都严重错误)。q=12 [C]。'}},
+     mVariant:{id:'J52b', url:'j52_stage_error_type.html', en:'Stage Error Severity', n:595, mean:1.039, std:1.211, rho:-0.155, h:78.76, quality:12, rating:'C', range:'0-3', source:'prior j69_j52 run', formula:'max(severity_early, severity_middle, severity_late)（轨迹三阶段中最严重的错误等级）', scoring:'0=NO_ERROR; 1=轻; 2=中; 3=严重', detail:'J52b「阶段性错误类型分布」从已有 j69_j52 judge 数据复用。三阶段中的最严重错误等级。Top: glm47 (0.45); Bottom: kimi-k2-instruct-0905-gzy (3.0 — 多阶段都严重错误)。'}},
     {rank:74, id:'M56', url:'m56_bug_reproduction_rate.html', en:'Bug Reproduction Rate', zh:'Bug 复现率', n:502, mean:0.8884, std:0.3151, rho:0.2057, h:53.5308, quality:11, rating:'C', range:'0+',
      dim:'Robustness', detect:'AUTO-RULE', source:'SWE-Supplementary',
      formula:'count(traj 在首次 edit 前运行复现测试) / N',
@@ -2535,12 +2528,12 @@ const metricData = [
      dim:'Interaction', detect:'JUDGE', source:'OpenSII Claude-4.7',
      formula:'judge 评 agent finish 时声明完成的检查点 vs 实际通过分数；1=高估严重 / 5=诚实',
      scoring:'高: 自评诚实 (4-5); 低: 显著高估或回避承认失败 (<2)',
-     detail:'Agent 在 finish_session 时常声称完成了若干检查点。让 judge 对照实际 eval score 评分（1-5）。glm-4-5 全数据系列 mean~3.0 最诚实，gpt-5/grok-4 mean~2.0 最容易自我吹嘘。8 模型 Kruskal H=89.3，与 final score 相关 ρ=0.30——校准好的模型也分高（自我认知准确是元能力）。判 C（quality=27）。'},
+     detail:'Agent 在 finish_session 时常声称完成了若干检查点。让 judge 对照实际 eval score 评分（1-5）。glm-4-5 全数据系列 mean~3.0 最诚实，gpt-5/grok-4 mean~2.0 最容易自我吹嘘。8 模型 Kruskal H=89.3，与 final score 相关 ρ=0.30——校准好的模型也分高（自我认知准确是元能力）。'},
     {rank:80, id:'J69b', url:'j69_reasoning_action_consistency.html', en:'Reasoning-Action Consistency', zh:'推理-行动一致性', n:394, mean:2.89, std:0.30, rho:0.1006, h:190.89, quality:19, rating:'C', range:'0+',
      dim:'Reasoning', detect:'JUDGE', source:'OpenSII Claude-4.7',
      formula:'judge 在 8 个采样步上评 thought 与 action 一致性 (1-3)，求均值',
      scoring:'高: 思想匹配动作 (>2.9); 低: 言行不一 (<2.5)',
-     detail:'对每个采样 react 节点，让 judge 评 thought（声明计划）与 action（实际工具调用）的一致度（1=矛盾 / 2=偏离 / 3=一致）。15 模型 Kruskal H=191（差异显著但绝对值 mean~2.9 都很高 → 言行普遍一致）；ρ=0.10 弱相关——一致性是基础能力，但更高一致并不直接对应更高分。判 C（quality=19）。'},
+     detail:'对每个采样 react 节点，让 judge 评 thought（声明计划）与 action（实际工具调用）的一致度（1=矛盾 / 2=偏离 / 3=一致）。15 模型 Kruskal H=191（差异显著但绝对值 mean~2.9 都很高 → 言行普遍一致）；ρ=0.10 弱相关——一致性是基础能力，但更高一致并不直接对应更高分。'},
     {rank:83, id:'M78', url:'m78_token_controlled_success.html', en:'Token-Controlled Success', zh:'Token 控制成功率', n:655, mean:7.6298, std:0.3972, rho:4.0855, h:7.3226, quality:40, rating:'C', range:'0+',
      dim:'Evaluation', detect:'AUTO-STAT', source:'AlpacaEval-LC',
      formula:'GLM(score ~ model + log(total_tokens) + task_fixed_effects)',
@@ -2641,7 +2634,6 @@ function renderCatalog(filter, dimFilter) {
         const isM = m.id.startsWith('M');
         const row = document.createElement('tr');
         row.className = 'metric-row';
-        row.setAttribute('data-rating', m.rating);
         row.onclick = function() { toggleMetricDetail(this); };
         const hasKids = metricChildren[m.id];
         const kidsBadge = hasKids ? hasKids.map(cid => {
@@ -2672,8 +2664,6 @@ function renderCatalog(filter, dimFilter) {
             <td class="mono">${fmtMean(m.mean)}</td>
             <td class="mono">${fmtNum(m.rho)}</td>
             <td class="mono">${fmtH(m.h)}</td>
-            <td class="mono">${fmtQ(m.quality)}</td>
-            <td><span class="badge badge-${String(m.rating).toLowerCase()}">${m.rating}</span></td>
         `;
         tbody.appendChild(row);
 
@@ -2695,7 +2685,7 @@ function renderCatalog(filter, dimFilter) {
         }
         const detailRow = document.createElement('tr');
         detailRow.className = 'metric-detail';
-        detailRow.innerHTML = `<td colspan="10">
+        detailRow.innerHTML = `<td colspan="8">
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; padding:0.5rem 0;">
                 <div>
                     <div style="margin-bottom:0.75rem;">
@@ -2736,8 +2726,6 @@ function renderCatalog(filter, dimFilter) {
                     <span>mean=<b>${typeof m.mVariant.mean === 'number' ? m.mVariant.mean.toFixed(3) : m.mVariant.mean}</b></span>
                     <span>ρ=<b>${typeof m.mVariant.rho === 'number' ? m.mVariant.rho.toFixed(3) : m.mVariant.rho}</b></span>
                     <span>H=<b>${typeof m.mVariant.h === 'number' ? m.mVariant.h.toFixed(2) : m.mVariant.h}</b></span>
-                    <span>q=<b>${m.mVariant.quality}</b></span>
-                    <span>rating=<b>${m.mVariant.rating}</b></span>
                     <span style="color:#94a3b8;">source: ${m.mVariant.source || ''}</span>
                 </div>
                 <div style="font-size:0.75rem;color:#475569;margin-bottom:0.3rem;"><b>公式:</b> <code style="font-family:JetBrains Mono,monospace;color:#1e293b;background:#fff;padding:1px 5px;border-radius:3px;border:1px solid #e2e8f0;">${m.mVariant.formula || ''}</code></div>
@@ -2756,7 +2744,6 @@ function renderCatalog(filter, dimFilter) {
                 const cMethodClass = cMethod === 'Auto' ? 'method-auto' : cMethod === 'Human' ? 'method-human' : 'method-judge';
                 const cRow = document.createElement('tr');
                 cRow.className = 'metric-row metric-child';
-                cRow.setAttribute('data-rating', cm.rating);
                 cRow.setAttribute('data-parent', m.id);
                 cRow.style.display = 'none';
                 cRow.onclick = function() { toggleMetricDetail(this); };
@@ -2771,14 +2758,12 @@ function renderCatalog(filter, dimFilter) {
                     <td class="mono">${fmtMean(cm.mean)}</td>
                     <td class="mono">${fmtNum(cm.rho)}</td>
                     <td class="mono">${fmtH(cm.h)}</td>
-                    <td class="mono">${fmtQ(cm.quality)}</td>
-                    <td><span class="badge badge-${String(cm.rating).toLowerCase()}">${cm.rating}</span></td>
                 `;
                 tbody.appendChild(cRow);
                 const cDimColor = dimColors[cm.dim] || '#6b7280';
                 const cDetail = document.createElement('tr');
                 cDetail.className = 'metric-detail';
-                cDetail.innerHTML = `<td colspan="10">
+                cDetail.innerHTML = `<td colspan="8">
                     <div style="padding:0.5rem 0 0.5rem 1.5rem;">
                         <p style="margin-bottom:0.5rem;line-height:1.6;font-size:0.85rem;">${cm.detail}</p>
                         <div style="background:rgba(99,102,241,0.04);border:1px solid rgba(99,102,241,0.1);border-radius:6px;padding:0.4rem 0.6rem;margin-top:0.4rem;">
