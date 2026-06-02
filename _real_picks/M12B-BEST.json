@@ -5,35 +5,15 @@
   "val": "1.00",
   "badge": "badge-good",
   "src": "workspace_task_15 · glm47",
-  "desc": "Clean — 12 create_session calls paired with 24 close_session calls (defensive double-closes).",
+  "desc": "Clean — 12 create_session paired with 24 close_session calls (defensive double-closes).",
   "steps": [
-    {
-      "create": {"depth": 107, "ts": "2026-02-26T19:47:41.892173", "session_id": "gammapo_training"},
-      "close":  {"depth": 66,  "ts": "2026-02-26T20:01:20.050424", "session_id": "gammapo_training"}
-    },
-    {
-      "create": {"depth": 67,  "ts": "2026-02-26T20:02:25.147168", "session_id": "gammapo_training_v2"},
-      "close":  {"depth": 80,  "ts": "2026-02-26T20:11:30.838613", "session_id": "gammapo_training_v2"},
-      "double_close": {"depth": 109, "ts": "2026-02-27T00:22:25.150358", "session_id": "gammapo_training_v2"}
-    },
-    {
-      "create": {"depth": 88,  "ts": "2026-02-26T20:18:08.435222", "session_id": "gammapo_training_v3"},
-      "close":  {"depth": 96,  "ts": "2026-02-26T20:28:34.674177", "session_id": "gammapo_training_v3"},
-      "double_close": {"depth": 130, "ts": "2026-02-27T00:39:32.226017", "session_id": "gammapo_training_v3"}
-    },
-    {
-      "create": {"depth": 97,  "ts": "2026-02-26T20:29:13.834177", "session_id": "gammapo_training_v4"},
-      "close":  {"depth": 104, "ts": "2026-02-26T20:35:57.906013", "session_id": "gammapo_training_v4"}
-    },
-    {
-      "create": {"depth": 114, "ts": "2026-02-26T20:48:45.528651", "session_id": "gammapo_training_v5"},
-      "close":  {"depth": 112, "ts": "2026-02-26T21:33:08.648746", "session_id": "gammapo_training_v5"},
-      "double_close": {"depth": 55, "ts": "2026-02-26T21:41:28.480498", "session_id": "gammapo_training_v5"}
-    },
-    {
-      "create": {"depth": 50,  "ts": "2026-02-26T21:55:31.473225", "session_id": "gammapo_training_zero2"},
-      "close":  {"depth": 104, "ts": "2026-02-27T00:21:00.495725", "session_id": "gammapo_training_zero2"}
-    }
+    {"t": "Step 107: create gammapo_training → step 66: close", "c": "success"},
+    {"t": "Step 67: create gammapo_training_v2 → close + double_close", "c": "success"},
+    {"t": "Step 88: create gammapo_training_v3 → close + double_close", "c": "success"},
+    {"t": "Step 97: create gammapo_training_v4 → step 104: close", "c": "success"},
+    {"t": "Step 114: create gammapo_training_v5 → close + double_close", "c": "success"},
+    {"t": "Step 50: create gammapo_training_zero2 → step 104: close", "c": "success"},
+    {"t": "Total: 12 creates, 24 closes — every session reclaimed", "c": "success"}
   ],
   "formula": "M12b = min(24/12, 1.0) = min(2.0, 1.0) = 1.00"
 }

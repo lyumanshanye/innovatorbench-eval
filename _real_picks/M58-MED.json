@@ -5,18 +5,18 @@
   "val": "0.40",
   "badge": "badge-warn",
   "src": "workspace_task_12 · glm-4-5-w-interact-w-filter",
-  "desc": "10 edits across two files (dataset_info.json, training_config.yaml); 4 hit a path edited in the previous 5 actions (rollbacks at edits #2, #3, #8, #9).",
+  "desc": "10 edits, 4 hit a path edited within the previous 5 actions.",
   "steps": [
-    {"n": 1, "ts": "01:11:37", "path": "/workspace/task/repositories/LLaMA-Factory/data/dataset_info.json", "range": "11-12", "rollback": false},
-    {"n": 2, "ts": "01:11:48", "path": "/workspace/task/repositories/LLaMA-Factory/data/dataset_info.json", "range": "11-19", "rollback": true},
-    {"n": 3, "ts": "01:12:10", "path": "/workspace/task/repositories/LLaMA-Factory/data/dataset_info.json", "range": "19-20", "rollback": true},
-    {"n": 4, "ts": "01:35:52", "path": "/workspace/task/repositories/LLaMA-Factory/data/dataset_info.json", "range": "19-38", "rollback": false},
-    {"n": 5, "ts": "01:46:08", "path": "/workspace/task/repositories/LLaMA-Factory/data/dataset_info.json", "range": "55-56", "rollback": false},
-    {"n": 6, "ts": "01:46:15", "path": "/workspace/task/repositories/LLaMA-Factory/training_config.yaml", "range": "12-12", "rollback": false},
-    {"n": 7, "ts": "02:05:16", "path": "/workspace/task/repositories/LLaMA-Factory/training_config.yaml", "range": "7-9", "rollback": false},
-    {"n": 8, "ts": "02:05:20", "path": "/workspace/task/repositories/LLaMA-Factory/training_config.yaml", "range": "30-32", "rollback": true},
-    {"n": 9, "ts": "02:05:24", "path": "/workspace/task/repositories/LLaMA-Factory/training_config.yaml", "range": "15-15", "rollback": true},
-    {"n": 10, "ts": "02:16:15", "path": "/workspace/task/repositories/LLaMA-Factory/data/dataset_info.json", "range": "54-55", "rollback": false}
+    {"t": "edit#1: dataset_info.json L11-12", "c": "action"},
+    {"t": "edit#2: dataset_info.json L11-19 (ROLLBACK on same path)", "c": "loop"},
+    {"t": "edit#3: dataset_info.json L19-20 (ROLLBACK)", "c": "loop"},
+    {"t": "edit#4-5: dataset_info.json L19-38, L55-56", "c": "action"},
+    {"t": "edit#6: training_config.yaml L12 (new file)", "c": "action"},
+    {"t": "edit#7: training_config.yaml L7-9", "c": "action"},
+    {"t": "edit#8: training_config.yaml L30-32 (ROLLBACK)", "c": "loop"},
+    {"t": "edit#9: training_config.yaml L15 (ROLLBACK)", "c": "loop"},
+    {"t": "edit#10: dataset_info.json L54-55", "c": "action"},
+    {"t": "Total: 10 edits, 4 rollbacks", "c": "error"}
   ],
   "formula": "M58 = 4/10 = 0.40"
 }
