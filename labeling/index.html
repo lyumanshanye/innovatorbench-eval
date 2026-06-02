@@ -137,6 +137,23 @@
   .question-card .q-text strong { color:var(--ink-blue); font-weight:700; }
 
   .label-buttons { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+
+  /* M21 category multi-select */
+  .cat-row { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; align-items:center;
+             padding:10px 14px; background:var(--parchment-light); border:1px solid var(--rule-color);
+             border-left:3px solid var(--accent-gold); border-radius:2px; }
+  .cat-row .cat-label { font-size:11px; font-weight:700; color:var(--accent-gold);
+                        text-transform:uppercase; letter-spacing:0.12em;
+                        font-family:var(--font-en); margin-right:8px; }
+  .cat-btn { padding:7px 14px; border-radius:2px; font-size:13px; font-weight:600;
+             border:1.5px solid var(--rule-color); background:var(--parchment);
+             color:var(--warm-gray); cursor:pointer; font-family:var(--font-cn);
+             letter-spacing:0.04em; transition:all 0.12s; min-width:auto; }
+  .cat-btn:hover { border-color:var(--ink-blue); color:var(--ink-blue); }
+  .cat-btn.selected { background:var(--ink-blue); color:var(--parchment-light);
+                      border-color:var(--ink-blue); }
+  .cat-btn .cat-key { font-family:var(--font-mono); font-size:11px; font-weight:700;
+                      margin-right:5px; opacity:0.85; }
   .label-btn { padding:11px 22px; border-radius:2px; font-size:13.5px; font-weight:600;
                border:1.5px solid; cursor:pointer; min-width:140px;
                font-family:var(--font-cn); letter-spacing:0.04em; transition:all 0.15s; }
@@ -282,17 +299,22 @@ const QUESTIONS = {
   },
   M21: {
     title: '【M21 格式失败】',
-    label: '指标说"这些 NullAction 是模型输出格式坏了"——判得对吗？',
-    body: `<strong>判定标准：</strong>检查红色高亮行下方的 🔬 诊断信息，判断 NullAction 来自模型输出格式问题还是框架兼容问题。<br>
+    label: 'null 节点的来源是？（多选 A-E）+ 事实层面 M21 抓得对不对（按 1/2/3）',
+    body: `<strong>说明：</strong>M21 公式只判 <code>action_type</code> 是否为 null/空。但 null 的成因有多种，需要分类记录，才能判断 M21 当 reward 是否合适。<br>
+           <strong>看每个红色高亮行下方的 🔬 诊断</strong>，把出现的来源都勾上（多选可同时存在）。<br>
            <table style="margin-top:10px;border-collapse:collapse;font-size:13px;">
              <tr style="border-bottom:1px solid var(--rule-color);">
-               <th style="text-align:left;padding:6px 14px 6px 0;font-weight:700;">🔬 诊断显示</th>
-               <th style="text-align:left;padding:6px 0;font-weight:700;">结论</th>
+               <th style="text-align:left;padding:6px 14px 6px 0;font-weight:700;">分类</th>
+               <th style="text-align:left;padding:6px 0;font-weight:700;">特征</th>
              </tr>
-             <tr><td style="padding:6px 14px 6px 0;"><code>MODEL_OUTPUT_TEXT</code> 为空白 / 非结构化文字 / 不完整 JSON；或 <code>finish_reason=length</code></td><td style="color:var(--good);font-weight:600;">判对（1）— 真格式问题</td></tr>
-             <tr><td style="padding:6px 14px 6px 0;"><code>FRAMEWORK_ERROR</code> 报参数不合法；或 <code>MODEL_TRIED_TO_CALL</code> 是合法工具（如 <code>finish</code>）但被框架拒绝</td><td style="color:var(--bad);font-weight:600;">判错（2）— 框架问题</td></tr>
-             <tr><td style="padding:6px 14px 6px 0;">诊断信息缺失或不足以判断</td><td style="color:var(--warn);font-weight:600;">看不清（3）</td></tr>
-           </table>`,
+             <tr><td style="padding:6px 14px 6px 0;"><kbd>A</kbd>　模型格式坏</td><td style="padding:6px 0;">MODEL_OUTPUT_TEXT 为 garbage / 残缺 JSON / 完全空白</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;"><kbd>B</kbd>　被截断</td><td style="padding:6px 0;"><code>finish_reason=length</code>（被 max_tokens 截断）</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;"><kbd>C</kbd>　调不存在的工具</td><td style="padding:6px 0;">MODEL_TRIED_TO_CALL 为不存在的工具，如 <code>null({})</code></td></tr>
+             <tr><td style="padding:6px 14px 6px 0;"><kbd>D</kbd>　框架拒合法工具</td><td style="padding:6px 0;">MODEL_TRIED_TO_CALL 为合法工具（如 <code>finish</code> / <code>open_file</code> 因参数错）但被框架拒</td></tr>
+             <tr><td style="padding:6px 14px 6px 0;"><kbd>E</kbd>　看不清</td><td style="padding:6px 0;">诊断信息缺失，无法分类</td></tr>
+           </table>
+           <strong style="display:block;margin-top:10px;">事实判定（按 <kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd>）：</strong>
+           只看 action_type 字段是否真的是 null。几乎所有 M21 触发样本应判对（按 <kbd>1</kbd>），除非框架算错了步数。`,
   },
   M93: {
     title: '【M93 重试改善】',
@@ -351,7 +373,28 @@ function getLabel(metric, traj) {
 function setLabel(metric, traj, label, note) {
   const L = loadLabels();
   if (!L[metric]) L[metric] = {};
-  L[metric][traj] = { label, note: note||'', at: new Date().toISOString() };
+  // Preserve any existing categories on the same trajectory
+  const prev = L[metric][traj] || {};
+  L[metric][traj] = {
+    label,
+    note: note||'',
+    categories: prev.categories || [],
+    at: new Date().toISOString(),
+  };
+  saveLabels(L);
+}
+function toggleCategory(metric, traj, cat) {
+  const L = loadLabels();
+  if (!L[metric]) L[metric] = {};
+  const prev = L[metric][traj] || {};
+  const cats = new Set(prev.categories || []);
+  if (cats.has(cat)) cats.delete(cat); else cats.add(cat);
+  L[metric][traj] = {
+    label: prev.label || null,
+    note: prev.note || '',
+    categories: Array.from(cats).sort(),
+    at: new Date().toISOString(),
+  };
   saveLabels(L);
 }
 
@@ -373,7 +416,10 @@ function renderTabs() {
 }
 function countLabeled(metric) {
   const L = loadLabels()[metric] || {};
-  return (DATA[metric] || []).filter(s => L[s.trajectory_dir]).length;
+  return (DATA[metric] || []).filter(s => {
+    const lab = L[s.trajectory_dir];
+    return lab && (lab.label || (lab.categories && lab.categories.length > 0));
+  }).length;
 }
 function renderProgress() {
   const total = (DATA[CUR_METRIC] || []).length;
@@ -383,9 +429,20 @@ function renderProgress() {
   const fp = Object.values(L).filter(x=>x.label==='false_pos').length;
   const us = Object.values(L).filter(x=>x.label==='unsure').length;
   const sk = Object.values(L).filter(x=>x.label==='skipped').length;
+  let extra = '';
+  if (CUR_METRIC === 'M21') {
+    const catCounts = { A:0, B:0, C:0, D:0, E:0 };
+    for (const v of Object.values(L)) {
+      for (const c of (v.categories||[])) {
+        if (catCounts[c] !== undefined) catCounts[c]++;
+      }
+    }
+    extra = ` · A=${catCounts.A} B=${catCounts.B} C=${catCounts.C} D=${catCounts.D} E=${catCounts.E}`;
+  }
   document.getElementById('progress').innerHTML =
     `${CUR_METRIC}: <strong>${labeled}/${total}</strong> · 判对 <strong style="color:var(--good)">${tp}</strong> · 判错 <strong style="color:var(--bad)">${fp}</strong> · 看不清 <strong style="color:var(--warn)">${us}</strong> · 跳过 ${sk}` +
-    (labeled - sk > 0 ? ` · <strong>指标准确率 ${((tp/(tp+fp+us||1))*100).toFixed(1)}%</strong>` : '');
+    (labeled - sk > 0 ? ` · <strong>指标准确率 ${((tp/(tp+fp+us||1))*100).toFixed(1)}%</strong>` : '') +
+    extra;
 }
 function renderSidebar() {
   const list = document.getElementById('sidebar-list');
@@ -393,9 +450,14 @@ function renderSidebar() {
   const L = loadLabels()[CUR_METRIC] || {};
   const items = arr.map((s,i) => {
     const lab = L[s.trajectory_dir];
-    if (FILTER === 'unlabeled' && lab) return '';
-    if (FILTER === 'labeled' && !lab) return '';
-    const status = lab ? `<span class="si-status ${lab.label}">${labelShort(lab.label)}</span>` : '';
+    const isLabeled = lab && (lab.label || (lab.categories && lab.categories.length > 0));
+    if (FILTER === 'unlabeled' && isLabeled) return '';
+    if (FILTER === 'labeled' && !isLabeled) return '';
+    let status = '';
+    if (lab?.label) status = `<span class="si-status ${lab.label}">${labelShort(lab.label)}</span>`;
+    if (CUR_METRIC === 'M21' && lab?.categories?.length) {
+      status = `<span class="si-status" style="background:var(--ink-blue);color:var(--parchment-light);font-family:var(--font-mono);">${lab.categories.join('')}</span>` + status;
+    }
     const trajShort = s.trajectory_dir.replace(/^workspace_task_/, 'T').slice(0, 38);
     let metaLine = `task ${s.task_id} · ${(s.model||'').slice(0,18)}`;
     if (CUR_METRIC === 'M14') metaLine += ` · run=${s.deadlock_run?.length||'?'}`;
@@ -517,6 +579,7 @@ function renderMain() {
       <div class="q-text">${Q.body}</div>
     </div>
     ${evalHTML}
+    ${CUR_METRIC === 'M21' ? renderCategoryButtons(s, cur) : ''}
     <div class="label-buttons">
       <button class="label-btn true_pos ${cur?.label==='true_pos'?'selected':''}" onclick="setCur('true_pos')">✓ 指标判对了 (1)</button>
       <button class="label-btn false_pos ${cur?.label==='false_pos'?'selected':''}" onclick="setCur('false_pos')">✗ 指标判错了 (2)</button>
@@ -541,6 +604,32 @@ function setCur(label) {
   const s = arr[CUR_IDX];
   const note = document.getElementById('note')?.value || '';
   setLabel(CUR_METRIC, s.trajectory_dir, label, note);
+  renderAll();
+}
+const M21_CATEGORIES = [
+  { key: 'A', name: '模型格式坏', desc: 'garbage / 残缺 JSON / 空白' },
+  { key: 'B', name: '被截断', desc: 'finish_reason=length' },
+  { key: 'C', name: '调不存在的工具', desc: 'null({}) 等' },
+  { key: 'D', name: '框架拒合法工具', desc: 'finish() / open_file 参数错' },
+  { key: 'E', name: '看不清', desc: '诊断缺失' },
+];
+function renderCategoryButtons(s, cur) {
+  const cats = new Set(cur?.categories || []);
+  const btns = M21_CATEGORIES.map(c => `
+    <button class="cat-btn ${cats.has(c.key)?'selected':''}" onclick="toggleCat('${c.key}')">
+      <span class="cat-key">${c.key}</span>${c.name}
+    </button>
+  `).join('');
+  return `<div class="cat-row">
+    <span class="cat-label">来源 (多选, A–E)</span>
+    ${btns}
+  </div>`;
+}
+function toggleCat(key) {
+  const arr = DATA[CUR_METRIC] || [];
+  if (CUR_IDX < 0) return;
+  const s = arr[CUR_IDX];
+  toggleCategory(CUR_METRIC, s.trajectory_dir, key);
   renderAll();
 }
 function nextItem() {
@@ -573,6 +662,10 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'n') { nextItem(); }
   else if (e.key === 'ArrowDown') { if (CUR_IDX+1 < arr.length) { CUR_IDX++; renderAll(); }}
   else if (e.key === 'ArrowUp') { if (CUR_IDX > 0) { CUR_IDX--; renderAll(); }}
+  // M21 category shortcuts a/b/c/d/e
+  else if (CUR_METRIC === 'M21' && /^[abcdeABCDE]$/.test(e.key)) {
+    toggleCat(e.key.toUpperCase());
+  }
 });
 
 document.querySelectorAll('.filter-btn').forEach(b => {
@@ -584,13 +677,14 @@ document.querySelectorAll('.filter-btn').forEach(b => {
 
 function exportCSV() {
   const L = loadLabels();
-  const rows = [['metric','trajectory_dir','task_id','model','band','metric_value','label','note','at']];
+  const rows = [['metric','trajectory_dir','task_id','model','band','metric_value','label','categories','note','at']];
   for (const m of METRICS) {
     for (const s of (DATA[m]||[])) {
       const lab = (L[m]||{})[s.trajectory_dir];
       if (!lab) continue;
       const mv = (m==='M14'?s.M14_deadlock_step_ratio:m==='M21'?s.M21_format_fail_rate:m==='M93'?s.M93_score_delta:s.M57_post_fix_verify);
-      rows.push([m, s.trajectory_dir, s.task_id, s.model, s._band, mv, lab.label, lab.note?.replace(/[\r\n]+/g,' ')||'', lab.at]);
+      const cats = (lab.categories||[]).join('|');
+      rows.push([m, s.trajectory_dir, s.task_id, s.model, s._band, mv, lab.label || '', cats, lab.note?.replace(/[\r\n]+/g,' ')||'', lab.at]);
     }
   }
   const csv = rows.map(r => r.map(x => `"${String(x||'').replace(/"/g,'""')}"`).join(',')).join('\n');
