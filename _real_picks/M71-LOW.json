@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M71",
+  "name": "推理退化指数 Reasoning Degradation",
+  "val": "0.00",
+  "badge": "badge-bad",
+  "src": "workspace_task_10 · grok-4",
+  "desc": "Late-stage reasoning collapsed: agent stopped emitting any text content — pure tool-call mode for the final 20% of react steps.",
+  "steps": [
+    {"t": "Step 2: think (early) — content_len=0, agent skips narration from the start", "c": "think"},
+    {"t": "Step 11: jumps to line 392 of /workspace/task/scripts/retrieval_server.py, content_len=2918", "c": "action"},
+    {"t": "First-20% (16 react steps) content lengths: 15 zeros + one 2918 → avg 182.38", "c": "think"},
+    {"t": "Step 66: check_session_idle session=search_server, content_len=0", "c": "action"},
+    {"t": "Step 76: check_session_idle session=install_faiss, content_len=0", "c": "loop"},
+    {"t": "Last-20% (16 react steps): every single content_len = 0 → avg 0.00", "c": "error"},
+    {"t": "M71 = 0.00 / 182.38 = 0.0000 — total textual reasoning collapse", "c": "error"}
+  ],
+  "formula": "M71 = avg_len(last20%) / avg_len(first20%) = 0.00 / 182.38 = 0.0000"
+}

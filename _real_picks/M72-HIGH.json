@@ -1,0 +1,18 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M72",
+  "name": "Think有效性 Think Effectiveness",
+  "val": "+1.00",
+  "badge": "badge-good",
+  "src": "workspace_task_9 · kimi-k2-instruct-0905",
+  "desc": "The single post-think action succeeds; every other action is a malformed null.",
+  "steps": [
+    {"t": "Step 1: think 'inspect workspace before listing'", "c": "think"},
+    {"t": "Step 2: list_files path='/workspace' (success)", "c": "success"},
+    {"t": "Step 3: null action — 'Do nothing. Please check your output format.'", "c": "error"},
+    {"t": "Step 4-7: null action repeats 'Do nothing... output format' errors", "c": "loop"},
+    {"t": "think_after: 1/1 success; non_think_after: 0/183 success", "c": "loop"},
+    {"t": "M72 = 1/1 − 0/183 = 1.000 − 0.000 = +1.00", "c": "success"}
+  ],
+  "formula": "M72 = think_sr − non_think_sr = 1.000 − 0.000 = +1.00"
+}

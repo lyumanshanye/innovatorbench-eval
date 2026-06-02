@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M15",
+  "name": "重复查看率 Repeated View Rate",
+  "val": "1.00",
+  "badge": "badge-bad",
+  "src": "task_5 · glm47",
+  "desc": "Only one file is ever opened, and it is reopened three times in five steps — every viewed file qualifies as repeated.",
+  "steps": [
+    {"t": "Step 31: open_file /workspace/clean_web_data.py (1st)", "c": "action"},
+    {"t": "Step 33: open_file /workspace/clean_web_data.py (2nd)", "c": "loop"},
+    {"t": "Step 36: open_file /workspace/clean_web_data.py (3rd) — ≥3 hit", "c": "loop"},
+    {"t": "No other file ever passes through open_file in 78 nodes", "c": "think"},
+    {"t": "Walk: 3 opens · 1 unique path · 1 path opened ≥3", "c": "think"},
+    {"t": "Top path: clean_web_data.py × 3 (sole entry)", "c": "action"},
+    {"t": "M15 = 1/1 = 1.00 — 100% revisit rate, monoculture viewing", "c": "error"}
+  ],
+  "formula": "M15 = (files_opened≥3) / unique_files = 1/1 = 1.00"
+}

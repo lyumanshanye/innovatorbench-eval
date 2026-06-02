@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M07",
+  "name": "先读后改率 Read-Before-Edit Rate",
+  "val": "0.75",
+  "badge": "badge-warn",
+  "src": "task_15 · claude-4-sonnet-gzy",
+  "desc": "9 of 12 edit_file calls had a same-path open_file in the prior 20 actions.",
+  "steps": [
+    {"t": "Step 22: open_file gammaPO/scripts/gammapo_trainer.py", "c": "action"},
+    {"t": "Step 36: edit_file gammapo_trainer.py - matches step 22 open (read-first)", "c": "success"},
+    {"t": "Step 115: open_file training_configs/qwen-2.5-7b-it-gammapo.yaml", "c": "action"},
+    {"t": "Step 116: edit_file qwen-2.5-7b-it-gammapo.yaml - paired with step 115", "c": "success"},
+    {"t": "Step 80: edit_file /workspace/task/script/infer.sh - no prior open in window", "c": "error"},
+    {"t": "Step 112: edit_file gammapo_trainer.py - last open at step 37, gap=75 (>20)", "c": "error"},
+    {"t": "preceded=9, total_edits=12 -> M07 = 9/12 = 0.75", "c": "loop"}
+  ],
+  "formula": "M07 = preceded / total_edits = 9/12 = 0.75"
+}

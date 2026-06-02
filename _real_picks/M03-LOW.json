@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M03",
+  "name": "子任务数量 Subtask Count",
+  "val": "0",
+  "badge": "badge-bad",
+  "src": "task_10 · claude-4-sonnet",
+  "desc": "Trajectory dives straight into shell exploration with zero plan/subgoal_create — never declares any subgoal.",
+  "steps": [
+    {"t": "Step 1: think (no plan tool, no subgoal_create issued)", "c": "think"},
+    {"t": "Step 2: create_session (jumps to env setup before any plan)", "c": "action"},
+    {"t": "Step 4: list_files /workspace (exploration without decomposition)", "c": "action"},
+    {"t": "Step 8: open_file /workspace/data/datasets/train.json", "c": "action"},
+    {"t": "Step 9: run_command wc -l /workspace/data/datasets/train.json", "c": "action"},
+    {"t": "Walk all 218 nodes: 0 plan, 0 subgoal_create, 0 subgoals[] entries", "c": "loop"},
+    {"t": "Final: M03 = 0 subgoals declared (no planning structure at all)", "c": "error"}
+  ],
+  "formula": "M03 = count(subgoal_create | plan_node.subgoals) = 0"
+}

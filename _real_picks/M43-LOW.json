@@ -1,0 +1,18 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M43_max_consecutive_sleep",
+  "name": "最大连续Sleep Max Consecutive Sleep",
+  "val": "0",
+  "badge": "badge-good",
+  "src": "workspace_task_10 · kimi-k2-instruct-0905-gzy",
+  "desc": "Zero waits — agent never issued sleep or check_session_idle; trajectory died after 2 real steps and produced 151 null-action nodes, so no waiting loop ever formed.",
+  "steps": [
+    {"t": "Step 1: think — drafts a plan before touching the workspace", "c": "think"},
+    {"t": "Step 2: list_files /workspace — single discovery action", "c": "action"},
+    {"t": "Steps 3-154: 151 nodes parsed with action_type=null (no tool emitted)", "c": "error"},
+    {"t": "Top types: null×151, think×1, list_files×1 (155 total nodes incl. root)", "c": "action"},
+    {"t": "sleep×0, check_session_idle×0 anywhere in the trajectory", "c": "success"},
+    {"t": "Longest consecutive sleep run = 0 — no wait pattern at all", "c": "success"}
+  ],
+  "formula": "M43_max_consecutive_sleep = max run-length of action_type=='sleep' = 0"
+}

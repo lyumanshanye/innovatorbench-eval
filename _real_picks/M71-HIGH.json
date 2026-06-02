@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M71",
+  "name": "推理退化指数 Reasoning Degradation",
+  "val": "382.52",
+  "badge": "badge-bad",
+  "src": "workspace_task_11 · glm-4-5-full-data-wo-interact-gzy",
+  "desc": "Extreme ratio driven by a near-zero denominator: the agent emitted text only on step 2, then went silent for 24 react steps.",
+  "steps": [
+    {"t": "Step 2: list_files /workspace, content_len=152 — only early step with text", "c": "action"},
+    {"t": "Steps 3-26: 24 consecutive react nodes all have content_len=0", "c": "loop"},
+    {"t": "First-20% (25 react steps) avg content_len = 6.08 (one 152 + 24 zeros)", "c": "think"},
+    {"t": "Step 108: emits 10290-char content with embedded <tool_call>create_file", "c": "action"},
+    {"t": "Last-20% (25 steps) contains 10290, 10577, 10241, 10241, 5635, 3619 spikes", "c": "think"},
+    {"t": "Step 130: final 3619-char output 'no more eval times left...' content_len=3619", "c": "error"},
+    {"t": "Last-20% avg = 2325.72 → M71 = 2325.72 / 6.08 = 382.52 (extreme)", "c": "error"}
+  ],
+  "formula": "M71 = avg_len(last20%) / avg_len(first20%) = 2325.72 / 6.08 = 382.5197"
+}

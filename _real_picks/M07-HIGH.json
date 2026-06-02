@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M07",
+  "name": "先读后改率 Read-Before-Edit Rate",
+  "val": "1.00",
+  "badge": "badge-good",
+  "src": "task_9 · glm47_apollo_copr_2ep",
+  "desc": "Every edit_file was preceded by a same-path open_file within 20 actions.",
+  "steps": [
+    {"t": "Step 40: open_file LLaMA-Factory/training_config.yaml", "c": "action"},
+    {"t": "Step 42: edit_file training_config.yaml - gap=2 (read-first)", "c": "success"},
+    {"t": "Step 44: edit_file training_config.yaml - same open at step 40, gap=4", "c": "success"},
+    {"t": "Step 92: open_file LLaMA-Factory/data/dataset_info.json", "c": "action"},
+    {"t": "Step 93: edit_file dataset_info.json - gap=1 (immediate read-first)", "c": "success"},
+    {"t": "Step 110: edit_file dataset_info.json - open at step 92, gap=18 (<=20)", "c": "success"},
+    {"t": "preceded=4, total_edits=4 -> M07 = 4/4 = 1.00", "c": "success"}
+  ],
+  "formula": "M07 = preceded / total_edits = 4/4 = 1.00"
+}

@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M03",
+  "name": "子任务数量 Subtask Count",
+  "val": "771",
+  "badge": "badge-bad",
+  "src": "task_15 · gpt-5",
+  "desc": "Compulsive decomposer: 89 plan/replan calls, each emitting 8-14 micro-subgoals, drowning execution in over-decomposition.",
+  "steps": [
+    {"t": "Step 3: internal_plan with 14 subgoals (initial decomposition)", "c": "action"},
+    {"t": "Subgoal#1: 'Draft gammapo design and write /workspace/data/outputs…'", "c": "think"},
+    {"t": "Subgoal#3: 'Implement loss_type == \"gammapo\" in gammapo_trainer.py…'", "c": "think"},
+    {"t": "Step 24,30,36…: internal_replan fires 81 more times, ~12 subgoals each", "c": "loop"},
+    {"t": "Step 216 subgoal: 'After each copy, emit COPIED:<src>-><dst>:SIZE=…'", "c": "loop"},
+    {"t": "Walk 531 nodes: 8 internal_plan + 81 internal_replan = 89 decompositions", "c": "loop"},
+    {"t": "Final: sum(len(args.subgoals)) = 771 — extreme over-decomposition", "c": "error"}
+  ],
+  "formula": "M03 = count(subgoal_create | plan_node.subgoals) = 771"
+}

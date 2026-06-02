@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M71",
+  "name": "推理退化指数 Reasoning Degradation",
+  "val": "3.62",
+  "badge": "badge-warn",
+  "src": "workspace_task_8 · glm-4-5-full-data-wo-interact-w-filter-gzy",
+  "desc": "Inverse pattern: late content actually grows ~3.6x larger than early — model becomes more verbose near the end, not less.",
+  "steps": [
+    {"t": "Step 2: list_files /workspace, content_len=165 — short opening narration", "c": "action"},
+    {"t": "Step 31: check_session_idle session=data_enhancement_session, content_len=95", "c": "action"},
+    {"t": "First-20% (61 react steps) avg content_len = 113.77", "c": "think"},
+    {"t": "Step 296: run head -10 /workspace/data/outputs/answer.jsonl, content_len=1581", "c": "action"},
+    {"t": "Step 311 (last react): final summary 'Complete.' content_len=9", "c": "success"},
+    {"t": "Last-20% (61 steps) includes spikes (3771, 2487, 1905) → avg 411.70", "c": "think"},
+    {"t": "M71 = 411.70 / 113.77 = 3.6187 — inflation, not degradation (>1)", "c": "success"}
+  ],
+  "formula": "M71 = avg_len(last20%) / avg_len(first20%) = 411.70 / 113.77 = 3.6187"
+}

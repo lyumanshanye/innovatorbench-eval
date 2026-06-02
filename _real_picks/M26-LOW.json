@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M26",
+  "name": "首次评估步骤 First Eval Step",
+  "val": "10",
+  "badge": "badge-good",
+  "src": "task_10_2025-11-22.01:50:16 · grok-code-fast-1",
+  "desc": "grok-code-fast-1 仅用 9 步浏览代码即触发首次 eval，启动评估最快。",
+  "steps": [
+    {"t": "Step 1: think — 列出 vllm 推理 + 评估的整体计划", "c": "think"},
+    {"t": "Step 2-3: open_file /workspace/data/datasets/train, scripts/training", "c": "action"},
+    {"t": "Step 5: open_file /workspace/task/scripts/inference", "c": "action"},
+    {"t": "Step 7-8: create_session 'search_session' & 'vllm_72b_session'", "c": "action"},
+    {"t": "Step 9: run_command 'bash /workspace/task/vllm_inference.sh'", "c": "action"},
+    {"t": "Step 10: eval — 首个 eval 节点触发", "c": "success"},
+    {"t": "M26 = min(step where action_type=='eval') = 10", "c": "success"}
+  ],
+  "formula": "M26 = min(step where action_type=='eval') = 10"
+}

@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M19",
+  "name": "Token消耗 Total Tokens",
+  "val": "207M",
+  "badge": "badge-bad",
+  "src": "task_19 · claude-4-sonnet",
+  "desc": "极端轨迹：2357个react节点，2236个null action空转，token消耗超2亿。",
+  "steps": [
+    {"t": "Step 1-4: think → create_session('main') → run_command 'ls -la data/'", "c": "action"},
+    {"t": "Step 30→2310: 连续2200+步 null action — 'Do nothing. Please check...'", "c": "loop"},
+    {"t": "Step 2340: 终于恢复 run_command 'cd /workspace/data/outputs && python main.py'", "c": "action"},
+    {"t": "Step 2357: run_command 'cd /workspace/data/outputs && python main_final.py'", "c": "action"},
+    {"t": "Step 2360: eval — 提交评估", "c": "success"},
+    {"t": "action_dist: null=2236, run_command=35, open_file=23（空转占比94.9%）", "c": "loop"},
+    {"t": "input=206,155,301 + output=182,932 → total=206,585,965 tokens", "c": "error"}
+  ],
+  "formula": "M19_total = sum(react.response.usage.total_tokens) = 206,155,301 + 182,932 = 206,585,965"
+}

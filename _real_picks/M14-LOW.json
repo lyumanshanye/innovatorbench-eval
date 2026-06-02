@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M14",
+  "name": "死锁步数占比 Deadlock Step Ratio",
+  "val": "0.00",
+  "badge": "badge-good",
+  "src": "task_10 · gpt-5",
+  "desc": "153 步轨迹中无任何 ≥10 步的 sleep/check/get/list 死锁段。",
+  "steps": [
+    {"t": "Step 1: plan — 写出任务计划", "c": "action"},
+    {"t": "Step 3: list_sessions on 10.244.175.108 (Listed 0)", "c": "action"},
+    {"t": "Step 10: check_session_idle sid=audit-gpu (idle)", "c": "action"},
+    {"t": "Steps 31-38: list_sessions ×8 — 最长死锁段仅 8 步", "c": "loop"},
+    {"t": "Top 动作: list_sessions=30, check_session_idle=26, run_command=17", "c": "action"},
+    {"t": "subgoal_finish ×21 穿插推进，无任何 ≥10 步连续轮询", "c": "success"},
+    {"t": "M14 = 0/153 = 0.00 — 无死锁段", "c": "success"}
+  ],
+  "formula": "M14 = sum(deadlock_runs ≥10) / total_steps = 0/153 = 0.00"
+}

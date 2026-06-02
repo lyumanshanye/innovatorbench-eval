@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M26",
+  "name": "首次评估步骤 First Eval Step",
+  "val": "113",
+  "badge": "",
+  "src": "task_20_2026-02-25.15:28:31 · glm47_codeact_swefactory_2epoch",
+  "desc": "GLM4.7 在 vstar 任务上经 112 步推理流水线搭建后才发起首个 eval。",
+  "steps": [
+    {"t": "Steps 1-111: run_command×26, open_file×16, sleep×14, get_session_output×14", "c": "action"},
+    {"t": "Step 109: run_command 'cd /workspace && python create_fallbacks.py'", "c": "action"},
+    {"t": "Step 110: run_command 'find /workspace/data/outputs -name result.json|wc'", "c": "action"},
+    {"t": "Step 111: open_file /workspace/data/outputs/summary.json", "c": "action"},
+    {"t": "Step 112: run_command 'head -3 .../vstar/direct_attributes@sa_68625/result.json'", "c": "action"},
+    {"t": "Step 113: eval — 首个 eval 节点终于触发", "c": "success"},
+    {"t": "M26 = min(step where action_type=='eval') = 113", "c": "success"}
+  ],
+  "formula": "M26 = min(step where action_type=='eval') = 113"
+}

@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M19",
+  "name": "Token消耗 Total Tokens",
+  "val": "7.5M",
+  "badge": "",
+  "src": "task_17 · glm-4-5-full-data",
+  "desc": "中等长度轨迹：165个react节点，token消耗约7.5M，处于典型水平。",
+  "steps": [
+    {"t": "Step 1-4: list_files 连续探索目录结构", "c": "action"},
+    {"t": "Step 30: run_command 'cd /workspace && python3 -c \"import pandas...'", "c": "error"},
+    {"t": "Step 90: run_command 'ray start' 在 training_session 启动训练", "c": "action"},
+    {"t": "Step 120: edit_file 修改训练脚本", "c": "action"},
+    {"t": "Step 162: eval — 提交评估", "c": "success"},
+    {"t": "Step 163-164: null action 'Do nothing. Please check your output...'", "c": "loop"},
+    {"t": "input=7,467,515 + output=15,751 → total=7,483,266 tokens", "c": "success"}
+  ],
+  "formula": "M19_total = sum(react.response.usage.total_tokens) = 7,467,515 + 15,751 = 7,483,266"
+}

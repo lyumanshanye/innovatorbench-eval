@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M72",
+  "name": "Think有效性 Think Effectiveness",
+  "val": "-0.98",
+  "badge": "badge-bad",
+  "src": "workspace_task_20 · glm-4-5-full-data-wo-interact-w-filter",
+  "desc": "The lone think yields a malformed null action while non-think actions run cleanly.",
+  "steps": [
+    {"t": "Step 1: list_files path='/workspace' (success)", "c": "success"},
+    {"t": "Step 2: list_files path='/workspace/data' (success)", "c": "success"},
+    {"t": "Step 3: list_files path='/workspace/task' (success)", "c": "success"},
+    {"t": "Step 26: think 'build a visual reasoning system... 4 task types'", "c": "think"},
+    {"t": "Step 27: null action — 'Do nothing. Please check your output format.'", "c": "error"},
+    {"t": "think_after: 0/1 success; non_think_after: 105/107 success", "c": "loop"},
+    {"t": "M72 = 0/1 − 105/107 = 0.000 − 0.981 = -0.98", "c": "error"}
+  ],
+  "formula": "M72 = think_sr − non_think_sr = 0.000 − 0.981 = -0.98"
+}

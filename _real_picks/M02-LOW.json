@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M02",
+  "name": "工具链深度 Tool Chain Depth",
+  "val": "8",
+  "badge": "badge-good",
+  "src": "task_1_2025-09-03.00:10:39 · gpt-5",
+  "desc": "GPT-5 在数据集构建任务上仅 8 个 react 节点便草草收尾，链条最短。",
+  "steps": [
+    {"t": "Step 1: plan — 列出建立数据集骨架的整体计划", "c": "think"},
+    {"t": "Step 3: list_sessions on 10.246.39.204 → Listed 0 sessions", "c": "action"},
+    {"t": "Step 5: create_session sid='setup_local' on 10.245.118.194", "c": "action"},
+    {"t": "Step 6: run_command 'set -euo pipefail; ls -la /workspace…' OK", "c": "action"},
+    {"t": "Step 7: check_session_idle → 'Session is idle, no command in progress'", "c": "action"},
+    {"t": "Step 8: run_command '# Create skeleton dataset files…' OK", "c": "action"},
+    {"t": "Step 9: subgoal_finish — 8 react 节点即终止，未真正构建数据集", "c": "loop"}
+  ],
+  "formula": "M02 = count(react_nodes) = 8"
+}

@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M16",
+  "name": "搜索vs打开比 Search vs Open Ratio",
+  "val": "0.05",
+  "badge": "",
+  "src": "task_12 · glm-4-5",
+  "desc": "1 search_file vs 18 open_file across 237 nodes — heavy reliance on direct file open.",
+  "steps": [
+    {"t": "Step 10: open_file /workspace/data/datasets/image2text_train.json", "c": "action"},
+    {"t": "Step 11: open_file /workspace/data/datasets/text2image_train.json", "c": "action"},
+    {"t": "Step 14: open_file repositories/LLaMA-Factory/training_config.yaml", "c": "action"},
+    {"t": "Step 50: search_file repositories/LLaMA-Factory/data/README.md (lone search)", "c": "action"},
+    {"t": "Steps 60-237: 14 more open_file calls, no further search_*", "c": "loop"},
+    {"t": "Walk totals: search_file=1, search_dir=0, find_file=0, open_file=18", "c": "think"},
+    {"t": "M16 = 1 / (1+18) = 0.0526 — search is rare, opens dominate", "c": "success"}
+  ],
+  "formula": "M16 = n_search / (n_search + n_open) = 1/(1+18) = 0.05"
+}

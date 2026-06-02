@@ -1,0 +1,18 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M16",
+  "name": "搜索vs打开比 Search vs Open Ratio",
+  "val": "1.00",
+  "badge": "badge-good",
+  "src": "task_15 · kimi-k2-instruct-0905",
+  "desc": "1 find_file vs 0 open_file across 89 nodes — agent searched but never opened.",
+  "steps": [
+    {"t": "Step 1: think — plan to explore workspace structure", "c": "think"},
+    {"t": "Steps 2-27: stream of null actions ('Do nothing', format errors)", "c": "error"},
+    {"t": "Step 28: find_file pattern='*' dir_path=/workspace", "c": "action"},
+    {"t": "Steps 29-88: more null/format-error actions, never opens any file", "c": "loop"},
+    {"t": "Walk totals: find_file=1, search_dir=0, search_file=0, open_file=0", "c": "think"},
+    {"t": "M16 = 1 / (1+0) = 1.00 — perfect ratio but only 1 file action total", "c": "success"}
+  ],
+  "formula": "M16 = n_search / (n_search + n_open) = 1/(1+0) = 1.00"
+}

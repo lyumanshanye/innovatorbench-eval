@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M14",
+  "name": "死锁步数占比 Deadlock Step Ratio",
+  "val": "0.69",
+  "badge": "badge-bad",
+  "src": "task_8 · gpt-5",
+  "desc": "391 步中 list_sessions=301，7 段 ≥10 死锁累计 269 步，占比 68.8%。",
+  "steps": [
+    {"t": "Step 59: create_file create_base_training_data.py (success)", "c": "action"},
+    {"t": "Steps 60-70: list_sessions ×11 — 第 1 段死锁触发", "c": "loop"},
+    {"t": "Steps 72-147: list_sessions ×76 — 第 2 段死锁", "c": "loop"},
+    {"t": "Steps 152-235: list_sessions ×84 — 最长死锁段（'Listed 1 sessions'）", "c": "error"},
+    {"t": "其余死锁段: 237-273=37, 298-318=21, 341-353=13, 364-390=27", "c": "loop"},
+    {"t": "动作分布: list_sessions=301, run_command=23, get_session_output=14", "c": "action"},
+    {"t": "M14 = (84+76+37+27+21+13+11)/391 = 269/391 = 0.69", "c": "error"}
+  ],
+  "formula": "M14 = sum(deadlock_runs ≥10) / total_steps = 269/391 = 0.69"
+}

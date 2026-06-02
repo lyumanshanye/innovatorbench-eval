@@ -1,0 +1,18 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M12",
+  "name": "会话泄漏 Session Leak",
+  "val": "0",
+  "badge": "badge-good",
+  "src": "workspace_task_10 · glm-4-5-gzy",
+  "desc": "Zero create_session and zero close_session calls — agent ran commands directly via run_command on implicit sessions ('search_server', 'vllm_server', 'data_synthesis'), then cleaned up with kill_session_processes; no leak.",
+  "steps": [
+    {"t": "Step 24: run_command sid=search_server 'bash scripts/retriever_launch.sh'", "c": "action"},
+    {"t": "Step 37: run_command sid=vllm_server 'bash /workspace/task/scripts/...'", "c": "action"},
+    {"t": "Step 66: run_command sid=data_synthesis 'python task/scripts/...'", "c": "action"},
+    {"t": "Step 106-108: kill_session_processes on simple_synthesis, vllm_server, search_server", "c": "success"},
+    {"t": "Walked all 140 react nodes: create_session=0, close_session=0", "c": "success"},
+    {"t": "M12 = max(0, 0 - 0) = 0 — no session leak", "c": "success"}
+  ],
+  "formula": "M12 = max(0, n_create_session - n_close_session) = 0 - 0 = 0"
+}

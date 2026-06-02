@@ -1,0 +1,26 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M74",
+  "name": "动作熵 Action Entropy",
+  "val": "4.61 bits",
+  "badge": "",
+  "src": "task_1_2026-02-27.23:13:38 · glm47-codeact-2epoch",
+  "desc": "137 个节点中 run_command 主导（44 次），sleep→get_session_output 形成稳定后台轮询循环。",
+  "steps": [
+    {"t": "Step 5: list_files '/workspace/data/checkpoints' 巡视目录", "c": "action"},
+    {"t": "Step 20: run_command 'cd /workspace && ls -la data/datasets/' on sid='main'", "c": "action"},
+    {"t": "Step 50: run_command 'python explore_cnn...' on sid='cpu_search'", "c": "action"},
+    {"t": "Step 100-130: 长程 sleep → get_session_output 轮询 GPU 任务", "c": "loop"},
+    {"t": "动作分布 top4: run_command×44, get_session_output×19, sleep×17, create_file×10", "c": "action"},
+    {"t": "Top-5 bigrams: run_command→run_command×20, sleep→get_session_output×16, run_command→sleep×13, create_file→run_command×10, get_session_output→check_session_idle×6", "c": "action"},
+    {"t": "134 个 bigram，10 类工具，M74 = 4.61 bits（中档）", "c": "success"}
+  ],
+  "formula": "M74 = -Σ p(bigram) · log₂ p(bigram) = 4.61 bits",
+  "M74_top_bigrams": [
+    {"bigram": "run_command→run_command", "count": 20},
+    {"bigram": "sleep→get_session_output", "count": 16},
+    {"bigram": "run_command→sleep", "count": 13},
+    {"bigram": "create_file→run_command", "count": 10},
+    {"bigram": "get_session_output→check_session_idle", "count": 6}
+  ]
+}

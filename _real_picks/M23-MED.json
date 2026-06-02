@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M23",
+  "name": "有效步骤率 Effective Step Rate",
+  "val": "0.95",
+  "badge": "badge-warn",
+  "src": "workspace_task_17 · gpt-5-gzy",
+  "desc": "Mostly valid tool calls; a handful of think/plan-only steps drop the rate just below 1.",
+  "steps": [
+    {"t": "Step 1: plan (no executable action_type)", "c": "think"},
+    {"t": "Step 3: list_sessions (effective)", "c": "action"},
+    {"t": "Step 12: run_command bash -lc 'backup /workspace/data...'", "c": "action"},
+    {"t": "Step 47: think -> reasoning only, no tool call", "c": "think"},
+    {"t": "Step 88: subgoal_finish (effective)", "c": "success"},
+    {"t": "Top types: list_sessions 63, subgoal_finish 45, run_command 35", "c": "action"},
+    {"t": "effective=219, total=231 -> M23=0.948", "c": "success"}
+  ],
+  "formula": "M23 = effective_steps / total_steps = 219/231 = 0.948"
+}

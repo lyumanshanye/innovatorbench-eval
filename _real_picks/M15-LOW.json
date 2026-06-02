@@ -1,0 +1,18 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M15",
+  "name": "重复查看率 Repeated View Rate",
+  "val": "0.00",
+  "badge": "badge-good",
+  "src": "task_10 · gpt-5",
+  "desc": "Run is dominated by sessions/commands; only one open_file ever fires, so no path is re-read.",
+  "steps": [
+    {"t": "Step 1: plan — outline benchmark task and resource snapshot", "c": "think"},
+    {"t": "Step 25: open_file /workspace/task/artifacts/resource_snapshot.txt", "c": "action"},
+    {"t": "Observation: 'File /workspace/task/artifacts/resource_snap...' (success)", "c": "success"},
+    {"t": "Steps 26-153: run_command / list_sessions / check_session_idle only", "c": "action"},
+    {"t": "Walk: 1 open_file total · 1 unique path · 0 paths opened ≥3", "c": "think"},
+    {"t": "M15 = 0/1 = 0.00 — no file revisits", "c": "success"}
+  ],
+  "formula": "M15 = (files_opened≥3) / unique_files = 0/1 = 0.00"
+}

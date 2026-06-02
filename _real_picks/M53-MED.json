@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M53",
+  "name": "代码定位效率 Code Locate Efficiency",
+  "val": "0.19",
+  "badge": "",
+  "src": "task_45 · claude-4-sonnet-gzy",
+  "desc": "Modest exploration (18 react steps) before the first code change.",
+  "steps": [
+    {"t": "Step 4: open_file /workspace/data/datasets/train.jsonl (view)", "c": "action"},
+    {"t": "Step 5: open_file /workspace/data/datasets/test.jsonl (view)", "c": "action"},
+    {"t": "Step 6: open_file LLaMA-Factory/data/README.md (view)", "c": "action"},
+    {"t": "Step 16: open_file LLaMA-Factory/data/dataset_info.json (view)", "c": "action"},
+    {"t": "Step 19: create_file /workspace/task/scripts/enhance_data.py (FIRST edit)", "c": "success"},
+    {"t": "Step 53: edit_file LLaMA-Factory/training_config.yaml (later edit)", "c": "action"},
+    {"t": "first_edit_idx=18, n_react=97 -> M53 = 18/97 = 0.186", "c": "success"}
+  ],
+  "formula": "M53 = first_edit_idx / n_react = 18/97 = 0.19"
+}

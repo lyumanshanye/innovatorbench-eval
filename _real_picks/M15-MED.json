@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M15",
+  "name": "重复查看率 Repeated View Rate",
+  "val": "0.13",
+  "badge": "",
+  "src": "task_12 · glm-4-5-full-data-w-interact-w-filter",
+  "desc": "Eight unique files are inspected; only dataset_info.json is reopened a third time, the rest stay at ≤2.",
+  "steps": [
+    {"t": "Step 4: open_file /workspace/data/datasets/image2text_train.json", "c": "action"},
+    {"t": "Step 10: open_file .../LLaMA-Factory/data/dataset_info.json (1st)", "c": "action"},
+    {"t": "Step 16: open_file .../dataset_info.json (2nd) — checking schema", "c": "loop"},
+    {"t": "Step 18: open_file .../dataset_info.json (3rd) — crosses ≥3 threshold", "c": "loop"},
+    {"t": "Steps 80,105: baseline_image2text_dev_fixed.json reopened (×2 only)", "c": "action"},
+    {"t": "Walk: 12 opens · 8 unique paths · 1 path (dataset_info.json) ≥3", "c": "think"},
+    {"t": "M15 = 1/8 = 0.125 — mostly first-look reads", "c": "success"}
+  ],
+  "formula": "M15 = (files_opened≥3) / unique_files = 1/8 = 0.125"
+}

@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M20",
+  "name": "任务耗时 Duration",
+  "val": "98s",
+  "badge": "badge-good",
+  "src": "task_2_2025-09-03.14:33:52 · claude-4-sonnet",
+  "desc": "Claude-4-Sonnet 仅探查 15 个 react 节点便草草收尾，端到端只用 98 秒。",
+  "steps": [
+    {"t": "Step 0 root @ 14:33:57.223 — first_ts 起始", "c": "think"},
+    {"t": "Step 1: think — 'OK, your thought has been logged'", "c": "think"},
+    {"t": "Step 2: list_files /workspace → Listed 0 files / 3 dirs", "c": "action"},
+    {"t": "Step 7: run_command 'python -c import json…' on check_test_data", "c": "action"},
+    {"t": "Step 13: summarize → summary 节点写出，准备收尾", "c": "action"},
+    {"t": "Step 16: open_file dataset_info.json @ 14:35:35.233 — last_ts", "c": "action"},
+    {"t": "Duration = 14:35:35.233 − 14:33:57.223 ≈ 98s, n_react=15", "c": "loop"}
+  ],
+  "formula": "M20 = last_ts − first_ts = 14:35:35.233 − 14:33:57.223 = 98 seconds"
+}

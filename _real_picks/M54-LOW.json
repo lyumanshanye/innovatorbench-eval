@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M54",
+  "name": "探索编辑比 Explore-Edit Ratio",
+  "val": "0.00",
+  "badge": "badge-warn",
+  "src": "workspace_task_12 · gpt-5-gzy",
+  "desc": "119 nodes, zero explore actions: agent ran shell audits then dumped 2 reports.",
+  "steps": [
+    {"t": "Step 5: create_session sid=audit_env_cpu (no list/open)", "c": "action"},
+    {"t": "Step 7-11: run_command bash audit (ls/find/python json) x3", "c": "action"},
+    {"t": "Steps 12-55: 21 run_command + list_sessions x30, no open_file", "c": "loop"},
+    {"t": "Step 56: create_file /workspace/data/outputs/sessions_report.json", "c": "action"},
+    {"t": "Step 67: create_file sessions_report.json (overwrite)", "c": "action"},
+    {"t": "Counts: explore={open,search,find,list_files}=0; edit=2", "c": "think"},
+    {"t": "M54 = 0/2 = 0.00 (zero exploration before edits)", "c": "error"}
+  ],
+  "formula": "M54 = n_explore / n_edit = 0/2 = 0.00"
+}

@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M07",
+  "name": "先读后改率 Read-Before-Edit Rate",
+  "val": "0.00",
+  "badge": "badge-bad",
+  "src": "task_10 · glm-4-5-gzy",
+  "desc": "Single edit_file fired with no open_file on the same path in the prior 20 actions.",
+  "steps": [
+    {"t": "Steps 110-129: 20 actions = sessions, run_command, sleep, get_session_output", "c": "action"},
+    {"t": "Step 125: create_file (different path) - still no open_file recon", "c": "action"},
+    {"t": "Step 129: get_session_output - last action before the edit", "c": "action"},
+    {"t": "Step 130: edit_file path=.../LLaMA-Factory/data/dataset_info.json", "c": "error"},
+    {"t": "Window scan: 0 open_file events on dataset_info.json in steps 110-129", "c": "error"},
+    {"t": "Only 1 edit_file in entire 159-node trajectory; it was blind", "c": "loop"},
+    {"t": "preceded=0, total_edits=1 -> M07 = 0/1 = 0.00", "c": "error"}
+  ],
+  "formula": "M07 = preceded / total_edits = 0/1 = 0.00"
+}

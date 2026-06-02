@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M02",
+  "name": "工具链深度 Tool Chain Depth",
+  "val": "2523",
+  "badge": "badge-bad",
+  "src": "task_13_2026-02-25.14:15:28 · glm47-sweagent-swefactory-Apollo",
+  "desc": "GLM-4.7 在 LLaMA-Factory dualalign 任务上累计 2523 个 react 节点，深陷编辑循环。",
+  "steps": [
+    {"t": "Step 400: get_session_output sid='session1' 取 50 行尾部日志", "c": "action"},
+    {"t": "Step 800: open_file '…/llamafactory/train/dualalign/trainer.py'", "c": "action"},
+    {"t": "Step 1200: file_goto_line → 跳转到 trainer.py 第 54 行", "c": "action"},
+    {"t": "Step 1600 / 2000: edit_file 反复改写 trainer.py，编辑振荡", "c": "loop"},
+    {"t": "Step 2400: sleep — 等待训练，仍未收敛", "c": "action"},
+    {"t": "动作分布 top4: edit_file×579, file_goto_line×425, run_command×322, get_session_output×301", "c": "action"},
+    {"t": "react 节点累计 2523，工具链深度爆炸为本数据集最长", "c": "error"}
+  ],
+  "formula": "M02 = count(react_nodes) = 2523"
+}

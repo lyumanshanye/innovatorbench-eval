@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M14",
+  "name": "死锁步数占比 Deadlock Step Ratio",
+  "val": "0.00",
+  "badge": "badge-warn",
+  "src": "task_7 · claude-4-sonnet",
+  "desc": "129 步中 sleep/check/get 累计 54 次但被 run_command 切断，最长段 9 步未达阈值。",
+  "steps": [
+    {"t": "Step 2: create_session sid=gpu_main (success)", "c": "action"},
+    {"t": "Step 10: run_command 'mkdir -p /workspace/data/outputs'", "c": "action"},
+    {"t": "Steps 20-28: sleep→get_session_output→check ×9 (gpu_main)", "c": "loop"},
+    {"t": "Step 29: run_command 切断轮询循环", "c": "action"},
+    {"t": "Top 动作: run_command=25, get_session_output=20, sleep=19", "c": "action"},
+    {"t": "次长段 41-46 仅 6 步；所有段均 <10，不计入死锁", "c": "loop"},
+    {"t": "M14 = 0/129 = 0.00 — 接近阈值但未触发", "c": "success"}
+  ],
+  "formula": "M14 = sum(deadlock_runs ≥10) / total_steps = 0/129 = 0.00"
+}

@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M11",
+  "name": "Eval滥用率 Eval Abuse Rate",
+  "val": "0.00",
+  "badge": "badge-good",
+  "src": "workspace_task_10 · gpt-5-gzy",
+  "desc": "Trajectory finished without invoking eval at all — abuse rate is zero by definition.",
+  "steps": [
+    {"t": "Step 1: plan — agent drafts approach for the deep-research training-data task", "c": "action"},
+    {"t": "Step 65: create_file /workspace/task/artifacts/session_audit.txt (only edit-class action)", "c": "action"},
+    {"t": "Walk of all 154 nodes: action_type counts include 0 'eval' actions", "c": "think"},
+    {"t": "Dominant types: list_sessions×30, check_session_idle×26, subgoal_finish×21, run_command×17", "c": "think"},
+    {"t": "Step 153: trajectory ends with no eval invocation across the whole run", "c": "success"},
+    {"t": "n_evals = 0 → denominator (n_evals−1) is undefined; metric defaults to 0.00", "c": "success"},
+    {"t": "No eval calls means no abuse possible — clean by absence", "c": "success"}
+  ],
+  "formula": "M11 = (evals without intervening edit) / (n_evals - 1) = 0/0 → 0.00 (default when n_evals < 2)"
+}

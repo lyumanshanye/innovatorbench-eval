@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M02",
+  "name": "工具链深度 Tool Chain Depth",
+  "val": "137",
+  "badge": "",
+  "src": "task_40_2025-09-04.02:14:15 · claude-4-sonnet",
+  "desc": "Claude-4-Sonnet 在 NL2SQL 任务上展开 137 步 react，工具调用分布均衡。",
+  "steps": [
+    {"t": "Step 10: run_command 'cd /workspace && pwd && ls -la' on gpu_session", "c": "action"},
+    {"t": "Step 11: open_file '/workspace/data/datasets/train.parquet' OK", "c": "action"},
+    {"t": "Step 14: sleep — 等待 GPU 训练任务进度", "c": "action"},
+    {"t": "Step 15: get_session_output sid='gpu_session' 取 39 行输出", "c": "action"},
+    {"t": "Step 100: edit_file '…/verl/utils/reward_score/synsql.py' 失败", "c": "error"},
+    {"t": "动作分布 top4: run_command×34, get_session_output×29, open_file×15, sleep×15", "c": "action"},
+    {"t": "全程 136 个 react 节点 + 1 个 finish ≈ M02 = 137", "c": "loop"}
+  ],
+  "formula": "M02 = count(react_nodes) = 137"
+}

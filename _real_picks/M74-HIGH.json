@@ -1,0 +1,27 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M74",
+  "name": "动作熵 Action Entropy",
+  "val": "5.68 bits",
+  "badge": "badge-good",
+  "src": "task_2_2026-02-26.18:53:48 · glm47",
+  "desc": "155 个节点动作类型最丰富——create_file、list_files、open_file、session 管理、web_browse 全部在用。",
+  "steps": [
+    {"t": "Step 1: list_files '/workspace' 起步盘点工作区", "c": "action"},
+    {"t": "Step 20: create_file 写入数据生成脚本", "c": "action"},
+    {"t": "Step 50: run_command 'chmod +x /workspace/run_data_gen.sh' on sid='run_data'", "c": "action"},
+    {"t": "Step 100: list_files '/workspace/task/scripts' 浏览任务脚本目录", "c": "action"},
+    {"t": "Step 150: file_goto_line 跳转长文件中的关键行", "c": "action"},
+    {"t": "动作分布 top: create_file×26, run_command×18, list_files×17, open_file×17, create_session×10, list_sessions×10, web_browse×7, close_all_sessions×7", "c": "action"},
+    {"t": "Top-5 bigrams: create_file→create_file×10, list_files→list_files×8, create_session→run_command×7, list_files→open_file×6, run_command→list_sessions×6", "c": "action"},
+    {"t": "144 个 bigram，分布最分散，M74 = 5.68 bits（最高档）", "c": "success"}
+  ],
+  "formula": "M74 = -Σ p(bigram) · log₂ p(bigram) = 5.68 bits",
+  "M74_top_bigrams": [
+    {"bigram": "create_file→create_file", "count": 10},
+    {"bigram": "list_files→list_files", "count": 8},
+    {"bigram": "create_session→run_command", "count": 7},
+    {"bigram": "list_files→open_file", "count": 6},
+    {"bigram": "run_command→list_sessions", "count": 6}
+  ]
+}

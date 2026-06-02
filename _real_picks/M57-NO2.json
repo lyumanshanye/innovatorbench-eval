@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M57",
+  "name": "修复后验证 Post-Fix Verify",
+  "val": "0",
+  "badge": "badge-bad",
+  "src": "task_10_09-17.17:46_step4000 · glm-4-5-full-data",
+  "desc": "After editing training_data_sample.py, only runs cp/ps grep checks and ends on null loops — no eval invoked.",
+  "steps": [
+    {"t": "Step 117: edit_file /workspace/task/scripts/training_data_sample.py (LAST edit)", "c": "action"},
+    {"t": "Step 119: open_file (re-inspect the just-edited file)", "c": "action"},
+    {"t": "Step 120: run_command 'cp training_data_sample.py training_data_sample.py'", "c": "error"},
+    {"t": "Step 123/125: run_command 'python simple_synthesis_test.py' (synthesis, not eval)", "c": "action"},
+    {"t": "Step 128/129: run_command 'ps aux | grep python|vllm' (process check)", "c": "loop"},
+    {"t": "Step 131-137: 7 consecutive null actions; observation 'Eval finish!'", "c": "error"},
+    {"t": "Result: M57 = 0 (no eval/verify call invoked after fix)", "c": "error"}
+  ],
+  "formula": "M57 = 1[any eval-style run_command|eval AFTER last edit_file (step 117)] = 0"
+}

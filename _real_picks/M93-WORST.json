@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M93",
+  "name": "重试改善 Retry Improved",
+  "val": "-70.0 (regressed)",
+  "badge": "badge-bad",
+  "src": "task_18 · GLM4.7 SWEFactory Apollo merged 2epoch",
+  "desc": "5 evals on a deep-research-agent task: held at 70.0 four times, then a last-ditch refactor crashed the final eval to 0.0.",
+  "steps": [
+    {"t": "Step 165: eval -> overall_score=70.0 (1st, 2 evals remaining)", "c": "action"},
+    {"t": "Step 169: edit_file research_agent.py, then eval again", "c": "action"},
+    {"t": "Step 180: eval -> overall_score=70.0 (2nd, no improvement)", "c": "loop"},
+    {"t": "Step 193: eval -> overall_score=70.0 (3rd, still 70)", "c": "loop"},
+    {"t": "Step 196: edit_file fails 'End line must be between 1 and 405'", "c": "error"},
+    {"t": "Step 206: eval -> overall_score=70.0 (4th, refactor stuck)", "c": "loop"},
+    {"t": "Step 235: final eval -> overall_score=0.0; delta = 0.0 − 70.0 = -70.0", "c": "error"}
+  ],
+  "formula": "M93_score_delta = eval_scores[-1] − eval_scores[0] = 0.0 − 70.0 = -70.0"
+}

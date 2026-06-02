@@ -1,0 +1,18 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M16",
+  "name": "搜索vs打开比 Search vs Open Ratio",
+  "val": "0.00",
+  "badge": "badge-warn",
+  "src": "task_10 · gpt-5",
+  "desc": "0 search calls vs 1 open_file across 154 nodes — agent never used search tools.",
+  "steps": [
+    {"t": "Step 1: plan — outline subgoals (no search planned)", "c": "action"},
+    {"t": "Step 5: list_sessions — discover existing sessions", "c": "action"},
+    {"t": "Step 25: open_file /workspace/task/artifacts/resource_snapshot.txt", "c": "action"},
+    {"t": "Steps 26-153: run_command / check_session_idle loops, no search_*", "c": "loop"},
+    {"t": "Walk totals: search_dir=0, search_file=0, find_file=0, open_file=1", "c": "think"},
+    {"t": "M16 = 0 / (0+1) = 0.00 — zero exploration via search", "c": "error"}
+  ],
+  "formula": "M16 = n_search / (n_search + n_open) = 0/(0+1) = 0.00"
+}

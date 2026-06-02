@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M05",
+  "name": "工具复用率 Tool Reuse Rate",
+  "val": "0.58",
+  "badge": "badge-warn",
+  "src": "task_44 · claude-4-sonnet",
+  "desc": "Mixed pattern: spins up several new scripts but iterates on dataset_info.json and training_config.yaml across multiple edits.",
+  "steps": [
+    {"t": "Step 25: create_file /workspace/task/scripts/generate_cot.py", "c": "action"},
+    {"t": "Step 40: create_file /workspace/task/scripts/generate_cot_batch.py", "c": "action"},
+    {"t": "Step 60: edit_file LLaMA-Factory/data/dataset_info.json", "c": "action"},
+    {"t": "Steps 62/64/73/75: edit_file LLaMA-Factory/training_config.yaml ×4", "c": "loop"},
+    {"t": "Step 101: create_file scripts/inference_trained_model.py", "c": "action"},
+    {"t": "Step 105: edit_file scripts/inference_trained_model.py — revises own script", "c": "success"},
+    {"t": "Final tally: edit_file=11, create_file=8 → M05 = 11/19 = 0.58", "c": "success"}
+  ],
+  "formula": "M05 = n_edit_file / (n_edit_file + n_create_file) = 11/(11+8) = 0.58"
+}

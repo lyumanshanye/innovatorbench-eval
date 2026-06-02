@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M93",
+  "name": "重试改善 Retry Improved",
+  "val": "+87.2 (recovered)",
+  "badge": "badge-good",
+  "src": "task_43 · Claude-4-Sonnet step5000",
+  "desc": "Math-parity task: first eval 10.0 exposed broken ParityAnalyzer; agent fixed math_tools.py + main.py and second eval recovered to 97.18.",
+  "steps": [
+    {"t": "Step 88: cat /workspace/data/outputs/math_parity/0/result.json", "c": "action"},
+    {"t": "Step 90: eval -> overall_score=10.0 (math_parity rate 30.7%)", "c": "error"},
+    {"t": "Step 97: edit_file /workspace/data/outputs/math_tools.py", "c": "action"},
+    {"t": "Step 109: edit_file math_tools.py again after sympy retest", "c": "action"},
+    {"t": "Step 111: edit_file main.py, then python main.py to regenerate", "c": "action"},
+    {"t": "Step 120: cd /workspace/data/outputs && python main.py (rerun)", "c": "action"},
+    {"t": "Step 129: eval -> overall_score=97.18; delta = 97.18 − 10.0 = +87.18", "c": "success"}
+  ],
+  "formula": "M93_score_delta = eval_scores[-1] − eval_scores[0] = 97.18 − 10.0 = +87.18"
+}

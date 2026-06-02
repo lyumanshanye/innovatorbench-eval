@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M11",
+  "name": "Eval滥用率 Eval Abuse Rate",
+  "val": "0.00",
+  "badge": "badge-good",
+  "src": "workspace_task_2 · glm-4-5-full-data-w-interact-w-filter-gzy",
+  "desc": "All 3 eval calls were preceded by fresh edits — every consecutive pair has an intervening create_file.",
+  "steps": [
+    {"t": "Step 298: eval — obs 'Eval finish! You have remaining 2 eval times.'", "c": "action"},
+    {"t": "Step 299: create_file /workspace/task/simple_inference.py (edit between eval 298 and 319)", "c": "action"},
+    {"t": "Step 305: create_file /workspace/task/basic_inference.py (further edit before next eval)", "c": "action"},
+    {"t": "Step 319: eval — pair (298→319) has edits at 299,305 → not abuse", "c": "success"},
+    {"t": "Step 320: create_file /workspace/task/minimal_complete_predictions.py", "c": "action"},
+    {"t": "Step 326: eval — pair (319→326) has edit at 320 → not abuse", "c": "success"},
+    {"t": "abuse_count = 0 over 2 consecutive eval pairs → M11 = 0/2 = 0.00", "c": "success"}
+  ],
+  "formula": "M11 = (evals without intervening edit) / (n_evals - 1) = 0/(3-1) = 0/2 = 0.00"
+}

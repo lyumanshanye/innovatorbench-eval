@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M55",
+  "name": "文件触达率 File Reach Rate",
+  "val": "6.5",
+  "badge": "badge-good",
+  "src": "task_3 · kimi-k2.5",
+  "desc": "Surveys repo with list_files + open_file, then narrowly edits config.yaml and dataset_info.json.",
+  "steps": [
+    {"t": "Step 2-6: list_files on /workspace/task, /workspace/data, repositories", "c": "action"},
+    {"t": "Step 7-9: open_file config.yaml, datasets/test.json, scripts/inference.py", "c": "action"},
+    {"t": "Step 13-14: open_file LLaMA-Factory data/dataset_info.json, README.md", "c": "action"},
+    {"t": "Step 46: edit_file /workspace/task/scripts/config.yaml (1st edit)", "c": "action"},
+    {"t": "Step 102: edit_file LLaMA-Factory/data/dataset_info.json (2nd edit)", "c": "action"},
+    {"t": "Step 109: edit_file dataset_info.json again — no new files touched", "c": "action"},
+    {"t": "13 unique viewed paths, 2 unique edited → M55 = 13/2 = 6.5", "c": "success"}
+  ],
+  "formula": "M55 = unique_viewed_files / unique_edited_files = 13/2 = 6.5"
+}

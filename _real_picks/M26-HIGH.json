@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M26",
+  "name": "首次评估步骤 First Eval Step",
+  "val": "1219",
+  "badge": "badge-bad",
+  "src": "task_2_2026-02-27.23:13:33 · glm47_codeact_swefactory_2epoch",
+  "desc": "GLM4.7 沉迷 web_search（前 1218 步占 652 次），到第 1219 步才首次 eval。",
+  "steps": [
+    {"t": "Steps 1-1218: web_search×652 主导, get_session_output×104, sleep×100", "c": "loop"},
+    {"t": "Other prior: check_session_idle×100, run_command×63, open_file×62", "c": "action"},
+    {"t": "edit_file×53, create_file×18, summarize×9, think×7 — 0 次 eval", "c": "action"},
+    {"t": "Step 1207: sleep — 推理 session 待机轮询", "c": "action"},
+    {"t": "Step 1208: check_session_idle on gpu_inference", "c": "action"},
+    {"t": "Step 1219: eval — 经 1218 步漫长检索/推理后首次评估", "c": "error"},
+    {"t": "M26 = min(step where action_type=='eval') = 1219", "c": "error"}
+  ],
+  "formula": "M26 = min(step where action_type=='eval') = 1219"
+}

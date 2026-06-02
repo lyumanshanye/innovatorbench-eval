@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M12",
+  "name": "会话泄漏 Session Leak",
+  "val": "37",
+  "badge": "badge-bad",
+  "src": "workspace_task_46 · claude-4-sonnet-gzy",
+  "desc": "37 create_session calls, 0 close_session — every new id leaked. Agent kept renaming ('gpu_main', 'gpu_train', 'gpu_session_1'..'_3', 'gpu_session_test99', 'gpu_session_6643533345435') instead of closing.",
+  "steps": [
+    {"t": "Step 22: create_session sid='gpu_main' (first session, success)", "c": "action"},
+    {"t": "Step 38-41: create_session 'gpu_train', 'gpu_train', 'gpu_train_new'", "c": "action"},
+    {"t": "Step 75-78: create_session 'gpu_session_1' → '_2' → '_3' → '_new'", "c": "loop"},
+    {"t": "Step 89-90: create_session 'gpu_session_13345435', 'gpu_session_6643533345435'", "c": "error"},
+    {"t": "Step 112: create_session sid='gpu_test_session' (37th and final create)", "c": "error"},
+    {"t": "Walked all 113 react nodes: create_session=37, close_session=0", "c": "error"},
+    {"t": "M12 = max(0, 37 - 0) = 37 — every session leaked", "c": "error"}
+  ],
+  "formula": "M12 = max(0, n_create_session - n_close_session) = 37 - 0 = 37"
+}

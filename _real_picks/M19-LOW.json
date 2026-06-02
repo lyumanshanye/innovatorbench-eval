@@ -1,0 +1,18 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M19",
+  "name": "Token消耗 Total Tokens",
+  "val": "90,101",
+  "badge": "badge-good",
+  "src": "task_6 · gpt-5-gzy",
+  "desc": "极短轨迹：仅9个react节点便提前结束，token消耗最低。",
+  "steps": [
+    {"t": "Step 1: think — 规划任务，决定先看一下工作区结构", "c": "think"},
+    {"t": "Step 2: create_session(session_id='main-cpu')", "c": "action"},
+    {"t": "Step 3: run_command 'ls -la /workspace && echo --- && ls ...'", "c": "action"},
+    {"t": "Step 4-8: open_file + file_scroll_down 浏览数据描述/代码", "c": "action"},
+    {"t": "Step 9: 终止节点（无后续action） — 仅9个react节点", "c": "loop"},
+    {"t": "input=84,354 + output=5,747 → total=90,101 tokens（极低）", "c": "success"}
+  ],
+  "formula": "M19_total = sum(react.response.usage.total_tokens) = 84,354 + 5,747 = 90,101"
+}

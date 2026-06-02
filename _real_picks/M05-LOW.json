@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M05",
+  "name": "工具复用率 Tool Reuse Rate",
+  "val": "0.00",
+  "badge": "badge-bad",
+  "src": "task_10 · gpt-5",
+  "desc": "154 nodes dominated by session bookkeeping; the only file-touch is a single create_file, with zero edit_file calls.",
+  "steps": [
+    {"t": "Step 1: plan — outline session-audit subgoals", "c": "think"},
+    {"t": "Step 15: subgoal_finish — first audit milestone", "c": "action"},
+    {"t": "Steps 2-64: list_sessions×30, check_session_idle×26, run_command×17", "c": "action"},
+    {"t": "Step 65: create_file /workspace/task/artifacts/session_audit.txt", "c": "action"},
+    {"t": "Steps 66-153: more list/check/subgoal_finish; no edit_file ever issued", "c": "loop"},
+    {"t": "Final tally: edit_file=0, create_file=1", "c": "error"},
+    {"t": "M05 = 0/(0+1) = 0.00 — pure write-once, never revise", "c": "error"}
+  ],
+  "formula": "M05 = n_edit_file / (n_edit_file + n_create_file) = 0/(0+1) = 0.00"
+}

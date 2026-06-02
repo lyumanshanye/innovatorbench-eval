@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M57",
+  "name": "修复后验证 Post-Fix Verify",
+  "val": "1",
+  "badge": "badge-good",
+  "src": "task_10_09-03.03:08_step4000 · gpt-5",
+  "desc": "After last fix-edit (create_file step 65), runs many bash audits/snapshots — repeated post-fix verification.",
+  "steps": [
+    {"t": "Step 65: create_file /workspace/task/artifacts/session_audit.txt (LAST fix)", "c": "action"},
+    {"t": "Step 71: run_command 'bash -lc set -euo pipefail; OUT=session_audit.txt...'", "c": "action"},
+    {"t": "Step 75: run_command writes resource_snapshot.tmp + final swap", "c": "action"},
+    {"t": "Step 81: run_command 'mkdir -p artifacts; verify session audit'", "c": "action"},
+    {"t": "Step 95/109/124/140: 4 more run_command verifications on artifacts", "c": "success"},
+    {"t": "Total 17 run_commands fired AFTER the last edit/create-fix", "c": "success"},
+    {"t": "Result: M57 = 1 (post-fix verification clearly executed)", "c": "success"}
+  ],
+  "formula": "M57 = 1[any run_command|eval AFTER last edit_file] = 1 (12+ run_commands after step 65)"
+}

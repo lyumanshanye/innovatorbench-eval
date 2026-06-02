@@ -1,0 +1,18 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M12",
+  "name": "会话泄漏 Session Leak",
+  "val": "1",
+  "badge": "badge-warn",
+  "src": "workspace_task_41 · claude-4-sonnet-gzy",
+  "desc": "Single session 'main' opened at step 3 and reused for all 170 react steps; agent never issued close_session, leaving exactly 1 dangling session.",
+  "steps": [
+    {"t": "Step 3: create_session sid='main' (success=True)", "c": "action"},
+    {"t": "Step 4: run_command sid=main 'cd /workspace && pwd'", "c": "action"},
+    {"t": "Step 45: run_command sid=main 'ray start --head --node-ip-address=0.0.0.0...'", "c": "action"},
+    {"t": "Step 49: run_command sid=main 'bash /workspace/task/scripts/train.sh'", "c": "action"},
+    {"t": "Walked all 170 react nodes: create_session=1, close_session=0", "c": "error"},
+    {"t": "M12 = max(0, 1 - 0) = 1 — sid='main' leaked", "c": "error"}
+  ],
+  "formula": "M12 = max(0, n_create_session - n_close_session) = 1 - 0 = 1"
+}

@@ -1,0 +1,20 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M43_max_consecutive_sleep",
+  "name": "最大连续Sleep Max Consecutive Sleep",
+  "val": "14",
+  "badge": "badge-bad",
+  "src": "workspace_task_16 · kimi-k2.5",
+  "desc": "Extreme wait loop — agent fires inference.py then loops sleep→check_session_idle 7 times back-to-back (14 wait actions in a row) on inference_session before checking output.",
+  "steps": [
+    {"t": "Step 327: run_command 'python inference.py --split=de…' on inference_session", "c": "action"},
+    {"t": "Step 328: sleep — first wait of the run", "c": "action"},
+    {"t": "Step 329: check_session_idle inference_session — still busy", "c": "loop"},
+    {"t": "Steps 330-341: sleep ↔ check_session_idle alternation × 6 more (12 more actions)", "c": "loop"},
+    {"t": "Run spans steps 328–341 → 14 consecutive wait actions", "c": "error"},
+    {"t": "Step 342: get_session_output finally breaks the loop", "c": "action"},
+    {"t": "Action mix: sleep×130, get_session_output×121, check_session_idle×32 over 369 nodes", "c": "action"},
+    {"t": "Longest consecutive sleep/idle run = 14 (steps 328-341)", "c": "error"}
+  ],
+  "formula": "M43_max_consecutive_sleep = max run-length of action_type=='sleep' = 14"
+}

@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M53",
+  "name": "代码定位效率 Code Locate Efficiency",
+  "val": "0.94",
+  "badge": "badge-good",
+  "src": "task_55 · glm-4-5-gzy",
+  "desc": "Spent 31 of 33 react steps locating files before first code change.",
+  "steps": [
+    {"t": "Step 2-9: list_files cascade /workspace -> data -> task/scripts", "c": "action"},
+    {"t": "Step 13: open_file /workspace/data/develop/mmvp/1/request.json", "c": "action"},
+    {"t": "Step 16: open_file blink_spatial/val_Spatial_Relation_10/request.json", "c": "action"},
+    {"t": "Step 20: open_file /workspace/task/scripts/tools.py (located target)", "c": "action"},
+    {"t": "Step 24-25: open_file config.py, simple_api_example.py (refine locate)", "c": "action"},
+    {"t": "Step 32: create_file /workspace/data/outputs/main.py (FIRST edit)", "c": "success"},
+    {"t": "first_edit_idx=31, n_react=33 -> M53 = 31/33 = 0.939", "c": "success"}
+  ],
+  "formula": "M53 = first_edit_idx / n_react = 31/33 = 0.94"
+}

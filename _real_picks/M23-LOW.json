@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M23",
+  "name": "有效步骤率 Effective Step Rate",
+  "val": "0.00",
+  "badge": "badge-bad",
+  "src": "workspace_task_13 · glm47-codeact-rebench",
+  "desc": "Model never emits a parseable tool call; every react step is action_type='null'.",
+  "steps": [
+    {"t": "Step 1: action_type='null' desc='Do nothing' (parse fail)", "c": "error"},
+    {"t": "Step 2: action_type='null' err='Please check your output format'", "c": "error"},
+    {"t": "Step 3: action_type='null' desc='Do nothing' (token cap)", "c": "loop"},
+    {"t": "Step 4: action_type='null' err='Do not output more than 3000 token'", "c": "loop"},
+    {"t": "Step 5: action_type='null' desc='Do nothing'", "c": "loop"},
+    {"t": "...all 81 react nodes: action_type='null', success=False", "c": "error"},
+    {"t": "effective=0, total=81 -> M23=0.00 (no valid actions)", "c": "error"}
+  ],
+  "formula": "M23 = effective_steps / total_steps = 0/81 = 0.00"
+}

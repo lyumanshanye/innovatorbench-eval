@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M43_max_consecutive_sleep",
+  "name": "最大连续Sleep Max Consecutive Sleep",
+  "val": "2",
+  "badge": "badge-warn",
+  "src": "workspace_task_20 · glm-4-5-full-data-w-interact-w-filter-gzy",
+  "desc": "Mild waiting — 8 sleeps total, mostly interleaved with get_session_output polls; only one back-to-back sleep+check_session_idle pair (length 2) on session 'fast_visual_processing'.",
+  "steps": [
+    {"t": "Step 70: run_command 'cd /workspace/task && python main.py' (visual_reasoning_session)", "c": "action"},
+    {"t": "Steps 72,74,76,78: sleep → get_session_output cycle on visual_reasoning_processing", "c": "action"},
+    {"t": "Step 94: sleep on fast_visual_processing run", "c": "action"},
+    {"t": "Step 95: get_session_output breaks the run (length-1 only)", "c": "action"},
+    {"t": "Step 96-97: sleep → check_session_idle — longest wait run = 2", "c": "loop"},
+    {"t": "Action mix: list_files×27, run_command×27, sleep×8, check_session_idle×2", "c": "action"},
+    {"t": "Longest consecutive sleep/idle run = 2 (steps 96-97)", "c": "success"}
+  ],
+  "formula": "M43_max_consecutive_sleep = max run-length of action_type=='sleep' = 2"
+}

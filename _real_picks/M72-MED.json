@@ -1,0 +1,18 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M72",
+  "name": "Think有效性 Think Effectiveness",
+  "val": "+0.03",
+  "badge": "",
+  "src": "workspace_task_1 · claude-4-sonnet",
+  "desc": "Both thinks land before successful actions; baseline non-think rate is already high.",
+  "steps": [
+    {"t": "Step 1: think 'plan workspace exploration' (logged)", "c": "think"},
+    {"t": "Step 2: list_files path='/workspace' (success)", "c": "success"},
+    {"t": "Step 22: think before authoring search_set.json", "c": "think"},
+    {"t": "Step 23: create_file '/workspace/data/datasets/search_set.json' (success)", "c": "success"},
+    {"t": "think_after: 2/2 success; non_think_after: 59/60 success", "c": "loop"},
+    {"t": "M72 = 1.000 − 0.983 ≈ +0.03 (think no real lift)", "c": "action"}
+  ],
+  "formula": "M72 = think_sr − non_think_sr = 1.000 − 0.983 = +0.03"
+}

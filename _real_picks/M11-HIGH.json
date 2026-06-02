@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M11",
+  "name": "Eval滥用率 Eval Abuse Rate",
+  "val": "1.00",
+  "badge": "badge-bad",
+  "src": "workspace_task_8 · glm-4-5-full-data-wo-interact-gzy",
+  "desc": "2 evals back-to-back with only run_command + open_file between them — zero edits, full abuse pair.",
+  "steps": [
+    {"t": "Step 115: create_file /workspace/task/scripts/mc_inference.py (last edit, 13 steps before eval)", "c": "action"},
+    {"t": "Step 128: eval — obs 'Eval finish! You have remaining 2 eval times.'", "c": "action"},
+    {"t": "Step 129: run_command 'cd /workspace && python3 -c …' on session fix_field_names (no edit)", "c": "think"},
+    {"t": "Step 130: open_file /workspace/data/outputs/answer.jsonl (read-only, no edit)", "c": "think"},
+    {"t": "Step 131: eval — obs 'Eval finish! You have remaining 1 eval times.'", "c": "loop"},
+    {"t": "Pair (128→131): zero edit_file/create_file in between → abuse_count = 1", "c": "error"},
+    {"t": "n_evals = 2 → M11 = 1/(2-1) = 1.00 (every consecutive eval pair is an abuse)", "c": "error"}
+  ],
+  "formula": "M11 = (evals without intervening edit) / (n_evals - 1) = 1/(2-1) = 1.00"
+}

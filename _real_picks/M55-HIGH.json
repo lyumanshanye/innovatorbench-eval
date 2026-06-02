@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M55",
+  "name": "文件触达率 File Reach Rate",
+  "val": "45.0",
+  "badge": "badge-bad",
+  "src": "task_19 · kimi-k2-0905",
+  "desc": "Walks 26 list_files + 25 open_file across develop/test datasets, only edits main.py.",
+  "steps": [
+    {"t": "Step 3-7: list_files /workspace, /task, /task/scripts, /data, /data/datasets", "c": "action"},
+    {"t": "Step 11-16: list_files+open_file on develop/{geometry,graph_connectivity,...}", "c": "action"},
+    {"t": "Step 78-81: open_file outputs/graph_connectivity/{0,69}/result.json, geometry/8/...", "c": "action"},
+    {"t": "Step 64,71,86,87,94,100: edit_file /workspace/data/outputs/main.py (×6)", "c": "loop"},
+    {"t": "All 6 edits target the SAME single file: /workspace/data/outputs/main.py", "c": "loop"},
+    {"t": "n_unique_viewed = 45 (open_file+list_files paths), n_unique_edited = 1", "c": "action"},
+    {"t": "M55 = 45/1 = 45.0 — severe over-exploration vs narrow edit surface", "c": "error"}
+  ],
+  "formula": "M55 = unique_viewed_files / unique_edited_files = 45/1 = 45.0"
+}

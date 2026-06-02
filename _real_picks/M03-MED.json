@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M03",
+  "name": "子任务数量 Subtask Count",
+  "val": "0",
+  "badge": "badge-warn",
+  "src": "task_20 · glm-4-5-full-data",
+  "desc": "Median run also skips planning entirely — 68 react nodes, all execution, zero subgoal declarations.",
+  "steps": [
+    {"t": "Step 1: list_files /workspace (no plan call precedes it)", "c": "action"},
+    {"t": "Step 3: list_files /workspace/task (still no decomposition)", "c": "action"},
+    {"t": "Step 7: open_file /workspace/task/scripts/tools.py", "c": "action"},
+    {"t": "Step 11: open_file /workspace/task/scripts/config.py", "c": "action"},
+    {"t": "Action mix: 19 list_files, 12 create_file, 10 run_command, 0 plan", "c": "loop"},
+    {"t": "Walk all 68 nodes: 0 plan, 0 subgoal_create, 0 subgoals[] items", "c": "error"},
+    {"t": "Final: M03 = 0 — typical for non-planning models", "c": "error"}
+  ],
+  "formula": "M03 = count(subgoal_create | plan_node.subgoals) = 0"
+}

@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M55",
+  "name": "文件触达率 File Reach Rate",
+  "val": "0.00",
+  "badge": "badge-warn",
+  "src": "task_19 · gpt-5",
+  "desc": "Bash-only run: explores via shell, never opens a file, then edits main.py blind.",
+  "steps": [
+    {"t": "Step 3: run_command 'ls -R /workspace/data/datasets/test || true'", "c": "action"},
+    {"t": "Step 5: run_command 'sed -n 1,200p /workspace/task/simple_api_example.py'", "c": "action"},
+    {"t": "Step 7: run_command 'ls -R /workspace/data/datasets/develop && head -n 80 ...'", "c": "action"},
+    {"t": "Step 11: grep -R 'call_with_image' /workspace returns success=False", "c": "error"},
+    {"t": "Step 14: edit_file /workspace/data/outputs/main.py — never opened first", "c": "action"},
+    {"t": "Step 14 obs: 'End line must be between 1 and 1' (blind edit fails)", "c": "error"},
+    {"t": "0 unique open_file/list_files paths, 1 unique edited path → M55=0/1=0.00", "c": "loop"}
+  ],
+  "formula": "M55 = unique_viewed_files / unique_edited_files = 0/1 = 0.00"
+}

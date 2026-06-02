@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M05",
+  "name": "工具复用率 Tool Reuse Rate",
+  "val": "1.00",
+  "badge": "badge-good",
+  "src": "task_9 · grok-4",
+  "desc": "All 10 file-touches are edits to two existing scripts (inference.sh, inference.py); no create_file emitted.",
+  "steps": [
+    {"t": "Step 14: edit_file /workspace/task/scripts/inference.sh lines 7-9", "c": "action"},
+    {"t": "Steps 17/24/25/29/36/38/43: edit_file inference.sh ×7 — iterative tuning", "c": "loop"},
+    {"t": "Step 45: edit_file /workspace/task/scripts/inference.py lines 147-150", "c": "action"},
+    {"t": "Step 53: edit_file /workspace/task/scripts/inference.py lines 147-148", "c": "action"},
+    {"t": "Throughout 58 nodes: 17 open_file reads back the file before each edit", "c": "success"},
+    {"t": "Final tally: edit_file=10, create_file=0", "c": "success"},
+    {"t": "M05 = 10/(10+0) = 1.00 — only modifies existing files, never creates", "c": "success"}
+  ],
+  "formula": "M05 = n_edit_file / (n_edit_file + n_create_file) = 10/(10+0) = 1.00"
+}

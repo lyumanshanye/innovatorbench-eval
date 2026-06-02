@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M53",
+  "name": "代码定位效率 Code Locate Efficiency",
+  "val": "0.00",
+  "badge": "badge-bad",
+  "src": "task_15 · grok-code-fast-1",
+  "desc": "Edited a file as the very first react action with zero prior exploration.",
+  "steps": [
+    {"t": "Step 1: create_file /workspace/data/outputs/idea.md (no exploration)", "c": "error"},
+    {"t": "Step 2: open_file gammaPO/scripts/simpo_trainer.py (read after write)", "c": "action"},
+    {"t": "Step 3-8: repeated open_file/search_file on simpo_trainer.py", "c": "loop"},
+    {"t": "Step 9: open_file gammaPO/scripts/simpo_trainer.py (still same file)", "c": "action"},
+    {"t": "Step 10: open_file gammaPO/scripts/gammapo_trainer.py", "c": "action"},
+    {"t": "first_edit_idx=0, n_react=10 -> edit happened before any view", "c": "error"},
+    {"t": "M53 = 0/10 = 0.00 (premature edit, zero locate effort)", "c": "error"}
+  ],
+  "formula": "M53 = first_edit_idx / n_react = 0/10 = 0.00"
+}

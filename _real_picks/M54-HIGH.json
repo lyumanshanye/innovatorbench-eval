@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M54",
+  "name": "探索编辑比 Explore-Edit Ratio",
+  "val": "35.00",
+  "badge": "badge-bad",
+  "src": "workspace_task_1 · gpt-5-gzy",
+  "desc": "66 nodes spent reading LLaMA-Factory; only one create_file all run.",
+  "steps": [
+    {"t": "Step 2-4: list_files /workspace/task, repositories, scripts", "c": "action"},
+    {"t": "Step 6-10: open_file config.yaml, README.md, hfd.sh + search_dir+find_file", "c": "action"},
+    {"t": "Steps 11-32: open_file/search_file/list_files x20+ on loader.py etc.", "c": "loop"},
+    {"t": "Step 33: create_file (the ONLY edit action of the run)", "c": "action"},
+    {"t": "Step 50,51,61,64: search_file + 3 more open_file on loader.py", "c": "loop"},
+    {"t": "Counts: open=14, list=6, search_file=9, search_dir=3, find=3 → 35", "c": "think"},
+    {"t": "M54 = 35/1 = 35.00 (severe over-exploration, zero followup edits)", "c": "error"}
+  ],
+  "formula": "M54 = n_explore / n_edit = 35/1 = 35.00"
+}

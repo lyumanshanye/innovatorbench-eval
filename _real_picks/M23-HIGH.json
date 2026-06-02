@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M23",
+  "name": "有效步骤率 Effective Step Rate",
+  "val": "1.00",
+  "badge": "badge-good",
+  "src": "workspace_task_9 · kimi-k2-instruct-0905",
+  "desc": "Every react step emits a valid action_type; tool-use is fully parseable.",
+  "steps": [
+    {"t": "Step 2: list_files /workspace", "c": "action"},
+    {"t": "Step 5: open_file /workspace/data/datasets/train.jsonl", "c": "action"},
+    {"t": "Step 10: open_file /workspace/task/scripts/training.sh", "c": "action"},
+    {"t": "Step 23: run_command nvidia-smi (session=gpu_check)", "c": "action"},
+    {"t": "Top types: run_command 26, close_session 24, think 20, sleep 17", "c": "action"},
+    {"t": "Also: edit_file 17, get_session_output 16, open_file 14", "c": "action"},
+    {"t": "effective=166, total=166 -> M23=1.00", "c": "success"}
+  ],
+  "formula": "M23 = effective_steps / total_steps = 166/166 = 1.00"
+}

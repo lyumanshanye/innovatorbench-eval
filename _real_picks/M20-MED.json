@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M20",
+  "name": "任务耗时 Duration",
+  "val": "9168s ≈ 2.5h",
+  "badge": "",
+  "src": "task_20_2026-02-26.23:22:47 · kimi-k2.5",
+  "desc": "Kimi-K2.5 在 multi-modal eval 上跑了 159 个 react 节点，端到端约 2 小时 33 分。",
+  "steps": [
+    {"t": "Step 0 root @ 02-26 23:22:51.580 — first_ts 起始", "c": "think"},
+    {"t": "Step 1: list_files /workspace → Listed 0 files / 3 dirs", "c": "action"},
+    {"t": "Step 30: list_files /workspace/data/outputs → 'Directory not found'", "c": "error"},
+    {"t": "Step 80: sleep — 等待评测进程，'Sleep completed'", "c": "action"},
+    {"t": "Step 159: open_file blink_jigsaw/val_Jigsaw_10/result.json", "c": "action"},
+    {"t": "Step 160 @ 02-27 01:55:39.605 — 'Eval finish! remaining 0 eval times'", "c": "success"},
+    {"t": "Duration = 02-27 01:55:39 − 02-26 23:22:51 ≈ 9168s ≈ 2.55h", "c": "loop"}
+  ],
+  "formula": "M20 = last_ts − first_ts = 2026-02-27T01:55:39.605 − 2026-02-26T23:22:51.580 = 9168 seconds"
+}

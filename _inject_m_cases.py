@@ -299,17 +299,20 @@ def main() -> None:
         if not fname.startswith("m") or not fname.endswith(".html"):
             continue
         mid = slug_to_id(fname)
-        cases = list(by_id.get(mid, []))
         path = os.path.join(RUBRICS, fname)
-        if not cases:
-            picks = load_real_picks(mid)
-            if picks:
-                cases = picks
-                real.append((mid, len(picks), fname))
+        # Real picks (extracted from real workspace_backup nodes) ALWAYS win over
+        # trajExamples — they describe a single concrete trajectory each, with
+        # real step numbers, paths, session_ids, error messages.
+        picks = load_real_picks(mid)
+        if picks:
+            cases = picks
+            real.append((mid, len(picks), fname))
+        else:
+            cases = list(by_id.get(mid, []))
+            if cases:
+                written.append((mid, len(cases), fname))
             else:
                 bare.append((mid, fname))
-        else:
-            written.append((mid, len(cases), fname))
         section = build_section(mid, cases)
         with open(path, encoding="utf-8") as f:
             current = f.read()

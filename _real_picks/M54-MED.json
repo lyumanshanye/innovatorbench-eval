@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M54",
+  "name": "探索编辑比 Explore-Edit Ratio",
+  "val": "1.90",
+  "badge": "badge-good",
+  "src": "workspace_task_9 · grok-4",
+  "desc": "Healthy ~2:1 read-then-write rhythm on inference.sh debugging.",
+  "steps": [
+    {"t": "Step 2-3: list_files data/, open_file data/README.md", "c": "action"},
+    {"t": "Step 4-8: open_file inference.py, training.sh, train.jsonl", "c": "action"},
+    {"t": "Step 14: edit_file /workspace/task/scripts/inference.sh (1st)", "c": "action"},
+    {"t": "Step 17,24,25,29,36,38,43: 7 more edits on inference.sh", "c": "action"},
+    {"t": "Step 44,46,52: re-open inference.py/.sh after each run", "c": "action"},
+    {"t": "Counts: open_file=17 + list_files=2 = 19 explore; edit=10", "c": "think"},
+    {"t": "M54 = 19/10 = 1.90 (balanced explore:edit)", "c": "success"}
+  ],
+  "formula": "M54 = n_explore / n_edit = 19/10 = 1.90"
+}

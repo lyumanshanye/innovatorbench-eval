@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M93",
+  "name": "重试改善 Retry Improved",
+  "val": "0.0",
+  "badge": "",
+  "src": "task_15 · Kimi-K2.5 step4000",
+  "desc": "Alpaca-eval task: agent burned all 3 evals on the same model_outputs.json variant; every retry returned overall_score=0.0.",
+  "steps": [
+    {"t": "Step 255: run_command python -c json validation on model_outputs", "c": "action"},
+    {"t": "Step 256: eval -> overall_score=0.0 (1st, 2 evals remaining)", "c": "action"},
+    {"t": "Step 260: rebuild outputs against alpaca_eval reference, retry", "c": "action"},
+    {"t": "Step 261: eval -> overall_score=0.0 (2nd, identical, 1 remaining)", "c": "loop"},
+    {"t": "Step 264: cp model_outputs.json to /workspace/data/outputs/, last try", "c": "action"},
+    {"t": "Step 265: eval -> overall_score=0.0 (3rd, no eval times left)", "c": "loop"},
+    {"t": "Final: delta = eval_scores[-1] − eval_scores[0] = 0.0 − 0.0 = 0.0", "c": "error"}
+  ],
+  "formula": "M93_score_delta = eval_scores[-1] − eval_scores[0] = 0.0 − 0.0 = 0.0"
+}

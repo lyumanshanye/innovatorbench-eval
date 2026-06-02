@@ -1,0 +1,20 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M20",
+  "name": "任务耗时 Duration",
+  "val": "172,452s ≈ 47.9h",
+  "badge": "badge-bad",
+  "src": "task_13_2026-02-25.14:15:28 · glm47-merged",
+  "desc": "GLM-4.7 merged 在 LLaMA-Factory dualalign 上跑了 2523 个 react 节点，端到端近两天。",
+  "steps": [
+    {"t": "Step 0 root @ 02-25 14:15:33.202 — first_ts 起始", "c": "think"},
+    {"t": "Step 1: think — 'OK, your thought has been logged'", "c": "think"},
+    {"t": "Step 500: open_file dualalign/workflow.py — 进入训练代码探查", "c": "action"},
+    {"t": "Step 1000: sleep — 等待 GPU 训练，'Sleep completed'", "c": "action"},
+    {"t": "Step 2000: edit_file dualalign/trainer.py — 中段反复改训练器", "c": "action"},
+    {"t": "Step 2556: run_command 'CUDA_VISIBLE_DEVICES=0..7 …' on sid=gpu1", "c": "action"},
+    {"t": "Step 2557 sleep @ 02-27 14:09:45.335 — 'Eval finish! remaining 2 eval times'", "c": "success"},
+    {"t": "Duration ≈ 172,452s ≈ 47.9h，n_react=2523，跨两昼夜", "c": "loop"}
+  ],
+  "formula": "M20 = last_ts − first_ts = 2026-02-27T14:09:45.335 − 2026-02-25T14:15:33.202 = 172452 seconds"
+}

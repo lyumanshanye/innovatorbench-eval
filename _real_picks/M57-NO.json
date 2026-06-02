@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M57",
+  "name": "修复后验证 Post-Fix Verify",
+  "val": "0",
+  "badge": "badge-bad",
+  "src": "task_10_09-06.02:07_step4000 · glm-4-5",
+  "desc": "Edits dataset_info.json then only does a one-line head inspect — no real verification before stopping.",
+  "steps": [
+    {"t": "Step 136: run_command 'python task/scripts/fix_dataset.py'", "c": "action"},
+    {"t": "Step 137: edit_file /LLaMA-Factory/data/dataset_info.json (LAST edit)", "c": "action"},
+    {"t": "Step 138: run_command 'head -1 .../sft_dataset_fixed.jsonl' (inspect only)", "c": "action"},
+    {"t": "Step 139: create_file /workspace/task/scripts/fix_dataset_better.py", "c": "action"},
+    {"t": "Step 140: summarize — no eval/verify run_command issued", "c": "loop"},
+    {"t": "Step 141: trajectory ends; no training/eval call after fix", "c": "error"},
+    {"t": "Result: M57 = 0 (post-fix actions are inspect+plan, not verify)", "c": "error"}
+  ],
+  "formula": "M57 = 1[any verify-style run_command|eval AFTER last edit_file (step 137)] = 0"
+}
