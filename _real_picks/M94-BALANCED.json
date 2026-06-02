@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M94",
+  "name": "编译/运行时错误比 Compile vs Runtime",
+  "val": "1.27",
+  "badge": "",
+  "src": "task_2 · glm47_codeact_rebench_apollo_copr_2epoch",
+  "desc": "18 syntax / 14 runtime — both classes present.",
+  "steps": [
+    {"t": "Step 34: COMPILE — 'SyntaxError: unexpected character after line continuation'", "c": "error"},
+    {"t": "Step 43: COMPILE — 'IndentationError: expected an indented block on line 452'", "c": "error"},
+    {"t": "Step 53: COMPILE — 'SyntaxError: invalid character (U+FF1A)'", "c": "error"},
+    {"t": "Step 20: RUNTIME — 'FileNotFoundError: predictions.json'", "c": "error"},
+    {"t": "Step 57: RUNTIME — 'ConnectionError: Ray already running at 6379'", "c": "error"},
+    {"t": "Step 266: RUNTIME — 'AssertionError: Session name does not match'", "c": "error"},
+    {"t": "compile = 18, runtime = 14", "c": "action"}
+  ],
+  "formula": "M94 = (X+1)/(Y+1) = (18+1)/(14+1) = 19/15 ≈ 1.27"
+}

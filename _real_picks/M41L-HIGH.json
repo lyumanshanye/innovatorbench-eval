@@ -1,0 +1,18 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M41L",
+  "name": "逻辑错误固化率 Logic Error Persistence",
+  "val": "1.00",
+  "badge": "badge-bad",
+  "src": "workspace_task_3 · glm47",
+  "desc": "12/12 logic errors persisted. No node_type=='summary' exists in this trajectory (62 react + 1 root) — implicit midpoint boundary used (~step 31 of 62). Same 'No valid session found on None' error repeats from step 18 through step 57 unchanged.",
+  "steps": [
+    {"t": "Step 18: run_command (session_id='') — 'No valid session found on None'", "c": "error"},
+    {"t": "Step 29: run_command (session_id='') — 'No valid session found on None' (pre-boundary, 6th occurrence)", "c": "error"},
+    {"t": "Step ~31: implicit boundary (no summary node was ever produced)", "c": "think"},
+    {"t": "Step 36: run_command (session_id='') — 'No valid session found on None' (post-boundary, identical)", "c": "loop"},
+    {"t": "Step 57: run_command (session_id='') — 'No valid session found on None' (last occurrence, still unchanged)", "c": "loop"},
+    {"t": "Pre-boundary: 6 logic errors | Post-boundary: 6 still in effect | Total 12/12", "c": "error"}
+  ],
+  "formula": "M41l = 12/12 = 1.00"
+}

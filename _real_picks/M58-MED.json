@@ -1,0 +1,22 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M58",
+  "name": "编辑回滚率 Edit Rollback Rate",
+  "val": "0.40",
+  "badge": "badge-warn",
+  "src": "workspace_task_12 · glm-4-5-w-interact-w-filter",
+  "desc": "10 edits across two files (dataset_info.json, training_config.yaml); 4 hit a path edited in the previous 5 actions (rollbacks at edits #2, #3, #8, #9).",
+  "steps": [
+    {"n": 1, "ts": "01:11:37", "path": "/workspace/task/repositories/LLaMA-Factory/data/dataset_info.json", "range": "11-12", "rollback": false},
+    {"n": 2, "ts": "01:11:48", "path": "/workspace/task/repositories/LLaMA-Factory/data/dataset_info.json", "range": "11-19", "rollback": true},
+    {"n": 3, "ts": "01:12:10", "path": "/workspace/task/repositories/LLaMA-Factory/data/dataset_info.json", "range": "19-20", "rollback": true},
+    {"n": 4, "ts": "01:35:52", "path": "/workspace/task/repositories/LLaMA-Factory/data/dataset_info.json", "range": "19-38", "rollback": false},
+    {"n": 5, "ts": "01:46:08", "path": "/workspace/task/repositories/LLaMA-Factory/data/dataset_info.json", "range": "55-56", "rollback": false},
+    {"n": 6, "ts": "01:46:15", "path": "/workspace/task/repositories/LLaMA-Factory/training_config.yaml", "range": "12-12", "rollback": false},
+    {"n": 7, "ts": "02:05:16", "path": "/workspace/task/repositories/LLaMA-Factory/training_config.yaml", "range": "7-9", "rollback": false},
+    {"n": 8, "ts": "02:05:20", "path": "/workspace/task/repositories/LLaMA-Factory/training_config.yaml", "range": "30-32", "rollback": true},
+    {"n": 9, "ts": "02:05:24", "path": "/workspace/task/repositories/LLaMA-Factory/training_config.yaml", "range": "15-15", "rollback": true},
+    {"n": 10, "ts": "02:16:15", "path": "/workspace/task/repositories/LLaMA-Factory/data/dataset_info.json", "range": "54-55", "rollback": false}
+  ],
+  "formula": "M58 = 4/10 = 0.40"
+}

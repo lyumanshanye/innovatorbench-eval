@@ -1,0 +1,17 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M79",
+  "name": "Step控制成功 Step-Controlled Success",
+  "val": "459 steps · score=86.1",
+  "badge": "badge-good",
+  "src": "workspace_task_6 · glm-4-5-full-data-wo-interact-w-filter-gzy",
+  "desc": "459-step deep dive paid off — anchoring +0.16 step-β.",
+  "steps": [
+    {"t": "M02_tool_chain_depth = 459 (top-tail of run distribution)", "c": "action"},
+    {"t": "n_react walked = 465 nodes; top: run_command×75, check_session_idle×48, get_session_output×45, sleep×41, open_file×30", "c": "action"},
+    {"t": "M19_total_tokens = 26,525,208 · M20_duration = 32,017s (≈8.9h)", "c": "action"},
+    {"t": "M24_best_eval_score = 86.14 across 4 evals", "c": "success"},
+    {"t": "Predicted by β: 459 × 0.1595 = +73.21", "c": "success"}
+  ],
+  "formula": "steps=459 · model β=+0.1595 · score=86.14"
+}

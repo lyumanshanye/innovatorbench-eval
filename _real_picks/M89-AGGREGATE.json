@@ -1,0 +1,17 @@
+{
+  "bench": "Aggregate · 97 (m,a) pairs · 7 attrs × 15 models",
+  "id": "M89",
+  "name": "Sgap(m,a) Bucket Self-Diagnosis",
+  "val": "max gap = 61.9",
+  "badge": "",
+  "src": "metrics_results_424.csv · tertile gap of mean(M24)",
+  "desc": "Token-per-point is the universal diagnostic: low-tpp tertile crushes the high-tpp tertile across every strong model.",
+  "steps": [
+    {"t": "kimi-k2.5 × tpp gap=61.9 tertiles=[80, 47, 18]", "c": "success"},
+    {"t": "glm-4-5-full-data × tpp gap=56.7 [61, 22, 4]", "c": "success"},
+    {"t": "glm47 × tpp gap=54.3 [75, 41, 20]", "c": "success"},
+    {"t": "glm-4-5-wo-interact × tpp gap=49.7 [58, 11, 9]", "c": "action"},
+    {"t": "kimi-k2.5 × M93_score_delta gap=46.6 (positive — retry helps)", "c": "action"}
+  ],
+  "formula": "Sgap(m,a) = max(tertile_means) − min(tertile_means) of M24 by attr-tertile"
+}

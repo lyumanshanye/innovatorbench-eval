@@ -71,10 +71,29 @@ def load_metric_catalog() -> dict[str, dict]:
 
 # ---------- step 2: render one case card ----------
 
-BENCH_ORDER = ["InnovatorBench", "AgencyBench", "SWE-bench", "ClawBench", "Aggregate Snapshot"]
+BENCH_ORDER = [
+    "InnovatorBench",
+    "AgencyBench",
+    "SWE-bench",
+    "ClawBench",
+    # Aggregate / meta cards land last
+    "Aggregate Snapshot",
+]
 
 
-def render_step(s: dict) -> str:
+def _bench_rank(b: str) -> int:
+    if b in BENCH_ORDER:
+        return BENCH_ORDER.index(b)
+    if b.startswith("Aggregate"):
+        return len(BENCH_ORDER)
+    return len(BENCH_ORDER) + 1
+
+
+def render_step(s) -> str:
+    if isinstance(s, str):
+        return (
+            f'<span class="traj-step traj-action">{html.escape(s)}</span>'
+        )
     cls = s.get("c", "action")
     return (
         f'<span class="traj-step traj-{html.escape(cls)}">'
@@ -172,102 +191,42 @@ CASE_CSS = """
 
 # ---------- step 4: build the section, inject into a page ----------
 
-_WORKED_RE = re.compile(
-    r"<h2>Worked Example</h2>\s*<p>(.*?)</p>",
-    flags=re.DOTALL,
-)
+REAL_PICKS_DIR = os.path.join(HERE, "_real_picks")
 
 
-def synth_case_from_page(metric_id: str, page_path: str,
-                         catalog: dict[str, dict]) -> dict | None:
-    """Build a synthetic 'Aggregate Snapshot' case from the page's Worked
-    Example + the catalog row. Returns None if there's nothing usable."""
-    try:
-        with open(page_path, encoding="utf-8") as f:
-            page = f.read()
-    except OSError:
-        return None
-    m = _WORKED_RE.search(page)
-    if not m:
-        return None
-    # Worked example is HTML — strip tags so render_case can html.escape() it
-    # safely without producing &lt;code&gt; artifacts.
-    worked_html = m.group(1)
-    worked = re.sub(r"<[^>]+>", "", worked_html)
-    worked = re.sub(r"\s+", " ", worked).strip()
-    info = catalog.get(metric_id, {})
-    name = info.get("en") or metric_id
-    zh = info.get("zh", "")
-    n = info.get("n")
-    mean = info.get("mean")
-    std = info.get("std")
-    rating = info.get("rating", "")
-    rho = info.get("rho")
-    val = ""
-    if isinstance(mean, (int, float)):
-        val = f"μ={mean:.3g}"
-    elif n:
-        val = f"n={n}"
-    badge = "badge-good" if rating in ("A", "B") else "badge-warn" if rating == "C" else ""
-    src_bits = []
-    if info.get("dim"):
-        src_bits.append(info["dim"])
-    if info.get("detect"):
-        src_bits.append(info["detect"])
-    if n:
-        src_bits.append(f"n={n}")
-    if rating:
-        src_bits.append(f"rating={rating}")
-    src = " · ".join(src_bits) if src_bits else "aggregate stats"
+def load_real_picks(metric_id: str) -> list[dict]:
+    """Load real-trajectory cards from `_real_picks/` for a metric.
 
-    # Steps: surface the catalog stats as colored chips + the worked sentence
-    steps: list[dict] = []
-    if isinstance(mean, (int, float)):
-        steps.append({"t": f"mean = {mean:.4g}", "c": "action"})
-    if isinstance(std, (int, float)):
-        steps.append({"t": f"std = {std:.4g}", "c": "action"})
-    if isinstance(rho, (int, float)):
-        c = "success" if rho > 0.2 else "error" if rho < -0.1 else "think"
-        steps.append({"t": f"ρ(score) = {rho:+.3f}", "c": c})
-    if rating:
-        c = "success" if rating in ("A", "B") else "think" if rating == "C" else "loop"
-        steps.append({"t": f"rating = {rating}", "c": c})
-    if not steps:
-        steps.append({"t": "see Worked Example below", "c": "think"})
-
-    formula_raw = info.get("formula") or ""
-    # render_case treats formula as raw HTML (so trajExamples can use <br>);
-    # escape unsafe chars but preserve any <br> already present.
-    formula = (
-        html.escape(formula_raw, quote=False)
-        .replace("&lt;br&gt;", "<br>")
-        .replace("&lt;br/&gt;", "<br>")
-        .replace("&lt;br /&gt;", "<br>")
-    )
-
-    return {
-        "bench": "Aggregate Snapshot",
-        "id": metric_id,
-        "name": f"{zh + ' ' if zh else ''}{name}".strip(),
-        "val": val or "—",
-        "badge": badge,
-        "src": src,
-        "desc": worked,
-        "steps": steps,
-        "formula": formula,
-    }
+    Filenames are like `M12B-WORST.json`, `M84-TOP.json`, etc. — single
+    object per file. They were extracted from real workspace_backup/
+    nodes (no synthesis). Returns [] if no files for this metric.
+    """
+    if not os.path.isdir(REAL_PICKS_DIR):
+        return []
+    out = []
+    prefix = metric_id.upper() + "-"
+    for fname in sorted(os.listdir(REAL_PICKS_DIR)):
+        if not fname.endswith(".json") or fname.startswith("_"):
+            continue
+        if not fname.upper().startswith(prefix):
+            continue
+        try:
+            with open(os.path.join(REAL_PICKS_DIR, fname)) as f:
+                d = json.load(f)
+        except Exception:
+            continue
+        if isinstance(d, list):
+            out.extend(d)
+        elif isinstance(d, dict):
+            out.append(d)
+    return out
 
 
 def build_section(metric_id: str, cases: list[dict]) -> str:
     """Return the full HTML block (markers + heading + CSS + cards)."""
     if cases:
-        # Order: Innovator → Agency → SWE → Claw, then preserve original within bench
-        cases = sorted(
-            cases,
-            key=lambda c: (
-                BENCH_ORDER.index(c["bench"]) if c["bench"] in BENCH_ORDER else 99
-            ),
-        )
+        # Order: Innovator → Agency → SWE → Claw → Aggregate; preserve original within bench
+        cases = sorted(cases, key=lambda c: _bench_rank(c.get("bench", "")))
         cards = "\n".join(render_case(c) for c in cases)
         body = f'<div class="case-cards">\n{cards}\n</div>'
         sub = (
@@ -329,13 +288,12 @@ def inject(path: str, section: str) -> str:
 
 def main() -> None:
     examples = load_traj_examples()
-    catalog = load_metric_catalog()
     by_id: dict[str, list[dict]] = {}
     for e in examples:
         by_id.setdefault(e["id"], []).append(e)
 
     written = []
-    synth = []
+    real = []
     bare = []
     for fname in sorted(os.listdir(RUBRICS)):
         if not fname.startswith("m") or not fname.endswith(".html"):
@@ -344,10 +302,10 @@ def main() -> None:
         cases = list(by_id.get(mid, []))
         path = os.path.join(RUBRICS, fname)
         if not cases:
-            s = synth_case_from_page(mid, path, catalog)
-            if s:
-                cases = [s]
-                synth.append((mid, fname))
+            picks = load_real_picks(mid)
+            if picks:
+                cases = picks
+                real.append((mid, len(picks), fname))
             else:
                 bare.append((mid, fname))
         else:
@@ -360,14 +318,14 @@ def main() -> None:
             with open(path, "w", encoding="utf-8") as f:
                 f.write(new)
 
-    total = len(written) + len(synth) + len(bare)
+    total = len(written) + len(real) + len(bare)
     print(f"Patched {total} M rubric pages.")
     print(f"  with curated trajExamples : {len(written)}")
     for mid, n, fn in written:
         print(f"    {mid:>5}  {n} case(s)  {fn}")
-    print(f"  synthesized snapshot      : {len(synth)}")
-    for mid, fn in synth:
-        print(f"    {mid:>5}  {fn}")
+    print(f"  real picks (from nodes)   : {len(real)}")
+    for mid, n, fn in real:
+        print(f"    {mid:>5}  {n} case(s)  {fn}")
     if bare:
         print(f"  no data at all (stub)     : {len(bare)}")
         for mid, fn in bare:

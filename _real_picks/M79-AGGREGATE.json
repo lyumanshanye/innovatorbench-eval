@@ -1,0 +1,17 @@
+{
+  "bench": "Aggregate over 655 trajectories · 15 models",
+  "id": "M79",
+  "name": "Step控制成功 Step-Controlled Success",
+  "val": "M79_diff = 0.050",
+  "badge": "",
+  "src": "metrics_results_424.csv (β per model)",
+  "desc": "Per-model β of M24 on tool_chain_depth. Models that benefit per-step diverge sharply from those that plateau.",
+  "steps": [
+    {"t": "Top: glm-4-5-full-data-wo-interact-w-filter β=+0.160 (n=20)", "c": "success"},
+    {"t": "2nd: glm-4-5-gzy β=+0.061 (n=49)", "c": "action"},
+    {"t": "3rd: glm-4-5-full-data-w-interact-w-filter β=+0.024 (n=86)", "c": "action"},
+    {"t": "Bot: kimi-k2.5 β=−0.064 (n=21) — more steps hurts", "c": "error"},
+    {"t": "M79_diff = std(β) = 0.0504", "c": "action"}
+  ],
+  "formula": "M79 = std_models( OLS(M24 ~ M02_tool_chain_depth | model) )"
+}

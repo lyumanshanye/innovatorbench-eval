@@ -1,0 +1,17 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M84",
+  "name": "冗长归一化评分 Verbosity-Normalized Score",
+  "val": "6.80",
+  "badge": "badge-good",
+  "src": "workspace_task_59 · claude-4-sonnet-gzy",
+  "desc": "Hit perfect score with 2.44M tokens — top efficiency in dataset.",
+  "steps": [
+    {"t": "n_react = 65, top: run_command×22, open_file×7, list_files×6, sleep×4, get_session_output×4", "c": "action"},
+    {"t": "Step 62: eval — overall_score = 100 (\"Eval finish! You have remaining 2 eval times.\")", "c": "success"},
+    {"t": "M19_total_tokens = 2,440,075", "c": "action"},
+    {"t": "ln(2,440,076) = 14.71", "c": "action"},
+    {"t": "M84 = 100 / 14.71 = 6.80", "c": "success"}
+  ],
+  "formula": "M84 = M24 / ln(M19+1) = 100 / 14.71 = 6.80"
+}

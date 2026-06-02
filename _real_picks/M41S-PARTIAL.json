@@ -1,0 +1,22 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M41S",
+  "name": "语法错误固化率 Syntax Error Persistence",
+  "val": "0.40",
+  "badge": "badge-warn",
+  "src": "workspace_task_1 · glm-4-5-gzy",
+  "desc": "2 of 5 syntax errors persisted across summary.",
+  "steps": [
+    {"t": "Step 35: 'python -c \"...; with open(...) as f: json.dump(...)\"' — `with` after `;` invalid in one-liner", "c": "error"},
+    {"t": "Step 38: corrected — split write into separate command, dropped inline `with`", "c": "success"},
+    {"t": "Step 42: get_session_output surfaces 'File \"<string>\", line 1 ... ^^^^ SyntaxError: invalid syntax' for bbc `with`-oneliner", "c": "error"},
+    {"t": "Step 47: corrected — switched to `python -c \"...; print(dataset[0])\"` (no `with`)", "c": "success"},
+    {"t": "Step 46: summary / checkpoint think-node (empty action, depth 46)", "c": "think"},
+    {"t": "Step 48: '...; with open(...) as f: json.dump(...)' bbc — same `with`-after-`;` class recurs", "c": "loop"},
+    {"t": "Step 49: '...; with open(...) as f: json.dump(...)' argilla — same class recurs again", "c": "loop"},
+    {"t": "Step 52: corrected — `print(type(dataset['Articles'][0]), ...)` (no `with`)", "c": "success"},
+    {"t": "Step 54: '...; with open(...) as f: json.dump(...)' argilla — class still recurs after summary", "c": "loop"},
+    {"t": "Pre: 5 | Post-persist: 2", "c": "loop"}
+  ],
+  "formula": "M41s = 2/5 = 0.40"
+}

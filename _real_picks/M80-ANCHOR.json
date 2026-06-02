@@ -1,0 +1,17 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M80",
+  "name": "推理长度控制评分 Reasoning-Length Controlled",
+  "val": "log(output)=11.0 · score=86.1",
+  "badge": "badge-good",
+  "src": "workspace_task_6 · glm-4-5-full-data-wo-interact-w-filter-gzy",
+  "desc": "Long-form output paid off — same trajectory anchors top β across all 3 verbosity GLMs.",
+  "steps": [
+    {"t": "M19_output_tokens = 58755", "c": "action"},
+    {"t": "log(output+1) = 10.98", "c": "action"},
+    {"t": "M19_total_tokens = 26525208", "c": "action"},
+    {"t": "M24_best_eval_score = 86.14", "c": "success"},
+    {"t": "Predicted by β=+25.29: 25.29 × 10.98 ≈ +277.7 (clipped at 100)", "c": "success"}
+  ],
+  "formula": "log(output_tokens+1) = 10.98 · model β=+25.29 · score=86.14"
+}

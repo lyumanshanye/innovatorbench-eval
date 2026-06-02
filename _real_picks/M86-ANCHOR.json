@@ -1,0 +1,17 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M86",
+  "name": "Sσ(m,a) Model×Attribute Std",
+  "val": "duration=47.6h",
+  "badge": "badge-bad",
+  "src": "workspace_task_16 · kimi-k2.5",
+  "desc": "Within-model record: 47.6h trajectory anchoring kimi-k2.5's σ=41,200s on duration.",
+  "steps": [
+    {"t": "M20_duration_seconds = 171,356 (47.6h)", "c": "error"},
+    {"t": "M02_tool_chain_depth = 358", "c": "action"},
+    {"t": "M19_total_tokens = 21,236,459", "c": "action"},
+    {"t": "M24_best_eval_score = 0.0", "c": "action"},
+    {"t": "Within-model rank: 21/21 (longest)", "c": "error"}
+  ],
+  "formula": "duration=171,356s · model σ=41,200s · z=(171356-mean)/41200"
+}

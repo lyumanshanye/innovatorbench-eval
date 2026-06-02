@@ -1,0 +1,16 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M43B",
+  "name": "会话创建总数 Session Create Count",
+  "val": "1",
+  "badge": "badge-good",
+  "src": "workspace_task_10 · gpt-5-gzy",
+  "desc": "Minimal — only one session created.",
+  "steps": [
+    {"t": "Step 58: create_session 'audit-gpu'", "c": "action"},
+    {"t": "n_react=106, dominated by list_sessions×30", "c": "action"},
+    {"t": "Other actions: check_session_idle×26, subgoal_finish×21, run_command×17, plan×5", "c": "action"},
+    {"t": "Total session creates: 1", "c": "success"}
+  ],
+  "formula": "M43b = count(create_session) = 1"
+}

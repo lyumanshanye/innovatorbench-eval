@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M43B",
+  "name": "会话创建总数 Session Create Count",
+  "val": "6",
+  "badge": "badge-warn",
+  "src": "workspace_task_10 · claude-4-sonnet-gzy",
+  "desc": "6 sessions created across CPU/GPU machines; agent never called close_session and instead used kill_session_processes 6 times to tear down workloads.",
+  "steps": [
+    {"t": "Step 2: create_session 'gpu_main' on 10.246.167.186 (use_proxy=true)", "c": "action"},
+    {"t": "Step 3: create_session 'cpu_main' on 10.245.118.192 (use_proxy=false)", "c": "action"},
+    {"t": "Step 46: create_session 'gpu_server' on 10.246.167.186 (use_proxy=true)", "c": "action"},
+    {"t": "Step 58: create_session 'gpu_test' on 10.246.167.186 (use_proxy=true)", "c": "action"},
+    {"t": "Step 127: create_session 'gpu_synth' on 10.246.167.186 (use_proxy=true)", "c": "action"},
+    {"t": "Step 148: create_session 'gpu_training' on 10.246.167.186 (use_proxy=true)", "c": "action"},
+    {"t": "0 close_session calls; 6 kill_session_processes instead at steps 69, 80, 113, 121, 145, 175 (sessions gpu_server×3, cpu_main×2, gpu_synth×1)", "c": "loop"}
+  ],
+  "formula": "M43b = count(create_session) = 6"
+}

@@ -1,0 +1,18 @@
+{
+  "bench": "Aggregate over 655 trajectories",
+  "id": "M33",
+  "name": "缩放瓶颈点 Scaling Bottleneck",
+  "val": "step ≈ 137",
+  "badge": "",
+  "src": "metrics_results_424.csv (n=655)",
+  "desc": "Mean score grows steeply through bin 3 then collapses at bin 4 — adding more steps stops helping around 137.",
+  "steps": [
+    {"t": "Bin 1 (≤38 steps): mean_score = 2.68", "c": "error"},
+    {"t": "Bin 2 (≤98 steps): mean_score = 9.57", "c": "action"},
+    {"t": "Bin 3 (≤137 steps): mean_score = 15.68", "c": "success"},
+    {"t": "Bin 4 (≤178 steps): mean_score = 14.62 (drop −1.06)", "c": "loop"},
+    {"t": "Bin 5 (≤348+ steps): mean_score = 16.12", "c": "action"},
+    {"t": "Spearman ρ(steps, score) = +0.238 overall", "c": "action"}
+  ],
+  "formula": "Bottleneck = argmin_b [score(b+1) − score(b)]; here bin 3→4, boundary ≈ 137 steps"
+}

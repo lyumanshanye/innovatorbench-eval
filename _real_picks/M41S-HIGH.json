@@ -1,0 +1,18 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M41S",
+  "name": "语法错误固化率 Syntax Error Persistence",
+  "val": "1.00",
+  "badge": "badge-bad",
+  "src": "workspace_task_1 · kimi-k2-instruct-0905-gzy",
+  "desc": "All 85 syntax errors persisted — model never recovered formatter.",
+  "steps": [
+    {"t": "Step 2 (16:46:35): leaks '<|tool_calls_section_begin|>' → action_type=null", "c": "error"},
+    {"t": "Step 3 (16:47:02): same '<|tool_call_begin|>...<|tool_call_argument_begin|>{\"path\"' tokens", "c": "loop"},
+    {"t": "No summary node in trajectory — metric uses implicit boundary (all 89 react steps)", "c": "think"},
+    {"t": "Step 40 (17:17:16): 'Let me create a new session...<|tool_calls_section_begin|>' recurs", "c": "loop"},
+    {"t": "Step 87 (19:24:27): 'Let me create a baseline...<|tool_call_begin|> Opera{\"filename\"' still broken", "c": "loop"},
+    {"t": "Pre: 85 syntax errors | Post: 85 persisting", "c": "error"}
+  ],
+  "formula": "M41s = 85/85 = 1.00"
+}

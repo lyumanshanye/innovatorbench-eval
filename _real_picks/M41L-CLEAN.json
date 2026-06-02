@@ -1,0 +1,18 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M41L",
+  "name": "逻辑错误固化率 Logic Error Persistence",
+  "val": "0.00",
+  "badge": "badge-good",
+  "src": "workspace_task_1 · glm-4-5-gzy",
+  "desc": "Both logic errors corrected before summary — final eval 20.5.",
+  "steps": [
+    {"t": "Step 17: run_command — 'bash: /workspace/conda/bin/activate: No such file or directory' (wrong path)", "c": "error"},
+    {"t": "Step 18-19: corrective `which conda` → `/opt/conda/condabin/conda` then `eval \"$(conda shell.bash hook)\" && conda activate base` succeeds → `(base) [root:workspace]$`", "c": "success"},
+    {"t": "Step 67: run_command — load_dataset('cnn_dailymail'/'xsum'/...) 'surpasses max execution time in wait_for_completion mode. Hence, it is killed' (timeout / wrong approach)", "c": "error"},
+    {"t": "Step 68: corrective create_file `/workspace/task/scripts/improve_synthetic_data.py` — switched approach from loading real HF datasets to generating improved synthetic political news data", "c": "success"},
+    {"t": "Step 69: summarize node (boundary)", "c": "think"},
+    {"t": "Pre: 2 logic errors (D17 wrong-path, D67 timeout) | Post: 0 persisting", "c": "success"}
+  ],
+  "formula": "M41l = 0/2 = 0.00"
+}

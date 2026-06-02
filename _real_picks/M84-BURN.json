@@ -1,0 +1,17 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M84",
+  "name": "冗长归一化评分 Verbosity-Normalized Score",
+  "val": "0.00",
+  "badge": "badge-bad",
+  "src": "workspace_task_13 · glm47_sweagent",
+  "desc": "Extreme burn: 197.8M tokens, 2523 react nodes, scored 0.",
+  "steps": [
+    {"t": "n_react = 2523 (sample top: edit_file×6, check_session_idle×5, sleep×3, open_file×3)", "c": "action"},
+    {"t": "M19_total_tokens = 197,782,945", "c": "error"},
+    {"t": "ln(197,782,946) = 19.10", "c": "action"},
+    {"t": "Best eval score = 0", "c": "error"},
+    {"t": "M84 = 0 / 19.10 = 0.00", "c": "error"}
+  ],
+  "formula": "M84 = 0 / ln(197,782,946) = 0.00"
+}

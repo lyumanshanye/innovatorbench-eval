@@ -1,0 +1,24 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M58",
+  "name": "编辑回滚率 Edit Rollback Rate",
+  "val": "0.06",
+  "badge": "badge-good",
+  "src": "workspace_task_53 · claude-4-sonnet-gzy",
+  "desc": "17 edits walked through 5 distinct files in clear phases; only 1 rollback within a 5-action window.",
+  "steps": [
+    {"t": "Phase 1 — Step 28: edit_file /workspace/task/repositories/gammaPO/scripts/gammapo_trainer.py", "c": "action"},
+    {"t": "Phase 1 — Step 31: edit_file /workspace/task/repositories/gammaPO/scripts/gammapo_trainer.py (same file, 3 actions later → rollback)", "c": "loop"},
+    {"t": "Phase 2 — Step 96: edit_file /workspace/task/repositories/gammaPO/training_configs/qwen-2.5-7b-it-gammapo1.yaml (new file)", "c": "action"},
+    {"t": "Phase 2 — Step 98: edit_file /workspace/task/repositories/gammaPO/training_configs/qwen-2.5-7b-it-gammapo2.yaml (new file)", "c": "action"},
+    {"t": "Phase 2 — Steps 108, 110, 121, 122, 130, 132, 141, 143: edits across the two yaml configs", "c": "action"},
+    {"t": "Phase 3 — Step 159: edit_file /workspace/task/repositories/gammaPO/scripts/run_gammapo.py (new file)", "c": "action"},
+    {"t": "Phase 3 — Step 165: edit_file /workspace/task/repositories/gammaPO/scripts/run_gammapo.py", "c": "action"},
+    {"t": "Phase 4 — Step 247: edit_file /workspace/task/scripts/infer.py (new file)", "c": "action"},
+    {"t": "Phase 4 — Steps 267, 273: edit_file /workspace/task/scripts/infer.py", "c": "action"},
+    {"t": "Rollback hit: Step 31 edit on gammapo_trainer.py (same path edited at step 28, within 5-action window)", "c": "loop"},
+    {"t": "5 distinct files traversed: gammapo_trainer.py → gammapo1.yaml ↔ gammapo2.yaml → run_gammapo.py → infer.py", "c": "success"},
+    {"t": "Total: 17 edits, 1 rollback", "c": "success"}
+  ],
+  "formula": "M58 = 1/17 = 0.06"
+}

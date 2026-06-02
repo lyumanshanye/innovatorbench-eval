@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M56",
+  "name": "Bug 复现率 Bug Reproduction Rate",
+  "val": "0",
+  "badge": "badge-bad",
+  "src": "workspace_task_14 · gpt-5-gzy",
+  "desc": "First edit at step 29 with no preceding run_command/eval — blind write.",
+  "steps": [
+    {"t": "Step 1: think — only planning, no execution", "c": "action"},
+    {"t": "Step 2: list_files /workspace/task/repositories/verl/verl/trainer/ppo — passive read", "c": "action"},
+    {"t": "Step 3: open_file core_algos.py — passive read", "c": "action"},
+    {"t": "Step 6: search_file 'def compute_policy_loss' — passive read", "c": "action"},
+    {"t": "Step 28: open_file core_algos.py at line 108 — last passive read before edit", "c": "action"},
+    {"t": "Step 29: first edit_file at /workspace/task/repositories/verl/verl/trainer/ppo/core_algos.py", "c": "error"},
+    {"t": "M56 = 0 (no run/eval before first edit)", "c": "error"}
+  ],
+  "formula": "M56 = 0 (first edit_file at step 29 has no preceding run_command/eval)"
+}

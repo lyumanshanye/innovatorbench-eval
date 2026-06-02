@@ -1,0 +1,17 @@
+{
+  "bench": "Aggregate over 655 trajectories · 15 models",
+  "id": "M80",
+  "name": "推理长度控制评分 Reasoning-Length Controlled",
+  "val": "M80_diff = 7.68",
+  "badge": "",
+  "src": "metrics_results_424.csv (β on log(output_tokens) per model)",
+  "desc": "Per-model β of M24 on log(output_tokens). Verbosity helps glm-wo-interact +25.3 but hurts glm47 by −11.0.",
+  "steps": [
+    {"t": "Top: glm-4-5-full-data-wo-interact-w-filter β=+25.29 (n=20)", "c": "success"},
+    {"t": "2nd: claude-4-sonnet β=+5.28 (n=207)", "c": "action"},
+    {"t": "3rd: glm-4-5-gzy β=+4.00 (n=49)", "c": "action"},
+    {"t": "Bot: glm47 β=−11.00 (n=20) — verbose hurts", "c": "error"},
+    {"t": "M80_diff = std(β) = 7.68", "c": "action"}
+  ],
+  "formula": "M80 = std_models( OLS(M24 ~ log(M19_output_tokens+1) | model) )"
+}

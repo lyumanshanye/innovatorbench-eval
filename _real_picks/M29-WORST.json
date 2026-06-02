@@ -1,0 +1,15 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M29",
+  "name": "Schema 合规率 Parameter Schema Compliance",
+  "val": "0.90",
+  "badge": "badge-warn",
+  "src": "workspace_task_5 · gpt-5-gzy",
+  "desc": "Single schema-violation event over 10 tool calls.",
+  "steps": [
+    {"t": "Step 5: check_session_idle succeeded", "c": "success"},
+    {"t": "Step 6: run_command — 'robustly parse a few records and validate required fields and types'", "c": "error"},
+    {"t": "Compliant: 9 / 10", "c": "action"}
+  ],
+  "formula": "M29 = 9 / 10 = 0.90"
+}

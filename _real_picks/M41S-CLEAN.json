@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M41S",
+  "name": "语法错误固化率 Syntax Error Persistence",
+  "val": "0.00",
+  "badge": "badge-good",
+  "src": "workspace_task_1 · glm-4-5-full-data-wo-interact-w-filter",
+  "desc": "Both syntax/format-class run_command failures (wait_for_completion misuse) corrected before summary — final eval 9.02.",
+  "steps": [
+    {"t": "Step 23: run_command — 'modelscope snapshot_download' killed: 'surpasses max execution time in wait_for_completion mode' (sync-API misuse on long download)", "c": "error"},
+    {"t": "Step 24: corrected — re-issued with async_execution=True and switched to datasets.load_dataset('gopalkalpande/bbc-news-summary'); success=True", "c": "success"},
+    {"t": "Step 106: run_command — inline python -c 'from inference import SummarizationEvaluator … evaluator.evaluation(...)' killed: 'surpasses max execution time in wait_for_completion mode'", "c": "error"},
+    {"t": "Step 107: summarize node emitted (summary checkpoint present in trajectory)", "c": "info"},
+    {"t": "Step 110→111: corrected — created evaluate_predictions.py and ran 'python evaluate_predictions.py'; loaded 1000 predictions, 1000 test samples; success=True", "c": "success"},
+    {"t": "Step 112: eval action returned success=True; final overall score 9.02", "c": "success"},
+    {"t": "Pre: 2 | Post-persist: 0", "c": "success"}
+  ],
+  "formula": "M41s = 0/2 = 0.00"
+}

@@ -1,0 +1,17 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M29",
+  "name": "Schema 合规率 Parameter Schema Compliance",
+  "val": "1.00",
+  "badge": "badge-good",
+  "src": "workspace_task_13 · glm47_sweagent",
+  "desc": "2523 tool calls across the full trajectory, zero schema violations — every action_type and parameter set validated against its tool spec.",
+  "steps": [
+    {"t": "First 100 nodes (early exploration): open_file×22, run_command×15, list_files×14, get_session_output×8, create_file×8, edit_file×8 — 99/99 valid.", "c": "action"},
+    {"t": "Every-50th sample (mid trajectory): edit_file×14, sleep×8, get_session_output×7, run_command×5, file_goto_line×5, open_file×4 — 48/48 valid.", "c": "action"},
+    {"t": "Last 50 nodes (late iteration): run_command×9, sleep×9, check_session_idle×8, get_session_output×8, edit_file×7, create_file×3 — 49/49 valid.", "c": "action"},
+    {"t": "Full-trajectory top 6: edit_file×579, file_goto_line×425, run_command×322, get_session_output×301, check_session_idle×295, sleep×292.", "c": "action"},
+    {"t": "Compliant: 2523 / 2523", "c": "success"}
+  ],
+  "formula": "M29 = 2523 / 2523 = 1.00"
+}

@@ -1,0 +1,17 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M84",
+  "name": "冗长归一化评分 Verbosity-Normalized Score",
+  "val": "0.00",
+  "badge": "badge-bad",
+  "src": "workspace_task_8 · glm-4-5-gzy",
+  "desc": "Burned 3.28M tokens, scored 0 — verbosity wasted.",
+  "steps": [
+    {"t": "n_react = 74, top: open_file×14, list_files×9", "c": "action"},
+    {"t": "No eval action across 74 nodes — score = 0", "c": "error"},
+    {"t": "M19_total_tokens = 3,280,581", "c": "action"},
+    {"t": "ln(3,280,582) = 14.99", "c": "action"},
+    {"t": "M84 = 0 / 14.99 = 0.00", "c": "error"}
+  ],
+  "formula": "M84 = 0 / ln(3,280,582) = 0.00"
+}

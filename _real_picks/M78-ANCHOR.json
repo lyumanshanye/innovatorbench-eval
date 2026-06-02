@@ -1,0 +1,17 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M78",
+  "name": "Token控制成功 Token-Controlled Success",
+  "val": "score=86.1 · 26.5M tokens",
+  "badge": "badge-good",
+  "src": "workspace_task_6 · glm-4-5-full-data-wo-interact-w-filter-gzy",
+  "desc": "Single trajectory anchoring the +24.18 β: heavy token spend pays off.",
+  "steps": [
+    {"t": "M19_total_tokens = 26,525,208 · M20_duration = 32017s (~8.9h)", "c": "action"},
+    {"t": "M02_tool_chain_depth = 459 · n_react walked = 20/25", "c": "action"},
+    {"t": "Top: run_command×4, open_file×3, sleep×2, check_session_idle×2", "c": "action"},
+    {"t": "M24_best_eval_score = 86.14 · M24_num_evals = 4", "c": "success"},
+    {"t": "Within model β=+24.18: high token spend → high score", "c": "success"}
+  ],
+  "formula": "log(tokens+1) ≈ 17.09 · score = 86.14 · model β = +24.18"
+}

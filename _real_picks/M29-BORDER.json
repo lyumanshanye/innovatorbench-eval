@@ -1,0 +1,16 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M29",
+  "name": "Schema 合规率 Parameter Schema Compliance",
+  "val": "0.96",
+  "badge": "badge-good",
+  "src": "workspace_task_5 · glm-4-5-full-data-wo-interact",
+  "desc": "4 schema violations over 93 tool calls.",
+  "steps": [
+    {"t": "Step 64: run_command — '# Check required fields\\n  if \\'id\\' not in entry or \\'text\\' not in entry'", "c": "error"},
+    {"t": "Step 78: run_command — '# Check required fields\\n  if \\'id\\' not in entry or \\'text\\' not in entry'", "c": "error"},
+    {"t": "Step 91: run_command — '# Check required fields\\n  if \\'id\\' not in entry or \\'text\\' not in entry'", "c": "error"},
+    {"t": "Compliant: 89 / 93", "c": "action"}
+  ],
+  "formula": "M29 = 89 / 93 = 0.957"
+}

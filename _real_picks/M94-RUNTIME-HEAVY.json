@@ -1,0 +1,17 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M94",
+  "name": "编译/运行时错误比 Compile vs Runtime",
+  "val": "0.0004",
+  "badge": "",
+  "src": "workspace_task_19 · claude-4-sonnet-gzy",
+  "desc": "2240 runtime failures, 0 syntax — pure runtime/timeout grind.",
+  "steps": [
+    {"t": "Step @13:28: react failed — 'Do nothing. Please check your output format.'", "c": "error"},
+    {"t": "Step @17:51: open_file failed — 'File /workspace/data/datasets/develop/geometry not found.'", "c": "error"},
+    {"t": "Step @19:29: run_command failed — 'rm command is not allowed: Failed to parse command'", "c": "error"},
+    {"t": "compile_fail = 0, runtime_fail = 2240", "c": "action"},
+    {"t": "M94 = (0+1)/(2240+1) = 0.0004", "c": "error"}
+  ],
+  "formula": "M94 = (compile+1)/(runtime+1) = 1/2241 = 0.0004"
+}

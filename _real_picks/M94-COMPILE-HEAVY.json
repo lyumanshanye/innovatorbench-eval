@@ -1,0 +1,18 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M94",
+  "name": "编译/运行时错误比 Compile vs Runtime",
+  "val": "5.00",
+  "badge": "",
+  "src": "workspace_task_16_2025-09-06.02:03:14_step4000_glm-4-5-gzy · glm-4.5",
+  "desc": "4 syntax errors, 0 runtime errors — syntax-heavy.",
+  "steps": [
+    {"t": "Step 83: open_file — 'IndentationError: unexpected indent (qa.py, line 41)'", "c": "error"},
+    {"t": "Step 86: open_file — 'IndentationError: unexpected indent (qa.py, line 84)'", "c": "error"},
+    {"t": "Step 92: edit_file — 'SyntaxError: unterminated string literal (line 83)'", "c": "error"},
+    {"t": "Step 150: edit_file — 'SyntaxError: invalid syntax'", "c": "error"},
+    {"t": "compile_fail = 4, runtime_fail = 0", "c": "action"},
+    {"t": "M94 = (4+1)/(0+1) = 5.00", "c": "action"}
+  ],
+  "formula": "M94 = (compile+1)/(runtime+1) = 5.00"
+}

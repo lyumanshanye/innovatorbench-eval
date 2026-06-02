@@ -1,0 +1,16 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M33",
+  "name": "缩放瓶颈点 Scaling Bottleneck",
+  "val": "121 steps · score=0",
+  "badge": "badge-bad",
+  "src": "workspace_task_20 · kimi-k2-instruct-0905",
+  "desc": "Sits exactly at the cliff bin (~137 steps) — burned 121 steps, scored 0.",
+  "steps": [
+    {"t": "n_react = 121", "c": "action"},
+    {"t": "Top: run_command×45, edit_file×20, open_file×19", "c": "action"},
+    {"t": "Step 123: eval finish, overall_score=0.0, error='Output directory not found: /workspace/data/outputs/vstar'", "c": "error"},
+    {"t": "Bin 4 mean was 14.62 — this trajectory is far below it", "c": "error"}
+  ],
+  "formula": "M02 = 121 (within bin 4 cliff range), M24 = 0"
+}

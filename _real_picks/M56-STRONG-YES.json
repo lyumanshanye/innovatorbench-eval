@@ -1,0 +1,17 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M56",
+  "name": "Bug 复现率 Bug Reproduction Rate",
+  "val": "1",
+  "badge": "badge-good",
+  "src": "workspace_task_13 · glm47_sweagent",
+  "desc": "Reproduces issue with run_command before any edit.",
+  "steps": [
+    {"t": "Step 40: run_command 'ls -la /workspace/task/repositories/LLaMA-Factory/src/llamafactory/train/dualalign'", "c": "action"},
+    {"t": "Step 41: run_command 'mkdir -p /workspace/task/repositories/LLaMA-Factory/src/llamafactory/train/dualalign'", "c": "action"},
+    {"t": "Step 42: run_command 'rm /workspace/task/repositories/LLaMA-Factory/src/llamafactory/train/dualalign'", "c": "action"},
+    {"t": "Step 48: first edit_file at /workspace/task/repositories/LLaMA-Factory/src/llamafactory/train/tuner.py", "c": "success"},
+    {"t": "M56 = 1 (reproduced before fixing)", "c": "success"}
+  ],
+  "formula": "M56 = 1 (run_command at step 40 precedes first edit_file at step 48)"
+}

@@ -1,0 +1,17 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M85",
+  "name": "Sρ(m,a) Model×Attribute Spearman",
+  "val": "tpp=3.96e10 · score=0",
+  "badge": "badge-bad",
+  "src": "workspace_task_13 · kimi-k2-instruct-0905",
+  "desc": "Within-model rank: highest token_per_point AND lowest score — anchoring ρ=−0.93.",
+  "steps": [
+    {"t": "M24_token_per_point = 3.96e+10 (rank 11/11 within model)", "c": "error"},
+    {"t": "M19_total_tokens = 18949288", "c": "action"},
+    {"t": "M24_best_eval_score = 0 (rank 1/11 within model)", "c": "error"},
+    {"t": "M24_num_evals = 3", "c": "action"},
+    {"t": "Pulls Spearman ρ within kimi-k2 to −0.927", "c": "error"}
+  ],
+  "formula": "rank(tpp)=11/11 vs rank(score)=1/11 → contributes to ρ=−0.93"
+}

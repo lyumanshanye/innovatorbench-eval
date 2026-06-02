@@ -1,0 +1,19 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M43B",
+  "name": "会话创建总数 Session Create Count",
+  "val": "37",
+  "badge": "badge-bad",
+  "src": "workspace_task_46 · claude-4-sonnet-gzy",
+  "desc": "Extreme leak — 37 create_session calls, 0 closes; session names degrade from descriptive ('gpu_main', 'gpu_train') into desperate suffixed and garbage IDs ('gpu_session_test99', 'gpu_session_13345435', 'gpu_session_6643533345435').",
+  "steps": [
+    {"t": "Step 23: create_session 'gpu_main' (first session, reasonable name)", "c": "action"},
+    {"t": "Step 41: create_session 'gpu_train' (collides with prior, then step 42 falls back to 'gpu_train_new')", "c": "action"},
+    {"t": "Step 76-79: create_session 'gpu_session_1' → 'gpu_session_2' → 'gpu_session_3' → 'gpu_session_new' (numeric suffix loop)", "c": "action"},
+    {"t": "Step 85-87: create_session 'gpu_session_test1' → 'gpu_session_test99' → 'gpu_session_work' (test/work suffixes)", "c": "warn"},
+    {"t": "Step 88-90: create_session 'gpu_session_9301' → 'gpu_session_6642' → 'gpu_session_13345435' (random number mashing)", "c": "warn"},
+    {"t": "Step 91: create_session 'gpu_session_6643533345435' (peak garbage — 13-digit suffix)", "c": "error"},
+    {"t": "Step 113: create_session 'gpu_test_session' — total 37 sessions, none closed", "c": "error"}
+  ],
+  "formula": "M43b = count(create_session) = 37"
+}

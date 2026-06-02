@@ -1,0 +1,22 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M41L",
+  "name": "逻辑错误固化率 Logic Error Persistence",
+  "val": "0.50",
+  "badge": "badge-warn",
+  "src": "workspace_task_2 · kimi-k2-instruct-0905",
+  "desc": "2 of 4 logic errors persisted past summary boundary (steps 95 / 132).",
+  "steps": [
+    {"t": "Step 12: wrong path — `source /workspace/conda/bin/activate ...` → `bash: /workspace/conda/bin/activate: No such file or directory`", "c": "error"},
+    {"t": "Step 13: corrected — pivots to `conda info --envs` (success)", "c": "success"},
+    {"t": "Step 49: wrong approach — `git clone https://modelscope.cn/datasets/ltrciiith/bhashik-parallel-corpora-health` → 'project ... could not be found or you don't have permission'", "c": "error"},
+    {"t": "Step 51: corrected — pivots to `web_search` for English-Tamil medical parallel corpora", "c": "success"},
+    {"t": "Step 95 / 132: summary nodes (node_type=summary, source=generate)", "c": "think"},
+    {"t": "Step 14: wrong flag — `python -c 'import datasets...'` with `wait_for_completion=True` killed at 13.26s (>10s cap)", "c": "error"},
+    {"t": "Step 121 (post-summary-95): identical bug recurs — `python -c 'import torch; ...cuda...'` on `gpu_setup` killed at 13.84s with same `wait_for_completion` mode", "c": "loop"},
+    {"t": "Step 134 (post-summary-132): same command re-issued verbatim, same timeout error returned", "c": "loop"},
+    {"t": "Step 154 (post-summary-132): missing dir — `cd /workspace/data/outputs && ls -la` → `bash: cd: /workspace/data/outputs: No such file or directory` (output dir never pre-created)", "c": "loop"},
+    {"t": "Pre-summary errors: 4 (Steps 12, 14, 49, 154-class) | Post-summary persisted: 2 (wait_for_completion timeout @121/134; missing-output-dir @154)", "c": "loop"}
+  ],
+  "formula": "M41l = m41_logic_persist / m41_logic = 2 / 4 = 0.50"
+}

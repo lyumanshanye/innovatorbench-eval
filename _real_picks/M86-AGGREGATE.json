@@ -1,0 +1,17 @@
+{
+  "bench": "Aggregate · 97 (m,a) pairs · 7 attrs × 15 models",
+  "id": "M86",
+  "name": "Sσ(m,a) Model×Attribute Std",
+  "val": "max σ_M20 = 41,200s",
+  "badge": "",
+  "src": "metrics_results_424.csv · within-model σ",
+  "desc": "M24_token_per_point dominates raw σ. Excluding it, M20_duration is the most volatile attribute — kimi-k2.5 spans 11+ hours within 21 trajectories.",
+  "steps": [
+    {"t": "(token_per_point dominates: top 4 σ all ≥1e13 — raw scale)", "c": "action"},
+    {"t": "Excluding tpp:", "c": "action"},
+    {"t": "kimi-k2.5 × M20_duration: σ=41,200s (11.4h spread)", "c": "error"},
+    {"t": "glm47_sweagent × M20_duration: σ=39,780s", "c": "error"},
+    {"t": "glm47_codeact × M20_duration: σ=30,750s", "c": "loop"}
+  ],
+  "formula": "Sσ(m,a) = std(<attr> | model=m)"
+}

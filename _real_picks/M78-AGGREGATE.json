@@ -1,0 +1,17 @@
+{
+  "bench": "Aggregate over 655 trajectories · 15 models",
+  "id": "M78",
+  "name": "Token控制成功 Token-Controlled Success",
+  "val": "M78_diff = 6.38",
+  "badge": "",
+  "src": "metrics_results_424.csv (β per model)",
+  "desc": "Per-model β of M24 on log(total_tokens). Wide spread — adding tokens helps glm4.5 variants, hurts kimi-k2.5.",
+  "steps": [
+    {"t": "Top: glm-4-5-full-data-wo-interact-w-filter β=+24.18 (n=20)", "c": "success"},
+    {"t": "2nd: glm47 β=+6.93 (n=20)", "c": "action"},
+    {"t": "3rd: claude-4-sonnet β=+4.49 (n=207)", "c": "action"},
+    {"t": "Bot: kimi-k2.5 β=−2.55 (n=21) — more tokens hurts", "c": "error"},
+    {"t": "M78_diff = std(β) across 15 models = 6.38", "c": "action"}
+  ],
+  "formula": "M78 = std_models( OLS(M24 ~ log(M19_total_tokens+1) | model) )"
+}

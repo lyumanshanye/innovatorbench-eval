@@ -1,0 +1,17 @@
+{
+  "bench": "Aggregate · 82 (model,attr) pairs · 7 attrs × 15 models",
+  "id": "M85",
+  "name": "Sρ(m,a) Model×Attribute Spearman",
+  "val": "max|ρ| = 0.93",
+  "badge": "",
+  "src": "metrics_results_424.csv · Spearman per (m,a) pair",
+  "desc": "Strongest within-model lever is M24_token_per_point. All top-5 pairs negative — fewer tokens-per-point ↔ higher score.",
+  "steps": [
+    {"t": "kimi-k2-instruct-0905 × token_per_point: ρ=−0.927 (n=11)", "c": "error"},
+    {"t": "glm-4-5-full-data-wo-interact × token_per_point: ρ=−0.915", "c": "error"},
+    {"t": "glm-4-5-full-data-wo-interact-w-filter × tpp: ρ=−0.912", "c": "error"},
+    {"t": "glm-4-5-full-data-w-interact-w-filter × tpp: ρ=−0.911 (n=36)", "c": "error"},
+    {"t": "Mean |ρ| across 82 pairs = 0.24", "c": "action"}
+  ],
+  "formula": "Sρ(m,a) = SpearmanCorrelation(<attr>, M24 | model=m)"
+}

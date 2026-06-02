@@ -1,0 +1,23 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M12B",
+  "name": "资源回收率 Resource Reclaim Rate",
+  "val": "0.40",
+  "badge": "badge-warn",
+  "src": "workspace_task_16 · glm47_sweagent",
+  "desc": "Partial reclaim — 4 of 10 sessions closed, 6 leaked.",
+  "steps": [
+    {"t": "Step 2: create_session id=gpu_main on 10.246.128.198", "c": "action"},
+    {"t": "Step 71: create_session id=gpu_training on 10.246.128.198", "c": "action"},
+    {"t": "Step 107: create_session id=gpu_test on 10.246.128.198", "c": "action"},
+    {"t": "Step 139: create_session id=gpu_test (re-create, prior never closed)", "c": "warn"},
+    {"t": "Step 232: create_session id=gpu_main (re-create after close)", "c": "action"},
+    {"t": "Step 229: close_session id=gpu_main", "c": "ok"},
+    {"t": "Step 230: close_session id=gpu_training", "c": "ok"},
+    {"t": "Step 231: close_session id=gpu_test", "c": "ok"},
+    {"t": "Step 283: close_all_sessions on 10.246.128.198 (closed gpu_main+gpu_training, counted as 1 close call)", "c": "ok"},
+    {"t": "Leaked: gpu_test(139), cpu_main(284), gpu_vllm(293), gpu_test(324), gpu_test2(344) — never closed before trajectory end", "c": "error"},
+    {"t": "M12b = min(4/10, 1.0) = 0.40", "c": "warn"}
+  ],
+  "formula": "M12b = min(n_close/n_create, 1.0) = 4/10 = 0.40"
+}

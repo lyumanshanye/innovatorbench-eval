@@ -1,0 +1,17 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M56",
+  "name": "Bug 复现率 Bug Reproduction Rate",
+  "val": "0",
+  "badge": "badge-bad",
+  "src": "workspace_task_18 · gpt-5-gzy",
+  "desc": "Edit-first pattern: 539 react steps, no diagnostic before first edit_file at step 92.",
+  "steps": [
+    {"t": "Step 89: file_scroll_down (passive read)", "c": "action"},
+    {"t": "Step 90: file_scroll_down (passive read)", "c": "action"},
+    {"t": "Step 91: file_scroll_down (passive read)", "c": "action"},
+    {"t": "Step 92: first edit_file → research_agent_prompts.py", "c": "error"},
+    {"t": "M56 = 0 (no run/eval before first edit)", "c": "error"}
+  ],
+  "formula": "M56 = 0 (first edit_file at step 92; preceding 3 actions all file_scroll_down)"
+}

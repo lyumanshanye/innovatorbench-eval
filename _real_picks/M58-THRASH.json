@@ -1,0 +1,18 @@
+{
+  "bench": "InnovatorBench",
+  "id": "M58",
+  "name": "编辑回滚率 Edit Rollback Rate",
+  "val": "0.93",
+  "badge": "badge-bad",
+  "src": "workspace_task_16 · glm-4-5-gzy",
+  "desc": "Re-edits the same file 80 times in a consecutive run.",
+  "steps": [
+    {"t": "Step 77: edit_file /workspace/task/repositories/verl/utils/reward_score/qa.py", "c": "action"},
+    {"t": "Step 78: edit_file /workspace/task/repositories/verl/utils/reward_score/qa.py", "c": "loop"},
+    {"t": "Step 79: edit_file /workspace/task/repositories/verl/utils/reward_score/qa.py", "c": "loop"},
+    {"t": "Step 80: edit_file /workspace/task/repositories/verl/utils/reward_score/qa.py", "c": "loop"},
+    {"t": "Step 81: edit_file /workspace/task/repositories/verl/utils/reward_score/qa.py", "c": "loop"},
+    {"t": "Total: 59 edits, 55 rollbacks", "c": "error"}
+  ],
+  "formula": "M58 = 55/59 = 0.93"
+}
