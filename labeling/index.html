@@ -859,9 +859,9 @@ function renderMain() {
 
   main.innerHTML = `
     <div class="header-row">
-      <div class="score-block ${((s.M24_best_eval_score ?? s.M24_best_overall_score) || 0)<=0?'zero':''}">
+      <div class="score-block ${((s.M24_best_overall_score ?? s.M24_best_eval_score) ?? -1) <= 0 ? 'zero' : ''}">
         <div class="score-label">Final Score</div>
-        <div class="score-value">${((s.M24_best_eval_score ?? s.M24_best_overall_score)?.toFixed?.(1)) ?? ((s.M24_best_eval_score ?? s.M24_best_overall_score) ?? '—')}</div>
+        <div class="score-value">${((s.M24_best_overall_score ?? s.M24_best_eval_score)?.toFixed?.(1)) ?? ((s.M24_best_overall_score ?? s.M24_best_eval_score) ?? '—')}</div>
       </div>
       <div class="header-info">
         <h2>${escapeHTML(s.trajectory_dir)}</h2>
