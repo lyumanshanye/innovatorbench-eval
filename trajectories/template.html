@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trajectory Lens — agent-run viewer</title>
+<style>
+/* ============================================================
+   Theme tokens (reference dataviz palette, light + dark selected)
+   ============================================================ */
+:root {
+  --page:        #f9f9f7;
+  --surface:     #fcfcfb;
+  --surface-2:   #f3f2ee;
+  --ink:         #0b0b0b;
+  --ink-2:       #52514e;
+  --muted:       #898781;
+  --grid:        #e1e0d9;
+  --baseline:    #c3c2b7;
+  --hairline:    rgba(11,11,11,0.10);
+  --shadow:      0 1px 3px rgba(11,11,11,.06), 0 4px 14px rgba(11,11,11,.04);
+
+  /* action categories — fixed slot order = validated adjacency order */
+  --c-explore:   #2a78d6;  /* blue   */
+  --c-run:       #1baf7a;  /* aqua   */
+  --c-eval:      #eda100;  /* yellow */
+  --c-edit:      #008300;  /* green  */
+  --c-think:     #4a3aa7;  /* violet */
+  --c-error:     #e34948;  /* red    */
+  --c-finish:    #e87ba4;  /* magenta*/
+  --c-session:   #eb6834;  /* orange */
+  --c-other:     #898781;
+
+  /* source colors — contiguous validated subsequence blue→aqua→yellow */
+  --s-swe:       #2a78d6;
+  --s-inno:      #1baf7a;
+  --s-agency:    #c98500;
+
+  --status-good:     #0ca30c;
+  --status-warning:  #b97f00;
+  --status-critical: #d03b3b;
+  --accent:      #2a78d6;
+  --accent-soft: rgba(42,120,214,.10);
+  --sel:         rgba(42,120,214,.14);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page:      #0d0d0d;
+    --surface:   #1a1a19;
+    --surface-2: #232322;
+    --ink:       #ffffff;
+    --ink-2:     #c3c2b7;
+    --muted:     #898781;
+    --grid:      #2c2c2a;
+    --baseline:  #383835;
+    --hairline:  rgba(255,255,255,0.10);
+    --shadow:    none;
+
+    --c-explore: #3987e5;
+    --c-run:     #199e70;
+    --c-eval:    #c98500;
+    --c-edit:    #159015;
+    --c-think:   #9085e9;
+    --c-error:   #e66767;
+    --c-finish:  #d55181;
+    --c-session: #d95926;
+
+    --s-swe:     #3987e5;
+    --s-inno:    #199e70;
+    --s-agency:  #eda100;
+
+    --status-good:     #0ca30c;
+    --status-warning:  #fab219;
+    --status-critical: #e66767;
+    --accent:     #3987e5;
+    --accent-soft: rgba(57,135,229,.16);
+    --sel:        rgba(57,135,229,.20);
+  }
+}
+:root[data-theme="light"] {
+  --page:#f9f9f7; --surface:#fcfcfb; --surface-2:#f3f2ee; --ink:#0b0b0b; --ink-2:#52514e;
+  --muted:#898781; --grid:#e1e0d9; --baseline:#c3c2b7; --hairline:rgba(11,11,11,0.10);
+  --shadow:0 1px 3px rgba(11,11,11,.06), 0 4px 14px rgba(11,11,11,.04);
+  --c-explore:#2a78d6; --c-run:#1baf7a; --c-eval:#eda100; --c-edit:#008300; --c-think:#4a3aa7;
+  --c-error:#e34948; --c-finish:#e87ba4; --c-session:#eb6834; --c-other:#898781;
+  --s-swe:#2a78d6; --s-inno:#1baf7a; --s-agency:#c98500;
+  --status-good:#0ca30c; --status-warning:#b97f00; --status-critical:#d03b3b;
+  --accent:#2a78d6; --accent-soft:rgba(42,120,214,.10); --sel:rgba(42,120,214,.14);
+}
+:root[data-theme="dark"] {
+  --page:#0d0d0d; --surface:#1a1a19; --surface-2:#232322; --ink:#ffffff; --ink-2:#c3c2b7;
+  --muted:#898781; --grid:#2c2c2a; --baseline:#383835; --hairline:rgba(255,255,255,0.10);
+  --shadow:none;
+  --c-explore:#3987e5; --c-run:#199e70; --c-eval:#c98500; --c-edit:#159015; --c-think:#9085e9;
+  --c-error:#e66767; --c-finish:#d55181; --c-session:#d95926; --c-other:#898781;
+  --s-swe:#3987e5; --s-inno:#199e70; --s-agency:#eda100;
+  --status-good:#0ca30c; --status-warning:#fab219; --status-critical:#e66767;
+  --accent:#3987e5; --accent-soft:rgba(57,135,229,.16); --sel:rgba(57,135,229,.20);
+}
+
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; }
+body {
+  background: var(--page); color: var(--ink);
+  font: 14px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+code, pre, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+a { color: var(--accent); text-decoration: none; }
+button { font: inherit; color: inherit; }
+
+.wrap { max-width: 1440px; margin: 0 auto; padding: 0 20px 80px; }
+
+/* ---------- header ---------- */
+header.app {
+  position: sticky; top: 0; z-index: 40;
+  background: color-mix(in srgb, var(--page) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--hairline);
+}
+.app-bar { max-width: 1440px; margin: 0 auto; padding: 10px 20px; display:flex; align-items:center; gap: 16px; }
+.brand { display:flex; align-items:baseline; gap: 10px; white-space:nowrap; }
+.brand .logo { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+.brand .logo .lens { color: var(--accent); }
+.brand .sub { font-size: 12px; color: var(--muted); }
+nav.tabs { display:flex; gap: 4px; margin-left: 8px; }
+nav.tabs a {
+  padding: 6px 14px; border-radius: 8px; color: var(--ink-2); font-weight: 550; font-size: 13.5px;
+}
+nav.tabs a.on { background: var(--accent-soft); color: var(--accent); }
+nav.tabs a:hover:not(.on) { background: var(--surface-2); }
+.spacer { flex: 1; }
+.theme-btn {
+  border: 1px solid var(--hairline); background: var(--surface); border-radius: 8px;
+  padding: 5px 11px; cursor: pointer; font-size: 12.5px; color: var(--ink-2);
+}
+.theme-btn:hover { background: var(--surface-2); }
+
+/* ---------- generic cards / tiles ---------- */
+.card {
+  background: var(--surface); border: 1px solid var(--hairline); border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+.tiles { display:grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: 10px; margin: 18px 0; }
+.tile { padding: 12px 14px; }
+.tile .k { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 600; }
+.tile .v { font-size: 22px; font-weight: 700; letter-spacing: -.01em; margin-top: 2px; }
+.tile .v small { font-size: 12px; font-weight: 500; color: var(--ink-2); margin-left: 3px; }
+.tile .d { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+
+h1.page { font-size: 21px; font-weight: 700; letter-spacing: -.01em; margin: 26px 0 2px; }
+p.lede { color: var(--ink-2); margin: 0 0 6px; font-size: 13.5px; max-width: 860px; }
+
+/* ---------- badges ---------- */
+.badge {
+  display:inline-flex; align-items:center; gap:5px; padding: 2px 9px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 600; border: 1px solid var(--hairline); white-space: nowrap;
+}
+.badge .dot { width: 7px; height: 7px; border-radius: 50%; flex:none; }
+.badge.model { color: var(--ink-2); background: var(--surface-2); font-family: ui-monospace, Menlo, monospace; font-size: 11px; font-weight: 500;}
+.flag {
+  display:inline-flex; align-items:center; gap: 4px; padding: 1px 8px; border-radius: 6px;
+  font-size: 10.5px; font-weight: 650; letter-spacing:.02em; white-space:nowrap;
+  background: color-mix(in srgb, var(--status-critical) 12%, transparent); color: var(--status-critical);
+  border: 1px solid color-mix(in srgb, var(--status-critical) 30%, transparent);
+}
+.flag.warn { background: color-mix(in srgb, var(--status-warning) 13%, transparent); color: var(--status-warning);
+  border-color: color-mix(in srgb, var(--status-warning) 35%, transparent); }
+.flag.good { background: color-mix(in srgb, var(--status-good) 12%, transparent); color: var(--status-good);
+  border-color: color-mix(in srgb, var(--status-good) 30%, transparent); }
+
+/* ---------- legend ---------- */
+.legend { display:flex; flex-wrap:wrap; gap: 4px 14px; align-items:center; font-size: 12px; color: var(--ink-2); }
+.legend .li { display:inline-flex; align-items:center; gap: 6px; }
+.legend .sw { width: 11px; height: 11px; border-radius: 3px; flex: none; }
+
+/* ---------- filter row ---------- */
+.filters { display:flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 14px 0 12px; }
+.chip-row { display:flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  border: 1px solid var(--hairline); background: var(--surface); border-radius: 999px;
+  padding: 4px 13px; cursor: pointer; font-size: 12.5px; font-weight: 550; color: var(--ink-2);
+  display: inline-flex; align-items: center; gap: 7px;
+}
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+.chip:hover { background: var(--surface-2); }
+.chip.on { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 45%, transparent); color: var(--ink); }
+.filters select, .filters input[type=search] {
+  border: 1px solid var(--hairline); background: var(--surface); color: var(--ink);
+  border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 12.5px;
+}
+.filters input[type=search] { width: 200px; }
+.filters .count { color: var(--muted); font-size: 12px; margin-left: auto; }
+
+/* ---------- run table ---------- */
+.table-scroller { overflow-x: auto; border: 1px solid var(--hairline); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
+table.runs { border-collapse: collapse; width: 100%; min-width: 1150px; }
+table.runs thead th {
+  position: sticky; top: 0; z-index: 5; text-align: left; font-size: 11px; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--muted); font-weight: 650; padding: 10px 12px;
+  background: var(--surface); border-bottom: 1px solid var(--grid); white-space: nowrap; cursor: pointer;
+  user-select: none;
+}
+table.runs thead th.nosort { cursor: default; }
+table.runs thead th .arr { color: var(--accent); font-size: 10px; }
+table.runs tbody td { padding: 9px 12px; border-bottom: 1px solid var(--grid); vertical-align: middle; }
+table.runs tbody tr { cursor: pointer; }
+table.runs tbody tr:hover { background: var(--sel); }
+table.runs tbody tr:last-child td { border-bottom: none; }
+td.name .nm { font-weight: 620; font-size: 13px; font-family: ui-monospace, Menlo, monospace; }
+td.name .meta { display: flex; gap: 6px; margin-top: 3px; align-items:center; }
+td.num { font-variant-numeric: tabular-nums; text-align: right; }
+td .fails { color: var(--status-critical); font-weight: 650; }
+td .zero { color: var(--muted); }
+.metric-chip { font-variant-numeric: tabular-nums; font-size: 12.5px; }
+.metric-chip.na { color: var(--muted); }
+.metric-chip.bad { color: var(--status-critical); font-weight: 650; }
+.metric-chip.good { color: var(--status-good); font-weight: 600; }
+.flags-cell { display: flex; flex-wrap: wrap; gap: 4px; max-width: 230px; }
+svg.mini-strip { display:block; }
+svg.mix-bar { display: block; }
+
+/* ---------- detail view ---------- */
+.backlink { display:inline-flex; gap:6px; align-items:center; font-size: 13px; margin: 20px 0 4px; color: var(--accent); cursor:pointer; }
+.detail-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 6px 0 4px; }
+.detail-head h1 { margin: 0; font-size: 21px; font-family: ui-monospace, Menlo, monospace; letter-spacing: -.01em; }
+.flags-row { display:flex; flex-wrap:wrap; gap: 6px; margin: 6px 0 0; }
+
+.strip-card { padding: 14px 16px 12px; margin: 14px 0 18px; }
+.strip-card .strip-head { display: flex; justify-content: space-between; align-items:baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;}
+.strip-card .strip-head .t { font-size: 12px; font-weight: 650; letter-spacing:.06em; text-transform: uppercase; color: var(--muted); }
+.strip-scroll { overflow-x: auto; padding-bottom: 4px; }
+.astrip { display: flex; gap: 2px; height: 30px; }
+.astrip .cell {
+  flex: 1 0 5px; min-width: 5px; max-width: 26px; border-radius: 2.5px; cursor: pointer; position: relative;
+}
+.astrip .cell.fail::after {
+  content:""; position:absolute; left:0; right:0; bottom:-4px; height:2.5px; border-radius:2px;
+  background: var(--status-critical);
+}
+.astrip .cell:hover { outline: 2px solid var(--ink); outline-offset: 1px; }
+.score-lane { position: relative; height: 30px; margin-top: 10px; border-top: 1px dashed var(--grid); }
+.score-lane .mk {
+  position: absolute; top: 4px; transform: translateX(-50%); font-size: 10px; font-weight: 700;
+  color: var(--c-eval); text-align: center; cursor: pointer; line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+.score-lane .mk .dia { width: 8px; height: 8px; margin: 0 auto 1px; background: var(--c-eval); transform: rotate(45deg); border-radius: 1.5px;}
+.score-lane .lbl { position:absolute; left: 0; top: 4px; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing:.06em;}
+
+.detail-grid { display: grid; grid-template-columns: minmax(0,1fr) 372px; gap: 20px; align-items: start; }
+@media (max-width: 1080px) { .detail-grid { grid-template-columns: 1fr; } .metric-panel { position: static !important; } }
+
+/* ---------- timeline ---------- */
+.timeline { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.turn {
+  border: 1px solid var(--hairline); border-left: 4px solid var(--cat, var(--muted));
+  background: var(--surface); border-radius: 10px; padding: 8px 12px 8px 12px; box-shadow: var(--shadow);
+  min-width: 0;
+}
+.turn.fail { background: color-mix(in srgb, var(--status-critical) 5%, var(--surface)); border-color: color-mix(in srgb, var(--status-critical) 35%, var(--hairline)); border-left-color: var(--status-critical); }
+.turn.retry { border-style: dashed; border-left-style: solid; }
+.turn-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.turn-head .idx { font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; width: 34px; flex:none;}
+.act-pill {
+  display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 650;
+  color: var(--cat); background: color-mix(in srgb, var(--cat) 11%, transparent);
+  padding: 2px 9px; border-radius: 6px; font-family: ui-monospace, Menlo, monospace; white-space: nowrap;
+}
+.turn-head .path { font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; color: var(--ink-2);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1 1 60px; direction: rtl; text-align: left;}
+.turn-head .ok { font-size: 10.5px; font-weight: 700; letter-spacing: .04em; }
+.turn-head .ok.yes { color: var(--status-good); }
+.turn-head .ok.no  { color: var(--status-critical); }
+.turn-head .toks { font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space:nowrap;}
+.turn-head .rchip { font-size: 10px; font-weight: 700; color: var(--status-critical); border: 1px dashed var(--status-critical); border-radius: 5px; padding: 0 6px; }
+.turn .cmd {
+  margin: 7px 0 0; padding: 6px 10px; background: var(--surface-2); border-radius: 7px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 12px; white-space: pre-wrap; word-break: break-word;
+  color: var(--ink); border: 1px solid var(--grid);
+}
+.turn .thought {
+  margin: 7px 0 0; padding: 5px 10px 5px 12px; border-left: 3px solid var(--c-think);
+  background: color-mix(in srgb, var(--c-think) 6%, transparent);
+  color: var(--ink-2); font-size: 12.5px; font-style: italic; border-radius: 0 7px 7px 0;
+  white-space: pre-wrap; word-break: break-word;
+}
+.obs { margin: 7px 0 0; font-size: 12px; }
+.obs .obs-body {
+  font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; color: var(--ink-2);
+  white-space: pre-wrap; word-break: break-word; background: var(--surface-2);
+  border: 1px solid var(--grid); border-radius: 7px; padding: 6px 10px; max-height: 260px; overflow: auto;
+}
+.turn.fail .obs .obs-body { border-color: color-mix(in srgb, var(--status-critical) 30%, var(--grid)); }
+.expander { background: none; border: none; padding: 0; color: var(--accent); cursor: pointer; font-size: 11.5px; font-weight: 600; margin-top: 4px;}
+.eval-score { font-weight: 800; color: var(--c-eval); font-variant-numeric: tabular-nums; font-size: 13px; }
+.poll-group {
+  border: 1px dashed color-mix(in srgb, var(--c-session) 55%, transparent); border-radius: 10px;
+  background: color-mix(in srgb, var(--c-session) 5%, transparent);
+  padding: 7px 12px; cursor: pointer; color: var(--ink-2); font-size: 12.5px; display:flex; gap: 10px; align-items:center;
+}
+.poll-group .n { font-weight: 750; color: var(--c-session); }
+.poll-group .hint { margin-left:auto; color: var(--accent); font-size: 11.5px; font-weight: 600;}
+
+/* ---------- metric panel ---------- */
+.metric-panel { position: sticky; top: 62px; max-height: calc(100vh - 78px); overflow-y: auto; display:flex; flex-direction:column; gap: 12px; }
+.mgroup { padding: 12px 14px; }
+.mgroup h3 { margin: 0 0 2px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display:flex; align-items:center; gap: 7px;}
+.mgroup h3 .gdot { width: 8px; height: 8px; border-radius: 3px; }
+.mrow { display: grid; grid-template-columns: minmax(0,1fr) 86px 64px; gap: 8px; align-items: center; padding: 4.5px 0; border-bottom: 1px solid var(--grid); }
+.mrow:last-child { border-bottom: none; }
+.mrow .ml { font-size: 12px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+.mrow .ml .mk { color: var(--muted); font-size: 10px; font-family: ui-monospace, Menlo, monospace; }
+.mrow .mv { text-align: right; font-variant-numeric: tabular-nums; font-size: 12.5px; font-weight: 650; }
+.mrow.na .mv, .mrow.na .ml { color: var(--muted); opacity: .65; font-weight: 400; }
+.mrow.bad .mv { color: var(--status-critical); }
+.mrow.goodv .mv { color: var(--status-good); }
+.mbar { height: 6px; border-radius: 3px; background: var(--surface-2); position: relative; overflow:hidden; border: 1px solid var(--grid);}
+.mbar .fill { position: absolute; inset: 0 auto 0 0; border-radius: 3px; background: var(--accent); opacity:.85;}
+.mrow.bad .mbar .fill { background: var(--status-critical); }
+.radar-card { padding: 12px 14px; }
+.radar-card h3 { margin: 0 0 6px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.radar-note { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* ---------- insights ---------- */
+.insight-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; margin-top: 14px; }
+.ichart { padding: 14px 16px; }
+.ichart h3 { margin: 0; font-size: 13.5px; font-weight: 680; }
+.ichart .sub { font-size: 11.5px; color: var(--muted); margin: 1px 0 8px; }
+.ichart svg { display: block; width: 100%; height: auto; }
+.ichart.wide { grid-column: 1 / -1; }
+.axislbl { font-size: 10px; fill: var(--muted); }
+.dirlbl  { font-size: 11px; fill: var(--ink-2); font-weight: 600; }
+
+/* ---------- tooltip ---------- */
+#tip {
+  position: fixed; z-index: 90; pointer-events: none; display: none; max-width: 340px;
+  background: var(--ink); color: var(--page); font-size: 11.5px; line-height: 1.45;
+  padding: 6px 10px; border-radius: 7px; box-shadow: 0 4px 18px rgba(0,0,0,.25);
+}
+#tip .t1 { font-weight: 700; }
+#tip .mono { font-size: 10.5px; opacity: .8; }
+
+/* ---------- batch + model colors (reference categorical slots, fixed order) ---------- */
+:root {
+  --b-swe_difficult:  var(--c-explore);  /* slot 1 blue   */
+  --b-swe_codeact:    var(--c-run);      /* slot 2 aqua   */
+  --b-swe_sweagent:   var(--c-eval);     /* slot 3 yellow */
+  --b-innovator:      var(--c-edit);     /* slot 4 green  */
+  --b-agency_openai:  var(--c-think);    /* slot 5 violet */
+  --b-agency_claude:  var(--c-error);    /* slot 6 red    */
+}
+
+/* ---------- pagination ---------- */
+.pager { display:flex; gap:6px; align-items:center; justify-content:center; margin: 14px 0 4px; flex-wrap: wrap;}
+.pager button {
+  border:1px solid var(--hairline); background: var(--surface); border-radius:8px; cursor:pointer;
+  padding: 5px 12px; font-size: 12.5px; color: var(--ink-2); min-width: 34px;
+}
+.pager button:hover:not(:disabled) { background: var(--surface-2); }
+.pager button.on { background: var(--accent-soft); color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); font-weight: 700;}
+.pager button:disabled { opacity:.4; cursor: default; }
+.pager .pinfo { font-size: 12px; color: var(--muted); margin: 0 8px; }
+
+/* ---------- verifier card ---------- */
+.verifier-card { padding: 12px 14px; border-left: 4px solid var(--c-eval); }
+.verifier-card h3 { margin: 0 0 6px; font-size: 12px; letter-spacing:.06em; text-transform: uppercase; color: var(--muted); }
+.verifier-card .vrow { display:flex; gap: 10px; align-items:center; flex-wrap: wrap; margin-bottom: 7px;}
+.verifier-card .vscore { font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.verifier-card .vreason { font-size: 12px; color: var(--ink-2); line-height: 1.5; }
+
+/* ---------- verdict badges (portability) ---------- */
+.verdict { display:inline-flex; align-items:center; gap:5px; padding:1px 9px; border-radius:999px; font-size:11px; font-weight:650; white-space:nowrap; border:1px solid transparent;}
+.verdict.strong { color: var(--status-good); background: color-mix(in srgb, var(--status-good) 11%, transparent); border-color: color-mix(in srgb, var(--status-good) 30%, transparent);}
+.verdict.medium { color: var(--accent); background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 32%, transparent);}
+.verdict.weak   { color: var(--status-warning); background: color-mix(in srgb, var(--status-warning) 12%, transparent); border-color: color-mix(in srgb, var(--status-warning) 32%, transparent);}
+.verdict.degen  { color: var(--muted); background: var(--surface-2); border-color: var(--hairline);}
+.verdict.na     { color: var(--muted); border-color: var(--hairline); border-style: dashed;}
+
+/* ---------- portability heatmap ---------- */
+.heat-scroller { overflow-x: auto; border: 1px solid var(--hairline); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
+table.heat { border-collapse: collapse; width: 100%; min-width: 980px; }
+table.heat thead th {
+  position: sticky; top: 0; z-index: 5; background: var(--surface); border-bottom: 1px solid var(--grid);
+  font-size: 10.5px; letter-spacing:.05em; text-transform: uppercase; color: var(--muted); font-weight: 650;
+  padding: 9px 8px; text-align: left; white-space: nowrap; cursor: pointer; user-select: none;
+}
+table.heat thead th .arr { color: var(--accent); font-size: 9px; }
+table.heat tbody td { padding: 4px 8px; border-bottom: 1px solid var(--grid); font-size: 12px; }
+table.heat tbody tr:hover { background: var(--sel); }
+table.heat td.mname { font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; white-space: nowrap; max-width: 300px; overflow:hidden; text-overflow: ellipsis;}
+table.heat td.hcell { padding: 3px 3px; }
+.hswatch { height: 22px; min-width: 66px; border-radius: 5px; display:flex; align-items:center; justify-content:center;
+  font-size: 10.5px; font-variant-numeric: tabular-nums; font-weight: 600; border: 1px solid var(--hairline); }
+.hswatch.empty { background: transparent; border-style: dashed; color: var(--muted); }
+.dbar { display:flex; align-items:center; gap: 7px; min-width: 120px;}
+.dbar .track { flex: 1; height: 7px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--grid); overflow: hidden;}
+.dbar .fill { height: 100%; border-radius: 4px; background: var(--accent); }
+.dbar .dv { font-size: 11.5px; font-variant-numeric: tabular-nums; font-weight: 650; width: 40px; text-align: right;}
+
+/* ---------- models view ---------- */
+.model-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-top: 14px;}
+.mm-panel { padding: 14px 16px; }
+.mm-panel h3 { margin:0; font-size: 13.5px; font-weight: 680; }
+.mm-panel .sub { font-size: 11.5px; color: var(--muted); margin: 1px 0 10px; }
+.mm-row { display:grid; grid-template-columns: 108px 1fr 52px; gap: 10px; align-items:center; margin: 6px 0; }
+.mm-row .mlabel { font-size: 12px; font-weight: 620; font-family: ui-monospace, Menlo, monospace; color: var(--ink-2);
+  display:flex; align-items:center; gap: 6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.mm-row .mlabel .dot { width:8px; height:8px; border-radius:50%; flex:none;}
+.mm-row .bartrack { position: relative; height: 18px; background: var(--surface-2); border:1px solid var(--grid); border-radius: 5px; overflow: visible;}
+.mm-row .barfill { position:absolute; top:0; bottom:0; left:0; border-radius: 4px; opacity:.85; }
+.mm-row .rundot { position:absolute; top:50%; width:7px; height:7px; border-radius:50%; transform: translate(-50%,-50%);
+  background: var(--ink); opacity:.55; border: 1.5px solid var(--surface); }
+.mm-row .mval { font-size: 12px; font-variant-numeric: tabular-nums; font-weight: 650; text-align: right;}
+.radar-multi { display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 12px;}
+.radar-multi .rm { padding: 10px 8px 6px; text-align: center; }
+.radar-multi .rm .nm { font-size: 12.5px; font-weight: 700; font-family: ui-monospace, Menlo, monospace; margin-bottom: 2px;}
+.radar-multi .rm .nn { font-size: 11px; color: var(--muted); }
+table.mmtable { border-collapse: collapse; width: 100%; }
+table.mmtable th { font-size: 10.5px; text-transform: uppercase; letter-spacing:.05em; color: var(--muted); font-weight: 650; text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--grid); white-space: nowrap;}
+table.mmtable th:first-child { text-align: left; }
+table.mmtable td { padding: 6px 10px; font-size: 12.5px; border-bottom: 1px solid var(--grid); text-align: right; font-variant-numeric: tabular-nums;}
+table.mmtable td:first-child { text-align: left; font-family: ui-monospace, Menlo, monospace; font-weight: 620; }
+table.mmtable tr:last-child td { border-bottom: none; }
+table.mmtable td.best { color: var(--status-good); font-weight: 750; }
+table.mmtable td.worst { color: var(--status-critical); }
+
+::-webkit-scrollbar { height: 9px; width: 9px; }
+::-webkit-scrollbar-thumb { background: var(--baseline); border-radius: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+</style>
+</head>
+<body>
+<header class="app">
+  <div class="app-bar">
+    <div class="brand"><span class="logo">Trajectory<span class="lens">Lens</span></span><span class="sub">fine-grained agent-run viewer · m_v2 batch</span></div>
+    <nav class="tabs">
+      <a href="#/" id="tab-runs">Runs</a>
+      <a href="#/models" id="tab-models">Models</a>
+      <a href="#/portability" id="tab-portability">Portability</a>
+      <a href="#/insights" id="tab-insights">Insights</a>
+    </nav>
+    <div class="spacer"></div>
+    <button class="theme-btn" id="themeBtn" title="toggle color theme">◐ theme</button>
+  </div>
+</header>
+<div class="wrap" id="app"></div>
+<div id="tip"></div>
+
+<script>
+window.__TRAJ_DATA__ = /*__DATA__*/;
+</script>
+<script>
+"use strict";
+/* ================================================================
+   Trajectory Lens — self-contained viewer for m_v2 smoke output.
+   Data embedded above by build.py. No external requests.
+   ================================================================ */
+const DATA = window.__TRAJ_DATA__;
+const RUNS = DATA.runs;
+
+/* ---------------- helpers ---------------- */
+const $ = (s, el=document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isNum = v => typeof v === "number" && isFinite(v);
+const fmtInt = v => isNum(v) ? v.toLocaleString("en-US") : "n/a";
+const fmtTok = v => !isNum(v) ? "n/a" : v >= 1e6 ? (v/1e6).toFixed(1)+"M" : v >= 1000 ? (v/1000).toFixed(1)+"k" : String(Math.round(v));
+const fmtPct = v => isNum(v) ? Math.round(v*100) + "%" : "n/a";
+const fmtNum = v => !isNum(v) ? "n/a" : Math.abs(v) >= 100 ? v.toFixed(0) : Math.abs(v) >= 10 ? v.toFixed(1) : v.toFixed(2);
+const fmtSec = v => !isNum(v) ? "n/a" : v >= 3600 ? (v/3600).toFixed(1)+"h" : v >= 90 ? Math.floor(v/60)+"m "+Math.round(v%60)+"s" : Math.round(v)+"s";
+const fmtBool = v => v === true || v === 1 ? "yes" : v === false || v === 0 ? "no" : "n/a";
+const FMT = { int: fmtInt, tok: fmtTok, pct: fmtPct, num: fmtNum, sec: fmtSec, bool: fmtBool };
+
+/* ---------------- taxonomy ---------------- */
+const CAT_OF = {
+  think: "think",
+  open_file: "explore", list_files: "explore", search_dir: "explore",
+  file_scroll_down: "explore", file_scroll_up: "explore", file_goto_line: "explore",
+  web_search: "explore", web_browse: "explore",
+  edit_file: "edit", create_file: "edit",
+  run_command: "run",
+  eval: "eval",
+  sleep: "session", get_session_output: "session", check_session_idle: "session",
+  create_session: "session", kill_session_processes: "session", input_in_session: "session",
+  finish: "finish", subgoal_finish: "finish",
+};
+const CATS = [
+  { id:"explore", label:"explore / read",  v:"--c-explore", icon:"◈" },
+  { id:"run",     label:"run_command",     v:"--c-run",     icon:"▶" },
+  { id:"eval",    label:"eval",            v:"--c-eval",    icon:"◆" },
+  { id:"edit",    label:"edit / create",   v:"--c-edit",    icon:"✎" },
+  { id:"think",   label:"think",           v:"--c-think",   icon:"✦" },
+  { id:"session", label:"session / wait",  v:"--c-session", icon:"⏳" },
+  { id:"finish",  label:"finish",          v:"--c-finish",  icon:"⚑" },
+  { id:"other",   label:"other",           v:"--c-other",   icon:"·" },
+];
+const CAT_BY_ID = Object.fromEntries(CATS.map(c => [c.id, c]));
+const catOf = t => CAT_OF[t.action_type] || "other";
+const catVar = id => `var(${(CAT_BY_ID[id]||CAT_BY_ID.other).v})`;
+
+/* six batches = the six trajectory files = the six "sources" of the
+   discrimination matrix. Colors: categorical slots 1-6 in fixed order. */
+const BATCHES = {
+  swe_difficult: { label:"SWE difficult",  short:"SWE-diff",  v:"--b-swe_difficult", family:"SWE" },
+  swe_codeact:   { label:"SWE CodeAct",    short:"SWE-ca",    v:"--b-swe_codeact",   family:"SWE" },
+  swe_sweagent:  { label:"SWE-agent",      short:"SWE-agent", v:"--b-swe_sweagent",  family:"SWE" },
+  innovator:     { label:"InnovatorBench", short:"Innovator", v:"--b-innovator",     family:"Innovator" },
+  agency_openai: { label:"Agency · OpenAI hn.", short:"Ag-openai", v:"--b-agency_openai", family:"AgencyBench" },
+  agency_claude: { label:"Agency · Claude hn.", short:"Ag-claude", v:"--b-agency_claude", family:"AgencyBench" },
+};
+const BATCH_IDS = Object.keys(BATCHES);
+const batVar = b => `var(${(BATCHES[b]||{v:"--c-other"}).v})`;
+const batLabel = b => (BATCHES[b]||{label:b}).label;
+/* kept for run badges (schema-level source field) */
+const srcVar = b => batVar(b);
+const srcLabel = b => batLabel(b);
+
+/* model normalization for the cross-model view (AgencyBench spans models).
+   Fixed categorical slot order by combined run count; overflow folds into "other". */
+const baseModel = m => String(m || "").replace(/^(openai_|claude_)/, "") || "—";
+const harnessOf = r => r.batch === "agency_openai" ? "openai" : r.batch === "agency_claude" ? "claude" : null;
+const MODEL_SLOTS = {
+  mini:         { v:"--c-explore" },  /* slot 1 blue   */
+  kimi:         { v:"--c-run"     },  /* slot 2 aqua   */
+  claude45opus: { v:"--c-eval"    },  /* slot 3 yellow */
+  gpt52:        { v:"--c-edit"    },  /* slot 4 green  */
+  glm46:        { v:"--c-think"   },  /* slot 5 violet */
+  gemini3pro:   { v:"--c-error"   },  /* slot 6 red    */
+};
+const modelVar = m => `var(${(MODEL_SLOTS[m]||{v:"--c-other"}).v})`;
+
+/* unified best-score accessor: agencybench M24, swe_difficult GLM verifier */
+const scoreOf = r => isNum(r.metrics.M24_best_overall_score) ? r.metrics.M24_best_overall_score
+  : (r.verifier && isNum(r.verifier.score)) ? r.verifier.score : null;
+const scoreKind = r => isNum(r.metrics.M24_best_overall_score) ? "eval" : (r.verifier && isNum(r.verifier.score)) ? "glm" : null;
+
+/* ---------------- metric catalog ----------------
+   dir: +1 higher-is-better, -1 lower-is-better, 0 neutral.
+   bad: predicate -> pathology highlight. good: predicate -> green. */
+const METRIC_GROUPS = [
+  { name:"Efficiency & Cost", var:"--c-run", metrics:[
+    { k:"M19_total_tokens",       l:"Total tokens",        f:"tok", dir:0 },
+    { k:"M19_output_tokens",      l:"Output tokens",       f:"tok", dir:0 },
+    { k:"M20_duration_seconds",   l:"Duration",            f:"sec", dir:0 },
+    { k:"M20_sleep_seconds",      l:"Slept",               f:"sec", dir:-1, bad:v=>v>=120 },
+    { k:"M23_effective_step_rate",l:"Effective step rate", f:"pct", dir:1, bad:v=>v<0.7 },
+    { k:"M23_n_waste",            l:"Wasted steps",        f:"int", dir:-1, bad:v=>v>0 },
+    { k:"M24_token_per_point",    l:"Tokens per point",    f:"tok", dir:-1 },
+    { k:"M96_budget_utilization", l:"Budget utilization",  f:"pct", dir:1 },
+  ]},
+  { name:"Exploration", var:"--c-explore", metrics:[
+    { k:"M16_search_vs_open_ratio", l:"Search vs open",      f:"num", dir:0 },
+    { k:"M16_n_search",             l:"Search actions",      f:"int", dir:0 },
+    { k:"M16_n_open",               l:"Open actions",        f:"int", dir:0 },
+    { k:"M53_code_locate_efficiency", l:"Code locate eff.",  f:"pct", dir:1 },
+    { k:"M54_explore_edit_log_ratio", l:"Explore∶edit (log)",f:"num", dir:0 },
+    { k:"M55_file_reach_rate",      l:"File reach rate",     f:"pct", dir:1, bad:v=>v<0.5 },
+    { k:"M55_blind_edit_rate",      l:"Blind edit rate",     f:"pct", dir:-1, bad:v=>v>0.5 },
+    { k:"M15_repeated_view_rate",   l:"Repeated view rate",  f:"pct", dir:-1, bad:v=>v>=0.3 },
+    { k:"M74_action_transition_entropy_normalized", l:"Action entropy (norm)", f:"num", dir:0 },
+  ]},
+  { name:"Editing Discipline", var:"--c-edit", metrics:[
+    { k:"M07_read_before_edit_rate", l:"Read before edit",   f:"pct", dir:1, bad:v=>v<0.5, good:v=>v>=0.9 },
+    { k:"M05_n_edits_total",         l:"Total edits",        f:"int", dir:0 },
+    { k:"M05_unique_edited_paths",   l:"Unique paths edited",f:"int", dir:0 },
+    { k:"M05_max_edits_per_path",    l:"Max edits / path",   f:"int", dir:-1, bad:v=>v>=8 },
+    { k:"M05_tool_reuse_rate",       l:"Tool reuse rate",    f:"pct", dir:0 },
+    { k:"M57_post_fix_verify",       l:"Post-fix verify",    f:"pct", dir:1, bad:v=>v<0.5, good:v=>v>=1 },
+  ]},
+  { name:"Retry & Recovery", var:"--c-error", metrics:[
+    { k:"M10_max_blind_retry",        l:"Max blind-retry run", f:"int", dir:-1, bad:v=>v>=3 },
+    { k:"M10_blind_retry_step_count", l:"Blind-retry steps",   f:"int", dir:-1, bad:v=>v>0 },
+    { k:"M10_blind_retry_step_ratio", l:"Blind retry ratio",   f:"pct", dir:-1, bad:v=>v>0 },
+    { k:"M93_retry_improved_max",     l:"Repair@n (retry improved)", f:"pct", dir:1, good:v=>v>0 },
+    { k:"M93_score_delta_max_minus_first", l:"Score delta (best−first)", f:"num", dir:1, good:v=>v>0 },
+    { k:"M14_polling_step_ratio",     l:"Polling ratio",     f:"pct", dir:-1, bad:v=>v>=0.3 },
+    { k:"M14_max_polling_run",        l:"Max polling run",   f:"int", dir:-1, bad:v=>v>=6 },
+    { k:"M43_total_deadlock_steps",   l:"Deadlock steps",    f:"int", dir:-1, bad:v=>v>0 },
+    { k:"M12_session_leak",           l:"Session leak",      f:"int", dir:-1, bad:v=>v>0 },
+    { k:"M21_format_fail_rate",       l:"Format fail rate",  f:"pct", dir:-1, bad:v=>v>0 },
+  ]},
+  { name:"Reasoning & Planning", var:"--c-think", metrics:[
+    { k:"M71_reasoning_coverage",    l:"Reasoning coverage", f:"pct", dir:1 },
+    { k:"M71_reasoning_degradation", l:"Reasoning degradation", f:"num", dir:-1, bad:v=>v>0.5 },
+    { k:"M72_think_effectiveness",   l:"Think effectiveness", f:"num", dir:1, bad:v=>v<-0.3 },
+    { k:"M72_think_count",           l:"Think steps",        f:"int", dir:0 },
+    { k:"M76_has_planning",          l:"Has planning",       f:"bool", dir:1 },
+    { k:"M76_plan_to_action_coverage", l:"Plan→action coverage", f:"pct", dir:1 },
+    { k:"M03_subtask_count",         l:"Subtasks",           f:"int", dir:0 },
+  ]},
+  { name:"Tool Use", var:"--c-session", metrics:[
+    { k:"M02_raw_step_count",        l:"Raw steps",          f:"int", dir:0 },
+    { k:"M02_effective_step_count",  l:"Effective steps",    f:"int", dir:0 },
+    { k:"M74_unique_bigrams",        l:"Unique action bigrams", f:"int", dir:0 },
+    { k:"M43_session_create_count",  l:"Sessions created",   f:"int", dir:0 },
+  ]},
+  { name:"Eval & Score", var:"--c-eval", metrics:[
+    { k:"M24_best_overall_score",  l:"Best overall score",  f:"pct", dir:1, good:v=>v>=0.8 },
+    { k:"M24_first_overall_score", l:"First overall score", f:"pct", dir:1 },
+    { k:"M24_num_evals",           l:"Eval calls",          f:"int", dir:0 },
+    { k:"M26_first_eval_step_frac",l:"First eval position", f:"pct", dir:-1 },
+    { k:"M11_eval_abuse_rate",     l:"Eval abuse rate",     f:"pct", dir:-1, bad:v=>v>=0.5 },
+    { k:"M24_score_regressed",     l:"Score regressed",     f:"int", dir:-1, bad:v=>v>0 },
+  ]},
+];
+
+/* global min/max per metric (for position bars) */
+const M_RANGE = {};
+for (const g of METRIC_GROUPS) for (const m of g.metrics) {
+  const vals = RUNS.map(r => r.metrics[m.k]).filter(isNum);
+  if (vals.length) M_RANGE[m.k] = { min: Math.min(...vals), max: Math.max(...vals), n: vals.length };
+}
+
+/* ---------------- per-run derived summary ---------------- */
+function summarize(run) {
+  const t = run.turns, m = run.metrics;
+  const catCounts = {}; let fails = 0;
+  const seq = [];
+  for (const tu of t) {
+    const c = catOf(tu);
+    catCounts[c] = (catCounts[c] || 0) + 1;
+    if (tu.success === false) fails++;
+    seq.push({ c, f: tu.success === false });
+  }
+  const flags = [];
+  const gv = k => m[k];
+  if (isNum(gv("M10_blind_retry_step_count")) && gv("M10_blind_retry_step_count") > 0) flags.push({ t:"blind retry", s:"bad",  d:`${gv("M10_blind_retry_step_count")} blind-retry steps (max run ${gv("M10_max_blind_retry")})` });
+  if (isNum(gv("M43_total_deadlock_steps")) && gv("M43_total_deadlock_steps") > 0) flags.push({ t:"deadlock", s:"bad", d:`${gv("M43_total_deadlock_steps")} deadlock steps` });
+  if (isNum(gv("M14_polling_step_ratio")) && gv("M14_polling_step_ratio") >= 0.3) flags.push({ t:"heavy polling", s:"warn", d:`${fmtPct(gv("M14_polling_step_ratio"))} of steps are polling` });
+  if (isNum(gv("M15_repeated_view_rate")) && gv("M15_repeated_view_rate") >= 0.3) flags.push({ t:"re-reads", s:"warn", d:`repeated-view rate ${fmtPct(gv("M15_repeated_view_rate"))}` });
+  if (isNum(gv("M12_session_leak")) && gv("M12_session_leak") > 0) flags.push({ t:"session leak", s:"bad", d:`${gv("M12_session_leak")} session(s) never closed` });
+  if (isNum(gv("M11_eval_abuse_rate")) && gv("M11_eval_abuse_rate") >= 0.5) flags.push({ t:"eval abuse", s:"bad", d:`eval-abuse rate ${fmtPct(gv("M11_eval_abuse_rate"))}` });
+  if (isNum(gv("M07_read_before_edit_rate")) && gv("M07_read_before_edit_rate") < 0.5) flags.push({ t:"blind edits", s:"bad", d:`read-before-edit only ${fmtPct(gv("M07_read_before_edit_rate"))}` });
+  if (isNum(gv("M21_format_fail_rate")) && gv("M21_format_fail_rate") > 0) flags.push({ t:"format fails", s:"warn", d:`format-fail rate ${fmtPct(gv("M21_format_fail_rate"))}` });
+  if (isNum(gv("M24_score_regressed")) && gv("M24_score_regressed") > 0) flags.push({ t:"score regressed", s:"warn", d:"a later eval scored below an earlier one" });
+  if (t.length && fails / t.length > 0.25) flags.push({ t:"high fail rate", s:"bad", d:`${fails}/${t.length} actions failed` });
+  if (isNum(gv("M93_retry_improved_max")) && gv("M93_retry_improved_max") > 0) flags.push({ t:"self-corrected", s:"good", d:`retry improved score by ${fmtNum(gv("M93_score_delta_max_minus_first"))}` });
+  if (run.verifier) {
+    if (run.verifier.resolved === true) flags.push({ t:"verifier: resolved", s:"good", d:`GLM verifier score ${fmtNum(run.verifier.score)} (confidence ${fmtNum(run.verifier.confidence)})` });
+    else flags.push({ t:"verifier: not resolved", s:"warn", d:`GLM verifier score ${fmtNum(run.verifier.score)} — ${(run.verifier.reason||"").slice(0,160)}` });
+  }
+  return { catCounts, fails, seq, flags };
+}
+const SUM = RUNS.map(summarize);
+
+/* percentile rank (direction-adjusted) for radar */
+function pctRank(key, v, dir) {
+  const vals = RUNS.map(r => r.metrics[key]).filter(isNum);
+  if (!isNum(v) || vals.length < 2) return null;
+  let lo = 0, eq = 0;
+  for (const x of vals) { if (x < v) lo++; else if (x === v) eq++; }
+  const p = (lo + 0.5 * eq) / vals.length;
+  return dir < 0 ? 1 - p : p;
+}
+const RADAR_AXES = [
+  { l:"Efficiency",   f:r => pctRank("M23_effective_step_rate", r.metrics.M23_effective_step_rate, 1) },
+  { l:"Exploration",  f:r => pctRank("M74_action_transition_entropy_normalized", r.metrics.M74_action_transition_entropy_normalized, 1) },
+  { l:"Edit hygiene", f:r => pctRank("M07_read_before_edit_rate", r.metrics.M07_read_before_edit_rate, 1) },
+  { l:"Recovery",     f:r => {
+      const ps = [ pctRank("M10_blind_retry_step_ratio", r.metrics.M10_blind_retry_step_ratio, -1),
+                   pctRank("M14_polling_step_ratio",     r.metrics.M14_polling_step_ratio, -1),
+                   pctRank("M15_repeated_view_rate",     r.metrics.M15_repeated_view_rate, -1) ].filter(isNum);
+      return ps.length ? ps.reduce((a,b)=>a+b,0)/ps.length : null; } },
+  { l:"Verification", f:r => pctRank("M57_post_fix_verify", r.metrics.M57_post_fix_verify, 1) },
+  { l:"Reasoning",    f:r => {
+      const ps = [ pctRank("M71_reasoning_coverage", r.metrics.M71_reasoning_coverage, 1),
+                   pctRank("M72_think_effectiveness", r.metrics.M72_think_effectiveness, 1) ].filter(isNum);
+      return ps.length ? ps.reduce((a,b)=>a+b,0)/ps.length : null; } },
+];
+
+/* ---------------- tooltip ---------------- */
+const tip = $("#tip");
+function showTip(html, ev) {
+  tip.innerHTML = html; tip.style.display = "block";
+  const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = ev.clientX + pad, y = ev.clientY + pad;
+  if (x + w > innerWidth - 8)  x = ev.clientX - w - pad;
+  if (y + h > innerHeight - 8) y = ev.clientY - h - pad;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+function hideTip() { tip.style.display = "none"; }
+document.addEventListener("mouseover", e => {
+  const el = e.target.closest("[data-tip]");
+  if (el) showTip(el.dataset.tip, e);
+});
+document.addEventListener("mousemove", e => {
+  const el = e.target.closest("[data-tip]");
+  if (el) showTip(el.dataset.tip, e); else hideTip();
+});
+
+/* ---------------- SVG builders ---------------- */
+function miniStrip(seq, w = 168, h = 16) {
+  /* downsample long trajectories so 220-row tables stay light: <=96 cells */
+  if (seq.length > 96) {
+    const k = Math.ceil(seq.length / 96), ds = [];
+    for (let i = 0; i < seq.length; i += k) {
+      const win = seq.slice(i, i + k), cnt = {};
+      let f = false;
+      for (const s of win) { cnt[s.c] = (cnt[s.c] || 0) + 1; f = f || s.f; }
+      const c = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0][0];
+      ds.push({ c, f });
+    }
+    seq = ds;
+  }
+  const n = seq.length; if (!n) return "";
+  const cw = w / n;
+  let cells = "";
+  for (let i = 0; i < n; i++) {
+    const s = seq[i];
+    cells += `<rect x="${(i*cw).toFixed(2)}" y="0" width="${Math.max(cw-0.45, 0.6).toFixed(2)}" height="${s.f ? h-4 : h}" rx="1" fill="${catVar(s.c)}"></rect>`;
+    if (s.f) cells += `<rect x="${(i*cw).toFixed(2)}" y="${h-2.5}" width="${Math.max(cw-0.45,0.6).toFixed(2)}" height="2.5" rx="1" fill="var(--status-critical)"></rect>`;
+  }
+  return `<svg class="mini-strip" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${cells}</svg>`;
+}
+function mixBar(catCounts, total, w = 120, h = 10) {
+  let x = 0, out = "";
+  for (const c of CATS) {
+    const n = catCounts[c.id] || 0; if (!n) continue;
+    const cw = (n / total) * w;
+    out += `<rect x="${x.toFixed(2)}" y="0" width="${Math.max(cw - 1.4, 0.8).toFixed(2)}" height="${h}" rx="2" fill="${catVar(c.id)}"><title>${c.label}: ${n} (${Math.round(n/total*100)}%)</title></rect>`;
+    x += cw;
+  }
+  return `<svg class="mix-bar" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${out}</svg>`;
+}
+function radarSVG(run) {
+  const size = 372, cx = size/2, cy = 138, R = 86;
+  const axes = RADAR_AXES.map(a => ({ l: a.l, v: a.f(run) }));
+  const N = axes.length;
+  const pt = (i, r) => { const ang = -Math.PI/2 + i * 2*Math.PI/N; return [cx + r*Math.cos(ang), cy + r*Math.sin(ang)]; };
+  let grid = "";
+  for (const frac of [0.25, 0.5, 0.75, 1]) {
+    const pts = axes.map((_, i) => pt(i, R*frac).map(v=>v.toFixed(1)).join(",")).join(" ");
+    grid += `<polygon points="${pts}" fill="none" stroke="var(--grid)" stroke-width="1"></polygon>`;
+  }
+  let spokes = "", labels = "";
+  axes.forEach((a, i) => {
+    const [x2, y2] = pt(i, R);
+    spokes += `<line x1="${cx}" y1="${cy}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="var(--grid)" stroke-width="1"></line>`;
+    const [lx, ly] = pt(i, R + 22);
+    const anch = Math.abs(lx - cx) < 8 ? "middle" : lx > cx ? "start" : "end";
+    const val = a.v == null ? "n/a" : Math.round(a.v * 100);
+    labels += `<text x="${lx.toFixed(1)}" y="${(ly+4).toFixed(1)}" text-anchor="${anch}" font-size="11" fill="${a.v==null ? "var(--muted)" : "var(--ink-2)"}" font-weight="600">${a.l}</text>
+      <text x="${lx.toFixed(1)}" y="${(ly+17).toFixed(1)}" text-anchor="${anch}" font-size="10.5" fill="${a.v==null ? "var(--muted)" : "var(--accent)"}" font-weight="700">${val}</text>`;
+  });
+  const poly = axes.map((a, i) => pt(i, R * (a.v == null ? 0 : a.v)).map(v=>v.toFixed(1)).join(",")).join(" ");
+  const dots = axes.map((a, i) => {
+    if (a.v == null) return "";
+    const [x, y] = pt(i, R * a.v);
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.4" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"></circle>`;
+  }).join("");
+  return `<svg viewBox="0 0 ${size} 280" style="max-width:352px;margin:0 auto;display:block">
+    ${grid}${spokes}
+    <polygon points="${poly}" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"></polygon>
+    ${dots}${labels}
+  </svg>`;
+}
+
+/* ---------------- state ---------------- */
+const PAGE_SIZE = 50;
+const state = { bats: new Set(BATCH_IDS), model: "*", q: "", sort: "idx", asc: true, page: 0,
+  harness: "openai",            /* models view: openai | claude | both */
+  pv: { verdict: "*", q: "", sort: "discrim", asc: false } };  /* portability view */
+
+/* ---------------- overview ---------------- */
+const legendHTML = () => `<div class="legend">` + CATS.map(c =>
+  `<span class="li"><span class="sw" style="background:${catVar(c.id)}"></span>${c.label}</span>`).join("") +
+  `<span class="li"><span class="sw" style="background:var(--status-critical);height:4px;border-radius:2px"></span>failed action</span></div>`;
+
+const SORTS = {
+  idx:    r => r.__i,
+  turns:  r => r.turns.length,
+  fails:  r => SUM[r.__i].fails,
+  dur:    r => r.metrics.M20_duration_seconds ?? -1,
+  tok:    r => r.metrics.M19_total_tokens ?? -1,
+  eff:    r => r.metrics.M23_effective_step_rate ?? -1,
+  rbe:    r => r.metrics.M07_read_before_edit_rate ?? -1,
+  score:  r => scoreOf(r) ?? -1,
+  flags:  r => SUM[r.__i].flags.filter(f=>f.s!=="good").length,
+};
+function headlineChip(v, fmt, badPred, goodPred) {
+  if (!isNum(v)) return `<span class="metric-chip na">n/a</span>`;
+  const cls = badPred && badPred(v) ? "bad" : goodPred && goodPred(v) ? "good" : "";
+  return `<span class="metric-chip ${cls}">${FMT[fmt](v)}</span>`;
+}
+function filteredRuns() {
+  return RUNS.filter(r => {
+    if (!state.bats.has(r.batch)) return false;
+    if (state.model !== "*" && (r.model || "—") !== state.model) return false;
+    if (state.q && !(r.sample_name + " " + r.model + " " + r.batch).toLowerCase().includes(state.q.toLowerCase())) return false;
+    return true;
+  });
+}
+function renderOverview() {
+  const app = $("#app");
+  const totTurns = RUNS.reduce((a,r)=>a+r.turns.length,0);
+  const totFails = SUM.reduce((a,s)=>a+s.fails,0);
+  const models = [...new Set(RUNS.map(r => r.model || "—"))];
+  const nBase = new Set(RUNS.filter(r=>r.model && r.batch.startsWith("agency")).map(r=>baseModel(r.model))).size;
+  const scored = RUNS.map(scoreOf).filter(isNum);
+  const nVerif = RUNS.filter(r=>r.verifier).length;
+  const nMetricFields = DATA.discrimination ? DATA.discrimination.matrix.length : 216;
+
+  const tiles = `
+    <div class="tiles">
+      <div class="card tile"><div class="k">Trajectories</div><div class="v">${RUNS.length}</div><div class="d">6 batches · 3 benchmark families</div></div>
+      <div class="card tile"><div class="k">Turns</div><div class="v">${fmtInt(totTurns)}</div><div class="d">median ${fmtInt([...RUNS.map(r=>r.turns.length)].sort((a,b)=>a-b)[Math.floor(RUNS.length/2)])} / run</div></div>
+      <div class="card tile"><div class="k">Failed actions</div><div class="v" style="color:var(--status-critical)">${fmtInt(totFails)}</div><div class="d">${(totFails/totTurns*100).toFixed(1)}% of all turns</div></div>
+      <div class="card tile"><div class="k">Models</div><div class="v">${nBase}</div><div class="d">AgencyBench spans ${nBase} base models</div></div>
+      <div class="card tile"><div class="k">Metric fields</div><div class="v">${nMetricFields}</div><div class="d">27 M-families per run</div></div>
+      <div class="card tile"><div class="k">Scored runs</div><div class="v">${scored.length}<small>of ${RUNS.length}</small></div><div class="d">${nVerif} via GLM verifier · μ ${scored.length?fmtPct(scored.reduce((a,b)=>a+b,0)/scored.length):"—"}</div></div>
+    </div>`;
+
+  const batChips = BATCH_IDS.map(id =>
+    `<button class="chip ${state.bats.has(id)?"on":""}" data-bat="${id}"><span class="dot" style="background:${batVar(id)}"></span>${BATCHES[id].label}
+      <span style="color:var(--muted);font-weight:500">${RUNS.filter(r=>r.batch===id).length}</span></button>`).join("");
+  const modelOpts = ["*", ...models].map(m =>
+    `<option value="${esc(m)}" ${state.model===m?"selected":""}>${m==="*"?"all models":esc(m)}</option>`).join("");
+
+  const all = filteredRuns();
+  const sortFn = SORTS[state.sort] || SORTS.idx;
+  all.sort((a,b) => { const va=sortFn(a), vb=sortFn(b); return (va<vb?-1:va>vb?1:0) * (state.asc?1:-1); });
+  const nPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
+  if (state.page >= nPages) state.page = nPages - 1;
+  const rows = all.slice(state.page * PAGE_SIZE, (state.page + 1) * PAGE_SIZE);
+
+  const th = (key, label, right) => `<th data-sort="${key}" ${right?'style="text-align:right"':''}>${label} ${state.sort===key?`<span class="arr">${state.asc?"▲":"▼"}</span>`:""}</th>`;
+
+  const body = rows.map(r => {
+    const s = SUM[r.__i], m = r.metrics;
+    const badFlags = s.flags.filter(f=>f.s!=="good");
+    const sv = scoreOf(r), sk = scoreKind(r);
+    return `<tr data-run="${r.__i}">
+      <td class="name">
+        <div class="nm">${esc(r.sample_name)}</div>
+        <div class="meta">
+          <span class="badge"><span class="dot" style="background:${batVar(r.batch)}"></span>${batLabel(r.batch)}</span>
+          ${r.model ? `<span class="badge model">${esc(r.model)}</span>` : ""}
+        </div>
+      </td>
+      <td class="num">${r.turns.length}</td>
+      <td class="num">${s.fails ? `<span class="fails">${s.fails}</span>` : `<span class="zero">0</span>`}</td>
+      <td class="num">${fmtSec(m.M20_duration_seconds)}</td>
+      <td class="num">${fmtTok(m.M19_total_tokens)}</td>
+      <td>${mixBar(s.catCounts, r.turns.length)}</td>
+      <td>${miniStrip(s.seq)}</td>
+      <td class="num">${headlineChip(m.M23_effective_step_rate, "pct", v=>v<0.7)}</td>
+      <td class="num">${headlineChip(m.M07_read_before_edit_rate, "pct", v=>v<0.5, v=>v>=0.9)}</td>
+      <td class="num" ${sk==="glm" ? `data-tip="GLM verifier score (SWE difficult)"` : ""}>${headlineChip(sv, "pct", null, v=>v>=0.8)}${sk==="glm" ? ` <span style="font-size:9px;color:var(--muted);font-weight:700">GLM</span>` : ""}</td>
+      <td><div class="flags-cell">${
+        s.flags.slice(0,4).map(f=>`<span class="flag ${f.s==="warn"?"warn":f.s==="good"?"good":""}" data-tip="${esc(f.d)}">${f.t}</span>`).join("") +
+        (s.flags.length>4?`<span class="flag warn" data-tip="${esc(s.flags.slice(4).map(f=>f.t).join(", "))}">+${s.flags.length-4}</span>`:"") ||
+        `<span style="color:var(--muted);font-size:11px">clean</span>`}</div></td>
+    </tr>`;
+  }).join("");
+
+  /* pager: prev · windowed page numbers · next */
+  let pageBtns = "";
+  if (nPages > 1) {
+    const win = [];
+    for (let p = 0; p < nPages; p++) if (p === 0 || p === nPages-1 || Math.abs(p - state.page) <= 2) win.push(p);
+    let last = -1;
+    pageBtns = win.map(p => {
+      const gap = (p - last > 1) ? `<span style="color:var(--muted)">…</span>` : "";
+      last = p;
+      return gap + `<button data-page="${p}" class="${p===state.page?"on":""}">${p+1}</button>`;
+    }).join("");
+  }
+  const pager = nPages > 1 ? `<div class="pager">
+      <button data-page="${state.page-1}" ${state.page===0?"disabled":""}>‹ prev</button>${pageBtns}
+      <button data-page="${state.page+1}" ${state.page===nPages-1?"disabled":""}>next ›</button>
+      <span class="pinfo">runs ${state.page*PAGE_SIZE+1}–${Math.min(all.length,(state.page+1)*PAGE_SIZE)} of ${all.length}</span>
+    </div>` : "";
+
+  app.innerHTML = `
+    <h1 class="page">Agent runs</h1>
+    <p class="lede">All ${RUNS.length} trajectories from the m_v2 batch evaluation — 3× SWE-bench harnesses, InnovatorBench, and AgencyBench under two harnesses — plus 27 families of fine-grained behavioral metrics per run. Click a row to open the turn-by-turn view.</p>
+    ${tiles}
+    <div class="filters">
+      <div class="chip-row">${batChips}</div>
+      <select id="modelSel">${modelOpts}</select>
+      <input type="search" id="q" placeholder="filter by name / model…" value="${esc(state.q)}">
+      <span class="count">${all.length} of ${RUNS.length} runs</span>
+    </div>
+    <div style="margin: 4px 0 10px">${legendHTML()}</div>
+    <div class="table-scroller">
+      <table class="runs">
+        <thead><tr>
+          ${th("idx","Run")}${th("turns","Turns",1)}${th("fails","Fails",1)}${th("dur","Duration",1)}${th("tok","Tokens",1)}
+          <th class="nosort">Action mix</th><th class="nosort">Trajectory</th>
+          ${th("eff","Eff. rate",1)}${th("rbe","Read→Edit",1)}${th("score","Best score",1)}${th("flags","Pathologies")}
+        </tr></thead>
+        <tbody>${body || `<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:30px">no runs match the current filters</td></tr>`}</tbody>
+      </table>
+    </div>
+    ${pager}`;
+
+  app.querySelectorAll(".chip[data-bat]").forEach(b => b.onclick = () => {
+    const id = b.dataset.bat;
+    if (state.bats.has(id) && state.bats.size === 1) state.bats = new Set(BATCH_IDS);
+    else if (state.bats.has(id)) state.bats.delete(id); else state.bats.add(id);
+    state.page = 0; renderOverview();
+  });
+  $("#modelSel").onchange = e => { state.model = e.target.value; state.page = 0; renderOverview(); };
+  $("#q").oninput = e => { state.q = e.target.value; state.page = 0; clearTimeout(state.__t); state.__t = setTimeout(renderOverview, 180); };
+  app.querySelectorAll("th[data-sort]").forEach(t => t.onclick = () => {
+    const k = t.dataset.sort;
+    if (state.sort === k) state.asc = !state.asc; else { state.sort = k; state.asc = k === "idx" || k === "run"; }
+    state.page = 0; renderOverview();
+  });
+  app.querySelectorAll(".pager button[data-page]").forEach(b => b.onclick = () => {
+    state.page = Math.max(0, Math.min(nPages-1, +b.dataset.page)); renderOverview();
+    window.scrollTo({ top: 0 });
+  });
+  app.querySelectorAll("tr[data-run]").forEach(tr => tr.onclick = e => {
+    if (e.target.closest(".flag")) return;
+    location.hash = "#/run/" + tr.dataset.run;
+  });
+  if (state.q) { const el = $("#q"); el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+}
+
+/* ---------------- detail view ---------------- */
+function turnTip(tu) {
+  const c = catOf(tu);
+  return `<div class="t1">#${tu.idx} · ${esc(tu.action_type)}</div>` +
+    (tu.path ? `<div class="mono">${esc(tu.path)}</div>` : "") +
+    (tu.description ? `<div class="mono">${esc(tu.description.slice(0,120))}</div>` : "") +
+    `<div>${tu.success === false ? "✗ failed" : "✓ ok"}${isNum(tu.overall_score) ? " · score " + fmtNum(tu.overall_score) : ""}</div>`;
+}
+function detectRetries(turns) {
+  const retry = new Array(turns.length).fill(false);
+  for (let i = 1; i < turns.length; i++) {
+    const a = turns[i];
+    for (let j = Math.max(0, i-3); j < i; j++) {
+      const b = turns[j];
+      if (b.action_type === a.action_type && (b.path||"") === (a.path||"") &&
+          (b.description||"") === (a.description||"") && b.success === false &&
+          (a.description || a.path)) { retry[i] = true; break; }
+    }
+  }
+  return retry;
+}
+function obsBlock(tu, i) {
+  let msg = tu.obs_msg || "";
+  if (!msg) return "";
+  /* pretty-print the {"success":..,"message":..} wrappers */
+  if (msg.startsWith("{")) {
+    try { const o = JSON.parse(msg); if (o && typeof o.message === "string") msg = o.message; } catch (e) {}
+  }
+  const short = msg.length > 220;
+  const id = `obs${i}`;
+  return `<div class="obs">
+    <div class="obs-body" id="${id}" data-full="${esc(msg)}">${esc(short ? msg.slice(0, 220) + " …" : msg)}</div>
+    ${short ? `<button class="expander" data-target="${id}">show full observation (${msg.length} chars)</button>` : ""}
+  </div>`;
+}
+function renderDetail(ri) {
+  const run = RUNS[ri]; if (!run) { location.hash = "#/"; return; }
+  const s = SUM[ri], m = run.metrics, app = $("#app");
+  const retry = detectRetries(run.turns);
+
+  /* -- strip -- */
+  const n = run.turns.length;
+  const cells = run.turns.map((tu, i) =>
+    `<div class="cell ${tu.success===false?"fail":""}" data-turn="${i}" style="background:${catVar(catOf(tu))}" data-tip="${esc(turnTip(tu)).replace(/"/g,"&quot;")}"></div>`).join("");
+  const evalTurns = run.turns.map((tu,i)=>({tu,i})).filter(x => x.tu.action_type === "eval" && isNum(x.tu.overall_score));
+  const scoreLane = evalTurns.length ? `<div class="score-lane">
+      ${evalTurns.map(x => `<span class="mk" style="left:${((x.i + 0.5) / n * 100).toFixed(2)}%" data-turn="${x.i}" data-tip="eval @ turn ${x.i} → score ${fmtNum(x.tu.overall_score)}"><span class="dia"></span>${fmtNum(x.tu.overall_score)}</span>`).join("")}
+    </div>` : "";
+
+  /* -- timeline with polling-run collapse -- */
+  const POLL = new Set(["sleep","get_session_output","check_session_idle"]);
+  const blocks = [];
+  for (let i = 0; i < n; ) {
+    if (POLL.has(run.turns[i].action_type) && run.turns[i].success !== false) {
+      let j = i;
+      while (j < n && POLL.has(run.turns[j].action_type) && run.turns[j].success !== false) j++;
+      if (j - i >= 4) { blocks.push({ type: "poll", from: i, to: j }); i = j; continue; }
+    }
+    blocks.push({ type: "turn", i }); i++;
+  }
+  const turnCard = i => {
+    const tu = run.turns[i], c = catOf(tu), cat = CAT_BY_ID[c] || CAT_BY_ID.other;
+    const failed = tu.success === false;
+    const toks = (isNum(tu.in_tokens) && (tu.in_tokens || tu.out_tokens)) ? `<span class="toks">${fmtTok(tu.in_tokens)} in · ${fmtTok(tu.out_tokens)} out</span>` : "";
+    const score = tu.action_type === "eval" && isNum(tu.overall_score) ? `<span class="eval-score">score ${fmtNum(tu.overall_score)}</span>` : "";
+    return `<div class="turn ${failed?"fail":""} ${retry[i]?"retry":""}" id="turn-${i}" style="--cat:${catVar(c)}">
+      <div class="turn-head">
+        <span class="idx">#${tu.idx}</span>
+        <span class="act-pill" style="--cat:${catVar(c)}">${cat.icon} ${esc(tu.action_type)}</span>
+        ${retry[i] ? `<span class="rchip" data-tip="same action + target repeated right after a failure">RETRY</span>` : ""}
+        ${tu.path ? `<span class="path" title="${esc(tu.path)}">&lrm;${esc(tu.path)}</span>` : `<span class="path"></span>`}
+        ${score}
+        <span class="ok ${failed?"no":"yes"}">${failed?"✗ FAIL":"✓ OK"}</span>
+        ${toks}
+      </div>
+      ${tu.description && tu.description !== "view" && tu.description !== tu.action_type && !(tu.description === "shell" && tu.action_type === "run_command") ? `<div class="cmd">${esc(tu.description)}</div>` : ""}
+      ${tu.thought ? `<div class="thought">✦ ${esc(tu.thought)}</div>` : ""}
+      ${obsBlock(tu, i)}
+    </div>`;
+  };
+  const timeline = blocks.map(b => {
+    if (b.type === "turn") return turnCard(b.i);
+    const kinds = {};
+    for (let k = b.from; k < b.to; k++) kinds[run.turns[k].action_type] = (kinds[run.turns[k].action_type]||0)+1;
+    const desc = Object.entries(kinds).map(([k,v])=>`${k}×${v}`).join(" · ");
+    return `<div class="poll-group" data-from="${b.from}" data-to="${b.to}">
+      ⏳ <span class="n">${b.to - b.from} polling turns</span> <span>(${esc(desc)})</span>
+      <span>turns ${b.from}–${b.to-1}</span><span class="hint">expand ▾</span>
+    </div>`;
+  }).join("");
+
+  /* -- metric panel -- */
+  const groupsHTML = METRIC_GROUPS.map(g => {
+    const rows = g.metrics.map(md => {
+      const v = m[md.k];
+      const na = !isNum(v) && typeof v !== "boolean";
+      const bad = !na && md.bad && isNum(v) && md.bad(v);
+      const good = !na && md.good && isNum(v) && md.good(v);
+      const rng = M_RANGE[md.k];
+      let bar = "";
+      if (!na && isNum(v) && rng) {
+        const span = rng.max - rng.min;
+        if (span > 0) {
+          const fr = (v - rng.min) / span;
+          bar = `<div class="mbar" data-tip="range across ${rng.n} runs: ${FMT[md.f](rng.min)} – ${FMT[md.f](rng.max)}"><div class="fill" style="width:${Math.max(3, Math.min(100, fr*100)).toFixed(1)}%"></div></div>`;
+        } else {
+          bar = `<div class="mbar" data-tip="all ${rng.n} runs share this value" style="opacity:.5"><div class="fill" style="width:4%;opacity:.5"></div></div>`;
+        }
+      } else bar = `<div class="mbar" style="opacity:.35"></div>`;
+      return `<div class="mrow ${na?"na":""} ${bad?"bad":""} ${good?"goodv":""}" data-tip="${esc(md.k)}">
+        <div class="ml">${md.l} <span class="mk">${md.k.split("_")[0]}</span></div>
+        ${bar}
+        <div class="mv">${na ? "n/a" : FMT[md.f](v)}</div>
+      </div>`;
+    }).join("");
+    return `<div class="card mgroup"><h3><span class="gdot" style="background:var(${g.var})"></span>${g.name}</h3>${rows}</div>`;
+  }).join("");
+
+  const tiles = `
+    <div class="tiles" style="margin:14px 0">
+      <div class="card tile"><div class="k">Turns</div><div class="v">${n}</div><div class="d">${fmtInt(m.M02_effective_step_count)} effective</div></div>
+      <div class="card tile"><div class="k">Failed</div><div class="v" style="color:${s.fails? "var(--status-critical)":"var(--status-good)"}">${s.fails}</div><div class="d">${(s.fails/n*100).toFixed(0)}% of turns</div></div>
+      <div class="card tile"><div class="k">Duration</div><div class="v">${fmtSec(m.M20_duration_seconds)}</div><div class="d">${isNum(m.M20_sleep_seconds)&&m.M20_sleep_seconds>0?fmtSec(m.M20_sleep_seconds)+" asleep":"no sleep"}</div></div>
+      <div class="card tile"><div class="k">Tokens</div><div class="v">${fmtTok(m.M19_total_tokens)}</div><div class="d">${fmtTok(m.M19_output_tokens)} out</div></div>
+      <div class="card tile"><div class="k">Eff. step rate</div><div class="v">${fmtPct(m.M23_effective_step_rate)}</div><div class="d">${fmtInt(m.M23_n_waste)} wasted</div></div>
+      <div class="card tile"><div class="k">Best score</div><div class="v" style="color:${isNum(scoreOf(run))?"var(--c-eval)":"var(--muted)"}">${isNum(scoreOf(run))?fmtPct(scoreOf(run)):"n/a"}</div><div class="d">${scoreKind(run)==="glm"?"GLM verifier":isNum(m.M24_num_evals)&&m.M24_num_evals>0?fmtInt(m.M24_num_evals)+" evals":"no verifier"}</div></div>
+    </div>`;
+
+  const V = run.verifier;
+  const verifierCard = V ? `<div class="card verifier-card">
+      <h3>GLM verifier (SWE difficult)</h3>
+      <div class="vrow">
+        <span class="vscore" style="color:${V.resolved?"var(--status-good)":"var(--status-critical)"}">${fmtNum(V.score)}</span>
+        <span class="flag ${V.resolved?"good":""}">${V.resolved?"✓ resolved":"✗ not resolved"}</span>
+        <span style="font-size:11.5px;color:var(--muted)">confidence ${fmtNum(V.confidence)}</span>
+      </div>
+      <div class="vreason">${esc(V.reason || "")}</div>
+    </div>` : "";
+
+  app.innerHTML = `
+    <div class="backlink" onclick="location.hash='#/'">← all runs</div>
+    <div class="detail-head">
+      <h1>${esc(run.sample_name)}</h1>
+      <span class="badge"><span class="dot" style="background:${batVar(run.batch)}"></span>${batLabel(run.batch)}</span>
+      ${run.model ? `<span class="badge model">${esc(run.model)}</span>` : ""}
+    </div>
+    <div class="flags-row">${s.flags.map(f=>`<span class="flag ${f.s==="warn"?"warn":f.s==="good"?"good":""}" data-tip="${esc(f.d)}">${f.t}</span>`).join("") || `<span class="flag good">no pathologies flagged</span>`}</div>
+    ${tiles}
+    <div class="card strip-card">
+      <div class="strip-head"><span class="t">Whole-trajectory action strip — ${n} turns, click to jump</span>${legendHTML()}</div>
+      <div class="strip-scroll"><div style="min-width:${Math.max(0, n*7)}px">
+        <div class="astrip">${cells}</div>${scoreLane}
+      </div></div>
+    </div>
+    <div class="detail-grid">
+      <div class="timeline" id="timeline">${timeline}</div>
+      <div class="metric-panel">
+        ${verifierCard}
+        <div class="card radar-card"><h3>Behavior profile (percentile vs all ${RUNS.length} runs)</h3>${radarSVG(run)}
+          <div class="radar-note">Each axis = this run's direction-adjusted percentile among all runs; 100 = best. Axes with no applicable metric are dimmed at 0.</div>
+        </div>
+        ${groupsHTML}
+      </div>
+    </div>`;
+
+  app.querySelectorAll("[data-turn]").forEach(el => el.onclick = () => {
+    const i = +el.dataset.turn;
+    /* expand poll group if the turn is inside one */
+    const pg = [...app.querySelectorAll(".poll-group")].find(g => i >= +g.dataset.from && i < +g.dataset.to);
+    if (pg) expandPoll(pg);
+    const t = $("#turn-" + i);
+    if (t) { t.scrollIntoView({ behavior:"smooth", block:"center" }); t.style.outline = "2px solid var(--accent)";
+      setTimeout(()=>t.style.outline="", 1600); }
+  });
+  function expandPoll(g) {
+    const from = +g.dataset.from, to = +g.dataset.to;
+    const html = Array.from({length: to-from}, (_,k)=>turnCard(from+k)).join("");
+    const div = document.createElement("div");
+    div.style.cssText = "display:flex;flex-direction:column;gap:8px";
+    div.innerHTML = html;
+    g.replaceWith(div);
+    wireExpanders(div);
+  }
+  app.querySelectorAll(".poll-group").forEach(g => g.onclick = () => expandPoll(g));
+  wireExpanders(app);
+}
+function wireExpanders(root) {
+  root.querySelectorAll(".expander").forEach(b => b.onclick = () => {
+    const el = document.getElementById(b.dataset.target);
+    if (!el) return;
+    el.textContent = el.dataset.full;
+    b.remove();
+  });
+}
+
+/* ---------------- insights ---------------- */
+function dotPlot(md, w = 340, h = 150) {
+  const pts = RUNS.map((r,i)=>({ v: r.metrics[md.k], r, i })).filter(p => isNum(p.v));
+  if (pts.length < 2) return `<div style="color:var(--muted);font-size:12px">not enough data</div>`;
+  const lo = Math.min(...pts.map(p=>p.v)), hi = Math.max(...pts.map(p=>p.v));
+  const pad = 16, x = v => lo===hi ? w/2 : pad + (v-lo)/(hi-lo)*(w-2*pad);
+  const lanes = {}; BATCH_IDS.forEach((b, i) => lanes[b] = 22 + i * 19);
+  const dots = pts.map(p => {
+    const jit = ((p.i * 37) % 9 - 4) * 0.8;
+    return `<circle cx="${x(p.v).toFixed(1)}" cy="${((lanes[p.r.batch]||60)+jit).toFixed(1)}" r="4.2" fill="${batVar(p.r.batch)}" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.2"
+      data-tip="<div class='t1'>${esc(p.r.sample_name)}</div><div class='mono'>${esc(p.r.model||batLabel(p.r.batch))}</div>${md.l}: <b>${FMT[md.f](p.v)}</b>" style="cursor:pointer" data-run-link="${p.i}"></circle>`;
+  }).join("");
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">
+    <line x1="${pad}" y1="${h-14}" x2="${w-pad}" y2="${h-14}" stroke="var(--baseline)" stroke-width="1"></line>
+    <text class="axislbl" x="${pad}" y="${h-3}">${FMT[md.f](lo)}</text>
+    <text class="axislbl" x="${w-pad}" y="${h-3}" text-anchor="end">${FMT[md.f](hi)}</text>
+    ${md.dirNote ? `<text class="axislbl" x="${w/2}" y="${h-3}" text-anchor="middle">${md.dirNote}</text>` : ""}
+    ${dots}
+  </svg>`;
+}
+function renderInsights() {
+  const app = $("#app");
+  const KEYS = [
+    { k:"M23_effective_step_rate", l:"Effective step rate", f:"pct", dirNote:"higher →" },
+    { k:"M07_read_before_edit_rate", l:"Read-before-edit rate", f:"pct", dirNote:"higher →" },
+    { k:"M14_polling_step_ratio", l:"Polling step ratio", f:"pct", dirNote:"← lower" },
+    { k:"M15_repeated_view_rate", l:"Repeated-view rate", f:"pct", dirNote:"← lower" },
+    { k:"M54_explore_edit_log_ratio", l:"Explore∶edit balance (log)", f:"num" },
+    { k:"M74_action_transition_entropy_normalized", l:"Action-transition entropy", f:"num" },
+    { k:"M20_duration_seconds", l:"Wall-clock duration", f:"sec" },
+    { k:"M05_tool_reuse_rate", l:"Tool reuse rate", f:"pct" },
+    { k:"M55_file_reach_rate", l:"File reach rate", f:"pct", dirNote:"higher →" },
+  ];
+  const srcLegend = `<div class="legend" style="margin:8px 0 0">` + BATCH_IDS.map(id =>
+    `<span class="li"><span class="sw" style="background:${batVar(id)};border-radius:50%"></span>${BATCHES[id].label}</span>`).join("") + `</div>`;
+
+  /* action mix per batch: 100% stacked horizontal bars */
+  const mixRows = BATCH_IDS.map(src => {
+    const runs = RUNS.filter(r => r.batch === src);
+    const counts = {}; let tot = 0;
+    for (const r of runs) { const s = SUM[r.__i]; for (const [c,v] of Object.entries(s.catCounts)) { counts[c]=(counts[c]||0)+v; tot += v; } }
+    let xp = 0; const segs = CATS.map(c => {
+      const v = counts[c.id]||0; if (!v) return "";
+      const wf = v / tot * 100; const seg = `<div data-tip="<div class='t1'>${srcLabel(src)}</div>${c.label}: ${v} turns (${(wf).toFixed(1)}%)" style="width:${wf}%;background:${catVar(c.id)};border-radius:3px"></div>`;
+      xp += wf; return seg;
+    }).join("");
+    return `<div style="display:grid;grid-template-columns:130px 1fr 60px;gap:10px;align-items:center;margin:7px 0">
+      <div style="font-size:12.5px;font-weight:600;color:var(--ink-2)"><span class="dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${srcVar(src)};margin-right:6px"></span>${srcLabel(src)}</div>
+      <div style="display:flex;gap:2px;height:18px">${segs}</div>
+      <div style="font-size:11.5px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums">${fmtInt(tot)} turns</div>
+    </div>`;
+  }).join("");
+
+  app.innerHTML = `
+    <h1 class="page">Cross-batch insights</h1>
+    <p class="lede">Behavioral fingerprints differ sharply by batch: SWE runs are read-edit loops, InnovatorBench runs are dominated by long-running sessions and polling, AgencyBench runs are eval-driven. Each dot is one of the ${RUNS.length} runs, one lane per batch — hover for the run, click to open it. For per-model comparison see the <a href="#/models">Models</a> tab; for which metrics survive across batches see <a href="#/portability">Portability</a>.</p>
+    <div class="insight-grid">
+      <div class="card ichart wide">
+        <h3>Action mix by batch</h3><div class="sub">share of turns per action category</div>
+        ${mixRows}
+        <div style="margin-top:8px">${legendHTML()}</div>
+      </div>
+      <div class="card ichart wide"><h3>Distribution lanes</h3><div class="sub">in the dot plots below, each dot = one trajectory; lanes top→bottom in this order</div>${srcLegend}</div>
+      ${KEYS.map(md => `<div class="card ichart">
+          <h3>${md.l}</h3><div class="sub mono">${md.k}</div>
+          ${dotPlot(md)}
+        </div>`).join("")}
+    </div>`;
+  app.querySelectorAll("[data-run-link]").forEach(el => el.addEventListener("click", () => location.hash = "#/run/" + el.dataset.runLink));
+}
+
+/* ================================================================
+   Models view — cross-model comparison on AgencyBench.
+   Answers: do the metrics discriminate BETWEEN models,
+   not just between task formats?
+   ================================================================ */
+const MODEL_METRICS = [
+  { k:"M93_max_eval_score",                 l:"Peak eval score",              f:"pct", hi:"better" },
+  { k:"M93_first_eval_score",               l:"First eval score",             f:"pct", hi:"better" },
+  { k:"M93_score_delta_max_minus_first",    l:"Self-improvement Δ",           f:"num", hi:"better" },
+  { k:"M11_eval_abuse_rate",                l:"Eval abuse rate",              f:"pct", hi:"worse"  },
+  { k:"M02_raw_step_count",                 l:"Steps taken",                  f:"int" },
+  { k:"M05_tool_reuse_rate",                l:"Tool reuse rate",              f:"pct" },
+  { k:"M05_n_edits_total",                  l:"Total edits",                  f:"int" },
+  { k:"M16_search_vs_open_ratio",           l:"Search∶open ratio",            f:"num" },
+  { k:"M54_explore_edit_log_ratio",         l:"Explore∶edit (log)",           f:"num" },
+  { k:"M74_action_transition_entropy_normalized", l:"Action entropy (norm)",  f:"num" },
+  { k:"M26_first_eval_step_frac",           l:"First-eval position",          f:"pct", hi:"worse" },
+  { k:"M23_effective_density",              l:"Effective density",            f:"pct", hi:"better" },
+  { k:"M57_n_post_edit_actions",            l:"Post-edit verify actions",     f:"num", hi:"better" },
+  { k:"M43_burn_window_size",               l:"Token-burn window",            f:"int" },
+];
+const mean = xs => xs.length ? xs.reduce((a,b)=>a+b,0)/xs.length : null;
+function modelSelection() {
+  const want = state.harness === "both" ? ["agency_openai","agency_claude"] : [state.harness === "claude" ? "agency_claude" : "agency_openai"];
+  return RUNS.filter(r => want.includes(r.batch));
+}
+function modelGroups(runs) {
+  const by = {};
+  for (const r of runs) { const b = baseModel(r.model); (by[b] = by[b] || []).push(r); }
+  /* fold tiny groups (<3 runs) into "other"; order = fixed slot order then rest */
+  const order = Object.keys(MODEL_SLOTS).filter(m => by[m] && by[m].length >= 3);
+  const other = [];
+  for (const [m, g] of Object.entries(by)) if (!order.includes(m)) other.push(...g);
+  const groups = order.map(m => ({ m, runs: by[m] }));
+  if (other.length) groups.push({ m: "other", runs: other });
+  return groups;
+}
+/* between-model variance share (eta^2): SSbetween / SStotal */
+function eta2(groups, key) {
+  const all = [];
+  const gs = groups.filter(g => g.m !== "other").map(g => {
+    const vs = g.runs.map(r => r.metrics[key]).filter(isNum);
+    all.push(...vs); return vs;
+  });
+  if (all.length < 12) return null;
+  const gm = mean(all), sst = all.reduce((a,x)=>a+(x-gm)**2, 0);
+  if (sst < 1e-12) return null;
+  const ssb = gs.reduce((a,vs)=>a + (vs.length ? vs.length*(mean(vs)-gm)**2 : 0), 0);
+  return ssb / sst;
+}
+function miniRadar(axes, color, W = 264, H = 196) {
+  const cx = W/2, cy = H/2 + 2, R = Math.min(W, H)/2 - 36, N = axes.length;
+  const pt = (i, r) => { const a = -Math.PI/2 + i*2*Math.PI/N; return [cx + r*Math.cos(a), cy + r*Math.sin(a)]; };
+  let grid = "";
+  for (const f of [0.5, 1]) grid += `<polygon points="${axes.map((_,i)=>pt(i,R*f).map(v=>v.toFixed(1)).join(",")).join(" ")}" fill="none" stroke="var(--grid)" stroke-width="1"></polygon>`;
+  let labels = "";
+  axes.forEach((a,i) => {
+    const [lx, ly] = pt(i, R + 15);
+    const anch = Math.abs(lx-cx) < 8 ? "middle" : lx > cx ? "start" : "end";
+    labels += `<text x="${lx.toFixed(1)}" y="${(ly+3.5).toFixed(1)}" text-anchor="${anch}" font-size="9.5" fill="var(--muted)" font-weight="600">${a.l}</text>`;
+  });
+  const poly = axes.map((a,i)=>pt(i, R*(a.v==null?0:a.v)).map(v=>v.toFixed(1)).join(",")).join(" ");
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:270px">
+    ${grid}${labels}
+    <polygon points="${poly}" fill="${color}" fill-opacity="0.2" stroke="${color}" stroke-width="2" stroke-linejoin="round"></polygon>
+  </svg>`;
+}
+function renderModels() {
+  const app = $("#app");
+  const sel = modelSelection();
+  const groups = modelGroups(sel);
+  const named = groups.filter(g => g.m !== "other");
+
+  /* eta^2 ranking over curated metric list */
+  const rank = MODEL_METRICS.map(md => ({ md, e: eta2(groups, md.k) })).filter(x => isNum(x.e))
+    .sort((a,b) => b.e - a.e);
+  const maxE = rank.length ? rank[0].e : 1;
+  const etaRows = rank.map(x => `
+    <div class="mm-row" style="grid-template-columns:158px 1fr 44px" data-tip="<div class='t1'>${esc(x.md.l)}</div><div class='mono'>${esc(x.md.k)}</div>share of run-to-run variance explained by which model produced the run: <b>${(x.e*100).toFixed(0)}%</b>">
+      <div class="mlabel" title="${esc(x.md.k)}">${esc(x.md.l)}</div>
+      <div class="bartrack" style="height:14px"><div class="barfill" style="width:${Math.max(2, x.e/Math.max(maxE,1e-9)*100).toFixed(1)}%;background:var(--accent)"></div></div>
+      <div class="mval">${(x.e*100).toFixed(0)}%</div>
+    </div>`).join("");
+
+  /* score dumbbells: first -> peak, per model */
+  const scoreRows = groups.map(g => {
+    const first = mean(g.runs.map(r=>r.metrics.M93_first_eval_score).filter(isNum));
+    const peak  = mean(g.runs.map(r=>r.metrics.M93_max_eval_score).filter(isNum));
+    if (!isNum(peak)) return "";
+    const x1 = (first ?? 0)*100, x2 = peak*100;
+    return `<div class="mm-row" data-tip="<div class='t1'>${esc(g.m)}</div>mean first eval ${fmtPct(first)} → mean peak eval ${fmtPct(peak)} over ${g.runs.length} runs">
+      <div class="mlabel"><span class="dot" style="background:${modelVar(g.m)}"></span>${esc(g.m)} <span style="color:var(--muted);font-weight:400">×${g.runs.length}</span></div>
+      <div class="bartrack">
+        <div style="position:absolute;top:50%;height:3px;transform:translateY(-50%);border-radius:2px;left:${Math.min(x1,x2)}%;width:${Math.max(Math.abs(x2-x1),0.5)}%;background:${modelVar(g.m)};opacity:.45"></div>
+        ${isNum(first)?`<div class="rundot" style="left:${x1}%;background:var(--surface);border:2px solid ${modelVar(g.m)};opacity:1"></div>`:""}
+        <div class="rundot" style="left:${x2}%;background:${modelVar(g.m)};opacity:1;width:9px;height:9px"></div>
+      </div>
+      <div class="mval">${fmtPct(peak)}</div>
+    </div>`;
+  }).join("");
+
+  /* small multiples: per-metric mean bars + run dots */
+  const SMALLS = ["M93_max_eval_score","M93_score_delta_max_minus_first","M02_raw_step_count","M11_eval_abuse_rate","M05_tool_reuse_rate","M16_search_vs_open_ratio","M54_explore_edit_log_ratio","M57_n_post_edit_actions"]
+    .map(k => MODEL_METRICS.find(m => m.k === k)).filter(Boolean);
+  const smallPanels = SMALLS.map(md => {
+    const gvals = groups.map(g => ({ g, vs: g.runs.map(r=>r.metrics[md.k]).filter(isNum) })).filter(x => x.vs.length);
+    if (!gvals.length) return "";
+    const allv = gvals.flatMap(x=>x.vs);
+    const lo = Math.min(0, ...allv), hi = Math.max(...allv);
+    const span = hi - lo || 1;
+    const rows = gvals.map(({g, vs}) => {
+      const mu = mean(vs);
+      const w = (mu - lo)/span*100;
+      const dots = vs.map(v => `<div class="rundot" style="left:${((v-lo)/span*100).toFixed(1)}%"></div>`).join("");
+      return `<div class="mm-row" data-tip="<div class='t1'>${esc(g.m)}</div>${esc(md.l)} mean <b>${FMT[md.f](mu)}</b> over ${vs.length} runs (dots = individual runs)">
+        <div class="mlabel"><span class="dot" style="background:${modelVar(g.m)}"></span>${esc(g.m)}</div>
+        <div class="bartrack"><div class="barfill" style="width:${Math.max(w,1).toFixed(1)}%;background:${modelVar(g.m)}"></div>${dots}</div>
+        <div class="mval">${FMT[md.f](mu)}</div>
+      </div>`;
+    }).join("");
+    const e = eta2(groups, md.k);
+    return `<div class="card mm-panel">
+      <h3>${esc(md.l)}</h3>
+      <div class="sub mono">${esc(md.k)}${isNum(e)?` · between-model η² ${(e*100).toFixed(0)}%`:""}${md.hi?` · ${md.hi === "better" ? "higher is better" : "lower is better"}`:""}</div>
+      ${rows}
+    </div>`;
+  }).join("");
+
+  /* behavioral fingerprint radars (percentile within selection) */
+  const AXES = [
+    { l:"peak score", k:"M93_max_eval_score", dir:1 },
+    { l:"self-improve", k:"M93_score_delta_max_minus_first", dir:1 },
+    { l:"economy", k:"M02_raw_step_count", dir:-1 },
+    { l:"eval discipline", k:"M11_eval_abuse_rate", dir:-1 },
+    { l:"verify", k:"M57_n_post_edit_actions", dir:1 },
+    { l:"diversity", k:"M74_action_transition_entropy_normalized", dir:1 },
+  ];
+  const pAll = {};
+  for (const a of AXES) pAll[a.k] = sel.map(r=>r.metrics[a.k]).filter(isNum).sort((x,y)=>x-y);
+  const pctIn = (arr, v, dir) => {
+    if (!isNum(v) || arr.length < 2) return null;
+    let lo=0, eq=0; for (const x of arr) { if (x<v) lo++; else if (x===v) eq++; }
+    const p = (lo + 0.5*eq)/arr.length; return dir < 0 ? 1-p : p;
+  };
+  const radars = named.map(g => {
+    const axes = AXES.map(a => {
+      const vs = g.runs.map(r=>r.metrics[a.k]).filter(isNum);
+      return { l:a.l, v: vs.length ? pctIn(pAll[a.k], mean(vs), a.dir) : null };
+    });
+    return `<div class="card rm"><div class="nm" style="color:${modelVar(g.m)}">● ${esc(g.m)}</div><div class="nn">${g.runs.length} runs</div>${miniRadar(axes, modelVar(g.m))}</div>`;
+  }).join("");
+
+  /* means table */
+  const tblCols = MODEL_METRICS.filter(md => groups.some(g => g.runs.some(r => isNum(r.metrics[md.k]))));
+  const tblRows = groups.map(g => {
+    const cells = tblCols.map(md => {
+      const vs = g.runs.map(r=>r.metrics[md.k]).filter(isNum);
+      const mu = vs.length ? mean(vs) : null;
+      /* mark best / worst among named groups when direction known */
+      let cls = "";
+      if (md.hi && isNum(mu) && g.m !== "other") {
+        const mus = named.map(x => mean(x.runs.map(r=>r.metrics[md.k]).filter(isNum))).filter(isNum);
+        if (mus.length > 2) {
+          const best = md.hi === "better" ? Math.max(...mus) : Math.min(...mus);
+          const worst = md.hi === "better" ? Math.min(...mus) : Math.max(...mus);
+          if (mu === best) cls = "best"; else if (mu === worst) cls = "worst";
+        }
+      }
+      return `<td class="${cls}">${mu==null?"·":FMT[md.f](mu)}</td>`;
+    }).join("");
+    return `<tr><td><span class="dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${modelVar(g.m)};margin-right:6px"></span>${esc(g.m)} <span style="color:var(--muted)">×${g.runs.length}</span></td>${cells}</tr>`;
+  }).join("");
+
+  const hnChip = (id, label, n) => `<button class="chip ${state.harness===id?"on":""}" data-hn="${id}">${label} <span style="color:var(--muted);font-weight:500">${n}</span></button>`;
+  const nOpen = RUNS.filter(r=>r.batch==="agency_openai").length, nCl = RUNS.filter(r=>r.batch==="agency_claude").length;
+
+  app.innerHTML = `
+    <h1 class="page">Cross-model comparison — AgencyBench</h1>
+    <p class="lede">AgencyBench runs the same tasks across ${named.length}+ base models, so it can answer the key validity question: do the m_v2 metrics discriminate <b>between models</b>, not just between task formats? Bars below rank metrics by between-model η² — the share of run-to-run variance explained by model identity alone.</p>
+    <div class="filters">
+      <div class="chip-row">
+        ${hnChip("openai", "OpenAI harness", nOpen)}
+        ${hnChip("claude", "Claude harness", nCl)}
+        ${hnChip("both", "both", nOpen+nCl)}
+      </div>
+      <span class="count">${sel.length} runs · ${groups.length} model groups${state.harness!=="openai" ? " · note: Claude-harness logs are much shorter (median ~9 turns) and lack path/token telemetry, so several metrics go n/a" : ""}</span>
+    </div>
+    <div class="insight-grid">
+      <div class="card ichart">
+        <h3>Which metrics separate models?</h3>
+        <div class="sub">between-model η² on the curated metric set · 100% = fully determined by model</div>
+        ${etaRows || `<div style="color:var(--muted);font-size:12px">not enough data in this selection</div>`}
+      </div>
+      <div class="card ichart">
+        <h3>Eval score: first attempt → peak</h3>
+        <div class="sub">hollow dot = mean first-eval score · filled dot = mean peak score · per model</div>
+        ${scoreRows}
+        <div class="sub" style="margin-top:8px">Gap between the dots = how much a model claws back by iterating (Repair@n behavior).</div>
+      </div>
+      ${smallPanels}
+      <div class="card ichart wide">
+        <h3>Behavioral fingerprints</h3>
+        <div class="sub">each axis = the model's mean, ranked as a percentile among all ${sel.length} selected runs (direction-adjusted: outer = better/more distinctive)</div>
+        <div class="radar-multi">${radars}</div>
+      </div>
+      <div class="card ichart wide">
+        <h3>Model × metric means</h3>
+        <div class="sub">green = best, red = worst among named models (only for direction-signed metrics) · "·" = metric not applicable</div>
+        <div style="overflow-x:auto"><table class="mmtable">
+          <thead><tr><th>model</th>${tblCols.map(md=>`<th title="${esc(md.k)}">${esc(md.l)}</th>`).join("")}</tr></thead>
+          <tbody>${tblRows}</tbody>
+        </table></div>
+      </div>
+    </div>`;
+  app.querySelectorAll(".chip[data-hn]").forEach(b => b.onclick = () => { state.harness = b.dataset.hn; renderModels(); });
+}
+
+/* ================================================================
+   Portability view — which of the 27 metric families discriminate
+   across sources vs degrade. Driven by discrimination_matrix.json.
+   ================================================================ */
+const VERDICTS = {
+  "强区分":      { id:"strong", label:"strong" },
+  "中区分":      { id:"medium", label:"medium" },
+  "弱区分":      { id:"weak",   label:"weak" },
+  "退化(常数)":  { id:"degen",  label:"degenerate" },
+  "NA(源不适用)":{ id:"na",     label:"n/a" },
+};
+const verdictOf = row => VERDICTS[row.verdict] || { id:"na", label: row.verdict };
+const fmtCell = v => !isNum(v) ? "·" :
+  Math.abs(v) >= 1e6 ? (v/1e6).toFixed(1)+"M" :
+  Math.abs(v) >= 1e4 ? (v/1e3).toFixed(0)+"k" :
+  Math.abs(v) >= 100 ? v.toFixed(0) :
+  Math.abs(v) >= 1 ? v.toFixed(2) : v.toFixed(3).replace(/^(-?)0\./, "$1.");
+function renderPortability() {
+  const app = $("#app");
+  const D = DATA.discrimination;
+  if (!D) { app.innerHTML = `<h1 class="page">Metric portability</h1><p class="lede">discrimination_matrix.json was not embedded in this build.</p>`; return; }
+  const SRC = D.sources;                       /* 6 batch ids */
+  const M = D.matrix;
+  const pv = state.pv;
+
+  const counts = {};
+  for (const row of M) { const v = verdictOf(row).id; counts[v] = (counts[v]||0)+1; }
+  const nFam = new Set(M.map(r => r.metric.split("_")[0])).size;
+
+  const tiles = `
+    <div class="tiles">
+      <div class="card tile"><div class="k">Metric fields</div><div class="v">${M.length}</div><div class="d">${nFam} M-families · 6 sources</div></div>
+      <div class="card tile"><div class="k">Strong</div><div class="v" style="color:var(--status-good)">${counts.strong||0}</div><div class="d">discriminate across sources</div></div>
+      <div class="card tile"><div class="k">Medium</div><div class="v" style="color:var(--accent)">${counts.medium||0}</div><div class="d">some separation</div></div>
+      <div class="card tile"><div class="k">Weak</div><div class="v" style="color:var(--status-warning)">${counts.weak||0}</div><div class="d">little separation</div></div>
+      <div class="card tile"><div class="k">Degenerate</div><div class="v" style="color:var(--muted)">${counts.degen||0}</div><div class="d">constant — carries no signal</div></div>
+      <div class="card tile"><div class="k">N/A</div><div class="v" style="color:var(--muted)">${counts.na||0}</div><div class="d">source not applicable</div></div>
+    </div>`;
+
+  /* family rollup: share of strong/medium/weak/degen per M-family */
+  const fam = {};
+  for (const row of M) {
+    const f = row.metric.split("_")[0];
+    (fam[f] = fam[f] || { strong:0, medium:0, weak:0, degen:0, na:0, n:0 });
+    fam[f][verdictOf(row).id]++; fam[f].n++;
+  }
+  const V_COLOR = { strong:"var(--status-good)", medium:"var(--accent)", weak:"var(--status-warning)", degen:"var(--baseline)", na:"var(--surface-2)" };
+  const famRows = Object.entries(fam).sort((a,b) => (b[1].strong/b[1].n) - (a[1].strong/a[1].n)).map(([f, c]) => {
+    const segs = ["strong","medium","weak","degen","na"].map(v => c[v] ?
+      `<div data-tip="<div class='t1'>${f}</div>${v}: ${c[v]} of ${c.n} fields" style="width:${(c[v]/c.n*100)}%;background:${V_COLOR[v]};border-radius:3px"></div>` : "").join("");
+    return `<div style="display:grid;grid-template-columns:52px 1fr 46px;gap:8px;align-items:center;margin:4px 0">
+      <div class="mono" style="font-size:11px;font-weight:650;color:var(--ink-2)">${f}</div>
+      <div style="display:flex;gap:2px;height:13px">${segs}</div>
+      <div style="font-size:10.5px;color:var(--muted);text-align:right">${c.strong}/${c.n}</div>
+    </div>`;
+  }).join("");
+
+  /* --- heatmap --- */
+  let rows = M.filter(r => {
+    if (pv.verdict !== "*" && verdictOf(r).id !== pv.verdict) return false;
+    if (pv.q && !r.metric.toLowerCase().includes(pv.q.toLowerCase())) return false;
+    return true;
+  });
+  const sortKey = pv.sort;
+  rows = rows.slice().sort((a,b) => {
+    let va, vb;
+    if (sortKey === "metric") { va = a.metric; vb = b.metric; }
+    else if (sortKey.startsWith("src:")) { const s = sortKey.slice(4); va = a["mean_"+s] ?? -Infinity; vb = b["mean_"+s] ?? -Infinity; }
+    else { va = a.discrim ?? -1; vb = b.discrim ?? -1; }
+    return (va<vb?-1:va>vb?1:0) * (pv.asc?1:-1);
+  });
+  const maxD = Math.max(...M.map(r => r.discrim || 0), 1e-9);
+
+  const hRows = rows.map(row => {
+    const v = verdictOf(row);
+    const means = SRC.map(s => row["mean_"+s]);
+    const finite = means.filter(isNum);
+    const lo = finite.length ? Math.min(...finite) : 0, hi = finite.length ? Math.max(...finite) : 0;
+    const span = hi - lo;
+    const cells = SRC.map((s, i) => {
+      const mv = means[i], cov = row["cover_"+s];
+      if (!isNum(mv)) return `<td class="hcell"><div class="hswatch empty">·</div></td>`;
+      const t = span > 1e-12 ? (mv - lo) / span : 0;
+      const pctMix = 6 + t * 80;
+      const inkT = t > 0.62;
+      return `<td class="hcell"><div class="hswatch" style="background:color-mix(in srgb, var(--accent) ${pctMix.toFixed(0)}%, var(--surface-2));color:${inkT?"#fff":"var(--ink-2)"};${isNum(cov)&&cov<1?"border-style:dashed;opacity:.75":""}"
+        data-tip="<div class='t1'>${esc(row.metric)}</div>${esc(BATCHES[s]?BATCHES[s].label:s)}: mean <b>${fmtNum(mv)}</b>${isNum(cov)?` · coverage ${fmtPct(cov)}`:""}">${fmtCell(mv)}</div></td>`;
+    }).join("");
+    return `<tr>
+      <td class="mname" title="${esc(row.metric)}">${esc(row.metric)}</td>
+      <td><span class="verdict ${v.id}">${v.label}</span></td>
+      <td><div class="dbar"><div class="track"><div class="fill" style="width:${Math.max(2,(row.discrim||0)/maxD*100).toFixed(1)}%"></div></div><div class="dv">${isNum(row.discrim)?row.discrim.toFixed(2):"·"}</div></div></td>
+      ${cells}
+    </tr>`;
+  }).join("");
+
+  const vChips = [["*","all"],["strong","strong"],["medium","medium"],["weak","weak"],["degen","degenerate"],["na","n/a"]].map(([id,l]) =>
+    `<button class="chip ${pv.verdict===id?"on":""}" data-verdict="${id}">${l} <span style="color:var(--muted);font-weight:500">${id==="*"?M.length:(counts[id]||0)}</span></button>`).join("");
+
+  const hHead = (key, label) => `<th data-hsort="${key}">${label} ${pv.sort===key?`<span class="arr">${pv.asc?"▲":"▼"}</span>`:""}</th>`;
+
+  app.innerHTML = `
+    <h1 class="page">Metric portability across sources</h1>
+    <p class="lede">Which of the ${M.length} metric fields (${nFam} M-families) actually discriminate between agent runs when moved across the six trajectory sources — and which degrade to constants. Cell color = the metric's per-source mean, normalized within its row (darker = higher); dashed cells have partial coverage. This is the core validity result of m_v2.</p>
+    ${tiles}
+    <div class="insight-grid" style="margin-bottom:16px">
+      <div class="card ichart wide">
+        <h3>Verdict share by metric family</h3>
+        <div class="sub">27 M-families sorted by share of strong fields · <span style="color:var(--status-good);font-weight:650">■ strong</span> · <span style="color:var(--accent);font-weight:650">■ medium</span> · <span style="color:var(--status-warning);font-weight:650">■ weak</span> · <span style="color:var(--muted);font-weight:650">■ degenerate / n-a</span></div>
+        <div style="columns: 2; column-gap: 28px">${famRows}</div>
+      </div>
+    </div>
+    <div class="filters">
+      <div class="chip-row">${vChips}</div>
+      <input type="search" id="pq" placeholder="filter metric name…" value="${esc(pv.q)}">
+      <span class="count">${rows.length} of ${M.length} fields</span>
+    </div>
+    <div class="heat-scroller">
+      <table class="heat">
+        <thead><tr>
+          ${hHead("metric","Metric field")}
+          <th style="cursor:default">Verdict</th>
+          ${hHead("discrim","Discrimination")}
+          ${SRC.map(s => hHead("src:"+s, `<span class="dot" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${batVar(s)};margin-right:4px"></span>${BATCHES[s]?BATCHES[s].short:s} <span style="color:var(--muted);text-transform:none">n=${D.n_per_source[s]||"?"}</span>`)).join("")}
+        </tr></thead>
+        <tbody>${hRows || `<tr><td colspan="${3+SRC.length}" style="text-align:center;color:var(--muted);padding:26px">no metric fields match</td></tr>`}</tbody>
+      </table>
+    </div>`;
+
+  app.querySelectorAll(".chip[data-verdict]").forEach(b => b.onclick = () => { pv.verdict = b.dataset.verdict; renderPortability(); });
+  $("#pq").oninput = e => { pv.q = e.target.value; clearTimeout(pv.__t); pv.__t = setTimeout(renderPortability, 180); };
+  app.querySelectorAll("th[data-hsort]").forEach(t => t.onclick = () => {
+    const k = t.dataset.hsort;
+    if (pv.sort === k) pv.asc = !pv.asc; else { pv.sort = k; pv.asc = k === "metric"; }
+    renderPortability();
+  });
+  if (pv.q) { const el = $("#pq"); el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+}
+
+/* ---------------- router / theme ---------------- */
+RUNS.forEach((r, i) => r.__i = i);
+function route() {
+  const h = location.hash || "#/";
+  $("#tab-runs").classList.toggle("on", !h.startsWith("#/insights") && !h.startsWith("#/models") && !h.startsWith("#/portability"));
+  $("#tab-models").classList.toggle("on", h.startsWith("#/models"));
+  $("#tab-portability").classList.toggle("on", h.startsWith("#/portability"));
+  $("#tab-insights").classList.toggle("on", h.startsWith("#/insights"));
+  hideTip();
+  const mRun = h.match(/^#\/run\/(\d+)/);
+  if (mRun) renderDetail(+mRun[1]);
+  else if (h.startsWith("#/insights")) renderInsights();
+  else if (h.startsWith("#/models")) renderModels();
+  else if (h.startsWith("#/portability")) renderPortability();
+  else renderOverview();
+  if (!mRun) window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", route);
+
+$("#themeBtn").onclick = () => {
+  const cur = document.documentElement.dataset.theme ||
+    (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  document.documentElement.dataset.theme = cur === "dark" ? "light" : "dark";
+};
+
+route();
+</script>
+</body>
+</html>
