@@ -346,6 +346,9 @@ svg.mix-bar { display: block; }
 }
 #tip .t1 { font-weight: 700; }
 #tip .mono { font-size: 10.5px; opacity: .8; }
+#tip .zh { margin-top: 3px; font-size: 11.5px; line-height: 1.55; }
+/* hint that a family name carries an explanation tooltip */
+.famzh { border-bottom: 1px dotted color-mix(in srgb, var(--muted) 70%, transparent); cursor: help; }
 
 /* ---------- batch + model colors (reference categorical slots, fixed order) ---------- */
 :root {
@@ -568,9 +571,42 @@ const FAM_NAME = {
   M71:"Reasoning",            M72:"Think Effectiveness",  M74:"Action Entropy",
   M76:"Planning",             M93:"Retry Improved",       M96:"Budget Utilization",
 };
+/* M-family -> one-line Chinese explanation (tooltip body). */
+const FAM_DESC = {
+  M02:"工具链深度：这条轨迹总共走了多少步(ReAct轮数)，另计去掉水分后的有效步数。",
+  M03:"子任务数：agent的计划把任务拆成了多少个子目标(取单次计划的最大值)。",
+  M05:"工具复用率：反复用同一工具/命令的比例。",
+  M07:"改前先读率：改文件前是否先读它(好习惯，别盲改)，越高越谨慎。",
+  M10:"盲目重试：碰到同样的报错却原样再试的连续次数与占比，越低越好。",
+  M11:"评测滥用率：两次eval之间没做任何实际修改就再评的比例(刷分嫌疑)，越低越好。",
+  M12:"资源回收：开了shell会话有没有关掉，泄漏的会话数越少越好。",
+  M14:"轮询步占比：多少步在干等/反复查状态/sleep，越低越好。",
+  M15:"重复查看率：反复看同一个已看过东西的比例，越低越好。",
+  M16:"搜索vs直开：找信息时用搜索(grep/find/列目录)还是逐个打开文件，反映信息获取策略。",
+  M19:"Token消耗：整条轨迹烧掉的LLM token总量(含输入/输出)。",
+  M20:"墙钟耗时：这条轨迹跑了多久。",
+  M21:"格式失败率：模型输出解析不出可用动作(空动作/截断/工具名错)的步数占比，越低越好。",
+  M23:"有效步率：agent的步骤里有多少真推进了任务(vs瞎折腾)，越高越好。",
+  M24:"每分token成本：每拿到1分评测分要烧多少token，越低越省。",
+  M26:"首次评测位置：agent第一次自测(eval)出现在轨迹多早的位置，早=尽快找反馈。",
+  M43:"早期失败信号：开局的坏兆头——狂开会话、长时间干等、前10%步token狂烧。",
+  M53:"代码定位效率：从开始到第一次真正动手改文件花了多少步，越少说明定位越快。",
+  M54:"探索:编辑平衡(log)：探索动作(读/搜)与编辑动作的比值，看是否先探够再改。",
+  M55:"文件触达率：相关文件里agent实际碰到了多少，越高覆盖越全。",
+  M57:"改后验证：改完文件之后有没有跑命令/评测来验证改动，有=好习惯。",
+  M71:"推理退化：轨迹后期的推理量比前期缩水多少，检测越跑越不动脑。",
+  M72:"think有效性：用think之后下一步的成功率是否比不用更高，正值=思考有帮助。",
+  M74:"动作转移熵：动作序列的多样度，高=模式多变，低=机械重复。",
+  M76:"规划有效性：有没有先做计划、计划里有没有真子目标、后续行动是否照着计划走。",
+  M93:"重试改善：多次评测之间分数有没有变好(首评到最佳/最终的提升)。",
+  M96:"预算利用率：非浪费步骤的占比(与M23同口径的别名)，越高越好。",
+};
 /* family code of a metric key: "M05a_tool_reuse_rate" -> "M05" (sub-field letter stripped) */
 const famCode = k => { const m = String(k).match(/^M(\d+)/); return m ? "M" + m[1] : String(k).split("_")[0]; };
 const famName = k => FAM_NAME[famCode(k)] || famCode(k);
+const famDesc = k => FAM_DESC[famCode(k)] || "";
+/* tooltip fragment carrying the Chinese one-liner (empty when unknown family) */
+const famTipZh = k => famDesc(k) ? `<div class='zh'>${esc(famDesc(k))}</div>` : "";
 /* field part of a full metric key, human-readable: "M71_reasoning_coverage" -> "reasoning coverage" */
 const fieldOf = k => { const m = String(k).match(/^M\d+[a-z]?_(.+)$/); return m ? m[1].replace(/_/g, " ") : ""; };
 /* readable label for a full metric key: "<Family Name> · <field>" (field dropped when redundant) */
@@ -729,6 +765,11 @@ document.addEventListener("mouseover", e => {
   if (el) showTip(el.dataset.tip, e);
 });
 document.addEventListener("mousemove", e => {
+  const el = e.target.closest("[data-tip]");
+  if (el) showTip(el.dataset.tip, e); else hideTip();
+});
+/* mobile: tap a [data-tip] element to show the tooltip, tap elsewhere to hide */
+document.addEventListener("click", e => {
   const el = e.target.closest("[data-tip]");
   if (el) showTip(el.dataset.tip, e); else hideTip();
 });
@@ -1072,8 +1113,8 @@ function renderDetail(ri) {
           bar = `<div class="mbar" data-tip="all ${rng.n} runs share this value" style="opacity:.5"><div class="fill" style="width:4%;opacity:.5"></div></div>`;
         }
       } else bar = `<div class="mbar" style="opacity:.35"></div>`;
-      return `<div class="mrow ${na?"na":""} ${bad?"bad":""} ${good?"goodv":""}" data-tip="<div class='t1'>${esc(famName(md.k))}</div><span class='mono'>${esc(md.k)}</span>">
-        <div class="ml">${md.l} <span class="mk" title="${esc(md.k)}">${esc(famName(md.k))}</span></div>
+      return `<div class="mrow ${na?"na":""} ${bad?"bad":""} ${good?"goodv":""}" data-tip="<div class='t1'>${esc(famName(md.k))}</div><span class='mono'>${esc(md.k)}</span>${famTipZh(md.k)}">
+        <div class="ml">${md.l} <span class="mk famzh" title="${esc(md.k)}">${esc(famName(md.k))}</span></div>
         ${bar}
         <div class="mv">${na ? "n/a" : FMT[md.f](v)}</div>
       </div>`;
@@ -1224,7 +1265,7 @@ function renderInsights() {
       </div>
       <div class="card ichart wide"><h3>Distribution lanes</h3><div class="sub">in the dot plots below, each dot = one trajectory; lanes top→bottom in this order</div>${srcLegend}</div>
       ${KEYS.map(md => `<div class="card ichart">
-          <h3>${md.l}</h3><div class="sub" title="${esc(md.k)}">${esc(famName(md.k))} family <span class="mono">(${esc(famCode(md.k))})</span></div>
+          <h3>${md.l}</h3><div class="sub" title="${esc(md.k)}"><span class="famzh" data-tip="<div class='t1'>${esc(famName(md.k))} (${esc(famCode(md.k))})</div><span class='mono'>${esc(md.k)}</span>${famTipZh(md.k)}">${esc(famName(md.k))} family <span class="mono">(${esc(famCode(md.k))})</span></span></div>
           ${dotPlot(md)}
         </div>`).join("")}
     </div>`;
@@ -1309,7 +1350,7 @@ function renderModels() {
     .sort((a,b) => b.e - a.e);
   const maxE = rank.length ? rank[0].e : 1;
   const etaRows = rank.map(x => `
-    <div class="mm-row" style="grid-template-columns:158px 1fr 44px" data-tip="<div class='t1'>${esc(x.md.l)}</div><div>${esc(famName(x.md.k))} family · <span class='mono'>${esc(x.md.k)}</span></div>share of run-to-run variance explained by which model produced the run: <b>${(x.e*100).toFixed(0)}%</b>">
+    <div class="mm-row" style="grid-template-columns:158px 1fr 44px" data-tip="<div class='t1'>${esc(x.md.l)}</div><div>${esc(famName(x.md.k))} family · <span class='mono'>${esc(x.md.k)}</span></div>${famTipZh(x.md.k)}share of run-to-run variance explained by which model produced the run: <b>${(x.e*100).toFixed(0)}%</b>">
       <div class="mlabel" title="${esc(x.md.k)}">${esc(x.md.l)}</div>
       <div class="bartrack" style="height:14px"><div class="barfill" style="width:${Math.max(2, x.e/Math.max(maxE,1e-9)*100).toFixed(1)}%;background:var(--accent)"></div></div>
       <div class="mval">${(x.e*100).toFixed(0)}%</div>
@@ -1354,7 +1395,7 @@ function renderModels() {
     const e = eta2(groups, md.k);
     return `<div class="card mm-panel">
       <h3>${esc(md.l)}</h3>
-      <div class="sub" title="${esc(md.k)}">${esc(famName(md.k))} family <span class="mono">(${esc(famCode(md.k))})</span>${isNum(e)?` · between-model η² ${(e*100).toFixed(0)}%`:""}${md.hi?` · ${md.hi === "better" ? "higher is better" : "lower is better"}`:""}</div>
+      <div class="sub" title="${esc(md.k)}"><span class="famzh" data-tip="<div class='t1'>${esc(famName(md.k))} (${esc(famCode(md.k))})</div><span class='mono'>${esc(md.k)}</span>${famTipZh(md.k)}">${esc(famName(md.k))} family <span class="mono">(${esc(famCode(md.k))})</span></span>${isNum(e)?` · between-model η² ${(e*100).toFixed(0)}%`:""}${md.hi?` · ${md.hi === "better" ? "higher is better" : "lower is better"}`:""}</div>
       ${rows}
     </div>`;
   }).join("");
@@ -1498,9 +1539,9 @@ function renderPortability() {
   const famRows = Object.entries(fam).sort((a,b) => (b[1].strong/b[1].n) - (a[1].strong/a[1].n)).map(([f, c]) => {
     const fn = FAM_NAME[f] || f;
     const segs = ["strong","medium","weak","degen","na"].map(v => c[v] ?
-      `<div data-tip="<div class='t1'>${esc(fn)} (${f})</div>${v}: ${c[v]} of ${c.n} fields" style="width:${(c[v]/c.n*100)}%;background:${V_COLOR[v]};border-radius:3px"></div>` : "").join("");
+      `<div data-tip="<div class='t1'>${esc(fn)} (${f})</div>${famTipZh(f)}${v}: ${c[v]} of ${c.n} fields" style="width:${(c[v]/c.n*100)}%;background:${V_COLOR[v]};border-radius:3px"></div>` : "").join("");
     return `<div style="display:grid;grid-template-columns:150px 1fr 46px;gap:8px;align-items:center;margin:4px 0">
-      <div style="font-size:11px;font-weight:650;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${f}">${esc(fn)}</div>
+      <div class="famzh" data-tip="<div class='t1'>${esc(fn)} (${f})</div>${famTipZh(f)}" style="font-size:11px;font-weight:650;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${f}">${esc(fn)}</div>
       <div style="display:flex;gap:2px;height:13px">${segs}</div>
       <div style="font-size:10.5px;color:var(--muted);text-align:right">${c.strong}/${c.n}</div>
     </div>`;
@@ -1538,7 +1579,7 @@ function renderPortability() {
         data-tip="<div class='t1'>${esc(metricLabel(row.metric))}</div><div class='mono'>${esc(row.metric)}</div>${esc(batLabel(s))}: mean <b>${fmtNum(mv)}</b>${isNum(cov)?` · coverage ${fmtPct(cov)}`:""}">${fmtCell(mv)}</div></td>`;
     }).join("");
     return `<tr>
-      <td class="mname" title="${esc(row.metric)}">${esc(metricLabel(row.metric))}</td>
+      <td class="mname famzh" title="${esc(row.metric)}" data-tip="<div class='t1'>${esc(metricLabel(row.metric))}</div><div class='mono'>${esc(row.metric)}</div>${famTipZh(row.metric)}">${esc(metricLabel(row.metric))}</td>
       <td><span class="verdict ${v.id}">${v.label}</span></td>
       <td><div class="dbar"><div class="track"><div class="fill" style="width:${Math.max(2,(row.discrim||0)/maxD*100).toFixed(1)}%"></div></div><div class="dv">${isNum(row.discrim)?row.discrim.toFixed(2):"·"}</div></div></td>
       ${cells}
