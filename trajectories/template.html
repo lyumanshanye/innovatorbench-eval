@@ -338,6 +338,19 @@ svg.mix-bar { display: block; }
 .axislbl { font-size: 10px; fill: var(--muted); }
 .dirlbl  { font-size: 11px; fill: var(--ink-2); font-weight: 600; }
 
+/* ---------- per-chart insight disclosures ---------- */
+details.insight { margin-top: 10px; border-top: 1px dashed var(--grid); padding-top: 8px; }
+details.insight > summary {
+  cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 650; color: var(--accent); user-select: none;
+  -webkit-tap-highlight-color: transparent; padding: 2px 0;
+}
+details.insight > summary::-webkit-details-marker { display: none; }
+details.insight > summary::before { content: "▸"; font-size: 11px; display: inline-block; transition: transform .15s ease; }
+details.insight[open] > summary::before { transform: rotate(90deg); }
+details.insight .ibody { margin-top: 7px; font-size: 12.5px; line-height: 1.62; color: var(--ink-2); max-width: 900px; }
+details.insight .ibody b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
 /* ---------- tooltip ---------- */
 #tip {
   position: fixed; z-index: 90; pointer-events: none; display: none; max-width: 340px;
@@ -773,6 +786,12 @@ document.addEventListener("click", e => {
   const el = e.target.closest("[data-tip]");
   if (el) showTip(el.dataset.tip, e); else hideTip();
 });
+
+/* ---------------- per-chart insight disclosure ----------------
+   collapsible data-grounded analyst note under a chart. Native
+   <details>/<summary> so it works on desktop (click) and mobile (tap). */
+const insightBox = (html, bare) =>
+  `<details class="insight"${bare ? ` style="border-top:none;padding-top:0"` : ""}><summary>Insight</summary><div class="ibody">${html}</div></details>`;
 
 /* ---------------- SVG builders ---------------- */
 function miniStrip(seq, w = 168, h = 16) {
@@ -1224,15 +1243,24 @@ function dotPlot(md, w = 340, h = 150) {
 function renderInsights() {
   const app = $("#app");
   const KEYS = [
-    { k:"M23_effective_step_rate", l:"Effective step rate", f:"pct", dirNote:"higher →" },
-    { k:"M07_read_before_edit_rate", l:"Read-before-edit rate", f:"pct", dirNote:"higher →" },
-    { k:"M14_polling_step_ratio", l:"Polling step ratio", f:"pct", dirNote:"← lower" },
-    { k:"M15_repeated_view_rate", l:"Repeated-view rate", f:"pct", dirNote:"← lower" },
-    { k:"M54_explore_edit_log_ratio", l:"Explore∶edit balance (log)", f:"num" },
-    { k:"M74_action_transition_entropy_normalized", l:"Action-transition entropy", f:"num" },
-    { k:"M20_duration_seconds", l:"Wall-clock duration", f:"sec" },
-    { k:"M05_tool_reuse_rate", l:"Tool reuse rate", f:"pct" },
-    { k:"M55_file_reach_rate", l:"File reach rate", f:"pct", dirNote:"higher →" },
+    { k:"M23_effective_step_rate", l:"Effective step rate", f:"pct", dirNote:"higher →",
+      ins:"This metric is a tail-catcher, not a ranker: <b>1,049 of the 1,092</b> runs sit at exactly 100% and every batch mean is ≥98%. All <b>25</b> runs below 95% come from just three batches — <b>20</b> from SWE-difficult, <b>3</b> from SWE-CodeAct (including the corpus floor, one run at <b>16%</b>) and <b>2</b> from InnovatorBench (floor <b>46%</b>) — while all 76 AgencyBench runs are pinned at exactly 1.00. Use it to screen for broken trajectories, not to compare healthy ones." },
+    { k:"M07_read_before_edit_rate", l:"Read-before-edit rate", f:"pct", dirNote:"higher →",
+      ins:"The three SWE harnesses cluster tightly — mean read-before-edit <b>0.82</b> (difficult), <b>0.82</b> (CodeAct), <b>0.89</b> (SWE-agent), all with median 1.00 — but the shape is bimodal: SWE-difficult's bottom decile reads first only <b>25%</b> of the time (near-blind editing). InnovatorBench matches SWE at <b>0.84</b>. Both AgencyBench lanes are empty because those logs carry no file-edit telemetry — the metric is inherently SWE/Innovator-scoped, one of the clearest portability gaps in the corpus." },
+    { k:"M14_polling_step_ratio", l:"Polling step ratio", f:"pct", dirNote:"← lower",
+      ins:"Polling is an InnovatorBench-only behavior: every one of its <b>55</b> runs polls (min <b>15%</b>, mean <b>52%</b>, and the worst run spends <b>96%</b> of its steps waiting on sessions), while all <b>1,037</b> runs in the other five batches sit at exactly 0. That is the task format speaking — Innovator launches long-running training jobs and then waits — and it makes M14 one of the most source-discriminating fields in the whole matrix (discrimination <b>2.77</b>)." },
+    { k:"M15_repeated_view_rate", l:"Repeated-view rate", f:"pct", dirNote:"← lower",
+      ins:"SWE-difficult is the heaviest re-reader: on average <b>24%</b> of its views are repeats and its top decile re-reads <b>half</b> of everything it opens, versus <b>16%</b> for CodeAct on the same task family — so the gap is harness-induced. InnovatorBench is cleaner (32 of 55 runs never repeat a view), and both AgencyBench batches are uniformly 0 across all <b>76</b> runs because their logs expose no per-file view events — a degenerate lane, not disciplined behavior." },
+    { k:"M54_explore_edit_log_ratio", l:"Explore∶edit balance (log)", f:"num",
+      ins:"SWE-agent is the most edit-leaning and tightest batch (mean log-ratio <b>0.96</b>, 10th–90th percentile only 0.78–1.10) — the harness rations exploration. SWE-difficult (<b>1.67</b>) and InnovatorBench (<b>1.77</b>, max <b>5.29</b>) are explore-heavy with long right tails: some Innovator runs do 5+ log-units of reading per edit. Agency-OpenAI sits CodeAct-like at <b>1.16</b>; the Agency-Claude lane is empty (no explore/edit telemetry in those logs)." },
+    { k:"M74_action_transition_entropy_normalized", l:"Action-transition entropy", f:"num",
+      ins:"The three SWE harnesses cluster at <b>0.33–0.35</b> mean entropy; InnovatorBench is markedly lower (<b>0.23</b>) because its long polling loops are exactly the repetitive transitions this metric penalizes. Agency-Claude collapses: <b>34 of 40</b> runs score exactly 0 (mean 0.06) — its logs are too short (median ~9 turns) for transition entropy to form — versus only 6 of 36 zeros on Agency-OpenAI. Cross-batch differences here partly measure logging depth, not behavior." },
+    { k:"M20_duration_seconds", l:"Wall-clock duration", f:"sec",
+      ins:"Read the AgencyBench lanes as telemetry, not speed: Agency-Claude logs report just <b>1–17 s</b> per run (median 8 s) — truncated timing — while Agency-OpenAI spans <b>6 s to 9.7 min</b> (mean ~2.9 min), the widest spread of any batch. Within SWE, the harness dominates: SWE-difficult finishes at ~<b>50 s</b> median while CodeAct and SWE-agent both take ~<b>1.5 min</b> on the same class of tasks." },
+    { k:"M05_tool_reuse_rate", l:"Tool reuse rate", f:"pct",
+      ins:"SWE-difficult is the most repetitive: mean reuse <b>0.80</b>, and <b>250 of its 580</b> runs reuse the same tool ≥90% of the time — largely bash-only loops. Reuse falls as the harness gets richer: CodeAct <b>0.60</b>, SWE-agent <b>0.53</b>, and Agency-OpenAI lowest at <b>0.38</b> (median 0.29), whose eval-driven tasks rotate across more distinct tools. The Agency-Claude lane is empty — no per-tool telemetry." },
+    { k:"M55_file_reach_rate", l:"File reach rate", f:"pct", dirNote:"higher →",
+      ins:"Coverage is harness-driven, not model-driven: on the same SWE task family, SWE-difficult touches <b>59%</b> of relevant files but SWE-agent only <b>23%</b> and CodeAct <b>32%</b> — the leaner harnesses navigate straight to a suspect file and edit it. InnovatorBench reaches <b>54%</b>. Both AgencyBench lanes are empty: the metric needs a gold relevant-file set that only the SWE/Innovator corpora define." },
   ];
   const srcLegend = `<div class="legend" style="margin:8px 0 0">` + BATCH_IDS.map(id =>
     `<span class="li"><span class="sw" style="background:${batVar(id)};border-radius:50%"></span>${BATCHES[id].label}</span>`).join("") + `</div>`;
@@ -1262,11 +1290,13 @@ function renderInsights() {
         <h3>Action mix by batch</h3><div class="sub">share of turns per action category${IS_FULL ? ` · computed on the ${RUNS.length}-run embedded sample (turn-level data)` : ""}</div>
         ${mixRows}
         <div style="margin-top:8px">${legendHTML()}</div>
+        ${insightBox("The turn mix is the clearest one-glance separator of the three benchmark families: the SWE batches are <b>62–65%</b> run_command plus 15–24% exploration; InnovatorBench is the only batch dominated by session/waiting turns (<b>48%</b> — its polling signature); and the two AgencyBench harnesses disagree with <i>each other</i> — Agency-OpenAI is a build loop (37% run, 30% explore, 28% edit, 4% eval) while Agency-Claude's short logs are <b>92%</b> eval turns. That imbalance is why Agency-Claude lanes go n/a in several dot plots below.")}
       </div>
       <div class="card ichart wide"><h3>Distribution lanes</h3><div class="sub">in the dot plots below, each dot = one trajectory; lanes top→bottom in this order</div>${srcLegend}</div>
       ${KEYS.map(md => `<div class="card ichart">
           <h3>${md.l}</h3><div class="sub" title="${esc(md.k)}"><span class="famzh" data-tip="<div class='t1'>${esc(famName(md.k))} (${esc(famCode(md.k))})</div><span class='mono'>${esc(md.k)}</span>${famTipZh(md.k)}">${esc(famName(md.k))} family <span class="mono">(${esc(famCode(md.k))})</span></span></div>
           ${dotPlot(md)}
+          ${md.ins ? insightBox(md.ins) : ""}
         </div>`).join("")}
     </div>`;
   app.querySelectorAll("[data-run-link]").forEach(el => el.addEventListener("click", () => location.hash = "#/run/" + el.dataset.runLink));
@@ -1409,19 +1439,25 @@ function renderModels() {
     { l:"verify", k:"M57_n_post_edit_actions", dir:1 },
     { l:"diversity", k:"M74_action_transition_entropy_normalized", dir:1 },
   ];
-  const pAll = {};
-  for (const a of AXES) pAll[a.k] = sel.map(r=>r.metrics[a.k]).filter(isNum).sort((x,y)=>x-y);
   const pctIn = (arr, v, dir) => {
     if (!isNum(v) || arr.length < 2) return null;
     let lo=0, eq=0; for (const x of arr) { if (x<v) lo++; else if (x===v) eq++; }
     const p = (lo + 0.5*eq)/arr.length; return dir < 0 ? 1-p : p;
   };
-  const radars = named.map(g => {
+  /* fingerprints: computed over the FULL AgencyBench corpus (both harnesses,
+     models aggregated across them) — NOT affected by the harness filter above */
+  const agAll = FULL.filter(r => r.batch === "agency_openai" || r.batch === "agency_claude");
+  const agNamed = modelGroups(agAll).filter(g => g.m !== "other");
+  const pAg = {};
+  for (const a of AXES) pAg[a.k] = agAll.map(r=>r.metrics[a.k]).filter(isNum).sort((x,y)=>x-y);
+  const radars = agNamed.map(g => {
     const axes = AXES.map(a => {
       const vs = g.runs.map(r=>r.metrics[a.k]).filter(isNum);
-      return { l:a.l, v: vs.length ? pctIn(pAll[a.k], mean(vs), a.dir) : null };
+      return { l:a.l, v: vs.length ? pctIn(pAg[a.k], mean(vs), a.dir) : null };
     });
-    return `<div class="card rm"><div class="nm" style="color:${modelVar(g.m)}">● ${esc(g.m)}</div><div class="nn">${g.runs.length} runs</div>${miniRadar(axes, modelVar(g.m))}</div>`;
+    const nO = g.runs.filter(r=>r.batch==="agency_openai").length,
+          nC = g.runs.filter(r=>r.batch==="agency_claude").length;
+    return `<div class="card rm"><div class="nm" style="color:${modelVar(g.m)}">● ${esc(g.m)}</div><div class="nn">${g.runs.length} runs (${nO} openai + ${nC} claude)</div>${miniRadar(axes, modelVar(g.m))}</div>`;
   }).join("");
 
   /* means table */
@@ -1474,8 +1510,9 @@ function renderModels() {
       ${smallPanels}
       <div class="card ichart wide">
         <h3>Behavioral fingerprints</h3>
-        <div class="sub">each axis = the model's mean, ranked as a percentile among all ${sel.length} selected runs (direction-adjusted: outer = better/more distinctive)</div>
+        <div class="sub">each axis = the model's mean over the <b>full AgencyBench corpus — all ${agAll.length} runs</b> (OpenAI + Claude harnesses, models aggregated across both), ranked as a direction-adjusted percentile: outer = better/more distinctive. Not affected by the harness filter above.</div>
         <div class="radar-multi">${radars}</div>
+        ${insightBox("Over all <b>76</b> AgencyBench runs, <b>glm46</b> posts the best mean peak score (<b>0.69</b>) and towers on verification — <b>11.3</b> post-edit verify actions per run versus ≤2.7 for every other model — but pays with the joint-heaviest trajectories (~<b>133</b> steps, alongside gemini3pro's ~132). <b>gpt52</b> is the most economical (<b>52</b> steps) yet lands the lowest peak (<b>0.47</b>) and the weakest self-improvement (Δ <b>0.18</b> vs kimi's <b>0.39</b>). Eval abuse is endemic to the benchmark rather than to one model — every named model averages between <b>0.58</b> (glm46) and <b>0.70</b> (claude45opus) — so the eval-discipline axis separates only mildly. The five models seen once each (deepseek, qwen3, claude45sonnet, gemini, gork) fold into the tables' “other” group and get no radar.")}
       </div>
       <div class="card ichart wide">
         <h3>Model × metric means</h3>
@@ -1600,6 +1637,7 @@ function renderPortability() {
         <h3>Verdict share by metric family</h3>
         <div class="sub">27 M-families sorted by share of strong fields · <span style="color:var(--status-good);font-weight:650">■ strong</span> · <span style="color:var(--accent);font-weight:650">■ medium</span> · <span style="color:var(--status-warning);font-weight:650">■ weak</span> · <span style="color:var(--muted);font-weight:650">■ degenerate / n-a</span></div>
         <div style="columns: 2; column-gap: 28px">${famRows}</div>
+        ${insightBox("<b>96 of 182</b> metric fields are strong cross-source discriminators, 32 medium, 6 weak — and <b>45 are flat constants</b>. Five families are strong on every field they own: M11 Eval Abuse (4/4), M74 Action Entropy (5/5), M53 Code Locate (4/4), M15 Repeated View (4/4) and M02 Tool Chain Depth (2/2). At the other end, <b>M03 Subtask Count (6 fields) and M76 Planning (5 fields) are degenerate everywhere</b>: none of these seven corpora emit explicit planning nodes, so plan-structure metrics have nothing to bind to. M19 Tokens splits down the middle — 18 of its 27 fields (all the judge/planning/summary token sub-counts) are constants for the same reason, while the 7 core usage fields stay strong.")}
       </div>
     </div>
     <div class="filters">
@@ -1617,7 +1655,8 @@ function renderPortability() {
         </tr></thead>
         <tbody>${hRows || `<tr><td colspan="${3+SRC.length}" style="text-align:center;color:var(--muted);padding:26px">no metric fields match</td></tr>`}</tbody>
       </table>
-    </div>`;
+    </div>
+    <div class="card" style="padding:10px 16px;margin-top:12px">${insightBox("The highest-discrimination rows are behaviors unique to one source: <b>M57 post-fix-verify-strict</b> (discrim <b>2.94</b>) averages <b>0.76</b> on Agency-OpenAI but <b>0.00</b> on all three SWE harnesses; <b>M14 polling ratio</b> (<b>2.77</b>) is <b>0.52</b> on Innovator and 0 in the other six sources; <b>M11 eval-abuse</b> climbs from 0.00 on every SWE source to <b>0.96–1.00</b> on Agency-publish/Claude. Empty and dashed cells concentrate in the Agency columns — agency_claude has means for <b>163 of 182</b> fields versus <b>172</b> for agency_openai — because those logs omit file-path and token telemetry. And treat the M20 duration row with suspicion: agency_claude's <b>7.6 s</b> mean against agency_openai's <b>175 s</b> is a logging artifact, not model speed.", true)}</div>`;
 
   app.querySelectorAll(".chip[data-verdict]").forEach(b => b.onclick = () => { pv.verdict = b.dataset.verdict; renderPortability(); });
   $("#pq").oninput = e => { pv.q = e.target.value; clearTimeout(pv.__t); pv.__t = setTimeout(renderPortability, 180); };
