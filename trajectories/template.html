@@ -131,6 +131,11 @@ nav.tabs a {
 nav.tabs a.on { background: var(--accent-soft); color: var(--accent); }
 nav.tabs a:hover:not(.on) { background: var(--surface-2); }
 .spacer { flex: 1; }
+.home-link {
+  border: 1px solid var(--hairline); background: var(--surface); border-radius: 8px;
+  padding: 5px 11px; font-size: 12.5px; color: var(--ink-2); font-weight: 550; white-space: nowrap;
+}
+.home-link:hover { background: var(--surface-2); }
 .theme-btn {
   border: 1px solid var(--hairline); background: var(--surface); border-radius: 8px;
   padding: 5px 11px; cursor: pointer; font-size: 12.5px; color: var(--ink-2);
@@ -350,6 +355,7 @@ svg.mix-bar { display: block; }
   --b-innovator:      var(--c-edit);     /* slot 4 green  */
   --b-agency_openai:  var(--c-think);    /* slot 5 violet */
   --b-agency_claude:  var(--c-error);    /* slot 6 red    */
+  --b-agency_publish: var(--c-session);  /* extra source in the full matrix */
 }
 
 /* ---------- pagination ---------- */
@@ -442,6 +448,7 @@ table.mmtable td.worst { color: var(--status-critical); }
       <a href="#/insights" id="tab-insights">Insights</a>
     </nav>
     <div class="spacer"></div>
+    <a class="home-link" href="../" title="Back to the InnovatorBench-Eval main page">← InnovatorBench-Eval Home</a>
     <button class="theme-btn" id="themeBtn" title="toggle color theme">◐ theme</button>
   </div>
 </header>
@@ -459,6 +466,12 @@ window.__TRAJ_DATA__ = /*__DATA__*/;
    ================================================================ */
 const DATA = window.__TRAJ_DATA__;
 const RUNS = DATA.runs;
+/* FULL = metrics-only rows for the whole scored corpus (analysis tabs).
+   RUNS stays a sample with full turn data (Runs tab / detail viewer). */
+const FULL = (DATA.full && DATA.full.rows && DATA.full.rows.length) ? DATA.full.rows : RUNS;
+const IS_FULL = FULL !== RUNS;
+/* map full-corpus rows back to embedded sample runs (for click-through) */
+const RUN_IDX = new Map(RUNS.map((r, i) => [r.batch + "|" + r.sample_name, i]));
 
 /* ---------------- helpers ---------------- */
 const $ = (s, el=document) => el.querySelector(s);
@@ -510,8 +523,14 @@ const BATCHES = {
   agency_claude: { label:"Agency · Claude hn.", short:"Ag-claude", v:"--b-agency_claude", family:"AgencyBench" },
 };
 const BATCH_IDS = Object.keys(BATCHES);
-const batVar = b => `var(${(BATCHES[b]||{v:"--c-other"}).v})`;
-const batLabel = b => (BATCHES[b]||{label:b}).label;
+/* extra sources that appear only in the full discrimination matrix
+   (no embedded trajectories), so they stay out of BATCH_IDS filters */
+const SRC_META = {
+  agency_publish: { label:"Agency · publish", short:"Ag-publish", v:"--b-agency_publish" },
+};
+const batVar = b => `var(${(BATCHES[b]||SRC_META[b]||{v:"--c-other"}).v})`;
+const batLabel = b => (BATCHES[b]||SRC_META[b]||{label:b}).label;
+const batShort = b => (BATCHES[b]||SRC_META[b]||{short:b}).short;
 /* kept for run badges (schema-level source field) */
 const srcVar = b => batVar(b);
 const srcLabel = b => batLabel(b);
@@ -534,6 +553,31 @@ const modelVar = m => `var(${(MODEL_SLOTS[m]||{v:"--c-other"}).v})`;
 const scoreOf = r => isNum(r.metrics.M24_best_overall_score) ? r.metrics.M24_best_overall_score
   : (r.verifier && isNum(r.verifier.score)) ? r.verifier.score : null;
 const scoreKind = r => isNum(r.metrics.M24_best_overall_score) ? "eval" : (r.verifier && isNum(r.verifier.score)) ? "glm" : null;
+
+/* ---------------- metric family names ----------------
+   M-family codename -> descriptive name, derived from the metric source
+   filenames in new_start_61/m_v2/metrics/ (m<NN>_<descriptive_name>.py). */
+const FAM_NAME = {
+  M02:"Tool Chain Depth",     M03:"Subtask Count",        M05:"Tool Reuse Rate",
+  M07:"Read Before Edit Rate",M10:"Blind Retry",          M11:"Eval Abuse Rate",
+  M12:"Resource Reclaim",     M14:"Deadlock",             M15:"Repeated View",
+  M16:"Search vs Open",       M19:"Tokens",               M20:"Duration",
+  M21:"Format Fail",          M23:"Effective Step Rate",  M24:"Token Per Point",
+  M26:"First Eval Step",      M43:"Precursor",            M53:"Code Locate",
+  M54:"Explore Edit",         M55:"File Reach",           M57:"Post Fix Verify",
+  M71:"Reasoning",            M72:"Think Effectiveness",  M74:"Action Entropy",
+  M76:"Planning",             M93:"Retry Improved",       M96:"Budget Utilization",
+};
+/* family code of a metric key: "M05a_tool_reuse_rate" -> "M05" (sub-field letter stripped) */
+const famCode = k => { const m = String(k).match(/^M(\d+)/); return m ? "M" + m[1] : String(k).split("_")[0]; };
+const famName = k => FAM_NAME[famCode(k)] || famCode(k);
+/* field part of a full metric key, human-readable: "M71_reasoning_coverage" -> "reasoning coverage" */
+const fieldOf = k => { const m = String(k).match(/^M\d+[a-z]?_(.+)$/); return m ? m[1].replace(/_/g, " ") : ""; };
+/* readable label for a full metric key: "<Family Name> · <field>" (field dropped when redundant) */
+const metricLabel = k => {
+  const fam = famName(k), f = fieldOf(k);
+  return (!f || f.toLowerCase() === fam.toLowerCase()) ? fam : fam + " · " + f;
+};
 
 /* ---------------- metric catalog ----------------
    dir: +1 higher-is-better, -1 lower-is-better, 0 neutral.
@@ -605,10 +649,10 @@ const METRIC_GROUPS = [
   ]},
 ];
 
-/* global min/max per metric (for position bars) */
+/* global min/max per metric (for position bars) — over the FULL corpus */
 const M_RANGE = {};
 for (const g of METRIC_GROUPS) for (const m of g.metrics) {
-  const vals = RUNS.map(r => r.metrics[m.k]).filter(isNum);
+  const vals = FULL.map(r => r.metrics[m.k]).filter(isNum);
   if (vals.length) M_RANGE[m.k] = { min: Math.min(...vals), max: Math.max(...vals), n: vals.length };
 }
 
@@ -644,9 +688,9 @@ function summarize(run) {
 }
 const SUM = RUNS.map(summarize);
 
-/* percentile rank (direction-adjusted) for radar */
+/* percentile rank (direction-adjusted) for radar — over the FULL corpus */
 function pctRank(key, v, dir) {
-  const vals = RUNS.map(r => r.metrics[key]).filter(isNum);
+  const vals = FULL.map(r => r.metrics[key]).filter(isNum);
   if (!isNum(v) || vals.length < 2) return null;
   let lo = 0, eq = 0;
   for (const x of vals) { if (x < v) lo++; else if (x === v) eq++; }
@@ -803,7 +847,7 @@ function renderOverview() {
 
   const tiles = `
     <div class="tiles">
-      <div class="card tile"><div class="k">Trajectories</div><div class="v">${RUNS.length}</div><div class="d">6 batches · 3 benchmark families</div></div>
+      <div class="card tile"><div class="k">Trajectories</div><div class="v">${RUNS.length}</div><div class="d">${IS_FULL ? `sample · full corpus ${fmtInt(FULL.length)}` : "6 batches · 3 benchmark families"}</div></div>
       <div class="card tile"><div class="k">Turns</div><div class="v">${fmtInt(totTurns)}</div><div class="d">median ${fmtInt([...RUNS.map(r=>r.turns.length)].sort((a,b)=>a-b)[Math.floor(RUNS.length/2)])} / run</div></div>
       <div class="card tile"><div class="k">Failed actions</div><div class="v" style="color:var(--status-critical)">${fmtInt(totFails)}</div><div class="d">${(totFails/totTurns*100).toFixed(1)}% of all turns</div></div>
       <div class="card tile"><div class="k">Models</div><div class="v">${nBase}</div><div class="d">AgencyBench spans ${nBase} base models</div></div>
@@ -874,7 +918,7 @@ function renderOverview() {
 
   app.innerHTML = `
     <h1 class="page">Agent runs</h1>
-    <p class="lede">All ${RUNS.length} trajectories from the m_v2 batch evaluation — 3× SWE-bench harnesses, InnovatorBench, and AgencyBench under two harnesses — plus 27 families of fine-grained behavioral metrics per run. Click a row to open the turn-by-turn view.</p>
+    <p class="lede">${IS_FULL ? `A <b>${RUNS.length}-trajectory sample</b> with full turn-by-turn data (the <a href="#/models">Models</a>, <a href="#/portability">Portability</a> and <a href="#/insights">Insights</a> tabs are computed over the full ${FULL.length}-trajectory scored corpus)` : `All ${RUNS.length} trajectories`} from the m_v2 evaluation — 3× SWE-bench harnesses, InnovatorBench, and AgencyBench under two harnesses — plus 27 families of fine-grained behavioral metrics per run. Click a row to open the turn-by-turn view.</p>
     ${tiles}
     <div class="filters">
       <div class="chip-row">${batChips}</div>
@@ -1028,8 +1072,8 @@ function renderDetail(ri) {
           bar = `<div class="mbar" data-tip="all ${rng.n} runs share this value" style="opacity:.5"><div class="fill" style="width:4%;opacity:.5"></div></div>`;
         }
       } else bar = `<div class="mbar" style="opacity:.35"></div>`;
-      return `<div class="mrow ${na?"na":""} ${bad?"bad":""} ${good?"goodv":""}" data-tip="${esc(md.k)}">
-        <div class="ml">${md.l} <span class="mk">${md.k.split("_")[0]}</span></div>
+      return `<div class="mrow ${na?"na":""} ${bad?"bad":""} ${good?"goodv":""}" data-tip="<div class='t1'>${esc(famName(md.k))}</div><span class='mono'>${esc(md.k)}</span>">
+        <div class="ml">${md.l} <span class="mk" title="${esc(md.k)}">${esc(famName(md.k))}</span></div>
         ${bar}
         <div class="mv">${na ? "n/a" : FMT[md.f](v)}</div>
       </div>`;
@@ -1077,7 +1121,7 @@ function renderDetail(ri) {
       <div class="timeline" id="timeline">${timeline}</div>
       <div class="metric-panel">
         ${verifierCard}
-        <div class="card radar-card"><h3>Behavior profile (percentile vs all ${RUNS.length} runs)</h3>${radarSVG(run)}
+        <div class="card radar-card"><h3>Behavior profile (percentile vs ${IS_FULL ? "the full " + FULL.length + "-run corpus" : "all " + RUNS.length + " runs"})</h3>${radarSVG(run)}
           <div class="radar-note">Each axis = this run's direction-adjusted percentile among all runs; 100 = best. Axes with no applicable metric are dimmed at 0.</div>
         </div>
         ${groupsHTML}
@@ -1114,17 +1158,19 @@ function wireExpanders(root) {
   });
 }
 
-/* ---------------- insights ---------------- */
+/* ---------------- insights (dot plots over the FULL corpus) ---------------- */
 function dotPlot(md, w = 340, h = 150) {
-  const pts = RUNS.map((r,i)=>({ v: r.metrics[md.k], r, i })).filter(p => isNum(p.v));
+  const pts = FULL.map((r,i)=>({ v: r.metrics[md.k], r, i })).filter(p => isNum(p.v));
   if (pts.length < 2) return `<div style="color:var(--muted);font-size:12px">not enough data</div>`;
   const lo = Math.min(...pts.map(p=>p.v)), hi = Math.max(...pts.map(p=>p.v));
   const pad = 16, x = v => lo===hi ? w/2 : pad + (v-lo)/(hi-lo)*(w-2*pad);
   const lanes = {}; BATCH_IDS.forEach((b, i) => lanes[b] = 22 + i * 19);
+  const rr = pts.length > 400 ? 3.1 : 4.2;   /* smaller dots once the corpus is large */
   const dots = pts.map(p => {
-    const jit = ((p.i * 37) % 9 - 4) * 0.8;
-    return `<circle cx="${x(p.v).toFixed(1)}" cy="${((lanes[p.r.batch]||60)+jit).toFixed(1)}" r="4.2" fill="${batVar(p.r.batch)}" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.2"
-      data-tip="<div class='t1'>${esc(p.r.sample_name)}</div><div class='mono'>${esc(p.r.model||batLabel(p.r.batch))}</div>${md.l}: <b>${FMT[md.f](p.v)}</b>" style="cursor:pointer" data-run-link="${p.i}"></circle>`;
+    const ri = RUN_IDX.get(p.r.batch + "|" + p.r.sample_name);
+    const jit = ((p.i * 37) % 11 - 5) * 0.85;
+    return `<circle cx="${x(p.v).toFixed(1)}" cy="${((lanes[p.r.batch]||60)+jit).toFixed(1)}" r="${rr}" fill="${batVar(p.r.batch)}" fill-opacity="${pts.length > 400 ? 0.55 : 0.8}" stroke="var(--surface)" stroke-width="1"
+      data-tip="<div class='t1'>${esc(p.r.sample_name)}</div><div class='mono'>${esc(p.r.model||batLabel(p.r.batch))}</div>${md.l}: <b>${FMT[md.f](p.v)}</b>${ri==null?"":" · click to open run"}"${ri==null?"":` style="cursor:pointer" data-run-link="${ri}"`}></circle>`;
   }).join("");
   return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">
     <line x1="${pad}" y1="${h-14}" x2="${w-pad}" y2="${h-14}" stroke="var(--baseline)" stroke-width="1"></line>
@@ -1169,16 +1215,16 @@ function renderInsights() {
 
   app.innerHTML = `
     <h1 class="page">Cross-batch insights</h1>
-    <p class="lede">Behavioral fingerprints differ sharply by batch: SWE runs are read-edit loops, InnovatorBench runs are dominated by long-running sessions and polling, AgencyBench runs are eval-driven. Each dot is one of the ${RUNS.length} runs, one lane per batch — hover for the run, click to open it. For per-model comparison see the <a href="#/models">Models</a> tab; for which metrics survive across batches see <a href="#/portability">Portability</a>.</p>
+    <p class="lede">Behavioral fingerprints differ sharply by batch: SWE runs are read-edit loops, InnovatorBench runs are dominated by long-running sessions and polling, AgencyBench runs are eval-driven. Each dot is one of the <b>${FULL.length}</b> trajectories in the ${IS_FULL ? "full scored corpus" : "sample"}, one lane per batch — hover for the run${IS_FULL ? "; dots in the embedded " + RUNS.length + "-run sample are clickable" : ", click to open it"}. For per-model comparison see the <a href="#/models">Models</a> tab; for which metrics survive across batches see <a href="#/portability">Portability</a>.</p>
     <div class="insight-grid">
       <div class="card ichart wide">
-        <h3>Action mix by batch</h3><div class="sub">share of turns per action category</div>
+        <h3>Action mix by batch</h3><div class="sub">share of turns per action category${IS_FULL ? ` · computed on the ${RUNS.length}-run embedded sample (turn-level data)` : ""}</div>
         ${mixRows}
         <div style="margin-top:8px">${legendHTML()}</div>
       </div>
       <div class="card ichart wide"><h3>Distribution lanes</h3><div class="sub">in the dot plots below, each dot = one trajectory; lanes top→bottom in this order</div>${srcLegend}</div>
       ${KEYS.map(md => `<div class="card ichart">
-          <h3>${md.l}</h3><div class="sub mono">${md.k}</div>
+          <h3>${md.l}</h3><div class="sub" title="${esc(md.k)}">${esc(famName(md.k))} family <span class="mono">(${esc(famCode(md.k))})</span></div>
           ${dotPlot(md)}
         </div>`).join("")}
     </div>`;
@@ -1209,7 +1255,7 @@ const MODEL_METRICS = [
 const mean = xs => xs.length ? xs.reduce((a,b)=>a+b,0)/xs.length : null;
 function modelSelection() {
   const want = state.harness === "both" ? ["agency_openai","agency_claude"] : [state.harness === "claude" ? "agency_claude" : "agency_openai"];
-  return RUNS.filter(r => want.includes(r.batch));
+  return FULL.filter(r => want.includes(r.batch));   /* full corpus */
 }
 function modelGroups(runs) {
   const by = {};
@@ -1263,7 +1309,7 @@ function renderModels() {
     .sort((a,b) => b.e - a.e);
   const maxE = rank.length ? rank[0].e : 1;
   const etaRows = rank.map(x => `
-    <div class="mm-row" style="grid-template-columns:158px 1fr 44px" data-tip="<div class='t1'>${esc(x.md.l)}</div><div class='mono'>${esc(x.md.k)}</div>share of run-to-run variance explained by which model produced the run: <b>${(x.e*100).toFixed(0)}%</b>">
+    <div class="mm-row" style="grid-template-columns:158px 1fr 44px" data-tip="<div class='t1'>${esc(x.md.l)}</div><div>${esc(famName(x.md.k))} family · <span class='mono'>${esc(x.md.k)}</span></div>share of run-to-run variance explained by which model produced the run: <b>${(x.e*100).toFixed(0)}%</b>">
       <div class="mlabel" title="${esc(x.md.k)}">${esc(x.md.l)}</div>
       <div class="bartrack" style="height:14px"><div class="barfill" style="width:${Math.max(2, x.e/Math.max(maxE,1e-9)*100).toFixed(1)}%;background:var(--accent)"></div></div>
       <div class="mval">${(x.e*100).toFixed(0)}%</div>
@@ -1308,7 +1354,7 @@ function renderModels() {
     const e = eta2(groups, md.k);
     return `<div class="card mm-panel">
       <h3>${esc(md.l)}</h3>
-      <div class="sub mono">${esc(md.k)}${isNum(e)?` · between-model η² ${(e*100).toFixed(0)}%`:""}${md.hi?` · ${md.hi === "better" ? "higher is better" : "lower is better"}`:""}</div>
+      <div class="sub" title="${esc(md.k)}">${esc(famName(md.k))} family <span class="mono">(${esc(famCode(md.k))})</span>${isNum(e)?` · between-model η² ${(e*100).toFixed(0)}%`:""}${md.hi?` · ${md.hi === "better" ? "higher is better" : "lower is better"}`:""}</div>
       ${rows}
     </div>`;
   }).join("");
@@ -1359,11 +1405,11 @@ function renderModels() {
   }).join("");
 
   const hnChip = (id, label, n) => `<button class="chip ${state.harness===id?"on":""}" data-hn="${id}">${label} <span style="color:var(--muted);font-weight:500">${n}</span></button>`;
-  const nOpen = RUNS.filter(r=>r.batch==="agency_openai").length, nCl = RUNS.filter(r=>r.batch==="agency_claude").length;
+  const nOpen = FULL.filter(r=>r.batch==="agency_openai").length, nCl = FULL.filter(r=>r.batch==="agency_claude").length;
 
   app.innerHTML = `
     <h1 class="page">Cross-model comparison — AgencyBench</h1>
-    <p class="lede">AgencyBench runs the same tasks across ${named.length}+ base models, so it can answer the key validity question: do the m_v2 metrics discriminate <b>between models</b>, not just between task formats? Bars below rank metrics by between-model η² — the share of run-to-run variance explained by model identity alone.</p>
+    <p class="lede">AgencyBench runs the same tasks across ${named.length}+ base models, so it can answer the key validity question: do the m_v2 metrics discriminate <b>between models</b>, not just between task formats? Bars below rank metrics by between-model η² — the share of run-to-run variance explained by model identity alone.${IS_FULL ? " Computed over all " + (nOpen+nCl) + " AgencyBench runs in the full scored corpus." : ""}</p>
     <div class="filters">
       <div class="chip-row">
         ${hnChip("openai", "OpenAI harness", nOpen)}
@@ -1429,11 +1475,11 @@ function renderPortability() {
 
   const counts = {};
   for (const row of M) { const v = verdictOf(row).id; counts[v] = (counts[v]||0)+1; }
-  const nFam = new Set(M.map(r => r.metric.split("_")[0])).size;
+  const nFam = new Set(M.map(r => famCode(r.metric))).size;
 
   const tiles = `
     <div class="tiles">
-      <div class="card tile"><div class="k">Metric fields</div><div class="v">${M.length}</div><div class="d">${nFam} M-families · 6 sources</div></div>
+      <div class="card tile"><div class="k">Metric fields</div><div class="v">${M.length}</div><div class="d">${nFam} M-families · ${SRC.length} sources</div></div>
       <div class="card tile"><div class="k">Strong</div><div class="v" style="color:var(--status-good)">${counts.strong||0}</div><div class="d">discriminate across sources</div></div>
       <div class="card tile"><div class="k">Medium</div><div class="v" style="color:var(--accent)">${counts.medium||0}</div><div class="d">some separation</div></div>
       <div class="card tile"><div class="k">Weak</div><div class="v" style="color:var(--status-warning)">${counts.weak||0}</div><div class="d">little separation</div></div>
@@ -1444,16 +1490,17 @@ function renderPortability() {
   /* family rollup: share of strong/medium/weak/degen per M-family */
   const fam = {};
   for (const row of M) {
-    const f = row.metric.split("_")[0];
+    const f = famCode(row.metric);
     (fam[f] = fam[f] || { strong:0, medium:0, weak:0, degen:0, na:0, n:0 });
     fam[f][verdictOf(row).id]++; fam[f].n++;
   }
   const V_COLOR = { strong:"var(--status-good)", medium:"var(--accent)", weak:"var(--status-warning)", degen:"var(--baseline)", na:"var(--surface-2)" };
   const famRows = Object.entries(fam).sort((a,b) => (b[1].strong/b[1].n) - (a[1].strong/a[1].n)).map(([f, c]) => {
+    const fn = FAM_NAME[f] || f;
     const segs = ["strong","medium","weak","degen","na"].map(v => c[v] ?
-      `<div data-tip="<div class='t1'>${f}</div>${v}: ${c[v]} of ${c.n} fields" style="width:${(c[v]/c.n*100)}%;background:${V_COLOR[v]};border-radius:3px"></div>` : "").join("");
-    return `<div style="display:grid;grid-template-columns:52px 1fr 46px;gap:8px;align-items:center;margin:4px 0">
-      <div class="mono" style="font-size:11px;font-weight:650;color:var(--ink-2)">${f}</div>
+      `<div data-tip="<div class='t1'>${esc(fn)} (${f})</div>${v}: ${c[v]} of ${c.n} fields" style="width:${(c[v]/c.n*100)}%;background:${V_COLOR[v]};border-radius:3px"></div>` : "").join("");
+    return `<div style="display:grid;grid-template-columns:150px 1fr 46px;gap:8px;align-items:center;margin:4px 0">
+      <div style="font-size:11px;font-weight:650;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${f}">${esc(fn)}</div>
       <div style="display:flex;gap:2px;height:13px">${segs}</div>
       <div style="font-size:10.5px;color:var(--muted);text-align:right">${c.strong}/${c.n}</div>
     </div>`;
@@ -1462,7 +1509,7 @@ function renderPortability() {
   /* --- heatmap --- */
   let rows = M.filter(r => {
     if (pv.verdict !== "*" && verdictOf(r).id !== pv.verdict) return false;
-    if (pv.q && !r.metric.toLowerCase().includes(pv.q.toLowerCase())) return false;
+    if (pv.q && !(r.metric + " " + metricLabel(r.metric)).toLowerCase().includes(pv.q.toLowerCase())) return false;
     return true;
   });
   const sortKey = pv.sort;
@@ -1488,10 +1535,10 @@ function renderPortability() {
       const pctMix = 6 + t * 80;
       const inkT = t > 0.62;
       return `<td class="hcell"><div class="hswatch" style="background:color-mix(in srgb, var(--accent) ${pctMix.toFixed(0)}%, var(--surface-2));color:${inkT?"#fff":"var(--ink-2)"};${isNum(cov)&&cov<1?"border-style:dashed;opacity:.75":""}"
-        data-tip="<div class='t1'>${esc(row.metric)}</div>${esc(BATCHES[s]?BATCHES[s].label:s)}: mean <b>${fmtNum(mv)}</b>${isNum(cov)?` · coverage ${fmtPct(cov)}`:""}">${fmtCell(mv)}</div></td>`;
+        data-tip="<div class='t1'>${esc(metricLabel(row.metric))}</div><div class='mono'>${esc(row.metric)}</div>${esc(batLabel(s))}: mean <b>${fmtNum(mv)}</b>${isNum(cov)?` · coverage ${fmtPct(cov)}`:""}">${fmtCell(mv)}</div></td>`;
     }).join("");
     return `<tr>
-      <td class="mname" title="${esc(row.metric)}">${esc(row.metric)}</td>
+      <td class="mname" title="${esc(row.metric)}">${esc(metricLabel(row.metric))}</td>
       <td><span class="verdict ${v.id}">${v.label}</span></td>
       <td><div class="dbar"><div class="track"><div class="fill" style="width:${Math.max(2,(row.discrim||0)/maxD*100).toFixed(1)}%"></div></div><div class="dv">${isNum(row.discrim)?row.discrim.toFixed(2):"·"}</div></div></td>
       ${cells}
@@ -1505,7 +1552,7 @@ function renderPortability() {
 
   app.innerHTML = `
     <h1 class="page">Metric portability across sources</h1>
-    <p class="lede">Which of the ${M.length} metric fields (${nFam} M-families) actually discriminate between agent runs when moved across the six trajectory sources — and which degrade to constants. Cell color = the metric's per-source mean, normalized within its row (darker = higher); dashed cells have partial coverage. This is the core validity result of m_v2.</p>
+    <p class="lede">Which of the ${M.length} metric fields (${nFam} M-families) actually discriminate between agent runs when moved across the ${SRC.length} trajectory sources — and which degrade to constants. Computed over the <b>full ${fmtInt(Object.values(D.n_per_source||{}).reduce((a,b)=>a+b,0))}-trajectory</b> scored corpus (supersets included). Cell color = the metric's per-source mean, normalized within its row (darker = higher); dashed cells have partial coverage. This is the core validity result of m_v2.</p>
     ${tiles}
     <div class="insight-grid" style="margin-bottom:16px">
       <div class="card ichart wide">
@@ -1525,7 +1572,7 @@ function renderPortability() {
           ${hHead("metric","Metric field")}
           <th style="cursor:default">Verdict</th>
           ${hHead("discrim","Discrimination")}
-          ${SRC.map(s => hHead("src:"+s, `<span class="dot" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${batVar(s)};margin-right:4px"></span>${BATCHES[s]?BATCHES[s].short:s} <span style="color:var(--muted);text-transform:none">n=${D.n_per_source[s]||"?"}</span>`)).join("")}
+          ${SRC.map(s => hHead("src:"+s, `<span class="dot" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${batVar(s)};margin-right:4px"></span>${batShort(s)} <span style="color:var(--muted);text-transform:none">n=${D.n_per_source[s]||"?"}</span>`)).join("")}
         </tr></thead>
         <tbody>${hRows || `<tr><td colspan="${3+SRC.length}" style="text-align:center;color:var(--muted);padding:26px">no metric fields match</td></tr>`}</tbody>
       </table>
