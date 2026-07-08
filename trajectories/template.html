@@ -338,18 +338,13 @@ svg.mix-bar { display: block; }
 .axislbl { font-size: 10px; fill: var(--muted); }
 .dirlbl  { font-size: 11px; fill: var(--ink-2); font-weight: 600; }
 
-/* ---------- per-chart insight disclosures ---------- */
-details.insight { margin-top: 10px; border-top: 1px dashed var(--grid); padding-top: 8px; }
-details.insight > summary {
-  cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px;
-  font-size: 12px; font-weight: 650; color: var(--accent); user-select: none;
-  -webkit-tap-highlight-color: transparent; padding: 2px 0;
+/* ---------- per-chart insight hover tooltips (ℹ 洞察) ---------- */
+.ins-i {
+  display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; vertical-align: 2px;
+  font-size: 11px; font-weight: 650; color: var(--accent); cursor: help; white-space: nowrap;
+  background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: 999px; padding: 1px 8px; user-select: none; -webkit-tap-highlight-color: transparent;
 }
-details.insight > summary::-webkit-details-marker { display: none; }
-details.insight > summary::before { content: "▸"; font-size: 11px; display: inline-block; transition: transform .15s ease; }
-details.insight[open] > summary::before { transform: rotate(90deg); }
-details.insight .ibody { margin-top: 7px; font-size: 12.5px; line-height: 1.62; color: var(--ink-2); max-width: 900px; }
-details.insight .ibody b { color: var(--ink); font-variant-numeric: tabular-nums; }
 
 /* ---------- tooltip ---------- */
 #tip {
@@ -360,6 +355,8 @@ details.insight .ibody b { color: var(--ink); font-variant-numeric: tabular-nums
 #tip .t1 { font-weight: 700; }
 #tip .mono { font-size: 10.5px; opacity: .8; }
 #tip .zh { margin-top: 3px; font-size: 11.5px; line-height: 1.55; }
+#tip .zh b { font-variant-numeric: tabular-nums; }
+#tip.wide { max-width: 420px; }
 /* hint that a family name carries an explanation tooltip */
 .famzh { border-bottom: 1px dotted color-mix(in srgb, var(--muted) 70%, transparent); cursor: help; }
 
@@ -401,7 +398,11 @@ details.insight .ibody b { color: var(--ink); font-variant-numeric: tabular-nums
 .verdict.na     { color: var(--muted); border-color: var(--hairline); border-style: dashed;}
 
 /* ---------- portability heatmap ---------- */
-.heat-scroller { overflow-x: auto; border: 1px solid var(--hairline); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
+/* bounded scroll region: the table scrolls INSIDE this container (both axes),
+   so the page itself never has to lay out / paint a 5000px-tall table —
+   this is what fixed the blank-on-scroll with 182 rows */
+.heat-scroller { overflow: auto; max-height: 72vh; overscroll-behavior: contain;
+  border: 1px solid var(--hairline); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
 table.heat { border-collapse: collapse; width: 100%; min-width: 980px; }
 table.heat thead th {
   position: sticky; top: 0; z-index: 5; background: var(--surface); border-bottom: 1px solid var(--grid);
@@ -775,23 +776,25 @@ function showTip(html, ev) {
 function hideTip() { tip.style.display = "none"; }
 document.addEventListener("mouseover", e => {
   const el = e.target.closest("[data-tip]");
-  if (el) showTip(el.dataset.tip, e);
+  if (el) { tip.classList.toggle("wide", el.classList.contains("ins-i")); showTip(el.dataset.tip, e); }
 });
 document.addEventListener("mousemove", e => {
   const el = e.target.closest("[data-tip]");
-  if (el) showTip(el.dataset.tip, e); else hideTip();
+  if (el) { tip.classList.toggle("wide", el.classList.contains("ins-i")); showTip(el.dataset.tip, e); } else hideTip();
 });
 /* mobile: tap a [data-tip] element to show the tooltip, tap elsewhere to hide */
 document.addEventListener("click", e => {
   const el = e.target.closest("[data-tip]");
-  if (el) showTip(el.dataset.tip, e); else hideTip();
+  if (el) { tip.classList.toggle("wide", el.classList.contains("ins-i")); showTip(el.dataset.tip, e); } else hideTip();
 });
 
-/* ---------------- per-chart insight disclosure ----------------
-   collapsible data-grounded analyst note under a chart. Native
-   <details>/<summary> so it works on desktop (click) and mobile (tap). */
-const insightBox = (html, bare) =>
-  `<details class="insight"${bare ? ` style="border-top:none;padding-top:0"` : ""}><summary>Insight</summary><div class="ibody">${html}</div></details>`;
+/* ---------------- per-chart insight tooltip ----------------
+   data-grounded analyst note in Chinese, surfaced through the SAME
+   data-tip hover/tap mechanism as the metric-family tooltips.
+   Renders as a small "ℹ 洞察" pill next to the chart title.
+   NOTE: the html payload must only use single quotes internally. */
+const insTip = html =>
+  `<span class="ins-i" data-tip="<div class='t1'>洞察</div><div class='zh'>${html}</div>">ℹ 洞察</span>`;
 
 /* ---------------- SVG builders ---------------- */
 function miniStrip(seq, w = 168, h = 16) {
@@ -864,7 +867,7 @@ function radarSVG(run) {
 const PAGE_SIZE = 50;
 const state = { bats: new Set(BATCH_IDS), model: "*", q: "", sort: "idx", asc: true, page: 0,
   harness: "openai",            /* models view: openai | claude | both */
-  pv: { verdict: "*", q: "", sort: "discrim", asc: false } };  /* portability view */
+  pv: { verdict: "*", q: "", sort: "discrim", asc: false, expand: false } };  /* portability view (expand=false → 27-family rollup) */
 
 /* ---------------- overview ---------------- */
 const legendHTML = () => `<div class="legend">` + CATS.map(c =>
@@ -1244,23 +1247,23 @@ function renderInsights() {
   const app = $("#app");
   const KEYS = [
     { k:"M23_effective_step_rate", l:"Effective step rate", f:"pct", dirNote:"higher →",
-      ins:"This metric is a tail-catcher, not a ranker: <b>1,049 of the 1,092</b> runs sit at exactly 100% and every batch mean is ≥98%. All <b>25</b> runs below 95% come from just three batches — <b>20</b> from SWE-difficult, <b>3</b> from SWE-CodeAct (including the corpus floor, one run at <b>16%</b>) and <b>2</b> from InnovatorBench (floor <b>46%</b>) — while all 76 AgencyBench runs are pinned at exactly 1.00. Use it to screen for broken trajectories, not to compare healthy ones." },
+      ins:"这个指标是抓坏轨迹用的，不是排名用的：<b>1092</b> 条轨迹里 <b>1049</b> 条恰好是 100%，每个批次的均值都 ≥98%。低于 95% 的 <b>25</b> 条全部来自三个批次——<b>20</b> 条 SWE-difficult、<b>3</b> 条 SWE-CodeAct（含全语料地板：一条 <b>16%</b>）、<b>2</b> 条 InnovatorBench（地板 <b>46%</b>）——而 76 条 AgencyBench 全部钉在 1.00。用它筛异常轨迹，别拿它比较健康轨迹。" },
     { k:"M07_read_before_edit_rate", l:"Read-before-edit rate", f:"pct", dirNote:"higher →",
-      ins:"The three SWE harnesses cluster tightly — mean read-before-edit <b>0.82</b> (difficult), <b>0.82</b> (CodeAct), <b>0.89</b> (SWE-agent), all with median 1.00 — but the shape is bimodal: SWE-difficult's bottom decile reads first only <b>25%</b> of the time (near-blind editing). InnovatorBench matches SWE at <b>0.84</b>. Both AgencyBench lanes are empty because those logs carry no file-edit telemetry — the metric is inherently SWE/Innovator-scoped, one of the clearest portability gaps in the corpus." },
+      ins:"三个 SWE harness 聚得很紧——改前先读均值 <b>0.82</b>（difficult）、<b>0.82</b>（CodeAct）、<b>0.89</b>（SWE-agent），中位数都是 1.00——但分布是双峰的：SWE-difficult 最差的十分位只有 <b>25%</b> 的编辑先读过文件（近乎盲改）。InnovatorBench 与 SWE 持平（<b>0.84</b>）。两条 AgencyBench 泳道是空的：那些日志没有文件编辑遥测——该指标天生只适用于 SWE/Innovator，是全语料里最明显的可移植性缺口之一。" },
     { k:"M14_polling_step_ratio", l:"Polling step ratio", f:"pct", dirNote:"← lower",
-      ins:"Polling is an InnovatorBench-only behavior: every one of its <b>55</b> runs polls (min <b>15%</b>, mean <b>52%</b>, and the worst run spends <b>96%</b> of its steps waiting on sessions), while all <b>1,037</b> runs in the other five batches sit at exactly 0. That is the task format speaking — Innovator launches long-running training jobs and then waits — and it makes M14 one of the most source-discriminating fields in the whole matrix (discrimination <b>2.77</b>)." },
+      ins:"轮询是 InnovatorBench 独有的行为：它的 <b>55</b> 条 run 条条都在轮询（最低 <b>15%</b>、均值 <b>52%</b>，最差的一条 <b>96%</b> 的步骤在等 session），而其余五个批次的 <b>1037</b> 条全部恰好为 0。这是任务形态决定的——Innovator 要启动长时间训练任务然后等——也让 M14 成为整个矩阵里区分源最强的字段之一（区分度 <b>2.77</b>）。" },
     { k:"M15_repeated_view_rate", l:"Repeated-view rate", f:"pct", dirNote:"← lower",
-      ins:"SWE-difficult is the heaviest re-reader: on average <b>24%</b> of its views are repeats and its top decile re-reads <b>half</b> of everything it opens, versus <b>16%</b> for CodeAct on the same task family — so the gap is harness-induced. InnovatorBench is cleaner (32 of 55 runs never repeat a view), and both AgencyBench batches are uniformly 0 across all <b>76</b> runs because their logs expose no per-file view events — a degenerate lane, not disciplined behavior." },
+      ins:"SWE-difficult 复读最重：平均 <b>24%</b> 的查看是重复的，最差十分位把打开过的东西重看了<b>一半</b>；同一任务族上 CodeAct 只有 <b>16%</b>——差距是 harness 造成的。InnovatorBench 更干净（55 条里 32 条从不重复查看），而两个 AgencyBench 批次 <b>76</b> 条全为 0——日志根本不暴露按文件的查看事件，这是退化泳道，不是纪律好。" },
     { k:"M54_explore_edit_log_ratio", l:"Explore∶edit balance (log)", f:"num",
-      ins:"SWE-agent is the most edit-leaning and tightest batch (mean log-ratio <b>0.96</b>, 10th–90th percentile only 0.78–1.10) — the harness rations exploration. SWE-difficult (<b>1.67</b>) and InnovatorBench (<b>1.77</b>, max <b>5.29</b>) are explore-heavy with long right tails: some Innovator runs do 5+ log-units of reading per edit. Agency-OpenAI sits CodeAct-like at <b>1.16</b>; the Agency-Claude lane is empty (no explore/edit telemetry in those logs)." },
+      ins:"SWE-agent 最偏编辑、也最收敛（log 比均值 <b>0.96</b>，10–90 分位只有 0.78–1.10）——是 harness 在配给探索。SWE-difficult（<b>1.67</b>）和 InnovatorBench（<b>1.77</b>，最大 <b>5.29</b>）偏探索且右尾很长：有的 Innovator run 每次编辑要配 5 个 log 单位以上的阅读。Agency-OpenAI 居中、类似 CodeAct（<b>1.16</b>）；Agency-Claude 泳道为空（日志无探索/编辑遥测）。" },
     { k:"M74_action_transition_entropy_normalized", l:"Action-transition entropy", f:"num",
-      ins:"The three SWE harnesses cluster at <b>0.33–0.35</b> mean entropy; InnovatorBench is markedly lower (<b>0.23</b>) because its long polling loops are exactly the repetitive transitions this metric penalizes. Agency-Claude collapses: <b>34 of 40</b> runs score exactly 0 (mean 0.06) — its logs are too short (median ~9 turns) for transition entropy to form — versus only 6 of 36 zeros on Agency-OpenAI. Cross-batch differences here partly measure logging depth, not behavior." },
+      ins:"三个 SWE harness 的熵均值聚在 <b>0.33–0.35</b>；InnovatorBench 明显更低（<b>0.23</b>），因为长轮询循环正是该指标惩罚的重复转移。Agency-Claude 则塌了：<b>40 条里 34 条</b>恰好为 0（均值 0.06）——日志太短（中位约 9 回合），转移熵根本形不成——对比 Agency-OpenAI 36 条里只有 6 条为 0。此处的跨批次差异部分反映的是日志深度，不是行为。" },
     { k:"M20_duration_seconds", l:"Wall-clock duration", f:"sec",
-      ins:"Read the AgencyBench lanes as telemetry, not speed: Agency-Claude logs report just <b>1–17 s</b> per run (median 8 s) — truncated timing — while Agency-OpenAI spans <b>6 s to 9.7 min</b> (mean ~2.9 min), the widest spread of any batch. Within SWE, the harness dominates: SWE-difficult finishes at ~<b>50 s</b> median while CodeAct and SWE-agent both take ~<b>1.5 min</b> on the same class of tasks." },
+      ins:"AgencyBench 的泳道要当遥测看、不能当速度看：Agency-Claude 日志每条只报 <b>1–17 秒</b>（中位 8 秒）——计时被截断——而 Agency-OpenAI 跨 <b>6 秒到 9.7 分钟</b>（均值约 2.9 分钟），是所有批次里最宽的。SWE 内部则由 harness 主导：同类任务上 SWE-difficult 中位约 <b>50 秒</b>收工，CodeAct 和 SWE-agent 都要约 <b>1.5 分钟</b>。" },
     { k:"M05_tool_reuse_rate", l:"Tool reuse rate", f:"pct",
-      ins:"SWE-difficult is the most repetitive: mean reuse <b>0.80</b>, and <b>250 of its 580</b> runs reuse the same tool ≥90% of the time — largely bash-only loops. Reuse falls as the harness gets richer: CodeAct <b>0.60</b>, SWE-agent <b>0.53</b>, and Agency-OpenAI lowest at <b>0.38</b> (median 0.29), whose eval-driven tasks rotate across more distinct tools. The Agency-Claude lane is empty — no per-tool telemetry." },
+      ins:"SWE-difficult 重复性最高：复用均值 <b>0.80</b>，<b>580 条里 250 条</b>对同一工具的复用 ≥90%——多为纯 bash 循环。harness 越丰富复用越低：CodeAct <b>0.60</b>、SWE-agent <b>0.53</b>，Agency-OpenAI 最低 <b>0.38</b>（中位 0.29），其 eval 驱动的任务在更多工具间轮换。Agency-Claude 泳道为空——无按工具遥测。" },
     { k:"M55_file_reach_rate", l:"File reach rate", f:"pct", dirNote:"higher →",
-      ins:"Coverage is harness-driven, not model-driven: on the same SWE task family, SWE-difficult touches <b>59%</b> of relevant files but SWE-agent only <b>23%</b> and CodeAct <b>32%</b> — the leaner harnesses navigate straight to a suspect file and edit it. InnovatorBench reaches <b>54%</b>. Both AgencyBench lanes are empty: the metric needs a gold relevant-file set that only the SWE/Innovator corpora define." },
+      ins:"覆盖率由 harness 驱动而非模型：同一 SWE 任务族上，SWE-difficult 触达 <b>59%</b> 的相关文件，SWE-agent 只有 <b>23%</b>、CodeAct <b>32%</b>——更精简的 harness 直奔嫌疑文件就改。InnovatorBench 触达 <b>54%</b>。两条 AgencyBench 泳道为空：该指标需要只有 SWE/Innovator 语料才定义的相关文件金集。" },
   ];
   const srcLegend = `<div class="legend" style="margin:8px 0 0">` + BATCH_IDS.map(id =>
     `<span class="li"><span class="sw" style="background:${batVar(id)};border-radius:50%"></span>${BATCHES[id].label}</span>`).join("") + `</div>`;
@@ -1287,16 +1290,14 @@ function renderInsights() {
     <p class="lede">Behavioral fingerprints differ sharply by batch: SWE runs are read-edit loops, InnovatorBench runs are dominated by long-running sessions and polling, AgencyBench runs are eval-driven. Each dot is one of the <b>${FULL.length}</b> trajectories in the ${IS_FULL ? "full scored corpus" : "sample"}, one lane per batch — hover for the run${IS_FULL ? "; dots in the embedded " + RUNS.length + "-run sample are clickable" : ", click to open it"}. For per-model comparison see the <a href="#/models">Models</a> tab; for which metrics survive across batches see <a href="#/portability">Portability</a>.</p>
     <div class="insight-grid">
       <div class="card ichart wide">
-        <h3>Action mix by batch</h3><div class="sub">share of turns per action category${IS_FULL ? ` · computed on the ${RUNS.length}-run embedded sample (turn-level data)` : ""}</div>
+        <h3>Action mix by batch${insTip("回合构成是三大基准族最一目了然的分界：三个 SWE 批次都是 <b>62–65%</b> 的 run_command 加 15–24% 探索；InnovatorBench 是唯一被 session/等待回合主导的批次（<b>48%</b>——它的轮询签名）；而两个 AgencyBench harness 彼此都不一致——Agency-OpenAI 是构建循环（37% run、30% 探索、28% 编辑、4% eval），Agency-Claude 的短日志则 <b>92%</b> 是 eval 回合。这种失衡正是下方多张点图里 Agency-Claude 泳道缺数据（n/a）的原因。")}</h3><div class="sub">share of turns per action category${IS_FULL ? ` · computed on the ${RUNS.length}-run embedded sample (turn-level data)` : ""}</div>
         ${mixRows}
         <div style="margin-top:8px">${legendHTML()}</div>
-        ${insightBox("The turn mix is the clearest one-glance separator of the three benchmark families: the SWE batches are <b>62–65%</b> run_command plus 15–24% exploration; InnovatorBench is the only batch dominated by session/waiting turns (<b>48%</b> — its polling signature); and the two AgencyBench harnesses disagree with <i>each other</i> — Agency-OpenAI is a build loop (37% run, 30% explore, 28% edit, 4% eval) while Agency-Claude's short logs are <b>92%</b> eval turns. That imbalance is why Agency-Claude lanes go n/a in several dot plots below.")}
       </div>
       <div class="card ichart wide"><h3>Distribution lanes</h3><div class="sub">in the dot plots below, each dot = one trajectory; lanes top→bottom in this order</div>${srcLegend}</div>
       ${KEYS.map(md => `<div class="card ichart">
-          <h3>${md.l}</h3><div class="sub" title="${esc(md.k)}"><span class="famzh" data-tip="<div class='t1'>${esc(famName(md.k))} (${esc(famCode(md.k))})</div><span class='mono'>${esc(md.k)}</span>${famTipZh(md.k)}">${esc(famName(md.k))} family <span class="mono">(${esc(famCode(md.k))})</span></span></div>
+          <h3>${md.l}${md.ins ? insTip(md.ins) : ""}</h3><div class="sub" title="${esc(md.k)}"><span class="famzh" data-tip="<div class='t1'>${esc(famName(md.k))} (${esc(famCode(md.k))})</div><span class='mono'>${esc(md.k)}</span>${famTipZh(md.k)}">${esc(famName(md.k))} family <span class="mono">(${esc(famCode(md.k))})</span></span></div>
           ${dotPlot(md)}
-          ${md.ins ? insightBox(md.ins) : ""}
         </div>`).join("")}
     </div>`;
   app.querySelectorAll("[data-run-link]").forEach(el => el.addEventListener("click", () => location.hash = "#/run/" + el.dataset.runLink));
@@ -1324,6 +1325,19 @@ const MODEL_METRICS = [
   { k:"M43_burn_window_size",               l:"Token-burn window",            f:"int" },
 ];
 const mean = xs => xs.length ? xs.reduce((a,b)=>a+b,0)/xs.length : null;
+/* Chinese hover insights for the Models-tab small multiples. Numbers are
+   computed over the FULL 76-run AgencyBench corpus (both harnesses,
+   out_full/agency_*_metrics.json) and do NOT follow the harness filter. */
+const MM_INS = {
+  M93_max_eval_score: "峰值 eval 分（76 条双 harness 均值）：<b>glm46 0.69</b> 最高，claude45opus 0.64、gemini3pro 0.63、kimi 0.63 紧随，mini 0.60，<b>gpt52 垫底 0.47</b>。注意这是自评 eval 的峰值，不等于最终能力——真实能力（best_overall_score）排名是 glm46 0.51 &gt; claude45opus 0.355 &gt; kimi 0.31 ≈ mini 0.31 &gt; gpt52 0.27 &gt; gemini3pro 0.25。",
+  M93_score_delta_max_minus_first: "自我改进 Δ（峰值−首评）：<b>kimi 最大 0.39</b>（起评最低 0.24、爬得最多），glm46 其次 0.37；<b>gpt52 最弱 0.18</b>——起评低还不怎么涨。claude45opus 只有 0.22，但那是因为它首评本来就最高（0.42），可涨空间小。",
+  M02_raw_step_count: "步数分两档：<b>glm46（133 步）和 gemini3pro（132 步）</b>跑得最重，mini 居中（108）；gpt52（<b>52</b>）、claude45opus（66）、kimi（67）不到前者一半。步数多不等于分高：gemini3pro 花 132 步只换来 0.25 的 best score，gpt52 的 52 步反而拿 0.27。",
+  M11_eval_abuse_rate: "评测滥用是基准的通病而非某个模型的：六个具名模型全部落在 <b>0.58–0.70</b> 的窄带里（glm46 最低 0.58，claude45opus 最高 0.70）——两次 eval 之间不做实际修改就再评在 AgencyBench 上是普遍现象，这个轴对模型的区分很弱（η² 仅约 1–5%）。",
+  M05_tool_reuse_rate: "这是模型间 η² 最高的指标（<b>36%</b>）：<b>gpt52 复用高达 0.76</b>（近乎单一工具循环），而 gemini3pro 只有 <b>0.20</b>、kimi 0.29——工具轮换习惯是清晰的模型指纹。注意只有 Agency-OpenAI 日志带按工具遥测（每模型 n=5）。",
+  M16_search_vs_open_ratio: "各模型差别不大（<b>0.25–0.37</b>）：claude45opus 最爱先搜索（0.37），mini 最偏直接打开文件（0.25）。η² 只有约 4%——信息获取策略在这批模型间基本同质。（仅 OpenAI harness 有遥测，每模型 n=5）",
+  M54_explore_edit_log_ratio: "探索∶编辑平衡也相当同质（log 比 <b>0.99–1.26</b>）：claude45opus（1.26）和 kimi（1.24）略偏探索，gemini3pro 最偏动手（0.99）。η² 约 13%，中等偏弱。（仅 OpenAI harness 有遥测）",
+  M57_n_post_edit_actions: "glm46 是绝对的验证狂：平均每条 run <b>11.3</b> 次改后验证动作，是其他所有模型（≤2.7）的 4 倍以上——这也与它 0.51 的最高真实得分同向。<b>gpt52 最少（1.0 次）</b>，同时峰值分也垫底。",
+};
 function modelSelection() {
   const want = state.harness === "both" ? ["agency_openai","agency_claude"] : [state.harness === "claude" ? "agency_claude" : "agency_openai"];
   return FULL.filter(r => want.includes(r.batch));   /* full corpus */
@@ -1424,7 +1438,7 @@ function renderModels() {
     }).join("");
     const e = eta2(groups, md.k);
     return `<div class="card mm-panel">
-      <h3>${esc(md.l)}</h3>
+      <h3>${esc(md.l)}${MM_INS[md.k] ? insTip(MM_INS[md.k]) : ""}</h3>
       <div class="sub" title="${esc(md.k)}"><span class="famzh" data-tip="<div class='t1'>${esc(famName(md.k))} (${esc(famCode(md.k))})</div><span class='mono'>${esc(md.k)}</span>${famTipZh(md.k)}">${esc(famName(md.k))} family <span class="mono">(${esc(famCode(md.k))})</span></span>${isNum(e)?` · between-model η² ${(e*100).toFixed(0)}%`:""}${md.hi?` · ${md.hi === "better" ? "higher is better" : "lower is better"}`:""}</div>
       ${rows}
     </div>`;
@@ -1497,25 +1511,26 @@ function renderModels() {
     </div>
     <div class="insight-grid">
       <div class="card ichart">
-        <h3>Which metrics separate models?</h3>
+        <h3>Which metrics separate models?${insTip("模型间差异主要在「怎么干活」而不是「拿多少分」：工具复用率的模型间 η² 最高（<b>36%</b>，gpt52 0.76 vs gemini3pro 0.20），是最能区分模型的指标；默认 OpenAI harness 口径下 token-burn 窗口（24%）、总编辑数（21%）、步数（20%）随其后；而 <b>peak eval score 的 η² 只有 9%</b>（双 harness 口径更低到 3%）——最终得分几乎不携带模型身份信息。")}</h3>
         <div class="sub">between-model η² on the curated metric set · 100% = fully determined by model</div>
         ${etaRows || `<div style="color:var(--muted);font-size:12px">not enough data in this selection</div>`}
       </div>
       <div class="card ichart">
-        <h3>Eval score: first attempt → peak</h3>
+        <h3>Eval score: first attempt → peak${insTip("空心点到实心点的距离＝靠迭代找回的分数（76 条双 harness 均值）：<b>kimi 起评最低（0.24）但爬升最多（Δ0.39，到 0.63）</b>；claude45opus 起评最高（0.42）却只再涨 0.22；<b>glm46 以 0.69 的峰值居首</b>；gpt52 峰值垫底（0.47）且提升最少（Δ0.18）——既起点低又不会修。")}</h3>
         <div class="sub">hollow dot = mean first-eval score · filled dot = mean peak score · per model</div>
         ${scoreRows}
         <div class="sub" style="margin-top:8px">Gap between the dots = how much a model claws back by iterating (Repair@n behavior).</div>
       </div>
       ${smallPanels}
       <div class="card ichart wide">
-        <h3>Behavioral fingerprints</h3>
+        <h3>Behavioral fingerprints${insTip("<b>这是行为画像、不是能力排名</b>：每条轴是行为指标的百分位，雷达面积大 ≠ 模型强。例如 <b>mini 的雷达看着很大，但它的真实能力（best score 0.308）低于 claude45opus（0.355）</b>——mini 只是在「经济性」等行为轴上百分位高。真实能力排名（best_overall_score 均值）：<b>glm46 0.51 &gt; claude45opus 0.355 &gt; kimi 0.309 ≈ mini 0.308 &gt; gpt52 0.27 &gt; gemini3pro 0.25</b>。行为签名举例：glm46＝重验证（11.3 次/run）+重轨迹（133 步）；gpt52＝最省（52 步）但峰值最低（0.47）。只出现一次的五个模型（deepseek、qwen3、claude45sonnet、gemini、gork）并入 other，不画雷达。")}</h3>
+        <div class="sub" style="color:var(--status-warning);font-weight:650">行为画像·非能力排名（雷达=行为百分位，不代表谁更强）</div>
         <div class="sub">each axis = the model's mean over the <b>full AgencyBench corpus — all ${agAll.length} runs</b> (OpenAI + Claude harnesses, models aggregated across both), ranked as a direction-adjusted percentile: outer = better/more distinctive. Not affected by the harness filter above.</div>
         <div class="radar-multi">${radars}</div>
-        ${insightBox("Over all <b>76</b> AgencyBench runs, <b>glm46</b> posts the best mean peak score (<b>0.69</b>) and towers on verification — <b>11.3</b> post-edit verify actions per run versus ≤2.7 for every other model — but pays with the joint-heaviest trajectories (~<b>133</b> steps, alongside gemini3pro's ~132). <b>gpt52</b> is the most economical (<b>52</b> steps) yet lands the lowest peak (<b>0.47</b>) and the weakest self-improvement (Δ <b>0.18</b> vs kimi's <b>0.39</b>). Eval abuse is endemic to the benchmark rather than to one model — every named model averages between <b>0.58</b> (glm46) and <b>0.70</b> (claude45opus) — so the eval-discipline axis separates only mildly. The five models seen once each (deepseek, qwen3, claude45sonnet, gemini, gork) fold into the tables' “other” group and get no radar.")}
+        <div class="sub" style="margin-top:8px">真实能力排名（best_overall_score 均值）：<b>glm46 0.51</b> &gt; claude45opus 0.355 &gt; kimi 0.309 ≈ mini 0.308 &gt; gpt52 0.27 &gt; gemini3pro 0.25</div>
       </div>
       <div class="card ichart wide">
-        <h3>Model × metric means</h3>
+        <h3>Model × metric means${insTip("绿＝该向指标下具名模型中最好、红＝最差。看点：<b>glm46 峰值分与改后验证双最佳、评测滥用还最低（0.58）</b>；<b>gpt52 峰值（0.47）和自我改进（Δ0.18）双垫底但步数最省（52）</b>；claude45opus 评测滥用最高（0.70）同时首评分最高（0.42）；gemini3pro 编辑最多（58.7 次/run）却只换来 0.25 的真实得分。other 行是五个各只出现一次的模型（deepseek、qwen3、claude45sonnet、gemini、gork）的合并。")}</h3>
         <div class="sub">green = best, red = worst among named models (only for direction-signed metrics) · "·" = metric not applicable</div>
         <div style="overflow-x:auto"><table class="mmtable">
           <thead><tr><th>model</th>${tblCols.map(md=>`<th title="${esc(md.k)}">${esc(md.l)}</th>`).join("")}</tr></thead>
@@ -1590,6 +1605,20 @@ function renderPortability() {
     if (pv.q && !(r.metric + " " + metricLabel(r.metric)).toLowerCase().includes(pv.q.toLowerCase())) return false;
     return true;
   });
+  /* default view: collapse to ONE representative row per M-family (the
+     highest-discrimination field among the filtered rows) — 27 rows instead
+     of 182 keeps the table light; "展开" shows every field. */
+  const famFieldCount = {};
+  for (const r of rows) { const f = famCode(r.metric); famFieldCount[f] = (famFieldCount[f] || 0) + 1; }
+  const nMatched = rows.length;
+  if (!pv.expand) {
+    const best = {};
+    for (const r of rows) {
+      const f = famCode(r.metric);
+      if (!best[f] || (r.discrim || 0) > (best[f].discrim || 0)) best[f] = r;
+    }
+    rows = Object.values(best);
+  }
   const sortKey = pv.sort;
   rows = rows.slice().sort((a,b) => {
     let va, vb;
@@ -1615,8 +1644,11 @@ function renderPortability() {
       return `<td class="hcell"><div class="hswatch" style="background:color-mix(in srgb, var(--accent) ${pctMix.toFixed(0)}%, var(--surface-2));color:${inkT?"#fff":"var(--ink-2)"};${isNum(cov)&&cov<1?"border-style:dashed;opacity:.75":""}"
         data-tip="<div class='t1'>${esc(metricLabel(row.metric))}</div><div class='mono'>${esc(row.metric)}</div>${esc(batLabel(s))}: mean <b>${fmtNum(mv)}</b>${isNum(cov)?` · coverage ${fmtPct(cov)}`:""}">${fmtCell(mv)}</div></td>`;
     }).join("");
+    const nFields = famFieldCount[famCode(row.metric)] || 1;
+    const collapsedNote = (!pv.expand && nFields > 1) ?
+      `<div class='zh'>折叠视图：${esc(famName(row.metric))} 族共 ${nFields} 个字段，此行是其中区分度最高的代表字段；点「展开到全部字段」查看其余。</div>` : "";
     return `<tr>
-      <td class="mname famzh" title="${esc(row.metric)}" data-tip="<div class='t1'>${esc(metricLabel(row.metric))}</div><div class='mono'>${esc(row.metric)}</div>${famTipZh(row.metric)}">${esc(metricLabel(row.metric))}</td>
+      <td class="mname famzh" title="${esc(row.metric)}" data-tip="<div class='t1'>${esc(metricLabel(row.metric))}</div><div class='mono'>${esc(row.metric)}</div>${famTipZh(row.metric)}${collapsedNote}">${esc(metricLabel(row.metric))}${(!pv.expand && nFields > 1) ? ` <span style="color:var(--muted);font-weight:400">+${nFields-1}</span>` : ""}</td>
       <td><span class="verdict ${v.id}">${v.label}</span></td>
       <td><div class="dbar"><div class="track"><div class="fill" style="width:${Math.max(2,(row.discrim||0)/maxD*100).toFixed(1)}%"></div></div><div class="dv">${isNum(row.discrim)?row.discrim.toFixed(2):"·"}</div></div></td>
       ${cells}
@@ -1634,16 +1666,17 @@ function renderPortability() {
     ${tiles}
     <div class="insight-grid" style="margin-bottom:16px">
       <div class="card ichart wide">
-        <h3>Verdict share by metric family</h3>
+        <h3>Verdict share by metric family${insTip("<b>182 个指标字段里 96 个</b>是强跨源区分器、32 个中等、6 个弱——还有 <b>45 个是纯常数</b>。五个族在自己所有字段上全强：M11 评测滥用（4/4）、M74 动作熵（5/5）、M53 代码定位（4/4）、M15 重复查看（4/4）、M02 工具链深度（2/2）。另一端，<b>M03 子任务数（6 字段）和 M76 规划（5 字段）处处退化</b>：七个语料没有一个输出显式规划节点，计划结构类指标无处着力。M19 Tokens 对半开——27 个字段里 18 个（judge/规划/摘要类 token 子计数）因同样原因是常数，7 个核心用量字段保持强。")}</h3>
         <div class="sub">27 M-families sorted by share of strong fields · <span style="color:var(--status-good);font-weight:650">■ strong</span> · <span style="color:var(--accent);font-weight:650">■ medium</span> · <span style="color:var(--status-warning);font-weight:650">■ weak</span> · <span style="color:var(--muted);font-weight:650">■ degenerate / n-a</span></div>
         <div style="columns: 2; column-gap: 28px">${famRows}</div>
-        ${insightBox("<b>96 of 182</b> metric fields are strong cross-source discriminators, 32 medium, 6 weak — and <b>45 are flat constants</b>. Five families are strong on every field they own: M11 Eval Abuse (4/4), M74 Action Entropy (5/5), M53 Code Locate (4/4), M15 Repeated View (4/4) and M02 Tool Chain Depth (2/2). At the other end, <b>M03 Subtask Count (6 fields) and M76 Planning (5 fields) are degenerate everywhere</b>: none of these seven corpora emit explicit planning nodes, so plan-structure metrics have nothing to bind to. M19 Tokens splits down the middle — 18 of its 27 fields (all the judge/planning/summary token sub-counts) are constants for the same reason, while the 7 core usage fields stay strong.")}
       </div>
     </div>
-    <div class="filters">
+    <div style="display:flex;align-items:center;gap:4px;margin:18px 0 0"><span style="font-size:13.5px;font-weight:680">Per-source mean heatmap</span>${insTip("区分度最高的行都是某一源独有的行为：<b>M57 改后严格验证</b>（区分度 <b>2.94</b>）在 Agency-OpenAI 均值 <b>0.76</b>、在三个 SWE harness 上全是 0.00；<b>M14 轮询占比</b>（<b>2.77</b>）在 Innovator 是 <b>0.52</b>、其余六源为 0；<b>M11 评测滥用</b>从每个 SWE 源的 0.00 爬到 Agency-publish/Claude 的 <b>0.96–1.00</b>。空格和虚线格集中在 Agency 列——agency_claude 只有 <b>163/182</b> 个字段有均值、agency_openai 有 <b>172</b>——因为那些日志缺文件路径和 token 遥测。M20 时长行要存疑：agency_claude 的 <b>7.6 秒</b>对 agency_openai 的 <b>175 秒</b>是日志截断的伪影，不是模型速度。")}</div>
+    <div class="filters" style="margin-top:8px">
       <div class="chip-row">${vChips}</div>
+      <button class="chip ${pv.expand?"on":""}" id="pvExpand">${pv.expand ? `折叠为 ${nFam} 族代表字段` : `展开到全部字段 (${M.length})`}</button>
       <input type="search" id="pq" placeholder="filter metric name…" value="${esc(pv.q)}">
-      <span class="count">${rows.length} of ${M.length} fields</span>
+      <span class="count">${pv.expand ? `${rows.length} of ${M.length} fields` : `${rows.length} families · 每族显示区分度最高的代表字段（共 ${nMatched} 字段）`}</span>
     </div>
     <div class="heat-scroller">
       <table class="heat">
@@ -1655,10 +1688,10 @@ function renderPortability() {
         </tr></thead>
         <tbody>${hRows || `<tr><td colspan="${3+SRC.length}" style="text-align:center;color:var(--muted);padding:26px">no metric fields match</td></tr>`}</tbody>
       </table>
-    </div>
-    <div class="card" style="padding:10px 16px;margin-top:12px">${insightBox("The highest-discrimination rows are behaviors unique to one source: <b>M57 post-fix-verify-strict</b> (discrim <b>2.94</b>) averages <b>0.76</b> on Agency-OpenAI but <b>0.00</b> on all three SWE harnesses; <b>M14 polling ratio</b> (<b>2.77</b>) is <b>0.52</b> on Innovator and 0 in the other six sources; <b>M11 eval-abuse</b> climbs from 0.00 on every SWE source to <b>0.96–1.00</b> on Agency-publish/Claude. Empty and dashed cells concentrate in the Agency columns — agency_claude has means for <b>163 of 182</b> fields versus <b>172</b> for agency_openai — because those logs omit file-path and token telemetry. And treat the M20 duration row with suspicion: agency_claude's <b>7.6 s</b> mean against agency_openai's <b>175 s</b> is a logging artifact, not model speed.", true)}</div>`;
+    </div>`;
 
   app.querySelectorAll(".chip[data-verdict]").forEach(b => b.onclick = () => { pv.verdict = b.dataset.verdict; renderPortability(); });
+  $("#pvExpand").onclick = () => { pv.expand = !pv.expand; renderPortability(); };
   $("#pq").oninput = e => { pv.q = e.target.value; clearTimeout(pv.__t); pv.__t = setTimeout(renderPortability, 180); };
   app.querySelectorAll("th[data-hsort]").forEach(t => t.onclick = () => {
     const k = t.dataset.hsort;
