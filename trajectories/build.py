@@ -37,23 +37,26 @@ FULL_ROWS_CAP = int(__import__("os").environ.get("FULL_ROWS_CAP", "2000"))
 
 
 def load_verifier() -> dict:
-    """GLM verifier scores for swe_difficult, keyed by sample_name."""
-    p = M_V2 / "verifier" / "scores_swe_difficult.jsonl"
+    """GLM verifier scores+reasons, keyed by sample_name. Merges the
+    swe_difficult batch and the 150-sample full run so every run with a
+    judged deliverable shows the judge's reason (2026-07-10)."""
     out = {}
-    if not p.exists():
-        print(f"[warn] missing {p}, SWE runs will have no verifier scores")
-        return out
-    for line in p.read_text().splitlines():
-        line = line.strip()
-        if not line:
+    for name in ("scores_full_sample.jsonl", "scores_swe_difficult.jsonl"):
+        p = M_V2 / "verifier" / name
+        if not p.exists():
+            print(f"[warn] missing {p}")
             continue
-        rec = json.loads(line)
-        out[rec["sample_name"]] = {
-            "resolved": rec.get("resolved"),
-            "score": rec.get("score"),
-            "confidence": rec.get("confidence"),
-            "reason": rec.get("reason"),
-        }
+        for line in p.read_text().splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            rec = json.loads(line)
+            out[rec["sample_name"]] = {
+                "resolved": rec.get("resolved"),
+                "score": rec.get("score"),
+                "confidence": rec.get("confidence"),
+                "reason": rec.get("reason"),
+            }
     return out
 
 
@@ -106,7 +109,7 @@ def main() -> None:
         recs = json.loads(p.read_text())
         for r in recs:
             r["batch"] = batch
-            if batch == "swe_difficult" and r["sample_name"] in verifier:
+            if r["sample_name"] in verifier:
                 r["verifier"] = verifier[r["sample_name"]]
                 joined += 1
         print(f"  {name}: {len(recs)} trajectories")
