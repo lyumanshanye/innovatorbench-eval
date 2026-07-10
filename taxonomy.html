@@ -1,0 +1,37 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Failure Taxonomy — 自底向上失败分类学</title>
+<style>
+body{font-family:-apple-system,'Segoe UI',sans-serif;margin:0;background:#0f1115;color:#dde1e8}
+.wrap{max-width:980px;margin:0 auto;padding:24px 16px} h1{font-size:22px} h2{font-size:17px;margin-top:34px;border-bottom:1px solid #2a2f3a;padding-bottom:6px}
+.note{background:#1a1f2b;border-left:3px solid #4a7dc9;padding:10px 14px;font-size:13.5px;line-height:1.7;border-radius:4px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px} th,td{padding:8px;border-bottom:1px solid #232833;text-align:left;vertical-align:top}
+.chip{color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:600;white-space:nowrap}
+.mono{font-family:ui-monospace,monospace;font-size:12px;color:#9aa4b5} a{color:#e0b84d}
+li{line-height:1.7} .cav{color:#9aa4b5;font-size:13px;line-height:1.7}
+@media(prefers-color-scheme:light){body{background:#fafbfc;color:#1c2330} .note{background:#eef3fb;color:#243a5c}
+ th,td{border-color:#e2e6ee} .mono{color:#5b6575} .cav{color:#5b6575}}
+</style></head><body><div class="wrap">
+<h1>自底向上失败分类学 Bottom-up Failure Taxonomy</h1>
+<p class="note">与文献综合式分类(如 arXiv 2607.05775 的 27 篇文献 6 聚类)相反,本分类从
+<b>29,425 条真实轨迹 x 21 个 headline 过程指标</b>(7 数据源/3 agent 框架)自底向上推导:
+源内秩-正态化消除跨源分布差,再<b>偏出轨迹长度</b>(本项目回归分析确认的最强混杂),
+然后对指标做相关结构聚类(维度)、对轨迹做 KMeans(原型)。文献分类仅作外部对照。
+分析脚本与数据: new_start_61/m_v2/failure_taxonomy/。<a href="index.html">← Home</a> ·
+<a href="trajectories/">Trajectory Lens</a>(run 徽章即本页原型)</p>
+<h2>六个经验行为维度(指标相关结构)</h2>
+<ol><li><b>推理纵向动态</b> — M71 推理退化 + 推理覆盖 — 推理量随轨迹推进怎么变化</li><li><b>工具操作纪律</b> — M05 复用 / M07 先读后改 / M10 盲重试 / M15 重复查看 / M23 有效步率 / M54 探索编辑比 / M55 文件触达 / M74 动作熵 — 八个行为指标共变一轴</li><li><b>思考效用</b> — M72 think 有效性(独立轴)</li><li><b>规划与空转</b> — M03 子任务 / M14 轮询 / M16 搜索比 / M21 格式失败 / M43 sleep+死锁 / M76 规划</li><li><b>验证习惯</b> — M57 修复后验证(独立轴)</li><li><b>评估滥用</b> — M11(独立轴)</li></ol>
+<p class="cav">对照文献 6 类:工具/规划两类双向印证;验证习惯、评估滥用、思考效用在我们数据里是独立第一等公民轴(文献没有);
+文献的 multi-agent 与 safety 在单 agent 语料不可见;measurement validity 对应我们的方法层(双门校准/rule-vs-judge)而非行为维度。</p>
+<h2>四个轨迹行为原型(控长度 KMeans, k=4)</h2>
+<table><thead><tr><th>原型</th><th>占比</th><th>签名(源内σ偏移)</th><th>innovator 平均 eval</th></tr></thead>
+<tbody><tr><td><span class="chip" style="background:#c94f4a">盲改型 Blind-edit</span></td><td>19%</td><td class="mono">M07-1.0, M54-0.69, M15-0.67, M55-0.48, M74-0.44, M23-0.07</td><td>9.914 (n=51)</td></tr><tr><td><span class="chip" style="background:#3f9e63">探索型 Explorer</span></td><td>24%</td><td class="mono">M54+0.83, M05-0.75, M74-0.55, M71+0.3, M55-0.23, M07+0.22</td><td>19.531 (n=122)</td></tr><tr><td><span class="chip" style="background:#4a7dc9">精修型 Refiner</span></td><td>28%</td><td class="mono">M55+1.03, M05+0.93, M71+0.27, M74+0.22, M54+0.2, M15+0.07</td><td>18.028 (n=111)</td></tr><tr><td><span class="chip" style="background:#c98a2e">乱翻型 Wanderer</span></td><td>28%</td><td class="mono">M15+0.63, M74+0.55, M71-0.5, M55-0.48, M54-0.44, M05-0.27</td><td>12.261 (n=160)</td></tr></tbody></table>
+<p><b>原型-成绩关联显著: Kruskal-Wallis H=11.4, p=0.0099(n=444)。</b>长度已被残差化——
+过程行为模式本身携带任务成败信息,盲改 vs 探索差距近 2 倍。</p>
+<h2>诚实的边界</h2>
+<ul class="cav">
+<li>silhouette≈0.11:这是连续行为空间的四个象限,不是天然分离的硬簇。</li>
+<li>跨源稳定性(ARI vs pooled): swe_codeact 0.81 强复制 / swe_sweagent 0.39 / innovator 0.155 弱——超长多模型轨迹结构不同,原型泛化有限。</li>
+<li>成绩标签只 innovator 够量(444/661);swe_difficult verifier 标签 40 条不足判。</li>
+<li>eval 依赖型指标(M11/M26/M53/M93)在 SWE 语料几乎无覆盖,相关轴主要由 innovator/agency 驱动。</li>
+</ul>
+</div></body></html>

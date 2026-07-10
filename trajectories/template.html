@@ -382,6 +382,8 @@ svg.mix-bar { display: block; }
 .pager button:disabled { opacity:.4; cursor: default; }
 .pager .pinfo { font-size: 12px; color: var(--muted); margin: 0 8px; }
 
+/* ---------- archetype badge (bottom-up failure taxonomy 2026-07-10) ---------- */
+.badge.arch { color:#fff; font-weight:600; }
 /* ---------- verifier card ---------- */
 .verifier-card { padding: 12px 14px; border-left: 4px solid var(--c-eval); }
 .verifier-card h3 { margin: 0 0 6px; font-size: 12px; letter-spacing:.06em; text-transform: uppercase; color: var(--muted); }
@@ -488,6 +490,14 @@ const RUNS = DATA.runs;
 const FULL = (DATA.full && DATA.full.rows && DATA.full.rows.length) ? DATA.full.rows : RUNS;
 const IS_FULL = FULL !== RUNS;
 /* map full-corpus rows back to embedded sample runs (for click-through) */
+const ARCH = [
+  {n:"盲改型", c:"#c94f4a", d:"Blind-edit: 先读后改率-1.0σ、低探索低触达。innovator 平均 eval 9.9(四型最差)。"},
+  {n:"探索型", c:"#3f9e63", d:"Explorer: 探索/编辑比+0.83σ、低复用。innovator 平均 eval 19.5(四型最好)。"},
+  {n:"精修型", c:"#4a7dc9", d:"Refiner: 文件触达+1.03σ、工具复用+0.93σ。innovator 平均 eval 18.0。"},
+  {n:"乱翻型", c:"#c98a2e", d:"Wanderer: 重复查看+0.63σ、高动作熵、低落地。innovator 平均 eval 12.3。"},
+];
+const archBadge = (r) => (r.archetype==null) ? "" :
+  `<span class="badge arch" style="background:${ARCH[r.archetype].c}" data-tip="${esc(ARCH[r.archetype].d)} 行为原型来自29,425条轨迹的控长度聚类(taxonomy)。">${ARCH[r.archetype].n}</span>`;
 const RUN_IDX = new Map(RUNS.map((r, i) => [r.batch + "|" + r.sample_name, i]));
 
 /* ---------------- helpers ---------------- */
@@ -943,6 +953,7 @@ function renderOverview() {
         <div class="meta">
           <span class="badge"><span class="dot" style="background:${batVar(r.batch)}"></span>${batLabel(r.batch)}</span>
           ${r.model ? `<span class="badge model">${esc(r.model)}</span>` : ""}
+          ${archBadge(r)}
         </div>
       </td>
       <td class="num">${r.turns.length}</td>
@@ -1171,6 +1182,7 @@ function renderDetail(ri) {
       <h1>${esc(run.sample_name)}</h1>
       <span class="badge"><span class="dot" style="background:${batVar(run.batch)}"></span>${batLabel(run.batch)}</span>
       ${run.model ? `<span class="badge model">${esc(run.model)}</span>` : ""}
+      ${archBadge(run)}
     </div>
     <div class="flags-row">${s.flags.map(f=>`<span class="flag ${f.s==="warn"?"warn":f.s==="good"?"good":""}" data-tip="${esc(f.d)}">${f.t}</span>`).join("") || `<span class="flag good">no pathologies flagged</span>`}</div>
     ${tiles}

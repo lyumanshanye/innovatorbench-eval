@@ -98,8 +98,25 @@ def load_full_metrics(template: str):
     return {"rows": rows, "counts": counts, "n_total": len(rows)}
 
 
+def load_archetypes() -> dict:
+    """(source, sample_name) -> archetype id from the bottom-up failure
+    taxonomy (failure_taxonomy/, length-controlled KMeans, 2026-07-10)."""
+    import csv
+    p = M_V2 / "failure_taxonomy" / "archetype_assignments_lengthctrl.csv"
+    out = {}
+    if not p.exists():
+        print(f"[warn] missing {p}, no archetype badges")
+        return out
+    with open(p) as f:
+        for r in csv.DictReader(f):
+            out[(r["source"], r["sample_name"])] = int(r["archetype"])
+    print(f"  archetype labels: {len(out)}")
+    return out
+
+
 def main() -> None:
     verifier = load_verifier()
+    arch = load_archetypes()
     runs, joined = [], 0
     for batch, name in BATCH_FILES:
         p = DATA_DIR / name
@@ -112,6 +129,9 @@ def main() -> None:
             if r["sample_name"] in verifier:
                 r["verifier"] = verifier[r["sample_name"]]
                 joined += 1
+            a = arch.get((batch, r["sample_name"]))
+            if a is not None:
+                r["archetype"] = a
         print(f"  {name}: {len(recs)} trajectories")
         runs.extend(recs)
     print(f"  verifier scores joined onto {joined} swe_difficult runs")
