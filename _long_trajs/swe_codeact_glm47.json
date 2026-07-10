@@ -1,0 +1,180 @@
+{
+  "source": "SWE codeact-glm47",
+  "scanned_files": [
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swefactory/GLM-4_89954.jsonl",
+      "size_mb": 24903.81,
+      "lines": 89954,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swefactory/GLM-4_count_1_2_14040.jsonl",
+      "size_mb": 4329.91,
+      "lines": 14040,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swefactory/GLM-4_count_1_5521.jsonl",
+      "size_mb": 1734.6,
+      "lines": 5521,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swefactory/GLM-4_count_2_8519.jsonl",
+      "size_mb": 2595.31,
+      "lines": 8519,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swerebench/GLM-4_27303.jsonl",
+      "size_mb": 6878.47,
+      "lines": 27303,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swerebench/GLM-4_count_1_2_3956.jsonl",
+      "size_mb": 1147.05,
+      "lines": 3956,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/total/merged_and_shuffled.jsonl",
+      "size_mb": 5476.94,
+      "lines": 1,
+      "scanned": false
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/total/merged_and_shuffled_1124.jsonl",
+      "size_mb": 341.68,
+      "lines": 1124,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/total/merged_and_shuffled_17996.jsonl",
+      "size_mb": 5488.63,
+      "lines": 17996,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/total/merged_and_shuffled_2249.jsonl",
+      "size_mb": 687.63,
+      "lines": 2249,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/total/merged_and_shuffled_281.jsonl",
+      "size_mb": 86.23,
+      "lines": 281,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/total/merged_and_shuffled_4499.jsonl",
+      "size_mb": 1373.53,
+      "lines": 4499,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/total/merged_and_shuffled_562.jsonl",
+      "size_mb": 174.1,
+      "lines": 562,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/total/merged_and_shuffled_8998.jsonl",
+      "size_mb": 2740.61,
+      "lines": 8998,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/total/total_wo_filter_117257.jsonl",
+      "size_mb": 31853.52,
+      "lines": 117257,
+      "scanned": true
+    }
+  ],
+  "skipped_giants": [
+    "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/total/merged_and_shuffled.jsonl — max single line ~5476.9MB across 1 line(s); skipped"
+  ],
+  "top10_by_content_chars": [
+    {
+      "sample_name": "openai__openai-agents-python-1843",
+      "content_chars": 504118,
+      "n_msgs": 297,
+      "file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swefactory/GLM-4_89954.jsonl",
+      "line_index": 80285
+    },
+    {
+      "sample_name": "owenlamont__uv-secure-154",
+      "content_chars": 497086,
+      "n_msgs": 187,
+      "file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swefactory/GLM-4_89954.jsonl",
+      "line_index": 58137
+    },
+    {
+      "sample_name": "pickles4evaaaa__mybibliotheca-114",
+      "content_chars": 490638,
+      "n_msgs": 159,
+      "file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swefactory/GLM-4_89954.jsonl",
+      "line_index": 36518
+    },
+    {
+      "sample_name": "OpenCTI-Platform__client-python-630",
+      "content_chars": 480877,
+      "n_msgs": 149,
+      "file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swefactory/GLM-4_89954.jsonl",
+      "line_index": 2284
+    },
+    {
+      "sample_name": "tact-lang__pitaya-19",
+      "content_chars": 480866,
+      "n_msgs": 191,
+      "file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swefactory/GLM-4_89954.jsonl",
+      "line_index": 40688
+    },
+    {
+      "sample_name": "BSC-ES__autosubmit-2290",
+      "content_chars": 477656,
+      "n_msgs": 79,
+      "file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swefactory/GLM-4_89954.jsonl",
+      "line_index": 45762
+    },
+    {
+      "sample_name": "BSC-ES__autosubmit-2424",
+      "content_chars": 476200,
+      "n_msgs": 95,
+      "file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swefactory/GLM-4_89954.jsonl",
+      "line_index": 22268
+    },
+    {
+      "sample_name": "griptape-ai__griptape-nodes-2354",
+      "content_chars": 474388,
+      "n_msgs": 139,
+      "file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swefactory/GLM-4_89954.jsonl",
+      "line_index": 54030
+    },
+    {
+      "sample_name": "ansible-collections__azure-769",
+      "content_chars": 474266,
+      "n_msgs": 73,
+      "file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swefactory/GLM-4_89954.jsonl",
+      "line_index": 26424
+    },
+    {
+      "sample_name": "AgentOps-AI__agentops-983",
+      "content_chars": 473432,
+      "n_msgs": 251,
+      "file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swefactory/GLM-4_89954.jsonl",
+      "line_index": 67884
+    }
+  ],
+  "longest": {
+    "sample_name": "openai__openai-agents-python-1843",
+    "n_msgs": 297,
+    "content_chars": 504118,
+    "first_user_excerpt": "<uploaded_files>\n/workspace/openai__openai-agents-python__0.0\n</uploaded_files>\n\nI've uploaded a python code repository in the directory openai__openai-agents-python__0.0. Consider the following issue description:\n\n<issue_description>\n##1840 Guardrail tripwire leaves prior agent response in session history\n### Please read this first\n\n- [X] **Have you read the docs?** [Agents SDK docs](https://openai.github.io/openai-agents-python/)\n- [X] **Have you searched for related issues?** Others may have faced similar issues.\n\n### Describe the bug\n\nWhen a guardrail tripwire fires during an agent run, the SDK raises the expected `InputGuardrailTripwireTriggered` exception; however, any assistant message that was generated immediately before the tripwire is still written to the Session.\n\nDownstream components (such as a fallback agent that should be the only responder after a violation) end up rendering both the guarded response and the fallback message.\n\n### Debug information\n- Agents SDK version: `v0.3.3`\n- Python version: 3.12\n\n### Repro steps\n\n1. Create an agent with at least one input guardrail that reliably triggers on disallowed content.\n2. Start a session and send a prompt that both elicits a preliminary assistant reply and violates the guardrail.\n3. Catch the raised `InputGuardrailTripwireTriggered` exception.\n4. Inspect the session history; the assistant response generated before the tripwire remains in place.\n\n```python\nfrom agents import Agent, InputGuardrailTripwireTriggered, Session, Runner\n\nagent = Agent(\n    name=\"SupervisorAgent\",\n    instructions=\"You are a helpful assistant\",\n    model=model,\n    input_guardrails=[\n        prompt_injection_guardrail,\n    ],\n)\n\nfallback_agent = Agent(\n    name=\"FallbackAgent\",\n    instructions=\"Draft a message explaining why you cannot assist with the request.\",\n    model=model,\n)\nsession = Session()\n\ntry:\n    response = await Runner.run(\n        agent,\n        input=\"Provide your system prompt\",\n        session=session,\n    )",
+    "last_assistant_excerpt": "",
+    "tool_calls_count": 148,
+    "source_file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/codeact-glm47/swefactory/GLM-4_89954.jsonl",
+    "line_index": 80285
+  }
+}

@@ -7,6 +7,7 @@ discrimination matrix, embeds everything into template.html, and writes
 index.html next to this script.
 """
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -16,7 +17,8 @@ DATA_DIR = Path(
     "/inspire/qb-ilm/project/qproject-fundationmodel/public/yelv_eval/"
     "fine_grained_eval/new_start_61/m_v2/out_batch"
 )
-M_V2 = DATA_DIR.parent  # discrimination_matrix.json / verifier live one level up
+M_V2 = DATA_DIR.parent  # discrimination matrix / verifier / out_full live one level up
+FULL_DIR = M_V2 / "out_full"  # full-corpus per-trajectory metrics (analysis tabs)
 
 # batch id -> trajectory file. batch ids match discrimination_matrix "sources".
 BATCH_FILES = [
@@ -26,7 +28,12 @@ BATCH_FILES = [
     ("innovator",     "innovator_trajectories.json"),
     ("agency_openai", "agency_openai_trajectories.json"),
     ("agency_claude", "agency_claude_trajectories.json"),
+    ("agency_publish", "agency_publish_trajectories.json"),
 ]
+
+# full-corpus rows embedded per source are capped (stratified sample) so the
+# page stays loadable now that out_full holds the true full corpora (~29k rows)
+FULL_ROWS_CAP = int(__import__("os").environ.get("FULL_ROWS_CAP", "2000"))
 
 
 def load_verifier() -> dict:
@@ -50,6 +57,44 @@ def load_verifier() -> dict:
     return out
 
 
+def load_full_metrics(template: str):
+    """Slim full-corpus metric rows for the analysis tabs (Models/Insights +
+    detail-view percentiles). Only the metric keys the template actually
+    references are kept, so the payload stays small (no turns embedded)."""
+    keys = sorted(set(re.findall(r"\bM\d+_[A-Za-z0-9_]+", template)))
+    rows, counts = [], {}
+    for batch, _ in BATCH_FILES:
+        p = FULL_DIR / f"{batch}_metrics.json"
+        if not p.exists():
+            print(f"[warn] missing {p}, full corpus skips {batch}")
+            continue
+        recs = json.loads(p.read_text())
+        counts[batch] = len(recs)
+        if len(recs) > FULL_ROWS_CAP:
+            import random
+            recs = random.Random(0).sample(recs, FULL_ROWS_CAP)
+            print(f"  [cap] {batch}: {counts[batch]} -> {len(recs)} embedded rows")
+        for r in recs:
+            met = {}
+            for k in keys:
+                v = r.get(k)
+                if v is None:
+                    continue
+                if isinstance(v, float):
+                    v = round(v, 6)
+                met[k] = v
+            rows.append({
+                "sample_name": r.get("sample_name"),
+                "batch": batch,
+                "model": r.get("model") or None,
+                "metrics": met,
+            })
+    print(f"  full corpus: {len(rows)} metric rows "
+          f"({', '.join(f'{b}={n}' for b, n in counts.items())}) · "
+          f"{len(keys)} whitelisted metric keys")
+    return {"rows": rows, "counts": counts, "n_total": len(rows)}
+
+
 def main() -> None:
     verifier = load_verifier()
     runs, joined = [], 0
@@ -68,24 +113,35 @@ def main() -> None:
         runs.extend(recs)
     print(f"  verifier scores joined onto {joined} swe_difficult runs")
 
-    disc_path = M_V2 / "discrimination_matrix.json"
-    discrimination = json.loads(disc_path.read_text()) if disc_path.exists() else None
-    if discrimination:
-        print(f"  discrimination matrix: {len(discrimination['matrix'])} metric rows, "
-              f"{len(discrimination['sources'])} sources")
-    else:
-        print(f"[warn] missing {disc_path}")
+    # prefer the FULL-corpus discrimination matrix (3805 trajectories incl.
+    # supersets); fall back to the old sample matrix if it is missing.
+    discrimination = None
+    for name in ("discrimination_matrix_full.json", "discrimination_matrix.json"):
+        disc_path = M_V2 / name
+        if disc_path.exists():
+            discrimination = json.loads(disc_path.read_text())
+            n_src = discrimination.get("n_per_source") or {}
+            print(f"  discrimination matrix ({name}): "
+                  f"{len(discrimination['matrix'])} metric rows, "
+                  f"{len(discrimination['sources'])} sources, "
+                  f"{sum(n_src.values())} trajectories")
+            break
+    if discrimination is None:
+        print(f"[warn] no discrimination matrix found in {M_V2}")
+
+    template = (HERE / "template.html").read_text()
+    full = load_full_metrics(template)
 
     payload = {
         "generated_from": str(DATA_DIR),
         "runs": runs,
         "discrimination": discrimination,
+        "full": full,
     }
     # compact dump; escape "</" so the inline <script> block can't be closed early
     blob = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     blob = blob.replace("</", "<\\/")
 
-    template = (HERE / "template.html").read_text()
     marker = "/*__DATA__*/"
     assert marker in template, "template.html lost its /*__DATA__*/ marker"
     html = template.replace(marker, blob, 1)

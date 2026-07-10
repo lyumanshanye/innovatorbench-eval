@@ -33,7 +33,6 @@ RUBRIC_FILES = [
     "rubric_j49_step_f1.md",
     "rubric_j50_evidence_action_gap.md",
     "rubric_j60_interaction_precision.md",
-    "rubric_j61_interaction_f1.md",
     "rubric_j63_hedging_frequency.md",
     "rubric_j64_uncertainty_calibration.md",
     "rubric_j65_question_quality.md",

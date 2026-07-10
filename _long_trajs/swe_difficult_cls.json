@@ -1,0 +1,86 @@
+{
+  "source": "SWE difficult_cls",
+  "files_scanned": 28,
+  "total_records": 29718,
+  "unique_samples": 3090,
+  "top10_by_content_chars": [
+    {
+      "sample_name": "elastic__apm-agent-python-1619",
+      "n_msgs": 80,
+      "content_chars": 401949,
+      "line_bytes": 508327,
+      "found_in_file": "glm46pass14_24-sonnet150-3449.jsonl"
+    },
+    {
+      "sample_name": "exo-lang__exo-473",
+      "n_msgs": 186,
+      "content_chars": 394782,
+      "line_bytes": 541722,
+      "found_in_file": "glm46pass14_24-sonnet150-3449.jsonl"
+    },
+    {
+      "sample_name": "aws__aws-cli-7342",
+      "n_msgs": 132,
+      "content_chars": 376835,
+      "line_bytes": 515129,
+      "found_in_file": "glm46pass14_24-sonnet150-3449.jsonl"
+    },
+    {
+      "sample_name": "OpenSourceEconomics__estimagic-74",
+      "n_msgs": 90,
+      "content_chars": 372176,
+      "line_bytes": 524788,
+      "found_in_file": "glm46pass14_24-sonnet150-3449.jsonl"
+    },
+    {
+      "sample_name": "radiocosmology__alpenhorn-269",
+      "n_msgs": 120,
+      "content_chars": 358645,
+      "line_bytes": 453994,
+      "found_in_file": "opus_dif_cls_glm_all_937.jsonl"
+    },
+    {
+      "sample_name": "sphinx-doc__sphinx-5861",
+      "n_msgs": 74,
+      "content_chars": 356402,
+      "line_bytes": 461781,
+      "found_in_file": "glm46pass14_24-sonnet150-3449.jsonl"
+    },
+    {
+      "sample_name": "pybamm-team__PyBaMM-2204",
+      "n_msgs": 132,
+      "content_chars": 354679,
+      "line_bytes": 522120,
+      "found_in_file": "glm46pass14_24-sonnet150-3449.jsonl"
+    },
+    {
+      "sample_name": "sphinx-doc__sphinx-5467",
+      "n_msgs": 106,
+      "content_chars": 345051,
+      "line_bytes": 491801,
+      "found_in_file": "glm46pass14_24-sonnet150-3449.jsonl"
+    },
+    {
+      "sample_name": "fairlearn__fairlearn-906",
+      "n_msgs": 92,
+      "content_chars": 341384,
+      "line_bytes": 446072,
+      "found_in_file": "glm46pass14_24-sonnet150-3449.jsonl"
+    },
+    {
+      "sample_name": "viraptor__phply-37",
+      "n_msgs": 200,
+      "content_chars": 334734,
+      "line_bytes": 594026,
+      "found_in_file": "glm46pass14_24-sonnet150-3449.jsonl"
+    }
+  ],
+  "longest": {
+    "sample_name": "elastic__apm-agent-python-1619",
+    "n_msgs": 80,
+    "content_chars": 401949,
+    "first_user_excerpt": "<uploaded_files>\n/testbed\n</uploaded_files>\nI've uploaded a python code repository in the directory /testbed. Consider the following PR description:\n\n<pr_description>\nFastAPI/Starlette: Truncate exception message to prevent \"event exceeded the permitted size\" error from APM Server\n**Describe the bug**: \r\nThe capture_exception() method is sending the whole exception message to the APM Server and when the message exceeds the maximum size, the APM Server returns the  \"event exceeded the permitted s",
+    "last_assistant_excerpt": "Perfect! The fix is working correctly. Let me summarize what I've done:\n\n## Summary\n\nI've successfully implemented the fix to prevent the \"event exceeded the permitted size\" error when capturing exceptions with large messages in FastAPI/Starlette applications.\n\n### The Issue\nThe `capture_exception()` method was sending the entire exception message to the APM Server without truncation. When messages were very large (e.g., 4MB+), the APM Server would reject them with an \"event exceeded the permitt",
+    "tool_call_count": 39
+  }
+}

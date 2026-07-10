@@ -1,0 +1,112 @@
+================================================================================
+M02 tool_chain_depth — n_react count
+  M02-LOW	workspace_task_1_2025-09-03.00:10:39_step4000_gpt-5-gzy	M02=8	model=gpt-5-gzy
+  M02-MED	workspace_task_40_2025-09-04.02:14:15_step5000_claude-4-sonnet-gzy	M02=137	model=claude-4-sonnet-gzy
+  M02-HIGH	workspace_task_13_2026-02-25.14:15:28_step4000_glm47_data_w_sweagent_swefactory_1_Apollo_copr_merged_2epoch	M02=2523	model=glm47_data_w_sweagent_swefactory_1_Apollo_copr_merged_2epoch
+
+M03 subtask_count — number of subgoals declared in plan
+  M03-LOW	workspace_task_10_2025-09-03.15:19:38_step4000_claude-4-sonnet-gzy	M03=0	model=claude-4-sonnet-gzy
+  M03-MED	workspace_task_20_2025-09-17.00:55:06_step4000_glm-4-5-full-data-w-interact-w-filter-gzy	M03=0	model=glm-4-5-full-data-w-interact-w-filter-gzy
+  M03-HIGH	workspace_task_15_2025-09-03.03:25:29_step4000_gpt-5-gzy	M03=771	model=gpt-5-gzy
+
+M05 tool_reuse_rate — edit/(edit+create_file) ratio
+  M05-LOW	workspace_task_10_2025-09-03.03:08:23_step4000_gpt-5-gzy	M05=0.000	model=gpt-5-gzy
+  M05-MED	workspace_task_44_2025-09-10.13:40:32_step5000_claude-4-sonnet-gzy	M05=0.579	model=claude-4-sonnet-gzy
+  M05-HIGH	workspace_task_9_2025-11-22.13:15:35_step4000_grok-4	M05=1.000	model=grok-4
+
+M07 read_before_edit_rate
+  M07-LOW	workspace_task_10_2025-09-07.14:30:59_step4000_glm-4-5-gzy	M07=0.000	model=glm-4-5-gzy
+  M07-MED	workspace_task_15_2025-09-12.13:22:55_step4000_claude-4-sonnet-gzy	M07=0.750	model=claude-4-sonnet-gzy
+  M07-HIGH	workspace_task_9_2026-02-25.14:31:47_step4000_glm47_data_w_sweagent_swefactory_1_Apollo_copr_merged_2epoch	M07=1.000	model=glm47_data_w_sweagent_swefactory_1_Apollo_copr_merged_2epoch
+
+M11 eval_abuse_rate
+  M11-LOW	workspace_task_10_2025-09-03.03:08:23_step4000_gpt-5-gzy	M11=0.000	model=gpt-5-gzy
+  M11-MED	workspace_task_2_2025-09-15.14:52:23_step4000_glm-4-5-full-data-w-interact-w-filter-gzy	M11=0.000	model=glm-4-5-full-data-w-interact-w-filter-gzy
+  M11-HIGH	workspace_task_8_2025-09-15.10:28:52_step4000_glm-4-5-full-data-wo-interact-gzy	M11=1.000	model=glm-4-5-full-data-wo-interact-gzy
+
+M12 session_leak — n_create-n_close
+  M12-LOW	workspace_task_10_2025-09-06.02:07:06_step4000_glm-4-5-gzy	M12=0	model=glm-4-5-gzy
+  M12-MED	workspace_task_41_2025-09-05.02:32:06_step5000_claude-4-sonnet-gzy	M12=1	model=claude-4-sonnet-gzy
+  M12-HIGH	workspace_task_46_2025-09-05.16:10:45_step5000_claude-4-sonnet-gzy	M12=37	model=claude-4-sonnet-gzy
+
+M14 deadlock_step_ratio
+  M14-LOW	workspace_task_10_2025-09-03.03:08:23_step4000_gpt-5-gzy	M14=0.000	model=gpt-5-gzy
+  M14-MED	workspace_task_7_2025-09-03.15:20:41_step4000_claude-4-sonnet-gzy	M14=0.000	model=claude-4-sonnet-gzy
+  M14-HIGH	workspace_task_8_2025-09-08.19:18:59_step4000_gpt-5-gzy	M14=0.692	model=gpt-5-gzy
+
+M15 repeated_view_rate
+  M15-LOW	workspace_task_10_2025-09-03.03:08:23_step4000_gpt-5-gzy	M15=0.000	model=gpt-5-gzy
+  M15-MED	workspace_task_12_2025-09-18.12:42:40_step4000_glm-4-5-full-data-w-interact-w-filter-gzy	M15=0.125	model=glm-4-5-full-data-w-interact-w-filter-gzy
+  M15-HIGH	workspace_task_5_2026-02-25.23:44:58_step4000_glm47	M15=1.000	model=glm47
+
+M16 search_vs_open_ratio
+  M16-LOW	workspace_task_10_2025-09-03.03:08:23_step4000_gpt-5-gzy	M16=0.000	model=gpt-5-gzy
+  M16-MED	workspace_task_12_2025-09-08.02:34:16_step4000_glm-4-5-gzy	M16=0.053	model=glm-4-5-gzy
+  M16-HIGH	workspace_task_15_2025-09-18.15:28:11_step4000_kimi-k2-instruct-0905-gzy	M16=1.000	model=kimi-k2-instruct-0905-gzy
+
+M19 total_tokens
+  M19-LOW	workspace_task_6_2025-09-05.13:31:57_step4000_gpt-5-gzy	M19=90,101	model=gpt-5-gzy
+  M19-MED	workspace_task_17_2025-09-12.17:20:39_step4000_glm-4-5-full-data-gzy	M19=7,483,266	model=glm-4-5-full-data-gzy
+  M19-HIGH	workspace_task_19_2025-09-12.13:22:52_step4000_claude-4-sonnet-gzy	M19=206,585,965	model=claude-4-sonnet-gzy
+
+M20 duration_seconds
+  M20-LOW	workspace_task_2_2025-09-03.14:33:52_step4000_claude-4-sonnet-gzy	M20=98s	model=claude-4-sonnet-gzy
+  M20-MED	workspace_task_20_2026-02-26.23:22:47_step4000_kimi-k2.5	M20=9168s	model=kimi-k2.5
+  M20-HIGH	workspace_task_13_2026-02-25.14:15:28_step4000_glm47_data_w_sweagent_swefactory_1_Apollo_copr_merged_2epoch	M20=172452s	model=glm47_data_w_sweagent_swefactory_1_Apollo_copr_merged_2epoch
+
+M23 effective_step_rate
+  M23-LOW	workspace_task_13_2026-02-25.03:38:28_step4000_glm47_data_w_codeact_rebench_1_2_sweagent_swefactory_1_Apollo_copr_merged_2epoch	M23=0.000	model=glm47_data_w_codeact_rebench_1_2_sweagent_swefactory_1_Apollo_copr_merged_2epoch
+  M23-MED	workspace_task_17_2025-09-03.03:34:05_step4000_gpt-5-gzy	M23=0.948	model=gpt-5-gzy
+  M23-HIGH	workspace_task_9_2025-09-21.01:09:58_step4000_kimi-k2-instruct-0905	M23=1.000	model=kimi-k2-instruct-0905
+
+M26 first_eval_step
+  M26-LOW	workspace_task_10_2025-11-22.01:50:16_step4000_grok-code-fast-1	M26=9	model=grok-code-fast-1
+  M26-MED	workspace_task_20_2026-02-25.15:28:31_step4000_glm47_data_w_codeact_rebench_1_2_sweagent_swefactory_1_Apollo_copr_merged_2epoch	M26=112	model=glm47_data_w_codeact_rebench_1_2_sweagent_swefactory_1_Apollo_copr_merged_2epoch
+  M26-HIGH	workspace_task_2_2026-02-27.23:13:33_step4000_glm47_data_w_codeact_rebench_1_2_sweagent_swefactory_1_Apollo_copr_merged_2epoch	M26=1209	model=glm47_data_w_codeact_rebench_1_2_sweagent_swefactory_1_Apollo_copr_merged_2epoch
+
+M43 max_consecutive_sleep
+  M43-LOW	workspace_task_10_2025-09-18.15:26:24_step4000_kimi-k2-instruct-0905-gzy	M43_sleep=0	model=kimi-k2-instruct-0905-gzy
+  M43-MED	workspace_task_20_2025-09-15.20:07:45_step4000_glm-4-5-full-data-w-interact-w-filter-gzy	M43_sleep=2	model=glm-4-5-full-data-w-interact-w-filter-gzy
+  M43-HIGH	workspace_task_16_2026-02-26.23:44:39_step4000_kimi-k2.5	M43_sleep=14	model=kimi-k2.5
+
+M53 code_locate_efficiency
+  M53-LOW	workspace_task_15_2025-11-21.23:40:54_step10_grok-code-fast-1	M53=0.000	model=grok-code-fast-1
+  M53-MED	workspace_task_45_2025-09-05.20:26:06_step5000_claude-4-sonnet-gzy	M53=0.186	model=claude-4-sonnet-gzy
+  M53-HIGH	workspace_task_55_2025-09-04.15:27:44_step2000_glm-4-5-gzy	M53=0.939	model=glm-4-5-gzy
+
+M54 explore_edit_ratio
+  M54-LOW	workspace_task_12_2025-09-03.03:12:41_step4000_gpt-5-gzy	M54=0.000	model=gpt-5-gzy
+  M54-MED	workspace_task_9_2025-11-22.13:15:35_step4000_grok-4	M54=1.900	model=grok-4
+  M54-HIGH	workspace_task_1_2025-09-04.15:26:19_step4000_gpt-5-gzy	M54=35.000	model=gpt-5-gzy
+
+M55 file_reach_rate
+  M55-LOW	workspace_task_19_2025-09-05.02:55:53_step4000_gpt-5-gzy	M55=0.000	model=gpt-5-gzy
+  M55-MED	workspace_task_3_2026-02-26.23:54:07_step4000_kimi-k2.5	M55=6.500	model=kimi-k2.5
+  M55-HIGH	workspace_task_19_2025-09-21.14:12:00_step4000_kimi-k2-instruct-0905	M55=45.000	model=kimi-k2-instruct-0905
+
+M57 post_fix_verify (binary 0/1)
+  M57-NO	workspace_task_10_2025-09-06.02:07:06_step4000_glm-4-5-gzy	M57=0	model=glm-4-5-gzy
+  M57-YES	workspace_task_10_2025-09-03.03:08:23_step4000_gpt-5-gzy	M57=1	model=gpt-5-gzy
+  M57-NO2	workspace_task_10_2025-09-17.17:46:21_step4000_glm-4-5-full-data-w-interact-w-filter-gzy	M57=0	model=glm-4-5-full-data-w-interact-w-filter-gzy
+
+M71 reasoning_degradation (lower = more degradation)
+  M71-LOW	workspace_task_10_2025-11-22.13:15:57_step4000_grok-4	M71=0.000	model=grok-4
+  M71-MED	workspace_task_8_2025-09-20.14:41:46_step4000_glm-4-5-full-data-wo-interact-w-filter-gzy	M71=3.619	model=glm-4-5-full-data-wo-interact-w-filter-gzy
+  M71-HIGH	workspace_task_11_2025-09-15.00:56:58_step4000_glm-4-5-full-data-wo-interact-gzy	M71=382.520	model=glm-4-5-full-data-wo-interact-gzy
+
+M72 think_effectiveness
+  M72-LOW	workspace_task_20_2025-09-20.14:28:29_step4000_glm-4-5-full-data-wo-interact-w-filter-gzy	M72=-0.982	model=glm-4-5-full-data-wo-interact-w-filter-gzy
+  M72-MED	workspace_task_1_2025-09-03.13:46:41_step4000_claude-4-sonnet-gzy	M72=0.032	model=claude-4-sonnet-gzy
+  M72-HIGH	workspace_task_9_2025-09-18.15:25:01_step4000_kimi-k2-instruct-0905-gzy	M72=1.000	model=kimi-k2-instruct-0905-gzy
+
+M74 action_entropy
+  M74-LOW	workspace_task_13_2026-02-25.03:38:28_step4000_glm47_data_w_codeact_rebench_1_2_sweagent_swefactory_1_Apollo_copr_merged_2epoch	M74=-0.000	model=glm47_data_w_codeact_rebench_1_2_sweagent_swefactory_1_Apollo_copr_merged_2epoch
+  M74-MED	workspace_task_1_2026-02-27.23:13:38_step4000_glm47_data_w_codeact_rebench_1_2_sweagent_swefactory_1_Apollo_copr_merged_2epoch	M74=4.613	model=glm47_data_w_codeact_rebench_1_2_sweagent_swefactory_1_Apollo_copr_merged_2epoch
+  M74-HIGH	workspace_task_2_2026-02-26.18:53:48_step4000_glm47	M74=5.675	model=glm47
+
+M93 retry_improved (M93=1 means improved)
+  M93-WORST	workspace_task_18_2026-02-25.23:50:51_step4000_glm47_data_w_sweagent_swefactory_1_Apollo_copr_merged_2epoch	M93=0 delta=-70.00	model=glm47_data_w_sweagent_swefactory_1_Apollo_copr_merged_2epoch
+  M93-NEUTRAL	workspace_task_15_2026-02-27.11:07:55_step4000_kimi-k2.5	delta=0.00	model=kimi-k2.5
+  M93-BEST	workspace_task_43_2025-09-04.18:47:04_step5000_claude-4-sonnet-gzy	M93=1 delta=87.18	model=claude-4-sonnet-gzy
+
+DONE

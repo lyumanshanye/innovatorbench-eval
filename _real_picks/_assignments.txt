@@ -1,0 +1,28 @@
+M12B-WORST	workspace_task_46_2025-09-05.16:10:45_step5000_claude-4-sonnet-gzy	create=37  close=0  M12b=0.0
+M12B-MED	workspace_task_16_2026-02-25.14:29:06_step4000_glm47_data_w_sweagent_swefactory_1_Apollo_copr_merged_2epoch	create=10  close=4  M12b=0.4
+M12B-BEST	workspace_task_15_2026-02-26.18:52:08_step4000_glm47	create=12  close=24  M12b=1.0
+M43B-EXTREME	workspace_task_46_2025-09-05.16:10:45_step5000_claude-4-sonnet-gzy	M43b=37  n_close=0
+M43B-MED	workspace_task_10_2025-09-03.15:19:38_step4000_claude-4-sonnet-gzy	M43b=6  n_close=0
+M43B-LOW	workspace_task_10_2025-09-03.03:08:23_step4000_gpt-5-gzy	M43b=1  n_close=0
+M29-WORST	workspace_task_5_2025-09-03.02:35:21_step4000_gpt-5-gzy	M29=0.9  total=10  ok=9
+M29-BORDER	workspace_task_5_2025-09-20.14:41:08_step4000_glm-4-5-full-data-wo-interact-w-filter-gzy	M29=0.956989247311828  total=93  ok=89
+M29-PERFECT	workspace_task_13_2026-02-25.14:15:28_step4000_glm47_data_w_sweagent_swefactory_1_Apollo_copr_merged_2epoch	M29=1.0  total=2523  ok=2523
+M56-STRONG-YES	workspace_task_13_2026-02-25.14:15:28_step4000_glm47_data_w_sweagent_swefactory_1_Apollo_copr_merged_2epoch	n_react=2523
+M56-NO	workspace_task_14_2025-09-09.04:30:27_step4000_gpt-5-gzy	n_react=912
+M56-OTHER-NO	workspace_task_18_2025-09-04.17:15:47_step4000_gpt-5-gzy	n_react=539
+M58-CLEAN	workspace_task_53_2025-09-04.14:22:10_step2000_claude-4-sonnet-gzy	M58=0.058823529411764705  n_edits=17  rollbacks=1
+M58-MED	workspace_task_12_2025-09-18.00:51:37_step4000_glm-4-5-full-data-w-interact-w-filter-gzy	M58=0.4  n_edits=10  rollbacks=4
+M58-THRASH	workspace_task_16_2025-09-06.02:03:14_step4000_glm-4-5-gzy	M58=0.9322033898305084  n_edits=59  rollbacks=55
+M84-TOP	workspace_task_59_2025-09-03.19:41:27_step2000_claude-4-sonnet-gzy	M84=6.799  score=100.0  tokens=2440075  model=claude-4-sonnet-gzy
+M84-MID	workspace_task_8_2025-09-05.20:54:30_step4000_glm-4-5-gzy	M84=0.0  score=0.0  tokens=3280581  model=glm-4-5-gzy
+M84-BURN	workspace_task_13_2026-02-25.14:15:28_step4000_glm47_data_w_sweagent_swefactory_1_Apollo_copr_merged_2epoch	M84=0.0  score=0.0  tokens=197782945  model=glm47_data_w_sweagent_swefactory_1_Apollo_copr_merged_2epoch
+M94-RUNTIME-HEAVY	workspace_task_19_2025-09-12.13:22:52_step4000_claude-4-sonnet-gzy	compile=0  runtime=2240  M94=0.0004
+M94-COMPILE-HEAVY	workspace_task_10_2025-09-03.03:08:23_step4000_gpt-5-gzy	compile=0  runtime=1  M94=0.5
+M94-BALANCED	workspace_task_10_2025-09-03.03:08:23_step4000_gpt-5-gzy	compile=0  runtime=1  M94=0.5
+M41L-HIGH	workspace_task_3_2026-02-26.10:57:58_step4000_glm47	logic=12  persist=12  rate=1.0  eval_score=0
+M41L-CLEAN	workspace_task_1_2025-09-05.20:46:28_step4000_glm-4-5-gzy	logic=2  persist=0  rate=0.0  eval_score=20.51
+M41L-PARTIAL	workspace_task_2_2025-09-21.01:09:58_step4000_kimi-k2-instruct-0905	logic=4  persist=2  rate=0.5  eval_score=0.2
+M41S-HIGH	workspace_task_1_2025-09-18.16:42:50_step4000_kimi-k2-instruct-0905-gzy	syntax=85  persist=85  rate=1.0  eval_score=0
+M41S-CLEAN	workspace_task_1_2025-09-20.14:14:39_step4000_glm-4-5-full-data-wo-interact-w-filter-gzy	syntax=2  persist=0  rate=0.0  eval_score=9.02
+M41S-PARTIAL	workspace_task_1_2025-11-22.20:18:01_step4000_glm-4-5-gzy	syntax=5  persist=2  rate=0.4  eval_score=0
+DONE

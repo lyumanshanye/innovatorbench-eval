@@ -1,0 +1,247 @@
+{
+  "source": "SWE code-sweagent-glm47",
+  "scanned_files": [
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_100_nested.jsonl",
+      "size_mb": 37.89,
+      "lines": 100,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_100.jsonl",
+      "size_mb": 37.89,
+      "lines": 100,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_500_nested.jsonl",
+      "size_mb": 182.72,
+      "lines": 500,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_500.jsonl",
+      "size_mb": 183.93,
+      "lines": 500,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_1k_nested.jsonl",
+      "size_mb": 365.56,
+      "lines": 1000,
+      "scanned": true
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_1k.jsonl",
+      "size_mb": 366.26,
+      "lines": 1000,
+      "scanned": true
+    }
+  ],
+  "skipped_giants": [
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swerebench/glm47_sweagent_rebench_1_1736.jsonl",
+      "size_mb": 632.73
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_2k_nested.jsonl",
+      "size_mb": 734.92
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_2k.jsonl",
+      "size_mb": 739.39
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swerebench/glm47_sweagent_rebench_2_2507.jsonl",
+      "size_mb": 875.62
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_3k_nested.jsonl",
+      "size_mb": 1100.26
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_4k_nested.jsonl",
+      "size_mb": 1470.92
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swerebench/glm47_sweagent_rebench_1_2_4243.jsonl",
+      "size_mb": 1508.35
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_3_4_mix_5k.jsonl",
+      "size_mb": 1591.71
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_5k_nested.jsonl",
+      "size_mb": 1842.21
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_5k.jsonl",
+      "size_mb": 1852.87
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_5272.jsonl",
+      "size_mb": 1963.21
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/openswe/glm47_sweagent_openswe_1_5272.jsonl",
+      "size_mb": 1963.21
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/total/glm47_sweagent_merged_1.jsonl",
+      "size_mb": 2605.55
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_2_7159.jsonl",
+      "size_mb": 2622.27
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/openswe/glm47_sweagent_openswe_2_7159.jsonl",
+      "size_mb": 2622.27
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_8k.jsonl",
+      "size_mb": 2949.04
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_8k_nested.jsonl",
+      "size_mb": 2953.5
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/total/glm47_sweagent_merged_2.jsonl",
+      "size_mb": 3510.15
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_10k_nested.jsonl",
+      "size_mb": 3686.57
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_10k.jsonl",
+      "size_mb": 3687.86
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_3_10749.jsonl",
+      "size_mb": 3778.53
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/openswe/glm47_sweagent_openswe_3_10749.jsonl",
+      "size_mb": 3778.53
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_12431.jsonl",
+      "size_mb": 4585.48
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/openswe/glm47_sweagent_openswe_1_2_12431.jsonl",
+      "size_mb": 4585.48
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/openswe_traj.jsonl",
+      "size_mb": 4642.64
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/total/glm47_sweagent_merged_1_2.jsonl",
+      "size_mb": 6115.7
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_4_52630.jsonl",
+      "size_mb": 16542.72
+    },
+    {
+      "path": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/openswe/glm47_sweagent_openswe_4_52630.jsonl",
+      "size_mb": 16542.72
+    }
+  ],
+  "top10_by_content_chars": [
+    {
+      "sample_name": "QuBenhao__LeetCode-25",
+      "n_msgs": 190,
+      "content_chars": 535855,
+      "line_bytes": 723508,
+      "source_file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_500_nested.jsonl",
+      "line_index": 24
+    },
+    {
+      "sample_name": "qiskit-community__qiskit-nature-1043",
+      "n_msgs": 234,
+      "content_chars": 492217,
+      "line_bytes": 652036,
+      "source_file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_500_nested.jsonl",
+      "line_index": 244
+    },
+    {
+      "sample_name": "elastic__rally-1971",
+      "n_msgs": 228,
+      "content_chars": 489914,
+      "line_bytes": 727944,
+      "source_file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_500.jsonl",
+      "line_index": 498
+    },
+    {
+      "sample_name": "DaviPtrs__hass-unified-remote-4",
+      "n_msgs": 142,
+      "content_chars": 459373,
+      "line_bytes": 699121,
+      "source_file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_500_nested.jsonl",
+      "line_index": 72
+    },
+    {
+      "sample_name": "getmoto__moto-8733",
+      "n_msgs": 180,
+      "content_chars": 457095,
+      "line_bytes": 639249,
+      "source_file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_1k_nested.jsonl",
+      "line_index": 331
+    },
+    {
+      "sample_name": "basher83__Zammad-MCP-97",
+      "n_msgs": 236,
+      "content_chars": 454408,
+      "line_bytes": 675864,
+      "source_file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_500_nested.jsonl",
+      "line_index": 170
+    },
+    {
+      "sample_name": "Breakthrough-Energy__PowerSimData-172",
+      "n_msgs": 172,
+      "content_chars": 453884,
+      "line_bytes": 656393,
+      "source_file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_1k_nested.jsonl",
+      "line_index": 902
+    },
+    {
+      "sample_name": "EnricoMi__publish-unit-test-result-action-439",
+      "n_msgs": 240,
+      "content_chars": 443461,
+      "line_bytes": 568896,
+      "source_file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_1k_nested.jsonl",
+      "line_index": 518
+    },
+    {
+      "sample_name": "IBM__mcp-context-forge-1080",
+      "n_msgs": 172,
+      "content_chars": 442872,
+      "line_bytes": 587477,
+      "source_file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_500_nested.jsonl",
+      "line_index": 409
+    },
+    {
+      "sample_name": "reactive-firewall-org__multicast-256",
+      "n_msgs": 204,
+      "content_chars": 440122,
+      "line_bytes": 573008,
+      "source_file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_500_nested.jsonl",
+      "line_index": 393
+    }
+  ],
+  "longest": {
+    "sample_name": "QuBenhao__LeetCode-25",
+    "n_msgs": 190,
+    "content_chars": 535855,
+    "first_user_excerpt": "<uploaded_files>\n/testbed\n</uploaded_files>\nI've uploaded a python code repository in the directory /testbed. Consider the following PR description:\n\n<pr_description>\n##24 1656 golang\ngolang 1656 test not pass, because:\r\n```\r\n        \tError:      \tNot equal: \r\n        \t            \texpected: []interface {}{interface {}(nil), []interface {}{}, []interface {}{\"aaaaa\"}, []interface {}{\"bbbbb\", \"ccccc\"}, []interface {}{}, []interface {}{\"ddddd\", \"eeeee\"}}\r\n        \t            \tactual  : []interface",
+    "last_assistant_excerpt": "Perfect! The test is still passing. Now I can submit the changes.</think>",
+    "tool_calls_count": 94,
+    "source_file": "/inspire/hdd/project/qproject-fundationmodel/public/sunjie/SWE/sft/dataset/code-sweagent-glm47/swefactory/glm47_sweagent_swefactory_1_2_500_nested.jsonl",
+    "line_index": 24
+  }
+}

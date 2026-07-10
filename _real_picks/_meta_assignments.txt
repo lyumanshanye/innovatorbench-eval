@@ -1,0 +1,68 @@
+M33 bins (n=655):
+  bin1 n=131 mean_steps=38 mean_score=2.68
+  bin2 n=131 mean_steps=98 mean_score=9.57
+  bin3 n=131 mean_steps=137 mean_score=15.68
+  bin4 n=131 mean_steps=178 mean_score=14.62
+  bin5 n=131 mean_steps=348 mean_score=16.12
+M33: bottleneck at bin 3->4, drop=-1.06, step boundary≈137
+M33 anchor: workspace_task_20_2025-09-21.14:15:02_step4000_kimi-k2-instruct-0905 steps=121 score=0.00 model=kimi-k2-instruct-0905
+
+M78 (β on log(tokens)) — 15 models
+  TOP glm-4-5-full-data-wo-interact-w-filter-gzy         n= 20 β=+24.176 mean_score=11.47
+  TOP glm47                                              n= 20 β= +6.925 mean_score=23.58
+  TOP claude-4-sonnet-gzy                                n=207 β= +4.490 mean_score=16.88
+  M78_diff = std(β) = 6.380
+  BOT kimi-k2-instruct-0905                              n= 29 β= -0.031
+  BOT glm-4-5-full-data-gzy                              n= 25 β= -2.091
+  BOT kimi-k2.5                                          n= 21 β= -2.547
+  ANCHOR: workspace_task_6_2025-09-20.14:41:47_step4000_glm-4-5-full-data-wo-interact-w-filter-gzy log_tokens=17.09 score=86.14
+
+M79 (β on tool_chain_depth) — 15 models
+  TOP glm-4-5-full-data-wo-interact-w-filter-gzy         n= 20 β=+0.1595
+  TOP glm-4-5-gzy                                        n= 49 β=+0.0613
+  TOP glm-4-5-full-data-w-interact-w-filter-gzy          n= 86 β=+0.0235
+  M79_diff = std(β) = 0.0504
+  BOT kimi-k2-instruct-0905                              n= 29 β=-0.0172
+  BOT glm-4-5-full-data-gzy                              n= 25 β=-0.0443
+  BOT kimi-k2.5                                          n= 21 β=-0.0642
+  ANCHOR: workspace_task_6_2025-09-20.14:41:47_step4000_glm-4-5-full-data-wo-interact-w-filter-gzy steps=459 score=86.14
+
+M80 (β on log(output_tokens)) — 15 models
+  TOP glm-4-5-full-data-wo-interact-w-filter-gzy         n= 20 β=+25.285
+  TOP claude-4-sonnet-gzy                                n=207 β= +5.282
+  TOP glm-4-5-gzy                                        n= 49 β= +4.002
+  M80_diff = std(β) = 7.678
+  BOT glm-4-5-full-data-w-interact-w-filter-gzy          n= 86 β= -0.990
+  BOT glm-4-5-full-data-gzy                              n= 25 β= -6.107
+  BOT glm47                                              n= 20 β=-10.997
+  ANCHOR: workspace_task_6_2025-09-20.14:41:47_step4000_glm-4-5-full-data-wo-interact-w-filter-gzy log_out_tokens=10.98 score=86.14
+
+M85 (Spearman ρ, |ρ| top): 82 pairs
+  kimi-k2-instruct-0905          × M24_token_per_point          ρ=-0.927 n=11
+  glm-4-5-full-data-wo-interact- × M24_token_per_point          ρ=-0.915 n=10
+  glm-4-5-full-data-wo-interact- × M24_token_per_point          ρ=-0.912 n=12
+  glm-4-5-full-data-w-interact-w × M24_token_per_point          ρ=-0.911 n=36
+  glm-4-5-full-data-gzy          × M24_token_per_point          ρ=-0.890 n=14
+  M85 anchor (highest M24_token_per_point): workspace_task_13_2025-09-21.01:09:58_step4000_kimi-k2-instr
+    attr=3.96e+10 score=0.00
+
+M86 (within-model σ, top): 97 pairs
+  glm-4-5-full-data-wo-interact- × M24_token_per_point          σ=2.658e+13 n=10
+  glm-4-5-gzy                    × M24_token_per_point          σ=1.091e+13 n=14
+  glm-4-5-full-data-gzy          × M24_token_per_point          σ=9.307e+12 n=14
+  claude-4-sonnet-gzy            × M24_token_per_point          σ=7.268e+12 n=127
+  kimi-k2-instruct-0905          × M24_token_per_point          σ=1.194e+10 n=11
+  Non-token top:
+  kimi-k2.5                      × M20_duration_seconds         σ=4.12e+04 n=21
+  glm47_data_w_sweagent_swefacto × M20_duration_seconds         σ=3.978e+04 n=21
+  glm47_data_w_codeact_rebench_1 × M20_duration_seconds         σ=3.075e+04 n=29
+  M86 anchor: workspace_task_16_2026-02-26.23:44:39_step4000_kimi-k2.5 attr=1.71e+05
+
+M89 (tertile gap, top): 97 pairs
+  kimi-k2.5                      × M24_token_per_point          gap=61.88 tertiles=[80.3, 47.0, 18.4]
+  glm-4-5-full-data-gzy          × M24_token_per_point          gap=56.69 tertiles=[60.8, 21.6, 4.1]
+  glm47                          × M24_token_per_point          gap=54.34 tertiles=[74.7, 41.5, 20.4]
+  glm-4-5-full-data-wo-interact- × M24_token_per_point          gap=49.75 tertiles=[58.3, 10.9, 8.6]
+  kimi-k2.5                      × M93_score_delta              gap=46.55 tertiles=[12.9, 42.3, 59.4]
+  M89 anchor: workspace_task_4_2026-02-26.23:55:00_step4000_kimi-k2.5 attr=6.96e+04 score=100.00
+DONE
