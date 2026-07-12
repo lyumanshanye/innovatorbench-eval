@@ -1,0 +1,51 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OOD 真检验 — 指标在 swefactory 上的判别力</title>
+<style>
+body{font-family:-apple-system,'Segoe UI',sans-serif;margin:0;background:#0f1115;color:#dde1e8}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 16px} h1{font-size:22px} h2{font-size:17px;margin-top:34px;border-bottom:1px solid #2a2f3a;padding-bottom:6px}
+.hero{display:flex;gap:20px;flex-wrap:wrap;margin:18px 0}
+.stat{background:#1a1f2b;border-radius:8px;padding:14px 20px;min-width:120px}
+.stat .v{font-size:28px;font-weight:800;color:#4cc38a} .stat .l{font-size:12px;color:#9aa4b5;margin-top:4px}
+.note{background:#1a1f2b;border-left:3px solid #4cc38a;padding:10px 14px;font-size:13.5px;line-height:1.7;border-radius:4px}
+.warn{background:#241f1a;border-left:3px solid #e0b84d;padding:10px 14px;font-size:13px;line-height:1.7;border-radius:4px;margin-top:12px;color:#d9c9a0}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px} th,td{padding:7px 9px;border-bottom:1px solid #232833;text-align:left;vertical-align:middle}
+th{background:#151923;font-weight:600} .mono{font-family:ui-monospace,monospace;font-size:12px;color:#c6cdd8} .num{text-align:right;font-variant-numeric:tabular-nums}
+.barwrap{height:4px;background:#232833;border-radius:2px;margin-top:3px} .bar{height:4px;background:#4cc38a;border-radius:2px}
+a{color:#e0b84d} .cav{color:#9aa4b5;font-size:13px;line-height:1.7} code{background:#232833;padding:1px 5px;border-radius:3px;font-size:12px}
+@media(prefers-color-scheme:light){body{background:#fafbfc;color:#1c2330} .stat,.note{background:#eef7f1} .stat .v{color:#1a7f4b} .note{color:#1d4a30} .warn{background:#fdf6e3;color:#6b5518} th{background:#eef1f6} td,th{border-color:#e2e6ee} .mono{color:#33404f} .barwrap{background:#e2e6ee} .cav{color:#5b6575} code{background:#eceff3}}
+</style></head><body><div class="wrap">
+<h1>OOD 真检验：m_v2 指标在 swefactory 上的判别力</h1>
+<p class="note">用真 m_v2 adapter（27 指标全集，展开 95 个数值字段）在 <b>SWE-CodeAct swefactory</b>
+轨迹上跑全量 <b>95,828</b> 条，测每个指标对 SWE-bench 真验证器 passed 标签的判别力。这批数据相对
+本项目 GDPval/innovator 训练分布是 <b>OOD（分布外）</b>，且带真成败标签——是"指标体系能否经受
+OOD 真检验"的天然试金石。<a href="index.html">← Home</a> · <a href="taxonomy.html">失败分类学</a> · <a href="trajectories/">Trajectory Lens</a></p>
+<div class="hero">
+<div class="stat"><div class="v">0.677</div><div class="l">组合模型 AUC（5折）</div></div>
+<div class="stat"><div class="v">95,828</div><div class="l">全量轨迹</div></div>
+<div class="stat"><div class="v">55,131</div><div class="l">resolved</div></div>
+<div class="stat"><div class="v">40,697</div><div class="l">unresolved</div></div>
+<div class="stat"><div class="v">95</div><div class="l">真指标字段</div></div>
+</div>
+<h2>结论</h2>
+<p class="cav">真 m_v2 指标的<b>组合</b>在完全没见过的 swefactory 分布上，把 bad case 判别到
+<b>AUC 0.677</b>（0.5=瞎猜，0.7=不错）——证明指标体系在 OOD 上仍携带成败信号，且是<b>多指标互补</b>
+（单字段最高 0.646，组合升到 0.677）。直接回答两个课题：(a) 无先验下 true negative 可识别；
+(b) 指标在 OOD 上有用。</p>
+<div class="warn">⚠️ 方法学教训：先用手搓的 11 个简化 proxy 探路，得出"AUC≈0.55、指标没用"的<b>假负结论</b>；
+换真 adapter 全量跑后组合 AUC 0.677、单指标也普遍更高（M74 0.553→0.608，M15 0.531→0.610）。
+proxy 系统性低估——判定指标价值必须用真 adapter，不能用手搓近似。</div>
+<h2>单指标判别力排名（AUC，去重别名后）</h2>
+<table><thead><tr><th>指标字段</th><th class="num">AUC</th><th class="num">点二列 r</th><th class="num">passed 均值</th><th class="num">unresolved 均值</th><th>方向</th></tr></thead>
+<tbody><tr><td class="mono">M19_input_tokens</td><td class="num"><b>0.646</b><div class="barwrap"><div class="bar" style="width:73%"></div></div></td><td class="num">+0.234</td><td class="num">1026.11</td><td class="num">647.31</td><td>↑passed高</td></tr><tr><td class="mono">M16_n_open</td><td class="num"><b>0.629</b><div class="barwrap"><div class="bar" style="width:64%"></div></div></td><td class="num">-0.223</td><td class="num">10.80</td><td class="num">14.74</td><td>↑unresolved高</td></tr><tr><td class="mono">M71_reasoning_coverage</td><td class="num"><b>0.625</b><div class="barwrap"><div class="bar" style="width:62%"></div></div></td><td class="num">-0.230</td><td class="num">0.75</td><td class="num">0.85</td><td>↑unresolved高</td></tr><tr><td class="mono">M15_n_files_viewed</td><td class="num"><b>0.610</b><div class="barwrap"><div class="bar" style="width:55%"></div></div></td><td class="num">-0.183</td><td class="num">7.11</td><td class="num">9.33</td><td>↑unresolved高</td></tr><tr><td class="mono">M74_action_entropy_legacy</td><td class="num"><b>0.608</b><div class="barwrap"><div class="bar" style="width:54%"></div></div></td><td class="num">-0.167</td><td class="num">2.28</td><td class="num">2.55</td><td>↑unresolved高</td></tr><tr><td class="mono">M55_n_viewed_files</td><td class="num"><b>0.606</b><div class="barwrap"><div class="bar" style="width:53%"></div></div></td><td class="num">-0.174</td><td class="num">5.79</td><td class="num">7.60</td><td>↑unresolved高</td></tr><tr><td class="mono">M74_action_transition_entropy</td><td class="num"><b>0.604</b><div class="barwrap"><div class="bar" style="width:52%"></div></div></td><td class="num">-0.163</td><td class="num">1.02</td><td class="num">1.14</td><td>↑unresolved高</td></tr><tr><td class="mono">M15_max_view_count</td><td class="num"><b>0.601</b><div class="barwrap"><div class="bar" style="width:50%"></div></div></td><td class="num">-0.159</td><td class="num">3.35</td><td class="num">4.39</td><td>↑unresolved高</td></tr><tr><td class="mono">M74_action_transition_entropy_normalized</td><td class="num"><b>0.595</b><div class="barwrap"><div class="bar" style="width:47%"></div></div></td><td class="num">-0.140</td><td class="num">0.28</td><td class="num">0.30</td><td>↑unresolved高</td></tr><tr><td class="mono">M15_n_files_repeated</td><td class="num"><b>0.590</b><div class="barwrap"><div class="bar" style="width:45%"></div></div></td><td class="num">-0.156</td><td class="num">0.81</td><td class="num">1.14</td><td>↑unresolved高</td></tr><tr><td class="mono">M74_unique_bigrams</td><td class="num"><b>0.581</b><div class="barwrap"><div class="bar" style="width:40%"></div></div></td><td class="num">-0.125</td><td class="num">12.73</td><td class="num">13.87</td><td>↑unresolved高</td></tr><tr><td class="mono">M19_react_total_tokens</td><td class="num"><b>0.579</b><div class="barwrap"><div class="bar" style="width:39%"></div></div></td><td class="num">+0.111</td><td class="num">15839.18</td><td class="num">12508.65</td><td>↑passed高</td></tr><tr><td class="mono">M07_read_before_edit_count</td><td class="num"><b>0.573</b><div class="barwrap"><div class="bar" style="width:36%"></div></div></td><td class="num">-0.119</td><td class="num">3.19</td><td class="num">4.16</td><td>↑unresolved高</td></tr><tr><td class="mono">M19_output_tokens</td><td class="num"><b>0.566</b><div class="barwrap"><div class="bar" style="width:33%"></div></div></td><td class="num">+0.101</td><td class="num">14813.07</td><td class="num">11861.34</td><td>↑passed高</td></tr></tbody></table>
+<h2>组合模型最看重的 12 个字段</h2>
+<p class="mono" style="line-height:1.9">M71_reasoning_coverage · M19_input_tokens · M19_react_input_tokens · M72_think_sr · M72_non_think_sr · M54_explore_edit_ratio · M23_effective_density · M15_n_files_viewed · M05_per_path_reuse_rate · M55_n_reached · M57_has_any_post_run_or_eval · M57_post_fix_verify</p>
+<p class="cav">这些是 5 折逻辑回归里权重最高的字段——推理覆盖(M71)、输入 token(M19)、think 成功率(M72)、
+探索编辑比(M54)、有效密度(M23)、修复后验证(M57)，全是真 m_v2 指标。</p>
+<h2>诚实的边界</h2>
+<ul class="cav">
+<li>组合 AUC 0.677 是有用但非强分类器；单指标最高 0.646，靠组合互补拉高。</li>
+<li>M19 系列、M54/M16 等别名字段测同一构造（表中已去重展示）。</li>
+<li>这是 pass/fail 预测；过程指标本就不是成败预言机（过程⊥结果），能到 0.677 已超预期。</li>
+<li>数据源 swefactory v1(46,434)+v2(49,394)，OmniSWE 管线产出，SWE-bench 真验证器判 passed。</li>
+</ul>
+</div></body></html>
