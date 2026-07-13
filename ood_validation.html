@@ -41,6 +41,36 @@ proxy 系统性低估——判定指标价值必须用真 adapter，不能用手
 <p class="mono" style="line-height:1.9">M71_reasoning_coverage · M19_input_tokens · M19_react_input_tokens · M72_think_sr · M72_non_think_sr · M54_explore_edit_ratio · M23_effective_density · M15_n_files_viewed · M05_per_path_reuse_rate · M55_n_reached · M57_has_any_post_run_or_eval · M57_post_fix_verify</p>
 <p class="cav">这些是 5 折逻辑回归里权重最高的字段——推理覆盖(M71)、输入 token(M19)、think 成功率(M72)、
 探索编辑比(M54)、有效密度(M23)、修复后验证(M57)，全是真 m_v2 指标。</p>
+
+<h2 id="steplevel">步级诊断：失败是两段式（真指标前缀法）</h2>
+<p class="cav">对每条轨迹取前 10%/20%/.../100% 的前缀，用真 m_v2 adapter 逐前缀算真指标，
+得到每个指标随轨迹进度的曲线，比 resolved vs unresolved 并定分岔点。这是 95 指标的时间展开，
+完全同源，非手搓信号。</p>
+<table><thead><tr><th>真指标</th><th class="num">分岔@进度</th><th class="num">末端 gap</th><th>passed vs unresolved 曲线</th><th>类型</th></tr></thead>
+<tbody><tr><td class="mono">M15_n_files_viewed</td><td class="num">0.1</td><td class="num">2.849</td><td>2.829→6.71 vs 3.897→9.559</td><td>早期先兆</td></tr><tr><td class="mono">M55_n_viewed_files</td><td class="num">0.1</td><td class="num">2.357</td><td>2.23→5.435 vs 3.051→7.792</td><td>早期先兆</td></tr><tr><td class="mono">M71_reasoning_coverage</td><td class="num">0.1</td><td class="num">0.15</td><td>0.603→0.717 vs 0.805→0.867</td><td>早期先兆</td></tr><tr><td class="mono">M07_read_before_edit_rate</td><td class="num">0.1</td><td class="num">0.142</td><td>0.691→0.583 vs 0.953→0.725</td><td>早期先兆</td></tr><tr><td class="mono">M57_post_fix_verify</td><td class="num">0.1</td><td class="num">-0.036</td><td>0.667→0.978 vs 0.636→0.942</td><td>早期先兆</td></tr><tr><td class="mono">M74_action_transition_entropy_normalized</td><td class="num">0.1</td><td class="num">0.03</td><td>0.22→0.276 vs 0.204→0.306</td><td>早期先兆</td></tr><tr><td class="mono">M23_effective_step_rate</td><td class="num">0.1</td><td class="num">-0.001</td><td>0.999→0.999 vs 1.0→0.998</td><td>早期先兆</td></tr><tr><td class="mono">M16_n_open</td><td class="num">0.2</td><td class="num">5.127</td><td>2.961→10.016 vs 4.019→15.143</td><td>早期先兆</td></tr><tr><td class="mono">M02_raw_step_count</td><td class="num">0.4</td><td class="num">5.309</td><td>6.738→72.429 vs 7.042→77.738</td><td>后期症状</td></tr><tr><td class="mono">M15_max_view_count</td><td class="num">0.4</td><td class="num">1.393</td><td>0.936→3.104 vs 1.013→4.497</td><td>后期症状</td></tr></tbody></table>
+<p class="note"><b>结论：失败是"开局广度铺太开→后期陷进去"的两段式。</b>早期先兆(10-20% 就分岔)是
+广度过度探索类指标 M15 看文件数 / M55 触达 / M16 打开——正是 OOD 判别力最高的那批；
+深度纠缠类(M02 步数长 / M15 单文件反复看)是 40% 后才显现的后期症状。5-20% 处就能预警。</p>
+
+<h2 id="paradox">反直觉深挖：推理覆盖是"挣扎症状"而非"能力信号"</h2>
+<div class="warn">步级分析发现失败组的 M71 推理覆盖<b>反而更高</b>。在 95,828 条上深挖，这个悖论稳固且可解释：</div>
+<div class="hero">
+<div class="stat"><div class="v">0.452</div><div class="l">高推理覆盖组 pass 率</div></div>
+<div class="stat"><div class="v">0.696</div><div class="l">低推理覆盖组 pass 率</div></div>
+<div class="stat"><div class="v">−0.14</div><div class="l">控探索后 推理-成败偏相关</div></div>
+</div>
+<p class="cav"><b>推理越多，成功率越低（0.452 vs 0.696），且控制探索量后仍负相关(−0.14)。</b>
+推理×探索的 2×2 分层显示，最大的杠杆是<b>探索聚焦度</b>而非推理量：</p>
+<table><thead><tr><th>组合</th><th class="num">pass 率</th><th class="num">n</th></tr></thead><tbody>
+<tr><td>想得少 + 聚焦探索（最好）</td><td class="num"><b>0.707</b></td><td class="num">35,185</td></tr>
+<tr><td>想得少 + 过度探索</td><td class="num">0.652</td><td class="num">12,729</td></tr>
+<tr><td>想得多 + 聚焦探索</td><td class="num">0.564</td><td class="num">11,266</td></tr>
+<tr><td>想得多 + 过度探索（最差）</td><td class="num"><b>0.426</b></td><td class="num">36,648</td></tr>
+</tbody></table>
+<p class="note"><b>机理：M71 推理覆盖是"挣扎症状"不是"能力信号"</b>——难任务触发更多推理，高推理是"卡住了在硬想"的表现，
+不是解题技巧。在每个探索层级里高推理都underperform，排除了"推理只要聚焦就有用"。
+<b>直接的训练含义：绝不能把推理覆盖当 reward 目标</b>（会激励模型模仿挣扎/空想）——这条直接约束了 PROC-IF 的奖励设计。</p>
+
 <h2>诚实的边界</h2>
 <ul class="cav">
 <li>组合 AUC 0.677 是有用但非强分类器；单指标最高 0.646，靠组合互补拉高。</li>
