@@ -1,0 +1,96 @@
+<title>跨-Bench 指标通用性分析</title>
+<style>
+:root{--bg:#fff;--fg:#1a1a1a;--mut:#666;--card:#f7f7f8;--bd:#e3e3e6;--acc:#2563eb;--good:#16a34a;--bad:#dc2626;--warn:#d97706}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1115;--fg:#e8e8ea;--mut:#9aa0aa;--card:#181b21;--bd:#2a2e37;--acc:#5b9bff;--good:#4ade80;--bad:#f87171;--warn:#fbbf24}}
+:root[data-theme=dark]{--bg:#0f1115;--fg:#e8e8ea;--mut:#9aa0aa;--card:#181b21;--bd:#2a2e37;--acc:#5b9bff;--good:#4ade80;--bad:#f87171;--warn:#fbbf24}
+:root[data-theme=light]{--bg:#fff;--fg:#1a1a1a;--mut:#666;--card:#f7f7f8;--bd:#e3e3e6;--acc:#2563eb;--good:#16a34a;--bad:#dc2626;--warn:#d97706}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px 80px}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:20px;margin:38px 0 12px;padding-top:12px;border-top:1px solid var(--bd)}
+h3{font-size:16px;margin:22px 0 8px}
+.sub{color:var(--mut);margin:0 0 22px}
+.kpis{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0}
+.kpi{flex:1;min-width:150px;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px 16px}
+.kpi .v{font-size:24px;font-weight:700}.kpi .l{color:var(--mut);font-size:13px}
+.tbox{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--bd)}
+th{color:var(--mut);font-weight:600;white-space:nowrap}
+td:not(:first-child){font-variant-numeric:tabular-nums}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px 18px;margin:14px 0}
+.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:20px;border:1px solid var(--bd);color:var(--mut);margin-right:6px}
+.good{color:var(--good)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+.lead{font-size:16px;background:var(--card);border-left:3px solid var(--acc);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0}
+code{background:var(--card);padding:1px 5px;border-radius:4px;font-size:13px}
+ul{margin:8px 0;padding-left:22px}li{margin:4px 0}
+.foot{color:var(--mut);font-size:12.5px;margin-top:40px;border-top:1px solid var(--bd);padding-top:14px}
+</style>
+<div class="wrap">
+<h1>跨-Bench 指标通用性分析</h1>
+<p class="sub">m_v2 规则指标体系在 7 个来源、约 82,000 条 agent 轨迹上的可迁移性检验 · 2026-07-14</p>
+
+<div class="lead">
+<b>一句话结论：</b>只有<b>归一化的结构比率类指标</b>能跨 bench 迁移——它们分布稳定、且在不同环境下都能判别任务成败；而<b>绝对量级类、行为存在性类、会话/规划类</b>指标是 bench 专属的，换个框架就结构性失效。193 个指标字段里，仅 <b>9 个</b>（4%）跨 7 个 bench 分布稳定，<b>124 个</b>（64%）是单 bench 专属。
+</div>
+
+<div class="kpis">
+<div class="kpi"><div class="v">7</div><div class="l">轨迹来源 bench</div></div>
+<div class="kpi"><div class="v">~82k</div><div class="l">总轨迹数</div></div>
+<div class="kpi"><div class="v good">9</div><div class="l">跨 bench 可迁移指标</div></div>
+<div class="kpi"><div class="v bad">124</div><div class="l">bench 专属指标</div></div>
+</div>
+
+<h2>1 · 数据总览</h2>
+<p>7 个来源里只有 2 个带任务成败标签（可做判别性分析），其余 5 个是纯轨迹语料（只能做分布稳定性）。</p>
+<div class="tbox"><table>
+<tr><th>Bench 来源</th><th>轨迹数</th><th>通过率（pass label）</th></tr>
+<tr><td>swefactory (SWE OOD)</td><td>80,468</td><td>55.8%</td></tr><tr><td>AgencyBench V3.0</td><td>230</td><td>63.9%</td></tr><tr><td>InnovatorBench</td><td>661</td><td>—（纯轨迹，无pass标签）</td></tr><tr><td>sunjie SWE-difficult</td><td>580</td><td>—（纯轨迹，无pass标签）</td></tr><tr><td>AgencyBench·claude</td><td>40</td><td>—（纯轨迹，无pass标签）</td></tr><tr><td>AgencyBench·openai</td><td>36</td><td>—（纯轨迹，无pass标签）</td></tr><tr><td>AgencyBench·publish</td><td>112</td><td>—（纯轨迹，无pass标签）</td></tr>
+</table></div>
+
+<h2>2 · 判别性：哪些指标预测成败，且跨 bench 一致</h2>
+<p>对两个带标签的 bench（swefactory / AgencyBench V3.0），逐指标算它对 pass 的判别强度 <code>|2·AUC−1|</code>（0=无判别，1=完美）。取两 bench 的<b>较小值</b>，就是"在两种环境下都靠得住"的信号。</p>
+<div class="card">
+<span class="tag">关键发现</span> <b>没有单一指标是强预测子</b>——所有单指标 <code>|2·AUC−1|</code> 均 &lt; 0.17（最强单指标 AUC 才 ~0.585）。轨迹好坏无法由任何单个指标断定，必须靠<b>组合</b>：swefactory 上 183 维组合逻辑回归 5 折 AUC = <b>0.608</b>（±0.108，n=80,468）。
+<div style="margin-top:8px" class="warn">⚠ AgencyBench V3.0 的组合 AUC 显示 0.994，但样本仅 230 条却配 192 维特征（p≫n），是过拟合假象，不予采信——该 bench 只看单指标一致性。</div>
+</div>
+<h3>跨两个标签 bench 都能判别成败的指标（Top 15，按 min 排序）</h3>
+<div class="tbox"><table>
+<tr><th>指标</th><th>swefactory |2AUC−1|</th><th>V3.0 |2AUC−1|</th><th>min（跨环境下限）</th></tr>
+<tr><td><b>M05_per_path_reuse_rate</b></td><td>0.090</td><td>0.145</td><td><b>0.090</b></td></tr><tr><td><b>M05_mean_edits_per_path</b></td><td>0.090</td><td>0.145</td><td><b>0.090</b></td></tr><tr><td><b>M05_max_edits_per_path</b></td><td>0.084</td><td>0.152</td><td><b>0.084</b></td></tr><tr><td><b>M54_explore_edit_log_ratio</b></td><td>0.083</td><td>0.084</td><td><b>0.083</b></td></tr><tr><td><b>M54_explore_edit_log_ratio_unclipped</b></td><td>0.083</td><td>0.084</td><td><b>0.083</b></td></tr><tr><td><b>M57_n_post_run_command</b></td><td>0.105</td><td>0.078</td><td><b>0.078</b></td></tr><tr><td><b>M57_n_post_run_command_success</b></td><td>0.103</td><td>0.078</td><td><b>0.078</b></td></tr><tr><td><b>M74_action_transition_entropy_normalized</b></td><td>0.120</td><td>0.077</td><td><b>0.077</b></td></tr><tr><td><b>M54_explore_edit_ratio</b></td><td>0.099</td><td>0.070</td><td><b>0.070</b></td></tr><tr><td><b>M57_n_post_edit_actions</b></td><td>0.094</td><td>0.068</td><td><b>0.068</b></td></tr><tr><td><b>M16_n_open</b></td><td>0.167</td><td>0.055</td><td><b>0.055</b></td></tr><tr><td><b>M74_action_entropy_legacy</b></td><td>0.109</td><td>0.052</td><td><b>0.052</b></td></tr><tr><td><b>M55_n_viewed_files</b></td><td>0.134</td><td>0.043</td><td><b>0.043</b></td></tr><tr><td><b>M15_n_files_viewed</b></td><td>0.148</td><td>0.043</td><td><b>0.043</b></td></tr><tr><td><b>M58_max_edits_one_path</b></td><td>0.049</td><td>0.038</td><td><b>0.038</b></td></tr>
+</table></div>
+<p class="sub" style="margin-top:6px">解读：M05（单路径反复编辑=挣扎信号）、M54（探索/编辑平衡）、M57（修复后是否再跑验证命令）、M74（动作转移熵）——这些是真正跨环境有效的成败信号。</p>
+
+<h2>3 · 分布稳定性：哪些指标跨 7 个 bench 分布一致</h2>
+<p>对每个指标算它在 7 个 bench 上均值的变异系数（CV = 均值间标准差 / 总均值）。CV 低 = 换 bench 数值不漂移 = 可迁移。</p>
+<div style="display:flex;gap:18px;flex-wrap:wrap">
+<div style="flex:1;min-width:280px">
+<h3 class="good">最稳定 · 可迁移（CV 最低）</h3>
+<div class="tbox"><table>
+<tr><th>指标</th><th>CV</th><th>覆盖 bench 数</th></tr>
+<tr><td>M23_effective_step_rate</td><td>0.034</td><td>7</td></tr><tr><td>M96_budget_utilization</td><td>0.034</td><td>7</td></tr><tr><td>M57_post_fix_verify</td><td>0.039</td><td>5</td></tr><tr><td>M72_non_think_sr</td><td>0.087</td><td>7</td></tr><tr><td>M23_effective_density</td><td>0.146</td><td>7</td></tr><tr><td>M07_read_before_edit_rate</td><td>0.154</td><td>4</td></tr><tr><td>M54_explore_edit_log_ratio</td><td>0.155</td><td>5</td></tr><tr><td>M54_explore_edit_log_ratio_unclipped</td><td>0.155</td><td>5</td></tr><tr><td>M29_param_schema_compliance</td><td>0.177</td><td>7</td></tr><tr><td>M05_mean_edits_per_path</td><td>0.266</td><td>4</td></tr><tr><td>M55_blind_edit_rate</td><td>0.281</td><td>4</td></tr><tr><td>M93_retry_improved_max</td><td>0.284</td><td>4</td></tr>
+</table></div>
+</div>
+<div style="flex:1;min-width:280px">
+<h3 class="bad">最专属 · 不可迁移（CV 最高）</h3>
+<div class="tbox"><table>
+<tr><th>指标</th><th>CV</th><th>覆盖 bench 数</th></tr>
+<tr><td>M19_n_summary_with_usage</td><td>2.449</td><td>7</td></tr><tr><td>M21_tool_not_exist_rate</td><td>2.449</td><td>7</td></tr><tr><td>M24_judge_pass_count</td><td>2.449</td><td>7</td></tr><tr><td>M03_planning_with_subgoals</td><td>2.449</td><td>7</td></tr><tr><td>M03_subtask_count</td><td>2.449</td><td>7</td></tr><tr><td>M03_subtask_count_dedup</td><td>2.449</td><td>7</td></tr><tr><td>M03_unique_subgoal_count_clipped</td><td>2.449</td><td>7</td></tr><tr><td>M12_n_close_session</td><td>2.449</td><td>7</td></tr><tr><td>M12_n_create_session</td><td>2.449</td><td>7</td></tr><tr><td>M14_deadlock_step_count_legacy_v1</td><td>2.449</td><td>7</td></tr><tr><td>M14_max_polling_run</td><td>2.449</td><td>7</td></tr><tr><td>M14_n_check_session_idle</td><td>2.449</td><td>7</td></tr>
+</table></div>
+</div>
+</div>
+<p class="sub" style="margin-top:6px">CV=2.449 是 7 个 bench 里"仅 1 个非零"的理论上限——M03（规划子目标）、M12（会话建/关）、M14（轮询/死锁）、M21（工具不存在率）、M24（judge 通过数）这类指标，在缺少对应工具或节点类型的 bench 里结构性为零，换框架即失效。</p>
+
+<h2>4 · 机制解释</h2>
+<div class="card">
+<b>为什么归一化比率能迁移，绝对量级/行为存在性不能？</b>
+<ul>
+<li><b>可迁移（结构比率）</b>：M23 有效步率、M96 预算利用率、M72 非思考成功率、M07 先读后改率、M54 探索/编辑比、M29 参数 schema 合规——都是<b>无量纲比值</b>，把"任务规模/框架冗长度"的差异在分母里约掉了，只留下行为质量本身。</li>
+<li><b>不可迁移（绝对量级）</b>：M19 token 数、M16 打开文件数、M15 查看文件数——数值随任务体量和框架 verbosity 线性漂移，同一个"好行为"在大任务里数字大、小任务里数字小，跨 bench 不可比。</li>
+<li><b>不可迁移（行为存在性）</b>：M12 会话、M14 轮询、M03 规划、M21 工具错误——依赖特定工具或节点类型是否存在。一个没有 session 工具的框架，M12/M14 恒为零，不是"表现好"而是"根本没这个维度"。</li>
+</ul>
+</div>
+
+<div class="foot">
+方法：单遍流式抽取 m_v2 的 184 个标量字段 → numpy/sklearn。判别性 = ROC-AUC(指标 vs pass)；组合 = 标准化 + L2 逻辑回归 5 折 CV；稳定性 = 7-bench 均值变异系数。swefactory 用 80,468 条（占全量 95,828 的 84%，总体统计量已饱和）。数据源：swefactory OOD（glm-5.1/5.2 SWE）、AgencyBench V3.0 openclaw、InnovatorBench、sunjie SWE、AgencyBench 三源。
+</div>
+</div>
