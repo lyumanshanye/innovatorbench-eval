@@ -1,0 +1,157 @@
+<title>新实验汇总 — 11 语料全覆盖 · EXP-C/E · GRPO 奖励曲线 · 实验路线图</title>
+<style>
+:root{--bg:#fff;--fg:#1a1a1a;--mut:#666;--card:#f7f7f8;--bd:#e3e3e6;--acc:#2563eb;--good:#16a34a;--bad:#dc2626;--warn:#d97706}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1115;--fg:#e8e8ea;--mut:#9aa0aa;--card:#181b21;--bd:#2a2e37;--acc:#5b9bff;--good:#4ade80;--bad:#f87171;--warn:#fbbf24}}
+:root[data-theme=dark]{--bg:#0f1115;--fg:#e8e8ea;--mut:#9aa0aa;--card:#181b21;--bd:#2a2e37;--acc:#5b9bff;--good:#4ade80;--bad:#f87171;--warn:#fbbf24}
+:root[data-theme=light]{--bg:#fff;--fg:#1a1a1a;--mut:#666;--card:#f7f7f8;--bd:#e3e3e6;--acc:#2563eb;--good:#16a34a;--bad:#dc2626;--warn:#d97706}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px 80px}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:20px;margin:38px 0 12px;padding-top:12px;border-top:1px solid var(--bd)}
+h3{font-size:16px;margin:22px 0 8px}
+.sub{color:var(--mut);margin:0 0 22px}
+.kpis{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0}
+.kpi{flex:1;min-width:150px;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px 16px}
+.kpi .v{font-size:24px;font-weight:700}.kpi .l{color:var(--mut);font-size:13px}
+.tbox{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--bd)}
+th{color:var(--mut);font-weight:600;white-space:nowrap}
+td:not(:first-child){font-variant-numeric:tabular-nums}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px 18px;margin:14px 0}
+.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:20px;border:1px solid var(--bd);color:var(--mut);margin-right:6px}
+.good{color:var(--good)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+.lead{font-size:16px;background:var(--card);border-left:3px solid var(--acc);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0}
+.caveat{background:var(--card);border-left:3px solid var(--warn);border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:13.5px;line-height:1.7}
+code{background:var(--card);padding:1px 5px;border-radius:4px;font-size:13px}
+ul{margin:8px 0;padding-left:22px}li{margin:4px 0}
+.foot{color:var(--mut);font-size:12.5px;margin-top:40px;border-top:1px solid var(--bd);padding-top:14px}
+.barwrap{height:8px;background:var(--bd);border-radius:4px;overflow:hidden;min-width:120px}
+.bar{height:8px;border-radius:4px;background:var(--acc)}
+.bar.g{background:var(--good)}.bar.b{background:var(--bad)}.bar.w{background:var(--warn)}
+.fig{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;margin:14px 0;text-align:center}
+.fig img{max-width:100%;height:auto;background:#fff;border-radius:6px}
+.fig .cap{color:var(--mut);font-size:12.5px;margin-top:8px;text-align:left;line-height:1.6}
+.status{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:20px;white-space:nowrap}
+.st-block{background:rgba(220,38,38,.12);color:var(--bad)}
+.st-todo{background:rgba(217,119,6,.12);color:var(--warn)}
+.st-easy{background:rgba(37,99,235,.12);color:var(--acc)}
+.st-defer{background:var(--card);color:var(--mut);border:1px solid var(--bd)}
+</style>
+<div class="wrap">
+<h1>新实验汇总：全覆盖 · 过程-结果关系 · 奖励曲线 · 路线图</h1>
+<p class="sub">KEY_NUMBERS §G 新增已核实结果（EXP-C 长度轴 / EXP-E 条件正交性 / 行为画像 / GRPO 奖励曲线）+ 论文尚缺实验清单 · 2026-07-15 · <a href="index.html" style="color:var(--acc)">← Home</a> · <a href="universality.html" style="color:var(--acc)">跨-Bench 通用性</a> · <a href="ood_validation.html" style="color:var(--acc)">OOD 真检验</a></p>
+
+<div class="lead">
+<b>一句话结论：</b>11 个语料 × 全指标覆盖已补齐（<code>coverage_audit.py</code> 报 "GAPS: 无"）。核心新发现是<b>过程指标与结果的关系是条件性的</b>——对二值 SWE 验证器（swefactory），judge 过程指标与成败<b>正交</b>（逐指标 AUC 中位数 0.506）；对 0–100 分级 rubric 结果，同一批指标<b>强收敛</b>（|ρ| 中位数最高 0.794）。行为画像显示模型"局部执行强、跨步恢复/验证弱"；长轨迹的过程缺陷率随长度单调爬升到 26.9%；GRPO 训练奖励曲线整体平坦（无稳定增益）。
+</div>
+
+<div class="kpis">
+<div class="kpi"><div class="v">11</div><div class="l">语料 × {31 规则 + 30 judge} 全覆盖</div></div>
+<div class="kpi"><div class="v">95,828</div><div class="l">swefactory 规则矩阵（全量）</div></div>
+<div class="kpi"><div class="v">39,510</div><div class="l">swefactory judge 抽样</div></div>
+<div class="kpi"><div class="v">~54k</div><div class="l">有效 judge 打分（4 语料）</div></div>
+</div>
+
+<h2>1 · 指标覆盖补齐：11 语料 × 61 指标，GAPS: 无</h2>
+<p>全部 11 个语料在 <b>31 个规则指标 + 30 个 GLM-5.2 judge 指标</b>上均已跑完。相对此前部署版的两处更新：</p>
+<ul>
+<li><b>swefactory 规则矩阵补齐全量 95,828 条</b>（<a href="universality.html" style="color:var(--acc)">通用性分析页</a>此前用 80,468 条 / 84%，总体统计量结论不变）。</li>
+<li><b>swefactory judge 指标抽样 39,510 条</b>，满足 ≥2000 × 26 指标 × 0.75 的采样阈值。</li>
+</ul>
+<p class="sub" style="margin-top:6px"><code>coverage_audit.py</code> 汇报 "GAPS: 无"——所有语料-指标组合无缺口。</p>
+
+<h2>2 · EXP-E 条件正交性：二值验证器⊥过程，分级 rubric 收敛</h2>
+<p>这条修正了此前"过程指标与结果总是正交"的表述——<b>正交与否取决于结果标签的形态</b>：</p>
+
+<h3>2a · 二值 SWE 验证器（swefactory）→ 正交</h3>
+<p>judge 过程指标对 pass/fail 逐指标 AUC 全部落在 <b>0.49–0.55</b>（中位数 <b>0.506</b>，≈随机线）。最高的两个也只是勉强脱离 0.5：</p>
+<div class="tbox"><table>
+<tr><th>Judge 指标</th><th>pass/fail AUC</th><th></th></tr>
+<tr><td>feedback-execution 反馈执行</td><td><b>0.556</b></td><td><div class="barwrap" style="max-width:220px"><div class="bar" style="width:56%"></div></div></td></tr>
+<tr><td>subtask-propagation 子任务传播</td><td>0.533</td><td><div class="barwrap" style="max-width:220px"><div class="bar" style="width:53%"></div></div></td></tr>
+<tr><td>全 26 指标中位数</td><td>0.506</td><td><div class="barwrap" style="max-width:220px"><div class="bar" style="width:51%"></div></div></td></tr>
+<tr><td>全 26 指标范围</td><td>0.49–0.55</td><td><span class="sub" style="font-size:12.5px">≈ 0.5 随机线</span></td></tr>
+</table></div>
+
+<h3>2b · 分级 0–100 rubric 结果 → 收敛</h3>
+<p>同一批 judge 指标对分级结果分数的每语料 |ρ| 中位数：</p>
+<div class="tbox"><table>
+<tr><th>语料</th><th>|ρ| 中位数</th><th>|ρ|&gt;0.3 指标数</th><th></th></tr>
+<tr><td>openclaw_v3（230 条，带 0–100 分）</td><td><b>0.794</b></td><td>21/23</td><td><div class="barwrap" style="max-width:220px"><div class="bar g" style="width:79%"></div></div></td></tr>
+<tr><td>agenteval</td><td>0.626</td><td>22/25</td><td><div class="barwrap" style="max-width:220px"><div class="bar g" style="width:63%"></div></div></td></tr>
+<tr><td>innovator</td><td>0.620</td><td>—</td><td><div class="barwrap" style="max-width:220px"><div class="bar g" style="width:62%"></div></div></td></tr>
+<tr><td>agency</td><td>0.451</td><td>16/23</td><td><div class="barwrap" style="max-width:220px"><div class="bar g" style="width:45%"></div></div></td></tr>
+</table></div>
+<p>单指标极值：trajectory-satisfaction 对分级结果 ρ=<b>0.922</b>（agenteval）/ <b>0.933</b>（openclaw）。</p>
+<div class="card">
+<span class="tag">解读</span> 二值验证器只看"最终 patch 是否通过"，与过程质量近乎独立——过程指标提供的是<b>结果分辨不出的补充维度</b>；分级 rubric 本身就在给"做得好不好"打分，与过程质量共享方差，故收敛。写论文时表述为<b>条件正交（conditional orthogonality）</b>。
+<div style="margin-top:8px" class="sub">注意区分：openclaw_v3（230 条轨迹，带 0–100 分）≠ ClawBench-Lite（562 条，无分数），两者不是同一语料。</div>
+</div>
+<div class="fig"><img src="newexp_figs/F3_passfail_auc.png" alt="F3: judge 指标对二值 pass/fail 的逐指标 AUC，贴近 0.5 线"><div class="cap"><b>F3</b> · 二值 pass/fail 下 judge 指标逐指标 AUC——全部贴近 0.5 随机线（正交）。</div></div>
+<div class="fig"><img src="newexp_figs/F5_orthogonal_vs_convergent.png" alt="F5: 二值正交 vs 分级收敛对比"><div class="cap"><b>F5</b> · 二值验证器（正交，AUC≈0.5）vs 分级 rubric（收敛，|ρ| 中位数 0.45–0.79）的对比。</div></div>
+
+<h2>3 · 行为画像：局部执行强，跨步恢复/验证弱</h2>
+<p>约 <b>54k 次有效 judge 打分</b>（4 语料，0–5 分制）的逐指标均值，两端分层清晰：</p>
+<div class="tbox"><table>
+<tr><th>Judge 指标</th><th>均值 (0–5)</th><th></th></tr>
+<tr><td class="good"><b>step-precision 步骤精确率</b></td><td><b>4.62</b></td><td><div class="barwrap" style="max-width:260px"><div class="bar g" style="width:92.4%"></div></div></td></tr>
+<tr><td class="good">parameter-accuracy 参数准确率</td><td>4.02</td><td><div class="barwrap" style="max-width:260px"><div class="bar g" style="width:80.4%"></div></div></td></tr>
+<tr><td class="good">root-cause 根因归因</td><td>4.01</td><td><div class="barwrap" style="max-width:260px"><div class="bar g" style="width:80.2%"></div></div></td></tr>
+<tr><td class="good">trajectory-satisfaction 轨迹满意度</td><td>3.94</td><td><div class="barwrap" style="max-width:260px"><div class="bar g" style="width:78.8%"></div></div></td></tr>
+<tr><td class="bad">evidence-action-gap 证据行动鸿沟</td><td>2.84</td><td><div class="barwrap" style="max-width:260px"><div class="bar b" style="width:56.8%"></div></div></td></tr>
+<tr><td class="bad">hypothesis-verify 假设验证</td><td>2.71</td><td><div class="barwrap" style="max-width:260px"><div class="bar b" style="width:54.2%"></div></div></td></tr>
+<tr><td class="bad">error-recovery 错误恢复</td><td>2.29</td><td><div class="barwrap" style="max-width:260px"><div class="bar b" style="width:45.8%"></div></div></td></tr>
+<tr><td class="bad"><b>propagation-length 传播长度</b></td><td><b>1.64</b></td><td><div class="barwrap" style="max-width:260px"><div class="bar b" style="width:32.8%"></div></div></td></tr>
+</table></div>
+<div class="card"><span class="tag">解读</span> 高分全是<b>单步局部执行</b>类（步骤精确、参数正确、根因说得对）；低分全是<b>跨步骤</b>类（错了不恢复、假设不验证、证据和行动脱节、错误一路传播）。这正是细粒度行为评估要暴露的诊断结论：当前 agent 的短板不在单步操作，而在跨步的恢复与验证回路。</div>
+<div class="fig"><img src="newexp_figs/F2_behavioral_profile.png" alt="F2: 行为画像逐指标均值"><div class="cap"><b>F2</b> · 行为画像：~54k 有效 judge 打分（4 语料，0–5 分制）逐指标均值。</div></div>
+
+<h2>4 · EXP-C 长度轴：过程缺陷率随轨迹长度单调爬升</h2>
+<p>swefactory 全量 95,828 条。过程缺陷取<b>严格红旗</b>定义：盲重试 / 死锁轮询爆发 / eval 滥用 / 未读先改。在<b>通过（pass）的轨迹中</b>统计带红旗比例（FPR-among-passes，即"答案对但过程有病"率）：</p>
+<div class="tbox"><table>
+<tr><th>轨迹长度（步数）</th><th>红旗率（passes 内）</th><th></th></tr>
+<tr><td>&lt;20</td><td>0.5%</td><td><div class="barwrap" style="max-width:260px"><div class="bar w" style="width:1.5%"></div></div></td></tr>
+<tr><td>20–40</td><td>8.6%</td><td><div class="barwrap" style="max-width:260px"><div class="bar w" style="width:26%"></div></div></td></tr>
+<tr><td>40–60</td><td>21.7%</td><td><div class="barwrap" style="max-width:260px"><div class="bar w" style="width:65%"></div></div></td></tr>
+<tr><td>60–80</td><td>26.0%</td><td><div class="barwrap" style="max-width:260px"><div class="bar w" style="width:78%"></div></div></td></tr>
+<tr><td>80–120</td><td>25.4%</td><td><div class="barwrap" style="max-width:260px"><div class="bar w" style="width:76%"></div></div></td></tr>
+<tr><td>&gt;120</td><td><b>26.9%</b></td><td><div class="barwrap" style="max-width:260px"><div class="bar b" style="width:81%"></div></div></td></tr>
+</table></div>
+<ul>
+<li>全体严格红旗 FPR = <b>23.0%</b>；更宽的 gold-seed "非过程干净" 口径 FPR = <b>45.6%</b>。</li>
+<li>各长度桶的通过率基本持平（52–62%）——<b>长轨迹不是更难导致缺陷，而是长本身滋生过程缺陷</b>，且二值验证器完全看不见。</li>
+<li>对照：ReasonEval 在数学 solver 上的对应 FPR 为 16.5–40.6%，我们的 23.0% 在同一量级。</li>
+</ul>
+<div class="fig"><img src="newexp_figs/F4_fpr_vs_length.png" alt="F4: 红旗率随轨迹长度爬升曲线"><div class="cap"><b>F4</b> · 过程缺陷率（passes 内严格红旗）vs 轨迹长度：&lt;20 步 0.5% → &gt;120 步 26.9%，通过率持平 52–62%。</div></div>
+
+<h2>5 · GRPO 训练奖励曲线：平坦，无稳定增益</h2>
+<p>GRPO300 一脉 iter 1→619（基座 GLM-4.7-Flash，MoE 30B-A3B：47 层 / 64 专家 top-4 / MLA），GLM-5.2 gated judge 奖励。从 wandb output_raw console 抢救回来的曲线（原始 log 已被覆写）：</p>
+<div class="tbox"><table>
+<tr><th>iter 窗口</th><th>judge 奖励均值</th><th></th></tr>
+<tr><td>300–400</td><td>0.301</td><td><div class="barwrap" style="max-width:260px"><div class="bar" style="width:60%"></div></div></td></tr>
+<tr><td>400–500</td><td>0.270</td><td><div class="barwrap" style="max-width:260px"><div class="bar" style="width:54%"></div></div></td></tr>
+<tr><td>500–600</td><td>0.287</td><td><div class="barwrap" style="max-width:260px"><div class="bar" style="width:57%"></div></div></td></tr>
+<tr><td>600–619</td><td>0.394 <span class="sub" style="font-size:12px">（n=607，大概率噪声）</span></td><td><div class="barwrap" style="max-width:260px"><div class="bar w" style="width:79%"></div></div></td></tr>
+</table></div>
+<div class="caveat">⚠ <b>诚实 caveat：</b>训练奖励整体平坦/噪声化，没有稳定的每百步增益。且<b>平坦的 judge 奖励无法区分"没学到东西"和"在 hack judge"（judge 饱和）</b>——训练奖励 ≠ held-out bench 成绩。要下结论必须补 held-out 评测（GDPval / skillbench / terminal / SWE 类验证器，见下方路线图 #3）；没有它，这条曲线（F6）不可解释。</div>
+<div class="fig"><img src="newexp_figs/F6_grpo_reward_curve.png" alt="F6: GRPO 训练奖励曲线（平坦）"><div class="cap"><b>F6</b> · GRPO300 一脉 iter 1→619 的 GLM-5.2 gated judge 训练奖励——整体平坦，末端 0.394 窗口样本少（n=607）大概率为噪声。</div></div>
+
+<h2>6 · 实验路线图：论文要求、尚未跑的实验（按优先级）</h2>
+<p>来自 NEXT_EXPERIMENTS / PAPER_DIRECTION_v3 的缺口审计。状态：<span class="status st-block">被决策阻塞</span> <span class="status st-todo">未跑·需搭建</span> <span class="status st-easy">纯重分析·易做</span> <span class="status st-defer">降级·后置</span></p>
+<div class="tbox"><table>
+<tr><th>#</th><th>实验</th><th>内容</th><th>状态</th></tr>
+<tr><td>1</td><td><b>EXP-B 元评估测试床</b>（皇冠明珠，补 GAP1+GAP2）</td><td>跨 bench 构建"答案对但过程有病"集（≥4 来源）：注入/已知缺陷阳性池（改测试、硬编码输出、盲重试、跳过验证）+ gold-seed 干净池 + 失败但有价值池。标注三级：(c) 弱签名 → (b) 跨家族模型陪审团（Claude+GPT+Qwen，避开 judge 家族）→ (a) 小规模人工 gold 切片。汇报逐构念检测 AUC、solution 级 F1、步级 first-flawed-step 定位 AUC。这是把 Section 4 从"可靠性研究"升级成"真元评估"的关键——ReasonEval 的步级 AUC 92.8 目前在我们这边没有对应物。</td><td><span class="status st-block">被 a/b/c 标注决策阻塞</span></td></tr>
+<tr><td>2</td><td><b>EXP-A 数据筛选 SFT 消融</b>（ReasonEval Table-5 对应物）</td><td>条件：全集 | 过程干净过滤（gold-seed 30,012 = 通过集的 54.4%）| 同规模随机 ×3 种子 | 含高进展失败。固定基座各自 SFT → held-out GDPval/skillbench 评测；汇报准确率、平均轨迹 token、过程分。"最先跑/最干净"。</td><td><span class="status st-todo">未跑·需基座+SFT harness</span></td></tr>
+<tr><td>3</td><td><b>GRPO checkpoint 的 held-out 评测</b></td><td>对 iter 序列在 held-out bench（GDPval/skillbench/terminal；SWE 类验证器评测也缺——现有 SWE 数字只是 OOD swefactory rollout 语料，不是对我们 checkpoint 的评测）跑评测。没有它 §5 的 F6 不可解释（平坦奖励分不清"没涨"和"hack judge"）。</td><td><span class="status st-todo">未跑</span></td></tr>
+<tr><td>4</td><td><b>规模化人工过程错误标注</b>（STEP-3 唯一真缺口）</td><td>现有 ground truth 仅 ~50 条人工标注、只覆盖 ~3–5 个指标、只有轨迹级；无步级定位标签。需覆盖整个指标套件；同时人工校验 EXP-C 的 FPR（GAP3）。</td><td><span class="status st-todo">未跑</span></td></tr>
+<tr><td>5</td><td><b>EXP-D 留一 bench 评估器迁移</b></td><td>在 bench A..I 上校准 flawed-vs-clean 阈值，在留出的 bench J 上测检测，轮换；汇报哪些构念存活。</td><td><span class="status st-easy">纯重分析·未跑</span></td></tr>
+<tr><td>6</td><td><b>EXP-F 指标当奖励 + 零假设基线</b></td><td>outcome-only | outcome+随机匹配 | outcome+过程过滤 三条件。已明确降级为 future-work 支撑；仅在 GRPO 线稳定时跑。</td><td><span class="status st-defer">降级·后置</span></td></tr>
+<tr><td>7</td><td><b>EXP-C 余项</b></td><td>(a) 错误固化逐十分位曲线（扩展早期 4.2% → 晚期 18.7%）；(b) 前缀可检测性 AUC-vs-前缀比例曲线成图（数据已在步级两段式分析里有；NEXT_EXPERIMENTS 原定的 F5 前缀可检测性图未产出——现已交付的 F5 是"正交 vs 收敛"）。</td><td><span class="status st-easy">数据已有·出图即可</span></td></tr>
+<tr><td>8</td><td><b>F1 构念层级图 + 构念树写作</b>（STEP-1 缺口）</td><td>7 → 27 → 168 树状图，以及正式形式化的 6→27→96 构念树 write-up。未产出（newexp_figs 从 F2 起）。</td><td><span class="status st-easy">未产出</span></td></tr>
+<tr><td>9</td><td><b>EXP-E 混淆清理</b></td><td>分级 rubric 语料可能与 judge 指标共享 LLM-judge 方法方差；干净检查（规则指标 + 仅人工 rubric 切片）在 §G 备注为干净但未作为专门分析跑过。</td><td><span class="status st-easy">未作专门分析</span></td></tr>
+</table></div>
+
+<div class="foot">
+可复现：全部 §1–§5 数字与 F2–F6 图由 <code>fine_grained_eval/new_start_61/m_v2/exp_c_and_figures.py</code> 产出；judge 原始打分在 <code>rubrics/judge_*_glm_results.jsonl</code>。覆盖审计：<code>coverage_audit.py</code>。GRPO 曲线从 wandb output_raw console 恢复（原始 log 已覆写）。相关页：<a href="universality.html" style="color:var(--acc)">跨-Bench 通用性</a> · <a href="ood_validation.html" style="color:var(--acc)">OOD 真检验</a> · <a href="index.html" style="color:var(--acc)">Home</a>。
+</div>
+</div>

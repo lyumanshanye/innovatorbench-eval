@@ -91,6 +91,6 @@ ul{margin:8px 0;padding-left:22px}li{margin:4px 0}
 </div>
 
 <div class="foot">
-方法：单遍流式抽取 m_v2 的 184 个标量字段 → numpy/sklearn。判别性 = ROC-AUC(指标 vs pass)；组合 = 标准化 + L2 逻辑回归 5 折 CV；稳定性 = 7-bench 均值变异系数。swefactory 用 80,468 条（占全量 95,828 的 84%，总体统计量已饱和）。数据源：swefactory OOD（glm-5.1/5.2 SWE）、AgencyBench V3.0 openclaw、InnovatorBench、sunjie SWE、AgencyBench 三源。
+方法：单遍流式抽取 m_v2 的 184 个标量字段 → numpy/sklearn。判别性 = ROC-AUC(指标 vs pass)；组合 = 标准化 + L2 逻辑回归 5 折 CV；稳定性 = 7-bench 均值变异系数。swefactory 本页分析用 80,468 条（当时占全量 84%，总体统计量已饱和）；全量 95,828 规则矩阵与 39,510 judge 抽样现已补齐（11 语料无缺口），见 <a href="new_experiments.html">新实验汇总</a>。数据源：swefactory OOD（glm-5.1/5.2 SWE）、AgencyBench V3.0 openclaw、InnovatorBench、sunjie SWE、AgencyBench 三源。
 </div>
 </div>
