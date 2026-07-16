@@ -114,6 +114,88 @@ def load_archetypes() -> dict:
     return out
 
 
+# ---- zh translations (produced by m_v2/translate_zh.py, cached by md5) ----
+ERR_MARKERS = ["traceback (most recent call last)", "error:", "errno", "no such file",
+               "command not found", "syntaxerror", "exception:", "fatal:", "permission denied",
+               "not found", "failed", "cannot ", "could not "]
+
+
+def _unwrap_obs(msg):
+    if msg and msg.startswith("{"):
+        try:
+            o = json.loads(msg)
+            if isinstance(o, dict) and isinstance(o.get("message"), str):
+                return o["message"]
+        except Exception:
+            pass
+    return msg or ""
+
+
+def _fail_scan(msg):
+    """Keep in sync with template.html failScan + m_v2/translate_zh.py."""
+    low = msg.lower()
+    for mk in ERR_MARKERS:
+        p = low.find(mk)
+        while p != -1:
+            ls = low.rfind("\n", 0, p) + 1
+            if p < 200 or p - ls < 40:
+                le = low.find("\n", p)
+                end = min(len(msg), ls + 240) if le == -1 else min(le, ls + 240)
+                line = msg[ls:end].strip()
+                return line or msg[p:p + 160]
+            p = low.find(mk, p + 1)
+    return None
+
+
+def load_zh() -> dict:
+    import hashlib  # noqa: F401 (used below)
+    p = DATA_DIR / "zh_cache.jsonl"
+    out = {}
+    if p.exists():
+        for ln in p.read_text().splitlines():
+            ln = ln.strip()
+            if ln:
+                try:
+                    r = json.loads(ln)
+                    out[r["h"]] = r["zh"]
+                except Exception:
+                    pass
+    print(f"  zh cache: {len(out)} translations")
+    return out
+
+
+def zh_of(zh_map, text):
+    import hashlib
+    t = (text or "").strip()
+    if len(t) < 6:
+        return None
+    return zh_map.get(hashlib.md5(t.encode("utf-8")).hexdigest())
+
+
+def attach_zh(runs) -> None:
+    zh = load_zh()
+    n = 0
+    for r in runs:
+        for tu in r.get("turns") or []:
+            z = zh_of(zh, tu.get("content"))
+            if z:
+                tu["content_zh"] = z; n += 1
+            z = zh_of(zh, tu.get("thought"))
+            if z:
+                tu["thought_zh"] = z; n += 1
+            if tu.get("success") is False:
+                line = _fail_scan(_unwrap_obs(tu.get("obs_msg")))
+                z = zh_of(zh, line) if line else None
+                if z:
+                    tu["freason_zh"] = z; n += 1
+        v = r.get("verifier")
+        if v and v.get("reason"):
+            z = zh_of(zh, v["reason"])
+            if z:
+                v["reason_zh"] = z; n += 1
+    print(f"  zh attached onto {n} fields")
+
+
 def main() -> None:
     verifier = load_verifier()
     arch = load_archetypes()
@@ -135,6 +217,7 @@ def main() -> None:
         print(f"  {name}: {len(recs)} trajectories")
         runs.extend(recs)
     print(f"  verifier scores joined onto {joined} swe_difficult runs")
+    attach_zh(runs)
 
     # prefer the FULL-corpus discrimination matrix (3805 trajectories incl.
     # supersets); fall back to the old sample matrix if it is missing.

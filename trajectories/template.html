@@ -374,12 +374,20 @@ svg.mix-bar { display: block; }
   position: fixed; z-index: 90; pointer-events: none; display: none; max-width: 340px;
   background: var(--ink); color: var(--page); font-size: 11.5px; line-height: 1.45;
   padding: 6px 10px; border-radius: 7px; box-shadow: 0 4px 18px rgba(0,0,0,.25);
+  max-height: 64vh; overflow: hidden;
 }
 #tip .t1 { font-weight: 700; }
 #tip .mono { font-size: 10.5px; opacity: .8; }
 #tip .zh { margin-top: 3px; font-size: 11.5px; line-height: 1.55; }
 #tip .zh b { font-variant-numeric: tabular-nums; }
 #tip.wide { max-width: 420px; }
+#tip.zhbig { max-width: 560px; }
+.zh-inline {
+  margin-top: 6px; padding: 5px 9px; border-left: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  border-radius: 0 6px 6px 0; font-size: 12.5px; line-height: 1.6; color: var(--ink);
+  white-space: pre-wrap; word-break: break-word; font-style: normal; display: block;
+}
 /* hint that a family name carries an explanation tooltip */
 .famzh { border-bottom: 1px dotted color-mix(in srgb, var(--muted) 70%, transparent); cursor: help; }
 
@@ -795,20 +803,20 @@ function summarize(run) {
   }
   const flags = [];
   const gv = k => m[k];
-  if (isNum(gv("M10_blind_retry_step_count")) && gv("M10_blind_retry_step_count") > 0) flags.push({ t:"blind retry", s:"bad",  d:`${gv("M10_blind_retry_step_count")} blind-retry steps (max run ${gv("M10_max_blind_retry")})` });
-  if (isNum(gv("M43_total_deadlock_steps")) && gv("M43_total_deadlock_steps") > 0) flags.push({ t:"deadlock", s:"bad", d:`${gv("M43_total_deadlock_steps")} deadlock steps` });
-  if (isNum(gv("M14_polling_step_ratio")) && gv("M14_polling_step_ratio") >= 0.3) flags.push({ t:"heavy polling", s:"warn", d:`${fmtPct(gv("M14_polling_step_ratio"))} of steps are polling` });
-  if (isNum(gv("M15_repeated_view_rate")) && gv("M15_repeated_view_rate") >= 0.3) flags.push({ t:"re-reads", s:"warn", d:`repeated-view rate ${fmtPct(gv("M15_repeated_view_rate"))}` });
-  if (isNum(gv("M12_session_leak")) && gv("M12_session_leak") > 0) flags.push({ t:"session leak", s:"bad", d:`${gv("M12_session_leak")} session(s) never closed` });
-  if (isNum(gv("M11_eval_abuse_rate")) && gv("M11_eval_abuse_rate") >= 0.5) flags.push({ t:"eval abuse", s:"bad", d:`eval-abuse rate ${fmtPct(gv("M11_eval_abuse_rate"))}` });
-  if (isNum(gv("M07_read_before_edit_rate")) && gv("M07_read_before_edit_rate") < 0.5) flags.push({ t:"blind edits", s:"bad", d:`read-before-edit only ${fmtPct(gv("M07_read_before_edit_rate"))}` });
-  if (isNum(gv("M21_format_fail_rate")) && gv("M21_format_fail_rate") > 0) flags.push({ t:"format fails", s:"warn", d:`format-fail rate ${fmtPct(gv("M21_format_fail_rate"))}` });
-  if (isNum(gv("M24_score_regressed")) && gv("M24_score_regressed") > 0) flags.push({ t:"score regressed", s:"warn", d:"a later eval scored below an earlier one" });
-  if (t.length && fails / t.length > 0.25) flags.push({ t:"high fail rate", s:"bad", d:`${fails}/${t.length} actions failed` });
-  if (isNum(gv("M93_retry_improved_max")) && gv("M93_retry_improved_max") > 0) flags.push({ t:"self-corrected", s:"good", d:`retry improved score by ${fmtNum(gv("M93_score_delta_max_minus_first"))}` });
+  if (isNum(gv("M10_blind_retry_step_count")) && gv("M10_blind_retry_step_count") > 0) flags.push({ t:"blind retry", s:"bad",  d:`盲目重试：失败后原样重复同一动作 ${gv("M10_blind_retry_step_count")} 步（最长连跑 ${gv("M10_max_blind_retry")} 步）` });
+  if (isNum(gv("M43_total_deadlock_steps")) && gv("M43_total_deadlock_steps") > 0) flags.push({ t:"deadlock", s:"bad", d:`死锁/空转 ${gv("M43_total_deadlock_steps")} 步` });
+  if (isNum(gv("M14_polling_step_ratio")) && gv("M14_polling_step_ratio") >= 0.3) flags.push({ t:"heavy polling", s:"warn", d:`重度轮询：${fmtPct(gv("M14_polling_step_ratio"))} 的步在轮询等待` });
+  if (isNum(gv("M15_repeated_view_rate")) && gv("M15_repeated_view_rate") >= 0.3) flags.push({ t:"re-reads", s:"warn", d:`反复重读：同一文件重复查看率 ${fmtPct(gv("M15_repeated_view_rate"))}（读了记不住）` });
+  if (isNum(gv("M12_session_leak")) && gv("M12_session_leak") > 0) flags.push({ t:"session leak", s:"bad", d:`会话泄漏：${gv("M12_session_leak")} 个 session 开了没关` });
+  if (isNum(gv("M11_eval_abuse_rate")) && gv("M11_eval_abuse_rate") >= 0.5) flags.push({ t:"eval abuse", s:"bad", d:`评测滥用：两次评测之间没有任何实质修改的比例 ${fmtPct(gv("M11_eval_abuse_rate"))}` });
+  if (isNum(gv("M07_read_before_edit_rate")) && gv("M07_read_before_edit_rate") < 0.5) flags.push({ t:"blind edits", s:"bad", d:`盲改：编辑前先读过该文件的比例仅 ${fmtPct(gv("M07_read_before_edit_rate"))}` });
+  if (isNum(gv("M21_format_fail_rate")) && gv("M21_format_fail_rate") > 0) flags.push({ t:"format fails", s:"warn", d:`格式失败率 ${fmtPct(gv("M21_format_fail_rate"))}（空动作/工具调用格式坏）` });
+  if (isNum(gv("M24_score_regressed")) && gv("M24_score_regressed") > 0) flags.push({ t:"score regressed", s:"warn", d:"得分回退：后面的评测分低于之前" });
+  if (t.length && fails / t.length > 0.25) flags.push({ t:"high fail rate", s:"bad", d:`高失败率：${fails}/${t.length} 的动作失败` });
+  if (isNum(gv("M93_retry_improved_max")) && gv("M93_retry_improved_max") > 0) flags.push({ t:"self-corrected", s:"good", d:`自我修正：重试后得分提高 ${fmtNum(gv("M93_score_delta_max_minus_first"))}` });
   if (run.verifier) {
-    if (run.verifier.resolved === true) flags.push({ t:"verifier: resolved", s:"good", d:`GLM verifier score ${fmtNum(run.verifier.score)} (confidence ${fmtNum(run.verifier.confidence)})` });
-    else flags.push({ t:"verifier: not resolved", s:"warn", d:`GLM verifier score ${fmtNum(run.verifier.score)} — ${(run.verifier.reason||"").slice(0,160)}` });
+    if (run.verifier.resolved === true) flags.push({ t:"verifier: resolved", s:"good", d:`判分器判定任务解决：GLM verifier 得分 ${fmtNum(run.verifier.score)}（置信度 ${fmtNum(run.verifier.confidence)}）` });
+    else flags.push({ t:"verifier: not resolved", s:"warn", d:`判分器判定未解决：得分 ${fmtNum(run.verifier.score)} — ${(run.verifier.reason_zh || run.verifier.reason || "").slice(0,160)}` });
   }
   return { catCounts, fails, seq, flags };
 }
@@ -850,18 +858,23 @@ function showTip(html, ev) {
   tip.style.left = x + "px"; tip.style.top = y + "px";
 }
 function hideTip() { tip.style.display = "none"; }
+function tipFor(el, e) {
+  tip.classList.toggle("wide", el.classList.contains("ins-i"));
+  tip.classList.toggle("zhbig", el.matches(".say,.thought,.fail-line,.vb-reason"));
+  showTip(el.dataset.tip, e);
+}
 document.addEventListener("mouseover", e => {
   const el = e.target.closest("[data-tip]");
-  if (el) { tip.classList.toggle("wide", el.classList.contains("ins-i")); showTip(el.dataset.tip, e); }
+  if (el) tipFor(el, e);
 });
 document.addEventListener("mousemove", e => {
   const el = e.target.closest("[data-tip]");
-  if (el) { tip.classList.toggle("wide", el.classList.contains("ins-i")); showTip(el.dataset.tip, e); } else hideTip();
+  if (el) tipFor(el, e); else hideTip();
 });
 /* mobile: tap a [data-tip] element to show the tooltip, tap elsewhere to hide */
 document.addEventListener("click", e => {
   const el = e.target.closest("[data-tip]");
-  if (el) { tip.classList.toggle("wide", el.classList.contains("ins-i")); showTip(el.dataset.tip, e); } else hideTip();
+  if (el) tipFor(el, e); else hideTip();
 });
 
 /* ---------------- per-chart insight tooltip ----------------
@@ -871,6 +884,11 @@ document.addEventListener("click", e => {
    NOTE: the html payload must only use single quotes internally. */
 const insTip = html =>
   `<span class="ins-i" data-tip="<div class='t1'>洞察</div><div class='zh'>${html}</div>">ℹ 洞察</span>`;
+
+/* hover-zh: hovering a translated block pops its Chinese rendition through
+   the SAME data-tip window (translations pre-baked at build time). */
+const zhAttr = (zh, title) =>
+  zh ? ` data-tip="<div class='t1'>${title || "中文"}</div><div class='zh'>${esc(zh)}</div>"` : "";
 
 /* ---------------- SVG builders ---------------- */
 function miniStrip(seq, w = 168, h = 16) {
@@ -986,12 +1004,12 @@ function renderOverview() {
 
   const tiles = `
     <div class="tiles">
-      <div class="card tile"><div class="k">Trajectories</div><div class="v">${RUNS.length}</div><div class="d">${IS_FULL ? `sample · full corpus ${fmtInt(FULL.length)}` : "6 batches · 3 benchmark families"}</div></div>
-      <div class="card tile"><div class="k">Turns</div><div class="v">${fmtInt(totTurns)}</div><div class="d">median ${fmtInt([...RUNS.map(r=>r.turns.length)].sort((a,b)=>a-b)[Math.floor(RUNS.length/2)])} / run</div></div>
-      <div class="card tile"><div class="k">Failed actions</div><div class="v" style="color:var(--status-critical)">${fmtInt(totFails)}</div><div class="d">${(totFails/totTurns*100).toFixed(1)}% of all turns</div></div>
-      <div class="card tile"><div class="k">Models</div><div class="v">${nBase}</div><div class="d">AgencyBench spans ${nBase} base models</div></div>
-      <div class="card tile"><div class="k">Metric fields</div><div class="v">${nMetricFields}</div><div class="d">27 M-families per run</div></div>
-      <div class="card tile"><div class="k">Scored runs</div><div class="v">${scored.length}<small>of ${RUNS.length}</small></div><div class="d">${nVerif} via GLM verifier · μ ${scored.length?fmtPct(scored.reduce((a,b)=>a+b,0)/scored.length):"—"}</div></div>
+      <div class="card tile" data-tip="采样进页面的轨迹条数（sample · full corpus=全语料总量）"><div class="k">Trajectories</div><div class="v">${RUNS.length}</div><div class="d">${IS_FULL ? `sample · full corpus ${fmtInt(FULL.length)}` : "6 batches · 3 benchmark families"}</div></div>
+      <div class="card tile" data-tip="所有轨迹的总步数（median=每条轨迹步数中位数）"><div class="k">Turns</div><div class="v">${fmtInt(totTurns)}</div><div class="d">median ${fmtInt([...RUNS.map(r=>r.turns.length)].sort((a,b)=>a-b)[Math.floor(RUNS.length/2)])} / run</div></div>
+      <div class="card tile" data-tip="失败动作步总数（展示层启发式判定）及占比"><div class="k">Failed actions</div><div class="v" style="color:var(--status-critical)">${fmtInt(totFails)}</div><div class="d">${(totFails/totTurns*100).toFixed(1)}% of all turns</div></div>
+      <div class="card tile" data-tip="参评基座模型数（AgencyBench 侧）"><div class="k">Models</div><div class="v">${nBase}</div><div class="d">AgencyBench spans ${nBase} base models</div></div>
+      <div class="card tile" data-tip="每条轨迹计算的指标字段数（来自 27 个 M 指标族）"><div class="k">Metric fields</div><div class="v">${nMetricFields}</div><div class="d">27 M-families per run</div></div>
+      <div class="card tile" data-tip="有结局得分的轨迹数（μ=均分；GLM verifier=判分器打分）"><div class="k">Scored runs</div><div class="v">${scored.length}<small>of ${RUNS.length}</small></div><div class="d">${nVerif} via GLM verifier · μ ${scored.length?fmtPct(scored.reduce((a,b)=>a+b,0)/scored.length):"—"}</div></div>
     </div>`;
 
   const batChips = BATCH_IDS.map(id =>
@@ -1007,7 +1025,10 @@ function renderOverview() {
   if (state.page >= nPages) state.page = nPages - 1;
   const rows = all.slice(state.page * PAGE_SIZE, (state.page + 1) * PAGE_SIZE);
 
-  const th = (key, label, right) => `<th data-sort="${key}" ${right?'style="text-align:right"':''}>${label} ${state.sort===key?`<span class="arr">${state.asc?"▲":"▼"}</span>`:""}</th>`;
+  const TH_ZH = { idx:"运行编号（点击排序）", turns:"总步数", fails:"失败步数（展示层启发式判定）",
+    dur:"总时长", tok:"token 总量", eff:"有效步骤率（1−浪费步占比）", rbe:"先读后改率（编辑前是否看过该文件）",
+    score:"最佳得分（轨迹内 eval 或 GLM verifier）", flags:"行为病灶标记（悬浮各标记看解释）" };
+  const th = (key, label, right) => `<th data-sort="${key}" ${right?'style="text-align:right"':''}${TH_ZH[key]?` data-tip="${TH_ZH[key]}"`:""}>${label} ${state.sort===key?`<span class="arr">${state.asc?"▲":"▼"}</span>`:""}</th>`;
 
   const body = rows.map(r => {
     const s = SUM[r.__i], m = r.metrics;
@@ -1071,7 +1092,7 @@ function renderOverview() {
       <table class="runs">
         <thead><tr>
           ${th("idx","Run")}${th("turns","Turns",1)}${th("fails","Fails",1)}${th("dur","Duration",1)}${th("tok","Tokens",1)}
-          <th class="nosort">Action mix</th><th class="nosort">Trajectory</th>
+          <th class="nosort" data-tip="动作类型构成（按颜色分类）">Action mix</th><th class="nosort" data-tip="整条轨迹动作条：每格一步，红=失败步">Trajectory</th>
           ${th("eff","Eff. rate",1)}${th("rbe","Read→Edit",1)}${th("score","Best score",1)}${th("flags","Pathologies")}
         </tr></thead>
         <tbody>${body || `<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:30px">no runs match the current filters</td></tr>`}</tbody>
@@ -1135,7 +1156,7 @@ function obsBlock(tu, i) {
   const id = `obs${i}`;
   return `<div class="obs">
     <div class="obs-body" id="${id}" data-full="${esc(msg)}">${esc(short ? msg.slice(0, cap) + " …" : msg)}</div>
-    ${short ? `<button class="expander" data-target="${id}">show result (${msg.length}${msg.length >= 2000 ? "+" : ""} chars)</button>` : ""}
+    ${short ? `<button class="expander" data-target="${id}" title="展开工具输出全文">show result (${msg.length}${msg.length >= 2000 ? "+" : ""} chars)</button>` : ""}
   </div>`;
 }
 function thoughtBlock(tu, i) {
@@ -1145,11 +1166,11 @@ function thoughtBlock(tu, i) {
   const say = tu.content || "";
   const t = tu.thought || "";
   const cap = say ? 160 : 450;
-  let h = say ? `<div class="say">${esc(say)}</div>` : "";
+  let h = say ? `<div class="say"${zhAttr(tu.content_zh)}>${esc(say)}</div>` : "";
   if (t) {
     const short = t.length > cap + 60;
     const id = `th${i}`;
-    h += `<div class="thought"><span id="${id}" data-full="✦ ${esc(t)}">✦ ${esc(short ? t.slice(0, cap) + " …" : t)}</span>${short ? `<button class="expander" data-target="${id}" style="display:block">show full reasoning (${t.length}${t.length >= 4000 ? "+" : ""} chars)</button>` : ""}</div>`;
+    h += `<div class="thought"${zhAttr(tu.thought_zh, "推理·中文")}><span id="${id}" data-full="✦ ${esc(t)}"${tu.thought_zh ? ` data-zhfull="${esc(tu.thought_zh)}"` : ""}>✦ ${esc(short ? t.slice(0, cap) + " …" : t)}</span>${short ? `<button class="expander" data-target="${id}" style="display:block" title="展开完整推理原文${tu.thought_zh ? "（附中文全文）" : ""}">show full reasoning (${t.length}${t.length >= 4000 ? "+" : ""} chars)</button>` : ""}</div>`;
   }
   return h;
 }
@@ -1190,7 +1211,7 @@ function renderDetail(ri) {
     return `<div class="turn ${failed?"fail":""} ${retry[i]?"retry":""}" id="turn-${i}" style="--cat:${catVar(c)}">
       <div class="turn-head">
         <span class="idx">#${tu.idx}</span>
-        ${retry[i] ? `<span class="rchip" data-tip="same action + target repeated right after a failure">RETRY</span>` : ""}
+        ${retry[i] ? `<span class="rchip" data-tip="重试步：失败后立刻原样重复同一动作+同一目标">RETRY</span>` : ""}
         <span class="sp"></span>
         ${score}
         ${okBadge}
@@ -1202,7 +1223,7 @@ function renderDetail(ri) {
         ${tu.path ? `<span class="path" title="${esc(tu.path)}">&lrm;${esc(tu.path)}</span>` : ""}
       </div>
       ${tu.description && tu.description !== "view" && tu.description !== tu.action_type && !(tu.description === "shell" && tu.action_type === "run_command") ? `<div class="cmd">${esc(tu.description)}</div>` : ""}
-      ${failed && tu._freason ? `<div class="fail-line">⚠ ${esc(tu._freason)}</div>` : ""}
+      ${failed && tu._freason ? `<div class="fail-line"${zhAttr(tu.freason_zh, "错误行·中文")}>⚠ ${esc(tu._freason)}</div>` : ""}
       ${obsBlock(tu, i)}
     </div>`;
   };
@@ -1211,9 +1232,9 @@ function renderDetail(ri) {
     const kinds = {};
     for (let k = b.from; k < b.to; k++) kinds[run.turns[k].action_type] = (kinds[run.turns[k].action_type]||0)+1;
     const desc = Object.entries(kinds).map(([k,v])=>`${k}×${v}`).join(" · ");
-    return `<div class="poll-group" data-from="${b.from}" data-to="${b.to}">
-      ⏳ <span class="n">${b.to - b.from} polling turns</span> <span>(${esc(desc)})</span>
-      <span>turns ${b.from}–${b.to-1}</span><span class="hint">expand ▾</span>
+    return `<div class="poll-group" data-from="${b.from}" data-to="${b.to}" data-tip="连续轮询/等待步（sleep、查询会话输出等），已折叠省地方；点击展开逐步查看">
+      ⏳ <span class="n">${b.to - b.from} polling turns · 轮询等待</span> <span>(${esc(desc)})</span>
+      <span>turns ${b.from}–${b.to-1}</span><span class="hint">expand ▾ 展开</span>
     </div>`;
   }).join("");
 
@@ -1246,12 +1267,12 @@ function renderDetail(ri) {
 
   const tiles = `
     <div class="tiles" style="margin:14px 0">
-      <div class="card tile"><div class="k">Turns</div><div class="v">${n}</div><div class="d">${fmtInt(m.M02_effective_step_count)} effective</div></div>
-      <div class="card tile"><div class="k">Failed</div><div class="v" style="color:${s.fails? "var(--status-critical)":"var(--status-good)"}">${s.fails}</div><div class="d">${(s.fails/n*100).toFixed(0)}% of turns</div></div>
-      <div class="card tile"><div class="k">Duration</div><div class="v">${fmtSec(m.M20_duration_seconds)}</div><div class="d">${isNum(m.M20_sleep_seconds)&&m.M20_sleep_seconds>0?fmtSec(m.M20_sleep_seconds)+" asleep":"no sleep"}</div></div>
-      <div class="card tile"><div class="k">Tokens</div><div class="v">${fmtTok(m.M19_total_tokens)}</div><div class="d">${fmtTok(m.M19_output_tokens)} out</div></div>
-      <div class="card tile"><div class="k">Eff. step rate</div><div class="v">${fmtPct(m.M23_effective_step_rate)}</div><div class="d">${fmtInt(m.M23_n_waste)} wasted</div></div>
-      <div class="card tile"><div class="k">Best score</div><div class="v" style="color:${isNum(scoreOf(run))?"var(--c-eval)":"var(--muted)"}">${isNum(scoreOf(run))?fmtPct(scoreOf(run)):"n/a"}</div><div class="d">${scoreKind(run)==="glm"?"GLM verifier":isNum(m.M24_num_evals)&&m.M24_num_evals>0?fmtInt(m.M24_num_evals)+" evals":"no verifier"}</div></div>
+      <div class="card tile" data-tip="本轨迹总步数（effective=有效步数，剔除浪费步）"><div class="k">Turns</div><div class="v">${n}</div><div class="d">${fmtInt(m.M02_effective_step_count)} effective</div></div>
+      <div class="card tile" data-tip="失败步数与占比（展示层启发式判定）"><div class="k">Failed</div><div class="v" style="color:${s.fails? "var(--status-critical)":"var(--status-good)"}">${s.fails}</div><div class="d">${(s.fails/n*100).toFixed(0)}% of turns</div></div>
+      <div class="card tile" data-tip="总时长（asleep=挂起/轮询等待时间；no sleep=无等待）"><div class="k">Duration</div><div class="v">${fmtSec(m.M20_duration_seconds)}</div><div class="d">${isNum(m.M20_sleep_seconds)&&m.M20_sleep_seconds>0?fmtSec(m.M20_sleep_seconds)+" asleep":"no sleep"}</div></div>
+      <div class="card tile" data-tip="整条轨迹 token 总量（out=输出 token）"><div class="k">Tokens</div><div class="v">${fmtTok(m.M19_total_tokens)}</div><div class="d">${fmtTok(m.M19_output_tokens)} out</div></div>
+      <div class="card tile" data-tip="有效步骤率 = 1 − 浪费步占比（wasted=浪费步数）"><div class="k">Eff. step rate</div><div class="v">${fmtPct(m.M23_effective_step_rate)}</div><div class="d">${fmtInt(m.M23_n_waste)} wasted</div></div>
+      <div class="card tile" data-tip="最佳得分（GLM verifier=判分器打分；evals=轨迹内自评次数；no verifier=无结局标签）"><div class="k">Best score</div><div class="v" style="color:${isNum(scoreOf(run))?"var(--c-eval)":"var(--muted)"}">${isNum(scoreOf(run))?fmtPct(scoreOf(run)):"n/a"}</div><div class="d">${scoreKind(run)==="glm"?"GLM verifier":isNum(m.M24_num_evals)&&m.M24_num_evals>0?fmtInt(m.M24_num_evals)+" evals":"no verifier"}</div></div>
     </div>`;
 
   const V = run.verifier;
@@ -1260,7 +1281,7 @@ function renderDetail(ri) {
   const verdictBanner = V ? `<div class="card verdict ${V.resolved?"":"bad"}">
       <span class="vb-badge ${V.resolved?"good":"bad"}">${V.resolved?"✓ RESOLVED":"✗ NOT RESOLVED"}</span>
       <span class="vb-meta">GLM verifier · score ${fmtNum(V.score)} · confidence ${fmtNum(V.confidence)}</span>
-      <div class="vb-reason"><b>${V.resolved?"依据":"失败原因"}：</b>${esc(V.reason || "（judge 未给出理由）")}</div>
+      <div class="vb-reason"${V.reason_zh ? ` data-tip="<div class='t1'>原文 (English)</div><div class='zh'>${esc(V.reason || "")}</div>"` : ""}><b>${V.resolved?"依据":"失败原因"}：</b>${esc(V.reason_zh || V.reason || "（judge 未给出理由）")}</div>
     </div>` : "";
 
   app.innerHTML = `
@@ -1275,14 +1296,14 @@ function renderDetail(ri) {
     ${verdictBanner}
     ${tiles}
     <div class="card strip-card">
-      <div class="strip-head"><span class="t">Whole-trajectory action strip — ${n} turns, click to jump</span>${legendHTML()}</div>
+      <div class="strip-head"><span class="t" data-tip="整条轨迹的动作色带：每格一步、颜色=动作类型、红框=失败步；点击任意格跳到对应步卡片">Whole-trajectory action strip — ${n} turns, click to jump</span>${legendHTML()}</div>
       <div class="strip-scroll"><div style="min-width:${Math.max(0, n*7)}px">
         <div class="astrip">${cells}</div>${scoreLane}
       </div></div>
     </div>
     <div class="detail-grid">
       <div class="timeline-col" style="min-width:0">
-        <div class="tl-note">每步卡片按时序排：<b>助手正文 → ✦ 推理（默认折叠，可展开全文）→ 工具调用 → 结果（默认折叠）</b>——下一步的助手信息会告诉你上一步成没成，异常时再点 show result 回看。步级 ✓/✗ 是对工具输出的文本启发式判定，✗ 步下方红色 ⚠ 行给出命中的错误行。</div>
+        <div class="tl-note">每步卡片按时序排：<b>助手正文 → ✦ 推理（默认折叠，可展开全文）→ 工具调用 → 结果（默认折叠）</b>——下一步的助手信息会告诉你上一步成没成，异常时再点 show result 回看。步级 ✓/✗ 是对工具输出的文本启发式判定，✗ 步下方红色 ⚠ 行给出命中的错误行。<b>鼠标悬浮在正文/推理/错误行上会弹出中文翻译</b>；展开长推理时中文全文一并显示。</div>
         <div class="timeline" id="timeline">${timeline}</div>
       </div>
       <div class="metric-panel">
@@ -1319,6 +1340,12 @@ function wireExpanders(root) {
     const el = document.getElementById(b.dataset.target);
     if (!el) return;
     el.textContent = el.dataset.full;
+    if (el.dataset.zhfull) {   /* full zh rendition inline under the original */
+      const z = document.createElement("div");
+      z.className = "zh-inline";
+      z.textContent = "【中文】" + el.dataset.zhfull;
+      el.appendChild(z);
+    }
     b.remove();
   });
 }
