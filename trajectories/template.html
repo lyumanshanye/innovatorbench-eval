@@ -280,17 +280,40 @@ svg.mix-bar { display: block; }
 .turn-head .ok.no  { color: var(--status-critical); }
 .turn-head .toks { font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space:nowrap;}
 .turn-head .rchip { font-size: 10px; font-weight: 700; color: var(--status-critical); border: 1px dashed var(--status-critical); border-radius: 5px; padding: 0 6px; }
+.turn-head .sp { flex: 1 1 0; min-width: 6px; }
 .turn .cmd {
   margin: 7px 0 0; padding: 6px 10px; background: var(--surface-2); border-radius: 7px;
   font-family: ui-monospace, Menlo, monospace; font-size: 12px; white-space: pre-wrap; word-break: break-word;
   color: var(--ink); border: 1px solid var(--grid);
 }
-.turn .thought {
-  margin: 7px 0 0; padding: 5px 10px 5px 12px; border-left: 3px solid var(--c-think);
-  background: color-mix(in srgb, var(--c-think) 6%, transparent);
-  color: var(--ink-2); font-size: 12.5px; font-style: italic; border-radius: 0 7px 7px 0;
+/* card order is temporal: assistant message → reasoning (collapsed) → tool → result */
+.turn .say {
+  margin: 7px 0 0; font-size: 13px; line-height: 1.55; color: var(--ink);
   white-space: pre-wrap; word-break: break-word;
 }
+.turn .thought {
+  margin: 7px 0 0; padding: 6px 11px 6px 13px; border-left: 3px solid var(--c-think);
+  background: color-mix(in srgb, var(--c-think) 7%, transparent);
+  color: var(--ink-2); font-size: 12.5px; line-height: 1.5; border-radius: 0 7px 7px 0;
+  white-space: pre-wrap; word-break: break-word;
+}
+.turn .tool-line { display: flex; align-items: center; gap: 8px; margin: 7px 0 0; min-width: 0; }
+.tool-line .path { font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; color: var(--ink-2);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1 1 60px; direction: rtl; text-align: left;}
+.turn .fail-line {
+  margin: 7px 0 0; padding: 5px 10px; border-radius: 7px; font-size: 12px;
+  font-family: ui-monospace, Menlo, monospace; word-break: break-word;
+  color: var(--status-critical); background: color-mix(in srgb, var(--status-critical) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--status-critical) 30%, var(--grid));
+}
+.tl-note { font-size: 11.5px; color: var(--muted); margin: 0 0 8px; line-height: 1.5; }
+.card.verdict { margin: 12px 0 0; padding: 11px 14px; border-left: 4px solid var(--status-good); }
+.card.verdict.bad { border-left-color: var(--status-critical); }
+.card.verdict .vb-badge { font-weight: 800; font-size: 13.5px; letter-spacing: .02em; }
+.card.verdict .vb-badge.good { color: var(--status-good); }
+.card.verdict .vb-badge.bad { color: var(--status-critical); }
+.card.verdict .vb-meta { font-size: 11.5px; color: var(--muted); margin-left: 10px; }
+.card.verdict .vb-reason { margin-top: 6px; font-size: 12.5px; color: var(--ink-2); line-height: 1.55; }
 .obs { margin: 7px 0 0; font-size: 12px; }
 .obs .obs-body {
   font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; color: var(--ink-2);
@@ -716,6 +739,49 @@ for (const g of METRIC_GROUPS) for (const m of g.metrics) {
   if (vals.length) M_RANGE[m.k] = { min: Math.min(...vals), max: Math.max(...vals), n: vals.length };
 }
 
+/* ---------------- display-level success re-check ----------------
+   The ingest marks a turn success=false whenever ANY error marker appears
+   anywhere in the tool output (adapters/common.py obs_success_from_text).
+   That false-positives on read-only views whose *file content* merely
+   mentions "error"/"not found"/…  For display we only trust a marker that
+   appears near the start of the output or at a line start, we surface the
+   matching line as the failure reason, and we rescue read-only views with
+   no such match. Metric values (M10/M23/…) are computed upstream from the
+   raw flag and are NOT affected by this display re-check. */
+const ERR_MARKERS = ["traceback (most recent call last)","error:","errno","no such file",
+  "command not found","syntaxerror","exception:","fatal:","permission denied",
+  "not found","failed","cannot ","could not "];
+const VIEW_ACTS = new Set(["open_file","list_files","search_dir","search_file","find_file","read_file","view","think"]);
+function unwrapObs(msg) {
+  if (msg && msg.startsWith("{")) {
+    try { const o = JSON.parse(msg); if (o && typeof o.message === "string") return o.message; } catch (e) {}
+  }
+  return msg || "";
+}
+function failScan(msg) {
+  const low = msg.toLowerCase();
+  for (const mk of ERR_MARKERS) {
+    let p = low.indexOf(mk);
+    while (p !== -1) {
+      const ls = low.lastIndexOf("\n", p) + 1;
+      if (p < 200 || p - ls < 40) {   /* near output start, or leading its line */
+        const le = low.indexOf("\n", p);
+        const line = msg.slice(ls, le === -1 ? Math.min(msg.length, ls + 240) : Math.min(le, ls + 240)).trim();
+        return line || msg.slice(p, p + 160);
+      }
+      p = low.indexOf(mk, p + 1);
+    }
+  }
+  return null;
+}
+for (const r of RUNS) for (const tu of (r.turns || [])) {
+  if (tu.success === false) {
+    const reason = failScan(unwrapObs(tu.obs_msg));
+    tu._freason = reason;
+    tu._fail = VIEW_ACTS.has(tu.action_type) ? reason !== null : true;
+  } else { tu._fail = false; tu._freason = null; }
+}
+
 /* ---------------- per-run derived summary ---------------- */
 function summarize(run) {
   const t = run.turns, m = run.metrics;
@@ -724,8 +790,8 @@ function summarize(run) {
   for (const tu of t) {
     const c = catOf(tu);
     catCounts[c] = (catCounts[c] || 0) + 1;
-    if (tu.success === false) fails++;
-    seq.push({ c, f: tu.success === false });
+    if (tu._fail) fails++;
+    seq.push({ c, f: tu._fail });
   }
   const flags = [];
   const gv = k => m[k];
@@ -1043,7 +1109,7 @@ function turnTip(tu) {
   return `<div class="t1">#${tu.idx} · ${esc(tu.action_type)}</div>` +
     (tu.path ? `<div class="mono">${esc(tu.path)}</div>` : "") +
     (tu.description ? `<div class="mono">${esc(tu.description.slice(0,120))}</div>` : "") +
-    `<div>${tu.success === false ? "✗ failed" : "✓ ok"}${isNum(tu.overall_score) ? " · score " + fmtNum(tu.overall_score) : ""}</div>`;
+    `<div>${tu._fail ? "✗ failed" + (tu._freason ? " — " + esc(tu._freason.slice(0, 90)) : "") : "✓ ok"}${isNum(tu.overall_score) ? " · score " + fmtNum(tu.overall_score) : ""}</div>`;
 }
 function detectRetries(turns) {
   const retry = new Array(turns.length).fill(false);
@@ -1052,25 +1118,40 @@ function detectRetries(turns) {
     for (let j = Math.max(0, i-3); j < i; j++) {
       const b = turns[j];
       if (b.action_type === a.action_type && (b.path||"") === (a.path||"") &&
-          (b.description||"") === (a.description||"") && b.success === false &&
+          (b.description||"") === (a.description||"") && b._fail &&
           (a.description || a.path)) { retry[i] = true; break; }
     }
   }
   return retry;
 }
 function obsBlock(tu, i) {
-  let msg = tu.obs_msg || "";
+  let msg = unwrapObs(tu.obs_msg);
   if (!msg) return "";
-  /* pretty-print the {"success":..,"message":..} wrappers */
-  if (msg.startsWith("{")) {
-    try { const o = JSON.parse(msg); if (o && typeof o.message === "string") msg = o.message; } catch (e) {}
-  }
-  const short = msg.length > 220;
+  /* results are collapsed hard by default — the next turn's reasoning tells
+     you whether the tool worked; failed turns get a larger preview since the
+     error is exactly what you came back to read */
+  const cap = tu._fail ? 400 : 90;
+  const short = msg.length > cap + 30;
   const id = `obs${i}`;
   return `<div class="obs">
-    <div class="obs-body" id="${id}" data-full="${esc(msg)}">${esc(short ? msg.slice(0, 220) + " …" : msg)}</div>
-    ${short ? `<button class="expander" data-target="${id}">show full observation (${msg.length} chars)</button>` : ""}
+    <div class="obs-body" id="${id}" data-full="${esc(msg)}">${esc(short ? msg.slice(0, cap) + " …" : msg)}</div>
+    ${short ? `<button class="expander" data-target="${id}">show result (${msg.length}${msg.length >= 2000 ? "+" : ""} chars)</button>` : ""}
   </div>`;
+}
+function thoughtBlock(tu, i) {
+  /* the assistant's visible message (content) leads the card; the raw
+     reasoning (reasoning_content) is usually long, so it collapses to a
+     one-line teaser and expands to the real, un-truncated thing */
+  const say = tu.content || "";
+  const t = tu.thought || "";
+  const cap = say ? 160 : 450;
+  let h = say ? `<div class="say">${esc(say)}</div>` : "";
+  if (t) {
+    const short = t.length > cap + 60;
+    const id = `th${i}`;
+    h += `<div class="thought"><span id="${id}" data-full="✦ ${esc(t)}">✦ ${esc(short ? t.slice(0, cap) + " …" : t)}</span>${short ? `<button class="expander" data-target="${id}" style="display:block">show full reasoning (${t.length}${t.length >= 4000 ? "+" : ""} chars)</button>` : ""}</div>`;
+  }
+  return h;
 }
 function renderDetail(ri) {
   const run = RUNS[ri]; if (!run) { location.hash = "#/"; return; }
@@ -1080,7 +1161,7 @@ function renderDetail(ri) {
   /* -- strip -- */
   const n = run.turns.length;
   const cells = run.turns.map((tu, i) =>
-    `<div class="cell ${tu.success===false?"fail":""}" data-turn="${i}" style="background:${catVar(catOf(tu))}" data-tip="${esc(turnTip(tu)).replace(/"/g,"&quot;")}"></div>`).join("");
+    `<div class="cell ${tu._fail?"fail":""}" data-turn="${i}" style="background:${catVar(catOf(tu))}" data-tip="${esc(turnTip(tu)).replace(/"/g,"&quot;")}"></div>`).join("");
   const evalTurns = run.turns.map((tu,i)=>({tu,i})).filter(x => x.tu.action_type === "eval" && isNum(x.tu.overall_score));
   const scoreLane = evalTurns.length ? `<div class="score-lane">
       ${evalTurns.map(x => `<span class="mk" style="left:${((x.i + 0.5) / n * 100).toFixed(2)}%" data-turn="${x.i}" data-tip="eval @ turn ${x.i} → score ${fmtNum(x.tu.overall_score)}"><span class="dia"></span>${fmtNum(x.tu.overall_score)}</span>`).join("")}
@@ -1090,30 +1171,38 @@ function renderDetail(ri) {
   const POLL = new Set(["sleep","get_session_output","check_session_idle"]);
   const blocks = [];
   for (let i = 0; i < n; ) {
-    if (POLL.has(run.turns[i].action_type) && run.turns[i].success !== false) {
+    if (POLL.has(run.turns[i].action_type) && !run.turns[i]._fail) {
       let j = i;
-      while (j < n && POLL.has(run.turns[j].action_type) && run.turns[j].success !== false) j++;
+      while (j < n && POLL.has(run.turns[j].action_type) && !run.turns[j]._fail) j++;
       if (j - i >= 4) { blocks.push({ type: "poll", from: i, to: j }); i = j; continue; }
     }
     blocks.push({ type: "turn", i }); i++;
   }
   const turnCard = i => {
     const tu = run.turns[i], c = catOf(tu), cat = CAT_BY_ID[c] || CAT_BY_ID.other;
-    const failed = tu.success === false;
-    const toks = (isNum(tu.in_tokens) && (tu.in_tokens || tu.out_tokens)) ? `<span class="toks">${fmtTok(tu.in_tokens)} in · ${fmtTok(tu.out_tokens)} out</span>` : "";
+    const failed = tu._fail;
+    const toks = (isNum(tu.in_tokens) && (tu.in_tokens || tu.out_tokens)) ? `<span class="toks" data-tip="本轮 token 遥测：input ${fmtTok(tu.in_tokens)} · output ${fmtTok(tu.out_tokens)}。日志缺真实 usage 的源按 ~4 字符/token 估算（input≈助手正文，output≈推理文本）">${fmtTok(tu.in_tokens)} in · ${fmtTok(tu.out_tokens)} out</span>` : "";
     const score = tu.action_type === "eval" && isNum(tu.overall_score) ? `<span class="eval-score">score ${fmtNum(tu.overall_score)}</span>` : "";
+    const okBadge = `<span class="ok ${failed?"no":"yes"}" data-tip="${failed
+      ? "启发式判定：工具输出中检出错误标记" + (tu._freason ? "（原因行见下方 ⚠）" : "（未定位到具体错误行）")
+      : (tu.success === false ? "原始日志曾标 FAIL，但错误词只出现在文件内容中——已按误报纠回 OK" : "启发式判定：工具输出未见错误标记")}">${failed?"✗ FAIL":"✓ OK"}</span>`;
+    /* card order = temporal order: reasoning → tool call → (collapsed) result */
     return `<div class="turn ${failed?"fail":""} ${retry[i]?"retry":""}" id="turn-${i}" style="--cat:${catVar(c)}">
       <div class="turn-head">
         <span class="idx">#${tu.idx}</span>
-        <span class="act-pill" style="--cat:${catVar(c)}">${cat.icon} ${esc(tu.action_type)}</span>
         ${retry[i] ? `<span class="rchip" data-tip="same action + target repeated right after a failure">RETRY</span>` : ""}
-        ${tu.path ? `<span class="path" title="${esc(tu.path)}">&lrm;${esc(tu.path)}</span>` : `<span class="path"></span>`}
+        <span class="sp"></span>
         ${score}
-        <span class="ok ${failed?"no":"yes"}">${failed?"✗ FAIL":"✓ OK"}</span>
+        ${okBadge}
         ${toks}
       </div>
+      ${thoughtBlock(tu, i)}
+      <div class="tool-line">
+        <span class="act-pill" style="--cat:${catVar(c)}">${cat.icon} ${esc(tu.action_type)}</span>
+        ${tu.path ? `<span class="path" title="${esc(tu.path)}">&lrm;${esc(tu.path)}</span>` : ""}
+      </div>
       ${tu.description && tu.description !== "view" && tu.description !== tu.action_type && !(tu.description === "shell" && tu.action_type === "run_command") ? `<div class="cmd">${esc(tu.description)}</div>` : ""}
-      ${tu.thought ? `<div class="thought">✦ ${esc(tu.thought)}</div>` : ""}
+      ${failed && tu._freason ? `<div class="fail-line">⚠ ${esc(tu._freason)}</div>` : ""}
       ${obsBlock(tu, i)}
     </div>`;
   };
@@ -1166,14 +1255,12 @@ function renderDetail(ri) {
     </div>`;
 
   const V = run.verifier;
-  const verifierCard = V ? `<div class="card verifier-card">
-      <h3>GLM verifier (SWE difficult)</h3>
-      <div class="vrow">
-        <span class="vscore" style="color:${V.resolved?"var(--status-good)":"var(--status-critical)"}">${fmtNum(V.score)}</span>
-        <span class="flag ${V.resolved?"good":""}">${V.resolved?"✓ resolved":"✗ not resolved"}</span>
-        <span style="font-size:11.5px;color:var(--muted)">confidence ${fmtNum(V.confidence)}</span>
-      </div>
-      <div class="vreason">${esc(V.reason || "")}</div>
+  /* run-level verdict WITH the judge's reason, up top where the pass bit is
+     actually explained — not buried in the sidebar */
+  const verdictBanner = V ? `<div class="card verdict ${V.resolved?"":"bad"}">
+      <span class="vb-badge ${V.resolved?"good":"bad"}">${V.resolved?"✓ RESOLVED":"✗ NOT RESOLVED"}</span>
+      <span class="vb-meta">GLM verifier · score ${fmtNum(V.score)} · confidence ${fmtNum(V.confidence)}</span>
+      <div class="vb-reason"><b>${V.resolved?"依据":"失败原因"}：</b>${esc(V.reason || "（judge 未给出理由）")}</div>
     </div>` : "";
 
   app.innerHTML = `
@@ -1185,6 +1272,7 @@ function renderDetail(ri) {
       ${archBadge(run)}
     </div>
     <div class="flags-row">${s.flags.map(f=>`<span class="flag ${f.s==="warn"?"warn":f.s==="good"?"good":""}" data-tip="${esc(f.d)}">${f.t}</span>`).join("") || `<span class="flag good">no pathologies flagged</span>`}</div>
+    ${verdictBanner}
     ${tiles}
     <div class="card strip-card">
       <div class="strip-head"><span class="t">Whole-trajectory action strip — ${n} turns, click to jump</span>${legendHTML()}</div>
@@ -1193,9 +1281,11 @@ function renderDetail(ri) {
       </div></div>
     </div>
     <div class="detail-grid">
-      <div class="timeline" id="timeline">${timeline}</div>
+      <div class="timeline-col" style="min-width:0">
+        <div class="tl-note">每步卡片按时序排：<b>助手正文 → ✦ 推理（默认折叠，可展开全文）→ 工具调用 → 结果（默认折叠）</b>——下一步的助手信息会告诉你上一步成没成，异常时再点 show result 回看。步级 ✓/✗ 是对工具输出的文本启发式判定，✗ 步下方红色 ⚠ 行给出命中的错误行。</div>
+        <div class="timeline" id="timeline">${timeline}</div>
+      </div>
       <div class="metric-panel">
-        ${verifierCard}
         <div class="card radar-card"><h3>Behavior profile (percentile vs ${IS_FULL ? "the full " + FULL.length + "-run corpus" : "all " + RUNS.length + " runs"})</h3>${radarSVG(run)}
           <div class="radar-note">Each axis = this run's direction-adjusted percentile among all runs; 100 = best. Axes with no applicable metric are dimmed at 0.</div>
         </div>
