@@ -1334,7 +1334,31 @@
         }
         .lc-tab:hover { color: var(--primary); }
         .lc-tab-active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
-<style>
+
+        /* Metric hover tooltips (中文指标释义) */
+        .mtip { position: relative; cursor: help; border-bottom: 1px dotted rgba(100,116,139,0.55); }
+        th .mtip { border-bottom-color: rgba(226,232,240,0.5); }
+        .mtip::after {
+            content: attr(data-tip);
+            position: absolute; left: 0; top: calc(100% + 6px);
+            z-index: 3000;
+            background: var(--navy); color: #f1f5f9;
+            padding: 0.5rem 0.75rem; border-radius: 8px;
+            font-size: 0.78rem; font-weight: 400; line-height: 1.55;
+            width: max-content; max-width: 320px; white-space: normal;
+            box-shadow: var(--shadow-xl);
+            opacity: 0; visibility: hidden; transition: opacity 0.12s;
+            pointer-events: none;
+            text-transform: none; letter-spacing: normal;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+        .mtip:hover::after { opacity: 1; visibility: visible; }
+
+        /* Generation lineage strip */
+        .gen-banner { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); border-radius: 12px; padding: 0.6rem 1.1rem; margin-top: 1.75rem; font-size: 0.82rem; color: rgba(255,255,255,0.85); display: flex; flex-wrap: wrap; gap: 0.3rem 0.7rem; justify-content: center; align-items: center; }
+        .gen-banner b { color: #fff; font-weight: 600; }
+        .gen-banner .gen-arrow { color: rgba(255,255,255,0.45); }
+
 .dim-banner { padding: 3.2rem 2rem 1.4rem; max-width: none; }
 .dim-banner-inner { max-width: 1200px; margin: 0 auto; }
 .dim-banner h2 { margin: 0 0 .35rem; font-size: 2rem; font-weight: 800; color: var(--navy); letter-spacing: -0.5px; }
@@ -1365,7 +1389,6 @@
 .harness-card .h-bar { margin-top: .8rem; height: 6px; background: #f1f5f9; border-radius: 999px; overflow: hidden; }
 .harness-card .h-bar > div { height: 100%; background: linear-gradient(90deg, var(--accent), var(--primary)); border-radius: 999px; }
 .harness-card .h-meta { display:flex; justify-content: space-between; font-size: .72rem; color: var(--text-light); margin-top: .3rem; }
-</style>
     </style>
 </head>
 <body>
@@ -1482,15 +1505,23 @@
 <section class="hero" id="hero">
     <div class="hero-content">
         <h1>Agentic<span class="dot">&middot;</span>Fine-Grained<span class="dot">&middot;</span>Eval</h1>
-        <p class="subtitle">AI 研究型 Agent 细粒度评估框架</p>
+        <p class="subtitle">AI 研究型 Agent 细粒度评估框架 — 7 大行为构念 → 约 27 个主指标（31 个规则实现 + 30 个 Judge 目录指标），适配约 10 种轨迹格式，全覆盖 11 个语料约 12.6 万条轨迹</p>
         <div class="hero-stats">
             <div class="hero-stat">
-                <div class="num">24</div>
-                <div class="label">Judge 指标</div>
+                <div class="num">96</div>
+                <div class="label">提案指标目录</div>
             </div>
             <div class="hero-stat">
-                <div class="num">660</div>
-                <div class="label">Agent 轨迹</div>
+                <div class="num">31</div>
+                <div class="label">规则指标已实现</div>
+            </div>
+            <div class="hero-stat">
+                <div class="num">24</div>
+                <div class="label">Judge 指标已部署</div>
+            </div>
+            <div class="hero-stat">
+                <div class="num">661</div>
+                <div class="label">InnovatorBench 轨迹</div>
             </div>
             <div class="hero-stat">
                 <div class="num">15</div>
@@ -1498,16 +1529,18 @@
             </div>
             <div class="hero-stat">
                 <div class="num">15,720</div>
-                <div class="label">评估次数</div>
+                <div class="label">Judge 评估次数</div>
             </div>
-            <div class="hero-stat">
-                <div class="num">34</div>
-                <div class="label">自动化指标</div>
-            </div>
-            <div class="hero-stat">
-                <div class="num">27</div>
-                <div class="label">m_v2 指标族</div>
-            </div>
+        </div>
+        <div class="gen-banner">
+            <span>指标体系代际：</span>
+            <b>G1</b> 96 条提案目录（47 RULE / 30 JUDGE / 11 STAT / 8 EXP）
+            <span class="gen-arrow">→</span>
+            <b>G2</b> J-Judge 部署（24 个，15,720 次评估）
+            <span class="gen-arrow">→</span>
+            <b>G3</b> m_v2 规则实现（31 个，零成本跑 10⁵ 级轨迹）
+            <span class="gen-arrow">→</span>
+            <b>G4</b> RL 复合奖励（13 个指标，preliminary）
         </div>
         <div style="margin-top: 28px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
             <a href="trajectories/" style="display:inline-block; padding: 12px 26px; background: var(--primary); color: #fff; border-radius: 10px; text-decoration: none; font-weight: 600; box-shadow: var(--shadow-lg);">🔬 Trajectory Lens — 逐轮轨迹查看器 →</a>
@@ -1568,6 +1601,12 @@
         <strong>§3.3 失败传播链</strong>（根因/距离/模式/CodeTracer/SWE-bench 六大子族 24 个指标）、
         <strong>§3.4 交互判断力</strong>（10 个交互专项指标）、
         <strong>§3.5/§3.6 难度分级 + 评估器</strong>（推理/对比/去偏/分桶/元指标 28 个）。
+        <br><br>
+        <strong>注意口径：96 是提案目录（inventory），不是完成数。</strong>
+        目录操作化 7 大行为构念（任务进展 / 执行有效性 / 错误恢复 / 验证纪律 / 效率 / 诚实性 / 交互质量），
+        落地为约 27 个主指标：<strong>31 个规则指标已实现</strong>（m_v2，免参考、零模型调用）+
+        <strong>24 个 Judge 指标已部署</strong>（InnovatorBench，claude judge；30 个 Judge 目录指标另已用 GLM-5.2 在 11 个语料全覆盖计算）。
+        指标实现共输出约 168 个标量字段（跨 bench 展开 193 个字段变体）——字段是实现明细，不是指标数。
     </p>
 
     <div class="overview-stats">
@@ -1663,12 +1702,12 @@
             <span class="dim-icon-big">📐</span>
             <h2>Metric<span class="dim-en">指标维度</span></h2>
         </div>
-        <p class="dim-desc">96 项细粒度指标的设计、实现与统计校准：24 个 LLM-Judge × 41 个规则自动化 × 31 个混合指标。下方依次是指标目录、Judge 评分卡（Rubric Showcase）与 Case Studies。</p>
+        <p class="dim-desc">96 项目录指标（47 规则 / 30 Judge / 11 统计 / 8 实验，其中 41 项全自动）的设计、实现与统计校准：31 个规则指标已实现（m_v2）、24 个 Judge 指标已部署（15,720 次评估）。下方依次是指标目录、Judge 评分卡（Rubric Showcase）与 Case Studies。悬停任意指标名可查看一句话中文释义。</p>
         <div class="dim-pills">
-            <span class="dim-pill">96 metrics</span>
-            <span class="dim-pill">6 dimensions</span>
-            <span class="dim-pill">24 Judge implemented</span>
-            <span class="dim-pill">41 Auto rules</span>
+            <span class="dim-pill">96 catalog</span>
+            <span class="dim-pill">31 rule implemented</span>
+            <span class="dim-pill">24 Judge deployed</span>
+            <span class="dim-pill">41 fully-automatic</span>
         </div>
     </div>
 </section>
@@ -1679,16 +1718,16 @@
         <div class="section-header">
             <h2>指标目录</h2>
             <div class="separator"></div>
-            <p>全部 55 个指标完整呈现：53 个已基于 InnovatorBench 轨迹实算（自动化规则/统计 + LLM Judge + 人工标注）；2 个为设计阶段（部分 EXP 对照实验、Trajectory 参考轨迹依赖、待开发 Judge 等）— 在表格中以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识，可展开查看完整定义。点击行展开详情，支持按方法类型和维度筛选。</p>
+            <p>本表收录 55 个指标条目（24 个 LLM-Judge、24 个规则、7 个统计去偏）：53 个已基于 InnovatorBench 轨迹实算；2 个为设计阶段（J52 无独立列 / J66 缺人类反馈轮数据）— 以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识。完整 96 条目录见「全量指标合集」，31 个已实现规则指标的跨语料结果见 Trajectory Lens。点击行展开详情，悬停指标名查看中文释义，支持按方法类型和维度筛选。</p>
         </div>
 
         <div class="catalog-controls">
             <div class="catalog-filter">
                 <button class="filter-btn active" onclick="filterMetrics('all')">全部 (55)</button>
-                <button class="filter-btn" onclick="filterMetrics('Auto')">⚡ 自动化 (61)</button>
-                <button class="filter-btn" onclick="filterMetrics('Judge')">🤖 LLM Judge (25)</button>
-                <button class="filter-btn" onclick="filterMetrics('Human')">👤 人工 / EXP (11)</button>
-                <span class="filter-btn" style="cursor: default; opacity: 0.7; background: #fff7ed; border-color: #fed7aa; color: #9a3412;">🔁 已合并 16 组 J/M 同指标</span>
+                <button class="filter-btn" onclick="filterMetrics('Auto')">⚡ 自动化 (38)</button>
+                <button class="filter-btn" onclick="filterMetrics('Judge')">🤖 LLM Judge (15)</button>
+                <button class="filter-btn" onclick="filterMetrics('Human')">👤 人工校准 (2)</button>
+                <span class="filter-btn" style="cursor: default; opacity: 0.7; background: #fff7ed; border-color: #fed7aa; color: #9a3412;">🔁 已合并 12 组 J/M 同指标</span>
             </div>
             <div class="catalog-filter" style="margin-top:0.5rem;">
                 <button class="filter-btn dim-filter" onclick="filterByDim('all')">全部维度</button>
@@ -1735,7 +1774,7 @@
             <!-- J06 -->
             <div class="rubric-card" onclick="toggleRubric(this)">
                 <div class="rubric-card-header">
-                    <h3><code>J06</code> Error Recovery Count / &#38169;&#35823;&#24674;&#22797;</h3>
+                    <h3><code>J06</code> <span class="mtip" data-tip="错误恢复：遇错后是否检测到、换了策略且真正推进（三条件缺一不算恢复）；高=从错误里爬得出来。">Error Recovery Count / &#38169;&#35823;&#24674;&#22797;</span></h3>
                     <span class="expand-icon">&#9660;</span>
                 </div>
                 <div class="rubric-body">
@@ -1773,7 +1812,7 @@
             <!-- J25 -->
             <div class="rubric-card" onclick="toggleRubric(this)">
                 <div class="rubric-card-header">
-                    <h3><code>J25</code> Effective Action Ratio / &#26377;&#25928;&#21160;&#20316;&#27604;</h3>
+                    <h3><code>J25</code> <span class="mtip" data-tip="有效动作比：真正推进任务的动作占比；低=大量循环、冗余、无效动作。">Effective Action Ratio / &#26377;&#25928;&#21160;&#20316;&#27604;</span></h3>
                     <span class="expand-icon">&#9660;</span>
                 </div>
                 <div class="rubric-body">
@@ -1811,7 +1850,7 @@
             <!-- J73 -->
             <div class="rubric-card" onclick="toggleRubric(this)">
                 <div class="rubric-card-header">
-                    <h3><code>J73</code> Dual-Channel Reasoning / &#21452;&#36890;&#36947;&#19968;&#33268;&#24615;</h3>
+                    <h3><code>J73</code> <span class="mtip" data-tip="双通道一致性：陈述的推理与实际动作是否一致；严重矛盾提示幻觉或目标漂移。">Dual-Channel Reasoning / &#21452;&#36890;&#36947;&#19968;&#33268;&#24615;</span></h3>
                     <span class="expand-icon">&#9660;</span>
                 </div>
                 <div class="rubric-body">
@@ -1969,10 +2008,10 @@
             <span class="dim-icon-big">🤖</span>
             <h2>Model<span class="dim-en">模型维度</span></h2>
         </div>
-        <p class="dim-desc">15 个参评模型在 9 个核心 Judge 指标上的横向对比：综合分、雷达图与可排序排行榜。涵盖 Claude / GLM / GPT / Kimi / Grok 等主流系列。</p>
+        <p class="dim-desc">15 个参评模型的 Judge 综合分横向对比（综合分 = 24 个 Judge 指标复合，权威口径 rubrics/model_metric_matrix.csv；下表另列 8 个核心指标分项）。涵盖 Claude / GLM / GPT / Kimi / Grok 等主流系列。24 指标全矩阵见「完整评估报告」。</p>
         <div class="dim-pills">
             <span class="dim-pill">15 models</span>
-            <span class="dim-pill">9 judge metrics</span>
+            <span class="dim-pill">24 judge metrics composite</span>
             <span class="dim-pill">15,720 evaluations</span>
         </div>
     </div>
@@ -1983,7 +2022,7 @@
     <div class="section-header">
         <h2>模型排行榜</h2>
         <div class="separator"></div>
-        <p>顶级 Judge 指标的模型性能对比。点击列标题排序。</p>
+        <p>综合分 = 24 个 Judge 指标复合（kimi-k2.5 3.30 居首）；分项列为 8 个核心 Judge 指标。点击列标题排序，悬停指标名看释义。注意：末位 kimi-k2-instruct-0905-gzy 多指标恒 1.0，属旧格式数据，参考价值有限。</p>
     </div>
 
     <div class="leaderboard-wrap">
@@ -1993,14 +2032,14 @@
                     <th onclick="sortLeaderboard(0)"># <span class="sort-arrow">&#9650;</span></th>
                     <th onclick="sortLeaderboard(1)">模型 <span class="sort-arrow">&#9650;</span></th>
                     <th onclick="sortLeaderboard(2)">综合分 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(3)">J06 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(4)">J39 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(5)">J50 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(6)">J70 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(7)">J68 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(8)">J95 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(9)">J37 <span class="sort-arrow">&#9650;</span></th>
-                    <th onclick="sortLeaderboard(10)">J25 <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(3)"><span class="mtip" data-tip="错误恢复：遇错后是否检测到、换了策略且真正推进（三条件缺一不算恢复）；高=从错误里爬得出来。">J06 错误恢复</span> <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(4)"><span class="mtip" data-tip="失败模式：轨迹主导失败模式（瞬间崩溃/格式坍塌/延迟爆发/监控死锁等 7 类）的严重度评分；与最终得分相关性最强（ρ=0.769）。">J39 失败模式</span> <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(5)"><span class="mtip" data-tip="证据-行动落差：收集到的有用信息有多少没被后续行动用上；低分=读了不用、采信息与做决策脱节。">J50 证据行动</span> <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(6)"><span class="mtip" data-tip="假设-验证循环：形成假设后是否在投入资源前做了能证伪它的验证动作；低分=靠假设裸奔。">J70 假设验证</span> <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(7)"><span class="mtip" data-tip="反馈利用率：eval 反馈/报错/自我反馈是否被具体吸收进下一步动作，还是无视反馈盲目重试。">J68 反馈利用</span> <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(8)"><span class="mtip" data-tip="子任务传播：错误跨子任务边界传播多远才被发现；高分=每个阶段边界都做了输出验证。">J95 子任务传播</span> <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(9)"><span class="mtip" data-tip="传播长度：根因错误发生到暴露为可见失败隔了多少步；短=测试勤、可观测性好。">J37 传播长度</span> <span class="sort-arrow">&#9650;</span></th>
+                    <th onclick="sortLeaderboard(10)"><span class="mtip" data-tip="有效动作比：真正推进任务的动作占比；低=大量循环、冗余、无效动作。">J25 有效动作</span> <span class="sort-arrow">&#9650;</span></th>
                 </tr>
             </thead>
             <tbody id="leaderboardBody">
@@ -2021,11 +2060,11 @@
             <span class="dim-icon-big">🧪</span>
             <h2>Harness<span class="dim-en">评测框架维度</span></h2>
         </div>
-        <p class="dim-desc">指标体系跨 6 个 Agent 评测 Harness 落地：研究型长任务、交互协作、SWE 代码修复、CTF 攻防、RL 训练监控、研究助手循环。每个 Harness 给出当前进度与样本规模。</p>
+        <p class="dim-desc">指标体系跨异构 Agent 评测 Harness 落地：研究型长任务、SWE 代码修复、RL rollout 大规模 OOD 语料、交互协作、CTF 攻防、RL 训练监控等。适配器统一约 10 种轨迹格式；2026-07 已达成 11 个语料 × {31 规则指标, 30 GLM-5.2 Judge 指标} 全覆盖（约 12.6 万条轨迹）。跨 bench 可迁移性检验见 Cross-Bench Universality。</p>
         <div class="dim-pills">
-            <span class="dim-pill">6 benchmarks</span>
-            <span class="dim-pill">~28K trajectories</span>
-            <span class="dim-pill">96 metrics × 6 harness</span>
+            <span class="dim-pill">10+ 语料来源</span>
+            <span class="dim-pill">~126K trajectories</span>
+            <span class="dim-pill">31 规则 + 30 Judge × 11 语料全覆盖</span>
         </div>
     </div>
 </section>
@@ -2039,14 +2078,14 @@
                     <h3 class="h-name">🔬 InnovatorBench</h3>
                     <span class="h-tag h-tag-done">主战场</span>
                 </div>
-                <p class="h-desc">研究型长决策链：开放式 ML 任务，660 条轨迹 × 15 模型 × 20 Task。覆盖 96 指标全集，是论文核心数据来源。</p>
+                <p class="h-desc">研究型长决策链：开放式 ML 任务，661 条轨迹 × 15 模型（行为分析 20 Task / 判别分析 40 Task 口径）。31 个规则指标 + 24 个已部署 Judge 指标全部落地，是论文核心数据来源。</p>
                 <div class="h-stats">
-                    <div class="h-stat"><div class="v">660</div><div class="l">Traj</div></div>
+                    <div class="h-stat"><div class="v">661</div><div class="l">Traj</div></div>
                     <div class="h-stat"><div class="v">15</div><div class="l">Models</div></div>
                     <div class="h-stat"><div class="v">20</div><div class="l">Tasks</div></div>
                 </div>
                 <div class="h-bar"><div style="width: 100%;"></div></div>
-                <div class="h-meta"><span>96/96 metrics</span><span>✓ 完成</span></div>
+                <div class="h-meta"><span>31 规则 + 24 Judge</span><span>✓ 完成</span></div>
             </div>
 
             <!-- AgencyBench -->
@@ -2055,7 +2094,7 @@
                     <h3 class="h-name">🤝 AgencyBench</h3>
                     <span class="h-tag h-tag-done">已完成</span>
                 </div>
-                <p class="h-desc">多轮交互/协作场景：22 模型 × 37 任务 = 165 轨迹。Tier-2 交互指标（J66）的主要数据源。</p>
+                <p class="h-desc">多轮交互/协作场景：22 模型 × 37 任务 = 165 轨迹（Gen-1 判别分析）；另有 AgencyBench-V3.0 230 条带标签轨迹（通过率 63.9%）进入跨 bench 通用性检验。</p>
                 <div class="h-stats">
                     <div class="h-stat"><div class="v">165</div><div class="l">Traj</div></div>
                     <div class="h-stat"><div class="v">22</div><div class="l">Models</div></div>
@@ -2081,6 +2120,22 @@
                 <div class="h-meta"><span>规则指标已覆盖</span><span>✓ 完成</span></div>
             </div>
 
+            <!-- swefactory (OOD) -->
+            <div class="harness-card">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <h3 class="h-name">🏭 swefactory (OOD)</h3>
+                    <span class="h-tag h-tag-done">真检验</span>
+                </div>
+                <p class="h-desc">SWE-CodeAct Rollout 语料：95,828 条带 SWE-bench verifier 标签的轨迹（55,131 resolved / 40,697 unresolved）。OOD 判别力真检验主语料：组合 5 折逻辑回归 AUC 0.677。</p>
+                <div class="h-stats">
+                    <div class="h-stat"><div class="v">95.8K</div><div class="l">Traj</div></div>
+                    <div class="h-stat"><div class="v">57.5%</div><div class="l">Pass</div></div>
+                    <div class="h-stat"><div class="v">0.677</div><div class="l">AUC</div></div>
+                </div>
+                <div class="h-bar"><div style="width: 100%;"></div></div>
+                <div class="h-meta"><span>规则全量 + Judge 抽样 39,510</span><span>✓ 完成</span></div>
+            </div>
+
             <!-- ClawBench-Lite -->
             <div class="harness-card">
                 <div style="display:flex; justify-content:space-between; align-items:start;">
@@ -2103,14 +2158,14 @@
                     <h3 class="h-name">📈 RL-Math</h3>
                     <span class="h-tag h-tag-progress">进行中</span>
                 </div>
-                <p class="h-desc">强化学习训练监控：69 个 checkpoint × 1920 条 rollout，跟踪 M02–M26 训练阶段指标演化。</p>
+                <p class="h-desc">强化学习训练监控：69 个 checkpoint × 26 个指标，轴为训练步。准确率 step0 0.756 → step300 0.774 几乎持平，而推理长度/验证/回溯行为持续上升（RF R²=0.998 主要由 accuracy 自身贡献，属泄漏口径）。</p>
                 <div class="h-stats">
                     <div class="h-stat"><div class="v">69</div><div class="l">Ckpts</div></div>
-                    <div class="h-stat"><div class="v">1920</div><div class="l">Rollouts</div></div>
                     <div class="h-stat"><div class="v">26</div><div class="l">Metrics</div></div>
+                    <div class="h-stat"><div class="v">0.935</div><div class="l">η² 输出长度</div></div>
                 </div>
-                <div class="h-bar"><div style="width: 75%;"></div></div>
-                <div class="h-meta"><span>26 / 26 训练指标</span><span>区分度复核中</span></div>
+                <div class="h-bar"><div style="width: 100%;"></div></div>
+                <div class="h-meta"><span>26 / 26 训练指标</span><span>✓ 完成（含泄漏 caveat）</span></div>
             </div>
 
             <!-- Archon -->
@@ -2119,11 +2174,11 @@
                     <h3 class="h-name">🏛️ Archon</h3>
                     <span class="h-tag h-tag-progress">进行中</span>
                 </div>
-                <p class="h-desc">研究助手长循环 workspace：4 个 workspace × 94 个 iteration。验证长链路指标在持续工作流上的表现。</p>
+                <p class="h-desc">研究助手长循环 workspace：Gen-1 联合分析（27,485 条轨迹）发现 Archon 存在 34% 的"幽灵迭代"（迭代空转无实质进展）。验证长链路指标在持续工作流上的表现。</p>
                 <div class="h-stats">
-                    <div class="h-stat"><div class="v">4</div><div class="l">Workspaces</div></div>
-                    <div class="h-stat"><div class="v">94</div><div class="l">Iterations</div></div>
+                    <div class="h-stat"><div class="v">34%</div><div class="l">Ghost Iter</div></div>
                     <div class="h-stat"><div class="v">J+M</div><div class="l">Metrics</div></div>
+                    <div class="h-stat"><div class="v">Gen-1</div><div class="l">Scope</div></div>
                 </div>
                 <div class="h-bar"><div style="width: 60%;"></div></div>
                 <div class="h-meta"><span>长链路验证</span><span>数据收集中</span></div>
@@ -2139,11 +2194,11 @@
             <span class="dim-icon-big">🎯</span>
             <h2>Task<span class="dim-en">任务维度</span></h2>
         </div>
-        <p class="dim-desc">逐任务行为画像：20 个 InnovatorBench Task 的通过率、最佳模型、零分率、行为特征。每个 Task 有独立的行为分析报告。</p>
+        <p class="dim-desc">逐任务行为画像：20 个 InnovatorBench Task 的通过率、最佳模型、零分率、行为特征（口径同「任务行为索引」：600 runs / 263 scored / 172 zero / 165 no-eval）。每个 Task 有独立的行为分析报告。</p>
         <div class="dim-pills">
             <span class="dim-pill">20 tasks</span>
-            <span class="dim-pill">200 total runs</span>
-            <span class="dim-pill">160 scored &gt; 0</span>
+            <span class="dim-pill">600 total runs</span>
+            <span class="dim-pill">263 scored &gt; 0</span>
         </div>
     </div>
 </section>
@@ -2161,19 +2216,19 @@
             <div class="stat-label">Tasks</div>
         </div>
         <div class="task-stat-item">
-            <div class="stat-num">200</div>
+            <div class="stat-num">600</div>
             <div class="stat-label">Total Runs</div>
         </div>
         <div class="task-stat-item">
-            <div class="stat-num" style="color:var(--green);">160</div>
+            <div class="stat-num" style="color:var(--green);">263</div>
             <div class="stat-label">Scored &gt; 0</div>
         </div>
         <div class="task-stat-item">
-            <div class="stat-num" style="color:var(--gold);">23</div>
+            <div class="stat-num" style="color:var(--gold);">172</div>
             <div class="stat-label">Zero Score</div>
         </div>
         <div class="task-stat-item">
-            <div class="stat-num" style="color:var(--red);">17</div>
+            <div class="stat-num" style="color:var(--red);">165</div>
             <div class="stat-label">No-Eval</div>
         </div>
     </div>
@@ -2212,35 +2267,39 @@
     <div class="progress-list">
         <div class="progress-item">
             <span class="progress-icon" style="color: var(--green);">&#10003;</span>
-            <div class="progress-text"><strong>96 metrics designed</strong> &mdash; 34 automated + 24 judge implemented + 38 pending calibration</div>
+            <div class="progress-text"><strong>96 条提案目录</strong>（47 RULE / 30 JUDGE / 11 STAT / 8 EXP）&mdash; 已落地 <strong>31 个规则指标</strong>（m_v2）+ <strong>24 个 Judge 指标部署</strong>；96 是目录数不是完成数</div>
         </div>
         <div class="progress-item">
             <span class="progress-icon" style="color: var(--green);">&#10003;</span>
-            <div class="progress-text"><strong>660 trajectories evaluated</strong> across 15 models, 40 tasks</div>
+            <div class="progress-text"><strong>661 条 InnovatorBench 轨迹全量实算</strong>（15 模型；判别分析 40 任务口径）；2026-07 已达成 11 个语料 &times; {31 规则, 30 GLM-5.2 Judge} 全覆盖（约 12.6 万条轨迹）</div>
         </div>
         <div class="progress-item">
             <span class="progress-icon" style="color: var(--green);">&#10003;</span>
-            <div class="progress-text"><strong>Statistical validation</strong> &mdash; Kruskal-Wallis, Spearman correlation, Random Forest (R&sup2;=0.8755)</div>
+            <div class="progress-text"><strong>Judge 信度工程</strong> &mdash; 两步法（先摘事实再打分）把 ICC 从 0.532 提到 0.800；rule-vs-judge Spearman ρ&asymp;0，二者互补而非冗余</div>
         </div>
         <div class="progress-item">
             <span class="progress-icon" style="color: var(--green);">&#10003;</span>
-            <div class="progress-text"><strong>PCA analysis</strong> &mdash; 10+ components for 80% variance coverage</div>
+            <div class="progress-text"><strong>统计校准</strong> &mdash; Kruskal-Wallis / Spearman / RandomForest / PCA（&gt;10 个主成分才覆盖 80% 方差）。注意：RF R&sup2;=0.876 受目标泄漏抬高（Retry-Improved-delta 重要度 0.383 占主导），只作 caveat 引用</div>
+        </div>
+        <div class="progress-item">
+            <span class="progress-icon" style="color: var(--gold);">&#9888;</span>
+            <div class="progress-text"><strong>人工双门校验（4 指标 &times; 50 金标 = 200 条；门槛 P&ge;0.70 且 R&ge;0.80）</strong> &mdash; 仅「监控死锁 M14」过线（P 0.778 / R 0.933）；「修复后验证 M57」精度过召回败（0.917 / 0.733）；「格式失败 M21」触发精度 0.35 未过；「重试改善 M93」双门皆败</div>
+        </div>
+        <div class="progress-item">
+            <span class="progress-icon" style="color: var(--gold);">&#9888;</span>
+            <div class="progress-text"><strong>指标人工验证四态（诚实口径）</strong> &mdash; 31 个规则指标中：<strong>1 个已验过关</strong>（M14）/ <strong>3 个已验不及格</strong>（M21、M57、M93）/ <strong>11 个语义指标待补金标</strong>（P0：盲目重试 M10、有效步骤率 M23、推理覆盖 M71）/ <strong>16 个机械可复现免标</strong>；Judge 部署侧三大 headline（J67 / J69 / J52）尚无人工金标</div>
         </div>
         <div class="progress-item">
             <span class="progress-icon" style="color: var(--green);">&#10003;</span>
-            <div class="progress-text"><strong>Redundancy detection</strong> &mdash; 9 metric pairs removed via correlation analysis</div>
+            <div class="progress-text"><strong>OOD 真检验</strong> &mdash; swefactory 95,828 条带标签轨迹上组合 AUC 0.677（94 个可用字段 / 75 dead / 18 weak；字段是实现明细，非指标数）</div>
         </div>
         <div class="progress-item">
             <span class="progress-icon" style="color: var(--green);">&#10003;</span>
-            <div class="progress-text"><strong>Per-task behavioral analysis</strong> &mdash; 20 tasks &times; model interaction profiles</div>
-        </div>
-        <div class="progress-item">
-            <span class="progress-icon" style="color: var(--gold);">&#8635;</span>
-            <div class="progress-text"><strong>Additional judge metrics</strong> being calibrated and validated</div>
+            <div class="progress-text"><strong>Per-task 行为画像</strong> &mdash; 20 个任务 &times; 600 runs（263 scored / 172 zero / 165 no-eval）</div>
         </div>
         <div class="progress-item">
             <span class="progress-icon" style="color: var(--primary);">&#9744;</span>
-            <div class="progress-text"><strong>Paper preparation</strong> in progress</div>
+            <div class="progress-text"><strong>论文撰写中</strong>（AAAI）&mdash; 核心论点：细粒度行为评估揭示模型行为错误（诊断，非排名）；过程指标对二值结果正交、对分级结果收敛</div>
         </div>
     </div>
 
@@ -2288,8 +2347,8 @@
     <div class="footer-content">
         <div class="footer-links">
             <a href="trajectories/">Trajectory Lens</a>
-            <a href="https://github.com/innovatorbench" target="_blank">GitHub Repository</a>
-            <a href="mailto:contact@innovatorbench.org">Contact</a>
+            <a href="https://github.com/lyumanshanye/innovatorbench-eval" target="_blank">GitHub Repository</a>
+            <a href="new_experiments.html">新实验汇总</a>
         </div>
         <div class="footer-brand">Built with Agentic Fine-Grained Eval &mdash; AI 研究型 Agent 细粒度评估框架</div>
     </div>
@@ -2297,6 +2356,79 @@
 
 <script>
 // ======== DATA ========
+
+// 指标一句话中文释义（来源：HUMAN_ANNOTATION_PLAN 第 0 节全指标中文定义总表 + METRIC_LINEAGE + COMPLETE_EXPERIMENTS PART 2/5）
+const METRIC_DEFS = {
+    // —— 31 个规则指标（m_v2）——
+    M02:'工具链深度：一条轨迹里带工具调用的 ReAct 步数；高=流程长、操作多。',
+    M03:'子任务数量：规划节点里声明的子目标总数；高=任务分解更细。',
+    M05:'工具复用率：文件改动中编辑已有文件的占比（编辑/(编辑+新建)）；高=迭代修改，低=推倒重写。',
+    M07:'先读后改率：每次编辑文件前是否先看过该文件（此前有成功的同路径读取）；低=盲改。',
+    M10:'盲目重试：连续撞同一报错（归一化后相同）却不改方法的最长连跑，≥3 判盲；高=恐慌循环。',
+    M11:'Eval 滥用率：相邻两次评估之间没有任何真实改动的比例；高=无改动反复刷分。',
+    M12:'资源回收/会话泄漏：开了没关的 session 数、关闭/创建之比；回收低=会话泄漏。',
+    M14:'监控死锁占比：处于长轮询等待且会话实际已空闲的步占比；高=干等卡死。全体系唯一通过人工双门的指标（P 0.778 / R 0.933）。',
+    M15:'重复查看率：打开过的文件中被反复查看≥3 次的比例；高=工作记忆差、来回翻。',
+    M16:'搜索/打开比：搜索类动作 vs 直接打开文件的占比；刻画信息获取风格（先搜再开 vs 逐个翻）。',
+    M19:'Token 消耗量：全轨迹 LLM token 总量；成本代理，高=更贵。',
+    M20:'任务完成时间：起止时间戳差（含活跃/等待拆分）；高=更慢。',
+    M21:'格式失败率：产不出可用动作的步（空/畸形输出）占比；高=输出格式崩坏。注意：人工验证触发精度仅 0.35，未过双门。',
+    M23:'有效步骤率：1−(格式失败+盲目重试+死锁等待) 步占比；高=步子都花在正事上。',
+    M24:'Token-per-Point：每得一分花多少 token；低=性价比高。',
+    M26:'首次评估步：第一次自评（eval）出现在第几步；低=更早自检。',
+    M29:'参数 Schema 合规：工具调用参数对象结构良构的比例；低=调用格式坏。',
+    M33:'缩放瓶颈点：步数继续增加却不再涨分的第一个悬崖位置；早=后半程白跑。',
+    M43:'早期失败信号：轨迹前段的失败前兆集合（多开会话/长死锁连跑/开头 token 独白）；触发=后续大概率失败。',
+    M53:'代码定位效率：第一次实质编辑发生在轨迹多深处；低=更快找到要改的地方。',
+    M54:'探索-编辑比：每次文件改动平均配多少探索动作；刻画查了再动手的节奏。',
+    M55:'文件触达率：被编辑的文件中曾被探索过的比例；低=对没看过的文件下手。',
+    M56:'Bug 复现率：首次编辑前是否先跑了复现/测试命令；1=测试驱动调试。',
+    M57:'修复后验证率：最后一次修复后是否成功运行了覆盖被改代码的检查；0=盲提交。人工验证：精度 0.917 过、召回 0.733 未过。',
+    M58:'编辑回滚率：短窗口（5 动作）内反复重编同一文件的比例；高=翻烙饼式改动。',
+    M71:'推理退化/推理覆盖：后段推理量相对前段的变化 + 带推理的步占比；低覆盖=不思考。',
+    M72:'Think 有效性：有 think 的下一步成功率比没 think 高多少；高=思考真的帮到了行动。',
+    M74:'动作转移熵：工具→工具转移的归一化条件熵；低=在少数动作间打转（循环），高=行为多样。',
+    M76:'规划行为：是否存在真正的规划步及其数量；0=从不规划。',
+    M93:'重试改善率：最后一次评估分是否高于第一次；1=重试真的变好了。人工验证双门皆败（P 0.50-0.64 / R 0.41-0.46）。',
+    M96:'预算利用率：有效步骤率（M23）的弃用别名，仅保兼容字段。',
+    // —— Judge 指标 ——
+    J06:'错误恢复：遇错后是否检测到、换了策略且真正推进（三条件缺一不算恢复）；高=从错误里爬得出来。',
+    J13:'跨阶段违反：后期决策违背早期自设约束/决定的程度；高分=全程计划自洽。',
+    J25:'有效动作比：真正推进任务的动作占比；低=大量循环、冗余、无效动作。',
+    J30:'参数准确率：工具调用参数（路径/函数名/标志/取值）给对的程度；低=频繁参数错误连锁失败。',
+    J35:'根因归因：从轨迹证据能多清晰地定位失败根因；与最终得分几乎无关（ρ≈-0.008），量的是诊断清晰度本身。',
+    J37:'传播长度：根因错误发生到暴露为可见失败隔了多少步；短=测试勤、可观测性好。',
+    J39:'失败模式：轨迹主导失败模式（瞬间崩溃/格式坍塌/延迟爆发/监控死锁等 7 类）的严重度评分；与最终得分相关性最强（ρ=0.769）。',
+    J40:'错误固化：错误存活下来并被当成正确事实继续使用的程度；低分=在错误地基上盖楼。',
+    J41:'分类型错误固化：按语法/逻辑/设计/环境四类追踪错误是否被纠正；低分=深层错误全固化。',
+    J42:'CAT 反模式：盲目重试 + 无改动刷评估 + 资源泄漏三类反模式的普遍度；低分=反模式主导轨迹。',
+    J47:'步骤精确率：agent 声称某步失败时判断对的比例；均值 4.13 接近天花板，区分度有限。',
+    J48:'步骤召回率：真实失败的步骤中被 agent 察觉承认的比例；低=大量静默失败没被发现。',
+    J49:'步骤 F1：失败检测精确率（J47）与召回率（J48）的调和平均。',
+    J50:'证据-行动落差：收集到的有用信息有多少没被后续行动用上；低分=读了不用。两步法信度实验主角（ICC 0.532→0.800）。',
+    J52:'阶段错误类型：轨迹早/中/晚三段各自的主导错误类型与严重度（裁判判定）；论文 persistence 4.2%→18.7% 曲线出自此。',
+    J63:'不确定性表达（Hedging）：思考流中表达不确定的频率与恰当性；抓过度自信与过度犹豫两个极端。',
+    J64:'不确定性校准：表达的信心与实际成败是否匹配；过度自信罚得更重。',
+    J66:'反馈执行率：人类反馈点被实际执行覆盖的比例；InnovatorBench 无人类反馈轮，无可计算值（24→23 之差）。',
+    J67:'自评校准：模型自称的完成度与真实得分是否一致；抓自欺（声称成功实则失败，部署集自欺率 13.3%）。',
+    J68:'反馈利用率：eval 反馈/报错/自我反馈是否被具体吸收进下一步动作，还是无视反馈盲目重试。',
+    J69:'推理-行动一致性：think 里说要做的和实际发出的工具调用是否一致；抓说一套做一套（595 条部署轨迹中仅 1 步真不一致）。',
+    J70:'假设-验证循环：形成假设后是否在投入资源前做了能证伪它的验证动作；低分=靠假设裸奔。',
+    J73:'双通道一致性：陈述的推理与实际动作是否一致；严重矛盾提示幻觉或目标漂移。',
+    J95:'子任务传播：错误跨子任务边界传播多远才被发现；高分=每个阶段边界都做了输出验证。',
+    // —— 统计去偏指标（模型层）——
+    M78:'Token 控制成功率：回归控制 token 用量与任务固定效应后剩下的模型真实差异；排除话多=分高的混淆。',
+    M79:'Step 控制成功率：控制步数与任务固定效应后的模型成功率差异。',
+    M80:'推理长度控制评分：控制推理输出长度后的模型得分差异。',
+    M84:'冗长归一化评分：单位 token 的得分（性价比）；高=token 高效。',
+    M85:'模型×属性 Spearman：某模型得分随某属性分桶变化的单调相关强度；|ρ| 大=该属性对该模型影响强。',
+    M86:'模型×属性标准差：模型在某属性各分桶上的表现波动；高=不稳定。',
+    M89:'分桶自诊断：找每个模型在每个属性上的最强/最弱分桶，生成诊断画像。'
+};
+// b-变体（J06b 等）回落到同概念基础定义
+function metricDef(id) {
+    return METRIC_DEFS[id] || METRIC_DEFS[id.replace(/b$/, '')] || '';
+}
 
 const metricData = [
     {rank:3, id:'J39', url:'j39_failure_pattern.html', en:'Failure Pattern', zh:'失败模式', n:655, mean:2.17, std:0.85, rho:0.769, h:249.7, quality:192, rating:'S', range:'1-5',
@@ -2588,21 +2720,23 @@ const metricData = [
      detail:'为每个模型生成属性维度的诊断画像（最强桶 vs 最弱桶）。可直接计算。 <strong>实测结果（661 InnovatorBench 轨迹）</strong>：Bucket self-diagnosis: 62/275 (m,a) pairs are monotonic (Q1 vs Q4 extremes). Mean score gap=15.8989, std=12.8048. Top-5 gaps: kimi-k2.5/M24_token_per_point gap=78.524; glm-4-5-full-data-gzy/M24_token_per_point gap=58.056; glm47/M24_token_per_point gap=54.811; glm-4-5-full-data-wo-interact-gzy/M24_token_per_point gap=53.830; claude-4-sonnet-gzy/M24_token_per_point gap=53.299.'},
 ];
 
+// 权威口径 rubrics/model_metric_matrix.csv（composite = 24 个 Judge 指标复合；分项列 = J06,J39,J50,J70,J68,J95,J37,J25）
 const leaderboardData = [
-    {model:'kimi-k2.5', composite:3.145, scores:[2.778,3.0,3.048,2.714,3.048,2.952,2.381,2.476]},
-    {model:'glm47', composite:2.75, scores:[2.5,2.5,2.7,2.5,2.8,2.65,2.0,2.4]},
-    {model:'glm47_data_w_codeact', composite:2.627, scores:[2.4,2.345,2.552,2.345,2.655,2.828,1.893,2.414]},
-    {model:'claude-4-sonnet-gzy', composite:2.601, scores:[2.455,2.425,2.71,2.304,2.623,2.556,1.852,2.44]},
-    {model:'glm-4-5-full-data-gzy', composite:2.592, scores:[2.5,2.56,2.64,2.36,2.48,2.52,1.84,2.36]},
-    {model:'glm47_data_w_sweagent', composite:2.323, scores:[2.3,2.143,2.524,2.143,2.476,2.286,1.524,1.952]},
-    {model:'glm-4-5-full-data-w-interact', composite:2.276, scores:[2.205,2.174,2.512,1.988,2.384,2.337,1.465,2.291]},
-    {model:'kimi-k2-instruct-0905', composite:2.228, scores:[2.148,2.069,2.345,1.966,2.552,2.138,1.75,2.103]},
-    {model:'glm-4-5-gzy', composite:2.161, scores:[2.045,2.143,2.388,1.959,2.286,2.184,1.551,2.429]},
-    {model:'glm-4-5-full-data-wo-interact', composite:2.11, scores:[2.0,1.966,2.483,1.828,2.241,2.069,1.464,2.103]},
-    {model:'gpt-5-gzy', composite:1.834, scores:[1.822,1.516,2.188,1.844,1.953,1.812,1.383,1.922]},
-    {model:'grok-4', composite:1.866, scores:[1.875,1.722,2.167,1.667,2.111,1.944,1.333,2.167]},
-    {model:'grok-code-fast-1', composite:1.425, scores:[1.235,1.389,1.889,1.111,1.611,1.5,1.0,2.056]},
-    {model:'kimi-k2-instruct-0905-gzy', composite:1.046, scores:[1.0,1.0,1.158,1.0,1.0,1.211,1.0,1.0]}
+    {model:'kimi-k2.5', composite:3.301, scores:[2.778,3.0,3.048,2.714,3.048,2.952,2.381,2.476]},
+    {model:'claude-4-sonnet-gzy', composite:3.072, scores:[2.455,2.425,2.71,2.304,2.623,2.556,1.852,2.44]},
+    {model:'glm47-codeact', composite:3.061, scores:[2.4,2.345,2.552,2.345,2.655,2.828,1.893,2.414]},
+    {model:'glm47', composite:3.022, scores:[2.5,2.5,2.7,2.5,2.8,2.65,2.0,2.4]},
+    {model:'glm-4-5-full-data-gzy', composite:2.962, scores:[2.5,2.56,2.64,2.36,2.48,2.52,1.84,2.36]},
+    {model:'glm47-sweagent', composite:2.884, scores:[2.3,2.143,2.524,2.143,2.476,2.286,1.524,1.952]},
+    {model:'kimi-k2-instruct-0905', composite:2.877, scores:[2.148,2.069,2.345,1.966,2.552,2.138,1.75,2.103]},
+    {model:'glm-4-5-full-data-wo-interact-w-filter-gzy', composite:2.837, scores:[2.4,2.35,2.6,2.0,2.45,2.5,1.6,2.15]},
+    {model:'gpt-5-gzy', composite:2.836, scores:[1.822,1.516,2.188,1.844,1.953,1.812,1.383,1.922]},
+    {model:'glm-4-5-full-data-w-interact-w-filter-gzy', composite:2.800, scores:[2.205,2.174,2.512,1.988,2.384,2.337,1.465,2.291]},
+    {model:'glm-4-5-gzy', composite:2.797, scores:[2.045,2.143,2.388,1.959,2.286,2.184,1.551,2.429]},
+    {model:'glm-4-5-full-data-wo-interact-gzy', composite:2.786, scores:[2.0,1.966,2.483,1.828,2.241,2.069,1.464,2.103]},
+    {model:'grok-4', composite:2.783, scores:[1.875,1.722,2.167,1.667,2.111,1.944,1.333,2.167]},
+    {model:'grok-code-fast-1', composite:2.582, scores:[1.235,1.389,1.889,1.111,1.611,1.5,1.0,2.056]},
+    {model:'kimi-k2-instruct-0905-gzy', composite:1.759, scores:[1.0,1.0,1.158,1.0,1.0,1.211,1.0,1.0]}
 ];
 
 const autoMetrics = [
@@ -2675,7 +2809,7 @@ function renderCatalog(filter, dimFilter) {
         row.innerHTML = `
             <td>${m.rank}</td>
             ${idCell}
-            <td><div style="line-height:1.3;">${m.zh}<br><span style="font-size:0.75rem;color:var(--text-light);">${m.en}</span></div></td>
+            <td><div style="line-height:1.3;">${metricDef(m.id) ? '<span class="mtip" data-tip="' + metricDef(m.id) + '">' + m.zh + '</span>' : m.zh}<br><span style="font-size:0.75rem;color:var(--text-light);">${m.en}</span></div></td>
             <td><span class="method-tag ${methodClass}">${mMethod}</span></td>
             <td class="mono">${m.n || ''}</td>
             <td class="mono">${fmtMean(m.mean)}</td>
@@ -2769,7 +2903,7 @@ function renderCatalog(filter, dimFilter) {
                     <td>${cm.url && cm.url !== '#'
                         ? '<a href="rubrics/' + cm.url + '" onclick="event.stopPropagation();" class="mono" style="font-weight:500;color:var(--primary);font-size:0.85em;text-decoration:none;">↳ ' + cm.id + '</a>'
                         : '<span class="mono" style="font-weight:500;color:var(--text-light);font-size:0.85em;">↳ ' + cm.id + '</span>'}</td>
-                    <td><div style="line-height:1.3;padding-left:0.5rem;">${cm.zh}<br><span style="font-size:0.75rem;color:var(--text-light);">${cm.en}</span></div></td>
+                    <td><div style="line-height:1.3;padding-left:0.5rem;">${metricDef(cm.id) ? '<span class="mtip" data-tip="' + metricDef(cm.id) + '">' + cm.zh + '</span>' : cm.zh}<br><span style="font-size:0.75rem;color:var(--text-light);">${cm.en}</span></div></td>
                     <td><span class="method-tag ${cMethodClass}">${cMethod}</span></td>
                     <td class="mono">${cm.n || ''}</td>
                     <td class="mono">${fmtMean(cm.mean)}</td>
@@ -3018,27 +3152,28 @@ document.querySelectorAll('.navbar-links a').forEach(link => {
 
 // ======== TASK BEHAVIORAL DATA ========
 
+// 口径 = behavioral_index.html 全量（600 runs / 263 scored / 172 zero / 165 no-eval）
 const taskData = [
-    {task:1, scored:10, total:10, best:'glm-4-5-full-data', bestScore:96.4, families:7, zero:0, noeval:0},
-    {task:2, scored:10, total:10, best:'claude-4-sonnet', bestScore:39.4, families:7, zero:0, noeval:0},
-    {task:3, scored:10, total:10, best:'glm-4-5', bestScore:18.9, families:6, zero:0, noeval:0},
-    {task:4, scored:10, total:10, best:'kimi-k2.5', bestScore:100.0, families:8, zero:0, noeval:0},
-    {task:5, scored:10, total:10, best:'claude-4-sonnet', bestScore:23.2, families:8, zero:0, noeval:0},
-    {task:6, scored:10, total:10, best:'glm-4-5-full-data-wo-interact', bestScore:100.0, families:7, zero:0, noeval:0},
-    {task:7, scored:10, total:10, best:'claude-4-sonnet', bestScore:25.8, families:8, zero:0, noeval:0},
-    {task:8, scored:10, total:10, best:'glm47-codeact', bestScore:38.0, families:8, zero:0, noeval:0},
-    {task:9, scored:2, total:10, best:'glm47', bestScore:60.8, families:5, zero:5, noeval:3},
-    {task:10, scored:1, total:10, best:'kimi-k2.5', bestScore:15.5, families:6, zero:6, noeval:3},
-    {task:11, scored:10, total:10, best:'claude-4-sonnet', bestScore:86.3, families:6, zero:0, noeval:0},
-    {task:12, scored:7, total:10, best:'kimi-k2.5', bestScore:95.4, families:7, zero:2, noeval:1},
-    {task:13, scored:10, total:10, best:'glm47', bestScore:31.4, families:6, zero:0, noeval:0},
-    {task:14, scored:6, total:10, best:'claude-4-sonnet', bestScore:37.4, families:4, zero:1, noeval:3},
-    {task:15, scored:9, total:10, best:'glm-4-5-full-data-w-interact-w-filter', bestScore:75.7, families:6, zero:0, noeval:1},
-    {task:16, scored:0, total:10, best:'claude-4-sonnet', bestScore:0.0, families:4, zero:9, noeval:1},
-    {task:17, scored:10, total:10, best:'glm47', bestScore:55.9, families:6, zero:0, noeval:0},
-    {task:18, scored:5, total:10, best:'glm47-sweagent', bestScore:70.0, families:5, zero:0, noeval:5},
-    {task:19, scored:10, total:10, best:'gpt-5', bestScore:92.5, families:7, zero:0, noeval:0},
-    {task:20, scored:10, total:10, best:'gpt-5', bestScore:87.8, families:6, zero:0, noeval:0}
+    {task:1, scored:21, total:35, best:'glm-4-5-full-data', bestScore:96.4, families:14, zero:3, noeval:11},
+    {task:2, scored:18, total:35, best:'claude-4-sonnet', bestScore:39.4, families:14, zero:5, noeval:12},
+    {task:3, scored:15, total:28, best:'glm-4-5', bestScore:18.9, families:14, zero:5, noeval:8},
+    {task:4, scored:19, total:25, best:'kimi-k2.5', bestScore:100.0, families:14, zero:1, noeval:5},
+    {task:5, scored:20, total:32, best:'claude-4-sonnet', bestScore:23.2, families:14, zero:2, noeval:10},
+    {task:6, scored:19, total:33, best:'glm-4-5-full-data-wo-interact', bestScore:100.0, families:14, zero:3, noeval:11},
+    {task:7, scored:21, total:28, best:'claude-4-sonnet', bestScore:25.8, families:14, zero:1, noeval:6},
+    {task:8, scored:16, total:36, best:'glm47-codeact', bestScore:38.0, families:14, zero:10, noeval:10},
+    {task:9, scored:2, total:26, best:'glm47', bestScore:60.8, families:14, zero:17, noeval:7},
+    {task:10, scored:1, total:21, best:'kimi-k2.5', bestScore:15.5, families:14, zero:14, noeval:6},
+    {task:11, scored:16, total:27, best:'claude-4-sonnet', bestScore:86.3, families:14, zero:4, noeval:7},
+    {task:12, scored:7, total:32, best:'kimi-k2.5', bestScore:95.4, families:14, zero:18, noeval:7},
+    {task:13, scored:13, total:33, best:'glm47', bestScore:31.4, families:13, zero:9, noeval:11},
+    {task:14, scored:6, total:28, best:'claude-4-sonnet', bestScore:37.4, families:12, zero:17, noeval:5},
+    {task:15, scored:9, total:28, best:'glm-4-5-full-data-w-interact-w-filter', bestScore:75.7, families:14, zero:10, noeval:9},
+    {task:16, scored:0, total:25, best:'claude-4-sonnet', bestScore:0.0, families:14, zero:21, noeval:4},
+    {task:17, scored:16, total:34, best:'glm47', bestScore:55.9, families:13, zero:10, noeval:8},
+    {task:18, scored:5, total:28, best:'glm47-sweagent', bestScore:70.0, families:14, zero:13, noeval:10},
+    {task:19, scored:19, total:30, best:'gpt-5', bestScore:92.5, families:13, zero:2, noeval:9},
+    {task:20, scored:20, total:36, best:'gpt-5', bestScore:87.8, families:14, zero:7, noeval:9}
 ];
 
 function renderTaskGrid() {
@@ -3046,7 +3181,7 @@ function renderTaskGrid() {
     grid.innerHTML = '';
 
     taskData.forEach(t => {
-        const borderClass = t.scored > 7 ? 'border-green' : t.scored === 0 ? 'border-orange' : 'border-blue';
+        const borderClass = (t.scored / t.total) >= 0.5 ? 'border-green' : t.scored === 0 ? 'border-orange' : 'border-blue';
         const scoredPct = (t.scored / t.total) * 100;
         const zeroPct = (t.zero / t.total) * 100;
         const noevalPct = (t.noeval / t.total) * 100;
@@ -3514,6 +3649,15 @@ document.addEventListener('DOMContentLoaded', () => {
     renderRadarChart();
     renderTaskGrid();
     renderTaskLeaderboard();
+    // 所有指向评分卡的链接：自动加中文释义 title（悬浮兜底）
+    document.querySelectorAll('a[href^="rubrics/"]').forEach(a => {
+        const mm = a.getAttribute('href').match(/rubrics\/([jm])(\d+)/i);
+        if (mm) {
+            const id = mm[1].toUpperCase() + mm[2].padStart(2, '0');
+            const d = metricDef(id);
+            if (d && !a.title) a.title = d;
+        }
+    });
 });
 
 // ======== Long Chain Analysis Tabs & Charts ========
