@@ -1505,19 +1505,19 @@
 <section class="hero" id="hero">
     <div class="hero-content">
         <h1>Agentic<span class="dot">&middot;</span>Fine-Grained<span class="dot">&middot;</span>Eval</h1>
-        <p class="subtitle">AI 研究型 Agent 细粒度评估框架 — 7 大行为构念 → 约 27 个主指标（31 个规则实现 + 30 个 Judge 目录指标），适配约 10 种轨迹格式，全覆盖 11 个语料约 12.6 万条轨迹</p>
+        <p class="subtitle">AI 研究型 Agent 细粒度评估框架 — 7 大行为构念 → 约 27 个主指标：96 提案 → 69 已实现（31 规则 + 27 Judge + 11 统计·其中 9 全/2 部分）→ 当前在产（31 规则 · 24 Judge 进矩阵 · 9 统计），适配约 10 种轨迹格式，全覆盖 11 个语料约 12.6 万条轨迹</p>
         <div class="hero-stats">
             <div class="hero-stat">
                 <div class="num">96</div>
                 <div class="label">提案指标目录</div>
             </div>
             <div class="hero-stat">
-                <div class="num">31</div>
-                <div class="label">规则指标已实现</div>
+                <div class="num">69</div>
+                <div class="label">已实现指标</div>
             </div>
             <div class="hero-stat">
                 <div class="num">24</div>
-                <div class="label">Judge 指标已部署</div>
+                <div class="label">Judge 进排行矩阵（在产）</div>
             </div>
             <div class="hero-stat">
                 <div class="num">661</div>
@@ -1533,10 +1533,18 @@
             </div>
         </div>
         <div class="gen-banner">
+            <span>实现口径：</span>
+            <b>96</b> 提案目录
+            <span class="gen-arrow">→</span>
+            <b>69</b> 已实现（31 规则 + 27 Judge + 11 统计·其中 9 全 / 2 部分）
+            <span class="gen-arrow">→</span>
+            当前在产：31 规则 · 24 Judge 进排行矩阵 · 9 统计实算
+        </div>
+        <div class="gen-banner">
             <span>指标体系代际：</span>
             <b>G1</b> 96 条提案目录（47 RULE / 30 JUDGE / 11 STAT / 8 EXP）
             <span class="gen-arrow">→</span>
-            <b>G2</b> J-Judge 部署（24 个，15,720 次评估）
+            <b>G2</b> J-Judge 实现 27 个（24 个进排行矩阵，15,720 次评估）
             <span class="gen-arrow">→</span>
             <b>G3</b> m_v2 规则实现（31 个，零成本跑 10⁵ 级轨迹）
             <span class="gen-arrow">→</span>
@@ -1604,8 +1612,11 @@
         <br><br>
         <strong>注意口径：96 是提案目录（inventory），不是完成数。</strong>
         目录操作化 7 大行为构念（任务进展 / 执行有效性 / 错误恢复 / 验证纪律 / 效率 / 诚实性 / 交互质量），
-        落地为约 27 个主指标：<strong>31 个规则指标已实现</strong>（m_v2，免参考、零模型调用）+
-        <strong>24 个 Judge 指标已部署</strong>（InnovatorBench，claude judge；30 个 Judge 目录指标另已用 GLM-5.2 在 11 个语料全覆盖计算）。
+        落地为约 27 个主指标，<strong>已实现 69 个</strong>：31 个规则（m_v2，免参考、零模型调用）+
+        27 个 Judge（其中 24 个进 InnovatorBench 排行矩阵，J52/J67/J69 已实现未入榜）+
+        11 个统计去偏（9 个全量实算 / 2 个部分实现）。
+        <strong>当前在产子集</strong>：31 规则 · 24 Judge 进矩阵（claude judge，15,720 次评估）· 9 统计实算；
+        30 个 Judge 目录指标另已用 GLM-5.2 在 11 个语料全覆盖计算。
         指标实现共输出约 168 个标量字段（跨 bench 展开 193 个字段变体）——字段是实现明细，不是指标数。
     </p>
 
@@ -1702,11 +1713,11 @@
             <span class="dim-icon-big">📐</span>
             <h2>Metric<span class="dim-en">指标维度</span></h2>
         </div>
-        <p class="dim-desc">96 项目录指标（47 规则 / 30 Judge / 11 统计 / 8 实验，其中 41 项全自动）的设计、实现与统计校准：31 个规则指标已实现（m_v2）、24 个 Judge 指标已部署（15,720 次评估）。下方依次是指标目录、Judge 评分卡（Rubric Showcase）与 Case Studies。悬停任意指标名可查看一句话中文释义。</p>
+        <p class="dim-desc">96 项目录指标（47 规则 / 30 Judge / 11 统计 / 8 实验，其中 41 项全自动）的设计、实现与统计校准：已实现 69 个（31 规则 + 27 Judge + 11 统计·其中 9 全/2 部分）；当前在产子集：31 规则 · 24 Judge 进排行矩阵（15,720 次评估）· 9 统计实算。下方依次是指标目录、Judge 评分卡（Rubric Showcase）与 Case Studies。悬停任意指标名可查看一句话中文释义。</p>
         <div class="dim-pills">
             <span class="dim-pill">96 catalog</span>
-            <span class="dim-pill">31 rule implemented</span>
-            <span class="dim-pill">24 Judge deployed</span>
+            <span class="dim-pill">69 implemented</span>
+            <span class="dim-pill">在产：31 规则 · 24 Judge 进矩阵 · 9 统计</span>
             <span class="dim-pill">41 fully-automatic</span>
         </div>
     </div>
@@ -2078,7 +2089,7 @@
                     <h3 class="h-name">🔬 InnovatorBench</h3>
                     <span class="h-tag h-tag-done">主战场</span>
                 </div>
-                <p class="h-desc">研究型长决策链：开放式 ML 任务，661 条轨迹 × 15 模型（行为分析 20 Task / 判别分析 40 Task 口径）。31 个规则指标 + 24 个已部署 Judge 指标全部落地，是论文核心数据来源。</p>
+                <p class="h-desc">研究型长决策链：开放式 ML 任务，661 条轨迹 × 15 模型（行为分析 20 Task / 判别分析 40 Task 口径）。31 个规则指标 + 24 个进排行矩阵的 Judge 指标（在产子集）全部落地，是论文核心数据来源。</p>
                 <div class="h-stats">
                     <div class="h-stat"><div class="v">661</div><div class="l">Traj</div></div>
                     <div class="h-stat"><div class="v">15</div><div class="l">Models</div></div>
@@ -2267,7 +2278,7 @@
     <div class="progress-list">
         <div class="progress-item">
             <span class="progress-icon" style="color: var(--green);">&#10003;</span>
-            <div class="progress-text"><strong>96 条提案目录</strong>（47 RULE / 30 JUDGE / 11 STAT / 8 EXP）&mdash; 已落地 <strong>31 个规则指标</strong>（m_v2）+ <strong>24 个 Judge 指标部署</strong>；96 是目录数不是完成数</div>
+            <div class="progress-text"><strong>96 条提案目录</strong>（47 RULE / 30 JUDGE / 11 STAT / 8 EXP）&mdash; <strong>已实现 69 个</strong>（31 规则 + 27 Judge + 11 统计·其中 9 全/2 部分）；当前在产子集：31 规则 · 24 Judge 进排行矩阵 · 9 统计实算；96 是目录数不是完成数</div>
         </div>
         <div class="progress-item">
             <span class="progress-icon" style="color: var(--green);">&#10003;</span>
