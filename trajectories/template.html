@@ -382,6 +382,13 @@ svg.mix-bar { display: block; }
 #tip .zh b { font-variant-numeric: tabular-nums; }
 #tip.wide { max-width: 420px; }
 #tip.zhbig { max-width: 560px; }
+.back-float {
+  position: fixed; top: 12px; left: 12px; z-index: 60; cursor: pointer;
+  padding: 6px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 700;
+  background: var(--surface); color: var(--accent); border: 1px solid var(--hairline);
+  box-shadow: var(--shadow); user-select: none;
+}
+.back-float:hover { background: var(--surface-2); }
 .zh-inline {
   margin-top: 6px; padding: 5px 9px; border-left: 3px solid var(--accent);
   background: color-mix(in srgb, var(--accent) 6%, transparent);
@@ -1021,6 +1028,11 @@ function renderOverview() {
   const all = filteredRuns();
   const sortFn = SORTS[state.sort] || SORTS.idx;
   all.sort((a,b) => { const va=sortFn(a), vb=sortFn(b); return (va<vb?-1:va>vb?1:0) * (state.asc?1:-1); });
+  /* coming back from a detail view: land on the page that holds that run */
+  if (state.returnTo != null) {
+    const pos = all.findIndex(r => r.__i === state.returnTo);
+    if (pos >= 0) state.page = Math.floor(pos / PAGE_SIZE);
+  }
   const nPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
   if (state.page >= nPages) state.page = nPages - 1;
   const rows = all.slice(state.page * PAGE_SIZE, (state.page + 1) * PAGE_SIZE);
@@ -1122,6 +1134,16 @@ function renderOverview() {
     location.hash = "#/run/" + tr.dataset.run;
   });
   if (state.q) { const el = $("#q"); el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+  /* back from detail: scroll to the run's row and flash it */
+  if (state.returnTo != null) {
+    const tr = app.querySelector(`tr[data-run="${state.returnTo}"]`);
+    if (tr) {
+      tr.scrollIntoView({ block: "center" });
+      tr.style.outline = "2px solid var(--accent)";
+      setTimeout(() => tr.style.outline = "", 1800);
+    }
+    state.returnTo = null;
+  }
 }
 
 /* ---------------- detail view ---------------- */
@@ -1176,6 +1198,7 @@ function thoughtBlock(tu, i) {
 }
 function renderDetail(ri) {
   const run = RUNS[ri]; if (!run) { location.hash = "#/"; return; }
+  state.returnTo = ri;   /* so the list view can jump back to this row */
   const s = SUM[ri], m = run.metrics, app = $("#app");
   const retry = detectRetries(run.turns);
 
@@ -1285,6 +1308,7 @@ function renderDetail(ri) {
     </div>` : "";
 
   app.innerHTML = `
+    <div class="back-float" onclick="location.hash='#/'" data-tip="返回列表并跳回本条 trajectory 所在的位置">← 返回列表</div>
     <div class="backlink" onclick="location.hash='#/'">← all runs</div>
     <div class="detail-head">
       <h1>${esc(run.sample_name)}</h1>
