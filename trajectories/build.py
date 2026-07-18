@@ -244,17 +244,16 @@ def main() -> None:
         "discrimination": discrimination,
         "full": full,
     }
-    # compact dump; escape "</" so the inline <script> block can't be closed early
+    # data externalized to data.json (fetched async by the page) so the HTML
+    # shell stays tiny and the browser never blocks parsing a ~28MB inline
+    # <script> — that inline blob was crashing the tab (2026-07-18 fix).
     blob = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-    blob = blob.replace("</", "<\\/")
-
-    marker = "/*__DATA__*/"
-    assert marker in template, "template.html lost its /*__DATA__*/ marker"
-    html = template.replace(marker, blob, 1)
+    (HERE / "data.json").write_text(blob)
 
     out = HERE / "index.html"
-    out.write_text(html)
-    print(f"wrote {out} ({out.stat().st_size/1e6:.2f} MB, {len(runs)} runs)")
+    out.write_text(template)  # template fetches ./data.json on load
+    print(f"wrote {out} ({out.stat().st_size/1e6:.3f} MB shell) + "
+          f"data.json ({len(blob)/1e6:.2f} MB, {len(runs)} runs)")
 
 
 if __name__ == "__main__":

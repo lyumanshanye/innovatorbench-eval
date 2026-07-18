@@ -513,7 +513,7 @@ table.mmtable td.worst { color: var(--status-critical); }
 <div id="tip"></div>
 
 <script>
-window.__TRAJ_DATA__ = /*__DATA__*/;
+/* data loaded asynchronously from data.json (see below) */
 </script>
 <script>
 "use strict";
@@ -521,7 +521,14 @@ window.__TRAJ_DATA__ = /*__DATA__*/;
    Trajectory Lens — self-contained viewer for m_v2 smoke output.
    Data embedded above by build.py. No external requests.
    ================================================================ */
-const DATA = window.__TRAJ_DATA__;
+(function(){
+  var _a = document.getElementById("app");
+  if (_a) _a.innerHTML = '<div style="padding:56px;text-align:center;color:var(--muted);font-size:15px">加载轨迹数据中…<br><span style="font-size:13px">首次约 2–3 秒（数据已外置,不再阻塞页面)</span></div>';
+})();
+fetch("data.json").then(function(r){
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return r.json();
+}).then(function(DATA){
 const RUNS = DATA.runs;
 /* FULL = metrics-only rows for the whole scored corpus (analysis tabs).
    RUNS stays a sample with full turn data (Runs tab / detail viewer). */
@@ -1880,6 +1887,11 @@ $("#themeBtn").onclick = () => {
 };
 
 route();
+}).catch(function(e){
+  var a = document.getElementById("app");
+  if (a) a.innerHTML = '<div style="padding:56px;text-align:center;color:var(--c-error);font-size:15px">数据加载失败：' + e + '<br><span style="font-size:13px;color:var(--muted)">请刷新重试</span></div>';
+  console.error("data.json load failed", e);
+});
 </script>
 </body>
 </html>
