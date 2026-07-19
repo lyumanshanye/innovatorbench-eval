@@ -7,6 +7,7 @@ discrimination matrix, embeds everything into template.html, and writes
 index.html next to this script.
 """
 import json
+import math
 import re
 import sys
 from pathlib import Path
@@ -34,6 +35,25 @@ BATCH_FILES = [
 # full-corpus rows embedded per source are capped (stratified sample) so the
 # page stays loadable now that out_full holds the true full corpora (~29k rows)
 FULL_ROWS_CAP = int(__import__("os").environ.get("FULL_ROWS_CAP", "2000"))
+
+
+def json_safe(value):
+    """Return a standards-compliant JSON value tree.
+
+    Python's json encoder emits bare NaN/Infinity tokens by default. They are
+    accepted by Python's decoder but rejected by the browser's JSON.parse,
+    which made the fully embedded Trajectory Lens payload unloadable. Missing
+    or undefined numeric metrics are represented as JSON null instead.
+    """
+    if isinstance(value, float):
+        return value if math.isfinite(value) else None
+    if isinstance(value, dict):
+        return {key: json_safe(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [json_safe(item) for item in value]
+    if isinstance(value, tuple):
+        return [json_safe(item) for item in value]
+    return value
 
 
 def load_verifier() -> dict:
@@ -247,7 +267,15 @@ def main() -> None:
     # data externalized to data.json (fetched async by the page) so the HTML
     # shell stays tiny and the browser never blocks parsing a ~28MB inline
     # <script> — that inline blob was crashing the tab (2026-07-18 fix).
-    blob = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    # Keep the external payload valid for the browser's strict response.json().
+    # The explicit allow_nan=False is a final guard against future unsupported
+    # numeric types escaping json_safe.
+    blob = json.dumps(
+        json_safe(payload),
+        ensure_ascii=False,
+        separators=(",", ":"),
+        allow_nan=False,
+    )
     (HERE / "data.json").write_text(blob)
 
     out = HERE / "index.html"
