@@ -1399,12 +1399,12 @@
 <!-- Navigation -->
 <nav class="navbar">
     <div class="navbar-inner">
-        <a href="#metric" class="navbar-brand">Agentic <span>Fine-Grained&middot;Eval</span></a>
+        <a href="#catalog" class="navbar-brand">Agentic <span>Fine-Grained&middot;Eval</span></a>
         <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle navigation">
             <span></span><span></span><span></span>
         </button>
         <ul class="navbar-links" id="navLinks">
-            <li><a href="#metric">📐 Metric</a></li>
+            <li><a href="#catalog">📐 Metric</a></li>
             <li><a href="#model">🤖 Model</a></li>
             <li><a href="#harness">🧪 Harness</a></li>
             <li><a href="#task">🎯 Task</a></li>
@@ -1539,30 +1539,13 @@
 .overview-stats .ov-stat .l { font-size: .8rem; color: var(--text-light); }
 .overview-stats .ov-stat .sep { color: var(--border); margin: 0 .3rem; }
 </style>
-<!-- ============== METRIC DIMENSION ============== -->
-<section class="dim-banner dim-banner-metric" id="metric">
-    <div class="dim-banner-inner">
-        <div class="dim-row">
-            <span class="dim-icon-big">📐</span>
-            <h2>Metric<span class="dim-en">指标维度</span></h2>
-        </div>
-        <p class="dim-desc">96 项目录指标（47 规则 / 30 Judge / 11 统计 / 8 实验，其中 41 项全自动）的设计、实现与统计校准：已实现 69 个（31 规则 + 27 Judge + 11 统计·其中 9 全/2 部分）；当前在产子集：31 规则 · 24 Judge 进排行矩阵（15,720 次评估）· 9 统计实算。下方依次是指标目录、Judge 评分卡（Rubric Showcase）与 Case Studies。悬停任意指标名可查看一句话中文释义。</p>
-        <div class="dim-pills">
-            <span class="dim-pill">96 catalog</span>
-            <span class="dim-pill">69 implemented</span>
-            <span class="dim-pill">在产：31 规则 · 24 Judge 进矩阵 · 9 统计</span>
-            <span class="dim-pill">41 fully-automatic</span>
-        </div>
-    </div>
-</section>
-
 <!-- Metric Catalog Section -->
 <section class="section" id="catalog" style="background: #fff; max-width: none; padding-left: 2rem; padding-right: 2rem;">
     <div style="max-width: 1200px; margin: 0 auto;">
         <div class="section-header">
             <h2>指标目录</h2>
             <div class="separator"></div>
-            <p>本表收录 55 个指标条目（24 个 LLM-Judge、24 个规则、7 个统计去偏）：53 个已基于 InnovatorBench 轨迹实算；2 个为设计阶段（J52 无独立列 / J66 缺人类反馈轮数据）— 以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识。完整 96 条目录见「全量指标合集」，31 个已实现规则指标的跨语料结果见 Trajectory Lens。点击行展开详情，悬停指标名查看中文释义，支持按方法类型和维度筛选。</p>
+            <p style="margin-top:1rem; padding:1rem 1.15rem; background:linear-gradient(135deg,#eef2ff,#f8fafc); border:1px solid #c7d2fe; border-left:4px solid var(--primary); border-radius:10px; color:var(--text); text-align:left;">本表收录 55 个指标条目（24 个 LLM-Judge、24 个规则、7 个统计去偏）：53 个已基于 InnovatorBench 轨迹实算；2 个为设计阶段（J52 无独立列 / J66 缺人类反馈轮数据）— 以 <span style="background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1e293b;padding:1px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;">TBD</span> 标识。31 个已实现规则指标的跨语料结果见 Trajectory Lens。点击行展开详情，悬停指标名查看中文释义，支持按方法类型和维度筛选。</p>
         </div>
 
         <div class="catalog-controls">
